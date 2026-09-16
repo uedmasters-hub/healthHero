@@ -1,0 +1,64 @@
+.dup-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgba(15, 23, 42, 0.4);
+  animation: dupFadeIn 0.2s ease;
+}
+
+.dup-modal {
+  width: 100%;
+  max-width: 340px;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-5) 18px;
+  text-align: center;
+  box-shadow: var(--shadow-modal);
+}
+
+.dup-modal h3 {
+  margin: 0 0 var(--space-2-5);
+  font-size: var(--text-subtitle-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.dup-modal p {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-body-size);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.dup-primary,
+.dup-secondary {
+  width: 100%;
+  min-height: var(--app-flow-cta-height);
+  border-radius: var(--radius-cta);
+  font-size: var(--text-title-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.dup-primary {
+  border: none;
+  background: var(--primary);
+  color: var(--white);
+  margin-bottom: var(--space-2);
+}
+
+.dup-secondary {
+  border: var(--border-width) solid var(--border);
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+@keyframes dupFadeIn {
+  from { opacity: var(--opacity-hidden); }
+  to { opacity: var(--opacity-visible); }
+}

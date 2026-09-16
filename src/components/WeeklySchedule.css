@@ -1,0 +1,51 @@
+/* Shared Weekly Schedule chrome — one layout for Profile, booking slot, and reschedule */
+
+.weekly-schedule {
+  width: 100%;
+}
+
+.weekly-schedule-label {
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+}
+
+.weekly-schedule-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5-5);
+}
+
+.weekly-schedule-body .cal-picker,
+.weekly-schedule-body .cal-strip {
+  margin-bottom: 0;
+}
+
+.weekly-slot-periods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.weekly-slot-period-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--section-header-gap);
+}
+
+.weekly-slot-period-label {
+  margin: 0;
+}
+
+.weekly-slot-period-count {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-faint);
+  white-space: nowrap;
+}

@@ -1,0 +1,99 @@
+.categories {
+  padding: 0;
+}
+
+.categories-scroll {
+  display: flex;
+  align-items: stretch;
+  gap: var(--card-gap);
+  overflow-x: auto;
+  padding: 0 var(--content-padding);
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--content-padding);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.categories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.categories-scroll:has(> :only-child) {
+  overflow-x: hidden;
+  scroll-snap-type: none;
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-0);
+  flex: 0 0 calc((100% - var(--card-gap) * 2 - var(--space-8)) / 3);
+  min-width: 0;
+  padding: var(--card-padding) var(--space-3);
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: background var(--transition);
+  font: inherit;
+  color: inherit;
+}
+
+.category-card:only-child {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+}
+
+.category-card .reveal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--stack-gap);
+  width: 100%;
+  height: 100%;
+}
+
+.category-card:hover {
+  background: var(--active-bg);
+}
+
+.category-icon {
+  width: calc(var(--avatar-xl) + var(--space-4));
+  height: calc(var(--avatar-xl) + var(--space-4));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.category-name {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.view-all-card {
+  border-style: dashed;
+  border-color: var(--border);
+}
+
+.view-all-card:hover {
+  background: var(--bg);
+}
+
+.view-all-icon {
+  background: transparent;
+  border-radius: var(--radius-full);
+}

@@ -1,0 +1,186 @@
+.notifications-page {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--white);
+  padding-bottom: 96px;
+}
+
+.notifications-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--content-padding) var(--space-3);
+  background: var(--white);
+  border-bottom: var(--border-width) solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: var(--space-2);
+}
+
+.notifications-back {
+  background: none;
+  border: none;
+  padding: var(--space-1);
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.notifications-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.notifications-mark-all {
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  padding: var(--space-1) 0;
+  white-space: nowrap;
+}
+
+.notifications-header-spacer {
+  width: 88px;
+}
+
+.notifications-list {
+  padding: var(--space-3) var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2-5);
+}
+
+.notification-card {
+  display: block;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-3-5);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.notification-card .reveal-body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.notification-card.unread {
+  background: var(--active-bg);
+  border-color: var(--primary-soft-strong);
+}
+
+.notification-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+  background: var(--service-icon-bg);
+}
+
+.notification-card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.notification-card-icon.results {
+  color: var(--success-text);
+  background: var(--success-bg-light);
+}
+
+.notification-card-icon.booking {
+  color: var(--success-text);
+  background: var(--success-bg);
+}
+
+.notification-card-icon.pharmacy {
+  color: var(--urgent);
+  background: var(--white)4ED;
+}
+
+.notification-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2-5);
+  margin-bottom: var(--space-1);
+}
+
+.notification-card-top h2 {
+  margin: 0;
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.notification-card-top span {
+  font-size: var(--text-caption-size);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.notification-card-body p {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.notification-unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--urgent);
+  flex-shrink: 0;
+  margin-top: var(--space-2);
+}
+
+.notifications-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px var(--space-5);
+  color: var(--text-muted);
+  gap: var(--space-3);
+}
+
+.notifications-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.notifications-empty p {
+  margin: 0;
+  font-size: var(--text-body-lg-size);
+}

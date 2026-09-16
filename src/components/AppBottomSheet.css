@@ -1,0 +1,185 @@
+/* Shared bottom-sheet chrome — single geometry, overlay, surface, spacing */
+
+.ds-sheet-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  /* Dim is owned by .dark-overlay (var(--overlay)); sheet layer stays clear to avoid double-tint */
+  background: transparent;
+  animation: dsSheetFadeIn var(--duration-normal) var(--ease-standard) forwards;
+}
+
+.ds-sheet-overlay.is-blurred {
+  background: color-mix(in srgb, var(--overlay, rgba(15, 23, 42, 0.28)) 55%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.ds-sheet-overlay.is-closing {
+  animation: dsSheetFadeOut var(--duration-moderate) var(--ease-standard) forwards;
+}
+
+.ds-sheet-overlay.is-closing .ds-sheet {
+  animation: dsSheetSlideDown var(--duration-moderate) var(--ease-standard) forwards;
+}
+
+.ds-sheet {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  /* Keep width full; do NOT stretch on the cross-axis — stretch pins tall
+     sheets to the top and leaves the page footer peeking below, which reads
+     as an embedded full-screen calendar instead of a bottom sheet. */
+  align-self: flex-end;
+  flex-shrink: 0;
+  background: var(--sheet-surface);
+  border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: var(--shadow-sheet);
+  padding: var(--sheet-pad-top) var(--sheet-pad-x) var(--sheet-pad-bottom);
+  max-height: var(--app-sheet-max-height);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: dsSheetSlideUp var(--duration-moderate) var(--ease-emphasized);
+  transition:
+    transform 0.42s var(--ease-emphasized),
+    max-height 0.42s var(--ease-emphasized),
+    padding-bottom 0.28s var(--ease-standard);
+  touch-action: pan-y;
+  will-change: transform;
+  /* Keep geometry rectangular — never use radius-pill / radius-full on sheets */
+}
+
+.ds-sheet.is-dragging {
+  transition: none;
+}
+
+.ds-sheet.is-snap-mid {
+  max-height: min(62vh, var(--app-sheet-max-height));
+}
+
+.ds-sheet.is-snap-full {
+  max-height: min(92vh, var(--app-sheet-max-height));
+}
+
+.ds-sheet-handle {
+  width: var(--sheet-handle-width);
+  height: var(--sheet-handle-height);
+  background: var(--border);
+  border-radius: var(--radius-2xs);
+  margin: var(--space-1) auto var(--space-3);
+  flex-shrink: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.ds-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0 var(--space-3);
+  flex-shrink: 0;
+}
+
+.ds-sheet-header h3,
+.ds-sheet-title {
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ds-sheet-close {
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  min-width: var(--icon-btn-size);
+  min-height: var(--icon-btn-size);
+  border: none;
+  border-radius: var(--icon-btn-radius);
+  background: var(--icon-surface-muted);
+  color: var(--icon-color-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font: inherit;
+  padding: 0;
+  transition: background var(--transition), color var(--transition), opacity var(--transition);
+}
+
+.ds-sheet-close:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.ds-sheet-close:active:not(:disabled) {
+  opacity: var(--opacity-pressed);
+}
+
+.ds-sheet-close:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+.ds-sheet-close svg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ds-sheet-option {
+  width: 100%;
+  display: block;
+  padding: var(--space-3-5) 0;
+  border: none;
+  border-bottom: var(--border-width) solid var(--border);
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.ds-sheet-option:last-child {
+  border-bottom: none;
+}
+
+.ds-sheet-option.is-active {
+  color: var(--primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds-sheet-option.is-danger {
+  color: var(--danger);
+}
+
+@keyframes dsSheetFadeIn {
+  from { opacity: var(--opacity-hidden); }
+  to { opacity: var(--opacity-visible); }
+}
+
+@keyframes dsSheetFadeOut {
+  from { opacity: var(--opacity-visible); }
+  to { opacity: var(--opacity-hidden); }
+}
+
+@keyframes dsSheetSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes dsSheetSlideDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}

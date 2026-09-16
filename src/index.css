@@ -1,0 +1,873 @@
+/* =============================================================================
+   HealthHero Design System — single source of truth
+   Layouts, flows, and interactions stay unchanged; visuals resolve through tokens.
+   ============================================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* —— Brand / Primary —— */
+  --primary: #5B5FC6;
+  --primary-light: #7B7FD7;
+  --primary-dark: #4A4EB0;
+  --primary-gradient-end: #9B9FE8;
+  --primary-soft: #EEF0FF;
+  --primary-soft-strong: #E4E6F8;
+  --primary-press: #F4F4FF;
+
+  /* —— Surfaces ——
+     Page = app canvas; Card = elevated white panel; Muted = inactive/skeleton fill.
+     Soft brand fills share one token so icon wells and primary tints stay aligned. */
+  --white: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --bg: #F5F5F8;
+  --bg-dark: var(--surface-muted);
+  --surface-muted: #F3F4F8;
+  --surface-subtle: var(--surface-muted);
+  --surface-soft: var(--surface-muted);
+  --media-bg: #EEF1F6;
+  --avatar-bg: var(--primary-soft);
+  --chip-bg: #EAF4FC;
+  --chip-bg-alt: var(--chip-bg);
+  --badge-bg: #F2F4F7;
+  --active-bg: #F0F0FF;
+  --service-icon-bg: var(--primary-soft);
+  --slot-day-bg: var(--surface-muted);
+
+  /* —— Text —— */
+  --text-primary: #1A1A2E;
+  --text-secondary: #6B7280;
+  --text-muted: var(--text-secondary);
+  --text-faint: #9CA3AF; /* decorative / disabled chrome only */
+  --text-on-primary: #FFFFFF;
+  --text-link: var(--primary);
+
+  /* —— Borders / Dividers ——
+     Default = cards, inputs, sheets, calendars, containers (one value only).
+     Subtle = hairline dividers inside surfaces.
+     Strong = emphasized separators (footers, sticky chrome). */
+  --border: #EEEFF3;
+  --border-subtle: #F0F1F4;
+  --border-strong: #E5E7EB;
+  --border-card: var(--border);
+  --border-soft: var(--border-subtle);
+  --border-focus: var(--primary);
+  --divider: var(--border-subtle);
+  --border-width: 1px;
+  --border-width-emphasis: 1.5px;
+  --border-width-strong: 2px;
+
+  /* —— Semantic status —— */
+  --success: #059669;
+  --success-light: #4ADE80;
+  --success-bg: #E8F5E9;
+  --success-bg-light: #F0FDF4;
+  --success-border: #A7F3D0;
+  --success-border-soft: var(--success-border);
+  --success-text: #047857;
+
+  --danger: #DC2626;
+  --danger-bg: #FEF2F2;
+  --danger-soft: #FFF7F7;
+
+  --warning: #D97706;
+  --warning-bg: #FEF3C7;
+  --warning-border: #FFD54F;
+  --urgent: #C2410C;
+  --urgent-bg: #FFF4E6;
+  --urgent-soft: #FFF4ED;
+
+  --info: #3B5BDB;
+  --info-bg: #EDF2FF;
+
+  --rating: #F59E0B;
+  --rating-star: var(--rating);
+
+  --upcoming: var(--warning);
+  --upcoming-bg: var(--warning-bg);
+
+  --toggle-off: #D1D5DB;
+
+  /* —— Overlay / Scrim —— */
+  --overlay: rgba(15, 23, 42, 0.35);
+  --overlay-strong: rgba(15, 23, 42, 0.5);
+  --overlay-dark: var(--overlay);
+  --overlay-lightbox: #0c0e14;
+  --surface-lightbox: #1c1d22;
+  --surface-lightbox-bar: #1F2937;
+  --frame-backdrop: #121214;
+  --shimmer-mid: #e4e7ee;
+
+  /* —— Elevation / Shadow ——
+     Card elevation is one treatment; hover/sheet/modal escalate intentionally. */
+  --shadow-xs: var(--shadow-sm);
+  --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.08);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 16px rgba(17, 24, 39, 0.05);
+  --shadow-card-lg: var(--shadow-card);
+  --shadow-hover: 0 4px 16px rgba(91, 95, 198, 0.12);
+  --shadow-sheet: 0 8px 28px rgba(17, 24, 39, 0.12);
+  --shadow-modal: 0 16px 40px rgba(17, 24, 39, 0.18);
+  --shadow-focus: 0 0 0 3px rgba(91, 95, 198, 0.28);
+  --shadow-ring-soft: 0 0 0 8px var(--service-icon-bg);
+
+  /* —— Radius ——
+     Tile = compact squares (services); Card = content panels / doctor cards;
+     CTA = primary buttons; Full = avatars & circular controls. */
+  --radius-2xs: 4px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-card: 22px;
+  --radius-xl: var(--radius-card);
+  --radius-cta: 26px;
+  --radius-device: 32px; /* phone bezel / outer chrome only */
+  --radius-full: 999px;
+  --radius-pill: var(--radius-full);
+  /* Sheet top radius lives under Layout tokens as --app-sheet-radius */
+
+  /* —— Spacing scale (4px base + half-steps for legacy control padding) —— */
+  --space-0: 0;
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-3-5: 14px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-5-5: 22px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --page-padding: var(--space-5);
+  --content-padding: var(--space-5);
+  --section-gap: var(--space-6);
+  --card-gap: var(--space-4);
+  --card-padding: var(--space-4);
+  --stack-gap: var(--space-3);
+  --section-header-gap: 11px;
+
+  /* —— Sizing / Touch / Icons ——
+     One stroke weight for the whole family. Subtle vs bold is color/surface, never thinner strokes. */
+  --touch-min: 44px;
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-md: 18px;
+  --icon-lg: 20px;
+  --icon-xl: 22px;
+  --icon-2xl: 24px;
+  --icon-stroke: 2;
+  --icon-stroke-bold: var(--icon-stroke); /* alias — no second weight */
+
+  --icon-btn-size: var(--touch-min);
+  --icon-btn-visual: 40px;
+  --icon-well-size: 36px;
+  --icon-well-size-lg: var(--touch-min);
+  --icon-chip-size: 28px;
+  --icon-btn-radius: var(--radius-full);
+  --icon-btn-border: var(--border-width) solid var(--border);
+  --icon-gap: var(--space-2);
+
+  --icon-color-default: var(--text-primary);
+  --icon-color-muted: var(--text-secondary);
+  --icon-color-brand: var(--primary);
+  --icon-color-on-brand: var(--text-on-primary);
+  --icon-color-danger: var(--danger);
+  --icon-color-success: var(--success);
+  --icon-color-warning: var(--warning);
+  --icon-color-info: var(--info);
+
+  --icon-surface-ghost: transparent;
+  --icon-surface-subtle: var(--card-bg);
+  --icon-surface-muted: var(--surface-muted);
+  --icon-surface-press: var(--primary-press);
+  --icon-surface-brand: var(--primary-soft);
+  --icon-surface-info: var(--info-bg);
+  --icon-surface-danger: var(--danger-bg);
+  --icon-surface-success: var(--success-bg);
+  --icon-surface-warning: var(--warning-bg);
+  --icon-surface-selected: var(--active-bg);
+
+  --avatar-sm: 40px;
+  --avatar-md: 52px;
+  --avatar-lg: 56px;
+  --avatar-xl: 72px;
+  --header-control: var(--icon-btn-size);
+  --app-flow-cta-height: 52px;
+  --nav-height: 64px;
+
+  /* —— Typography scale —— */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --text-display-size: 22px;
+  --text-display-line: 1.25;
+  --text-display-weight: var(--font-weight-bold);
+
+  --text-heading-size: 17px;
+  --text-heading-line: 1.3;
+  --text-heading-weight: var(--font-weight-semibold);
+
+  --text-title-size: 16px;
+  --text-title-line: 1.3;
+  --text-title-weight: var(--font-weight-semibold);
+
+  --text-body-size: 14px;
+  --text-body-line: 1.45;
+  --text-body-weight: var(--font-weight-regular);
+
+  --text-body-lg-size: 15px;
+  --text-body-lg-line: 1.45;
+
+  --text-label-size: 13px;
+  --text-label-line: 1.35;
+  --text-label-weight: var(--font-weight-medium);
+
+  --text-caption-size: 12px;
+  --text-caption-line: 1.35;
+  --text-caption-weight: var(--font-weight-medium);
+
+  --text-overline-size: 11px;
+  --text-overline-line: 1.3;
+  --text-overline-weight: var(--font-weight-semibold);
+  --text-overline-tracking: 0.06em;
+
+  --text-subtitle-size: 18px;
+  --text-subtitle-line: 1.3;
+  --text-subtitle-weight: var(--font-weight-semibold);
+
+  --text-micro-size: 10px;
+  --text-micro-line: 1.3;
+
+  --text-lead-size: 20px;
+  --text-hero-size: 28px;
+  --text-stat-size: 42px;
+  --text-badge-size: 9px;
+
+  --letter-tight: -0.25px;
+  --letter-snug: -0.15px;
+
+  /* —— Opacity —— */
+  --opacity-disabled: 0.45;
+  --opacity-muted: 0.7;
+  --opacity-soft: 0.5;
+  --opacity-pressed: 0.9;
+  --opacity-strong: 0.8;
+  --opacity-ghost: 0.3;
+  --opacity-hidden: 0;
+  --opacity-visible: 1;
+
+  /* —— Motion —— */
+  --ease-standard: ease;
+  --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.2s;
+  --duration-moderate: 0.28s;
+  --duration-slow: 0.4s;
+  --transition: var(--duration-normal) var(--ease-standard);
+  --transition-reveal: opacity var(--duration-moderate) var(--ease-standard),
+    transform 0.32s var(--ease-emphasized);
+
+  /* —— Layout / Frame —— */
+  --phone-width: 440px;
+  --phone-height: 956px;
+  --phone-scale: 1;
+  --frame-footer: 28px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-bar-pad: calc(var(--space-2-5) + max(var(--frame-footer), var(--safe-bottom)));
+  --app-flow-footer-pad-top: var(--space-3-5);
+  /* Sticky footer CTA — compact vertical rhythm (button/radius/horizontal unchanged) */
+  --sticky-footer-pad-top: var(--space-2-5);
+  --sticky-footer-cta-gap: var(--space-1);
+  --sticky-footer-secondary-pad-y: var(--space-1-5);
+  --sticky-footer-pad-bottom: calc(var(--space-1-5) + max(var(--frame-footer), var(--safe-bottom)));
+  --sticky-footer-clearance: calc(
+    var(--sticky-footer-pad-top)
+    + var(--app-flow-cta-height)
+    + var(--sticky-footer-cta-gap)
+    + (var(--sticky-footer-secondary-pad-y) * 2)
+    + (var(--text-body-size) * var(--text-body-line))
+    + var(--sticky-footer-pad-bottom)
+  );
+  --app-sheet-max-height: 85%;
+  /* Sheet top corners only — never pill/full (those create the dome distortion) */
+  --app-sheet-radius: 20px;
+  --sheet-surface: var(--card-bg);
+  --sheet-pad-x: var(--space-5);
+  --sheet-pad-top: var(--space-2);
+  --sheet-pad-bottom: var(--bottom-bar-pad);
+  --sheet-handle-width: 40px;
+  --sheet-handle-height: 4px;
+  --z-header: 50;
+  --z-footer: 100;
+  --z-overlay: 1000;
+  --z-sheet: 1001;
+}
+
+/* —— Base —— */
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  background: var(--frame-backdrop);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  background: transparent;
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* —— Focus / Accessibility —— */
+:focus {
+  outline: none;
+}
+
+/* Keyboard rings for controls that are not text entry */
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible,
+[role='tab']:focus-visible,
+[role='menuitem']:focus-visible,
+summary:focus-visible,
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible,
+input[type='button']:focus-visible,
+input[type='submit']:focus-visible,
+input[type='reset']:focus-visible,
+input[type='file']:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+/*
+  Text entry: search, forms, messages, OTP-adjacent native fields.
+  Idle and focused chrome stay identical — only the caret marks focus.
+*/
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']),
+textarea,
+select {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']),
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  caret-color: var(--text-primary);
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']):not([type='file']):not([type='range']):not([type='color']):not([type='hidden']):is(:focus, :focus-visible, :active),
+textarea:is(:focus, :focus-visible, :active),
+select:is(:focus, :focus-visible, :active) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Prefer 44×44 touch targets without changing visible chrome where controls are optically smaller */
+.touch-target {
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+}
+
+/* —— Semantic text utilities —— */
+.ds-display {
+  font-size: var(--text-display-size);
+  line-height: var(--text-display-line);
+  font-weight: var(--text-display-weight);
+  letter-spacing: var(--letter-tight);
+  color: var(--text-primary);
+}
+
+.ds-heading {
+  font-size: var(--text-heading-size);
+  line-height: var(--text-heading-line);
+  font-weight: var(--text-heading-weight);
+  color: var(--text-primary);
+}
+
+.ds-title {
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--text-title-weight);
+  color: var(--text-primary);
+}
+
+.ds-body {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--text-body-weight);
+  color: var(--text-primary);
+}
+
+.ds-label {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--text-label-weight);
+  color: var(--text-secondary);
+}
+
+.ds-caption {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  font-weight: var(--text-caption-weight);
+  color: var(--text-secondary);
+}
+
+.ds-overline {
+  font-size: var(--text-overline-size);
+  line-height: var(--text-overline-line);
+  font-weight: var(--text-overline-weight);
+  letter-spacing: var(--text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* —— Shared surface primitives —— */
+.ds-card {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.ds-card-flat {
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+
+.ds-section-title {
+  font-size: var(--text-overline-size);
+  font-weight: var(--text-overline-weight);
+  letter-spacing: var(--text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-3);
+}
+
+/* —— Motion primitives —— */
+@keyframes fadeIn {
+  from { opacity: var(--opacity-hidden); }
+  to { opacity: var(--opacity-visible); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: var(--opacity-hidden); }
+  to { transform: translateY(0); opacity: var(--opacity-visible); }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: var(--opacity-hidden); }
+  to { transform: scale(1); opacity: var(--opacity-visible); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.end-of-page-placeholder {
+  text-align: center;
+  font-size: var(--text-caption-size);
+  color: var(--text-secondary);
+  padding: var(--space-10) 0 var(--space-12);
+  letter-spacing: 0.3px;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    var(--shimmer-mid) 37%,
+    var(--border) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.45s ease-in-out infinite;
+}
+
+.reveal-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-host > .reveal-body {
+  width: 100%;
+}
+
+.reveal-skel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--opacity-visible);
+  transition: opacity var(--duration-moderate) var(--ease-standard);
+}
+
+.reveal-skel.is-hidden {
+  opacity: var(--opacity-hidden);
+}
+
+.reveal-skel-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--border);
+}
+
+.reveal-host > .reveal-skel-fill,
+.reveal-skel .reveal-skel-fill {
+  border-radius: inherit;
+}
+
+.reveal-body {
+  opacity: var(--opacity-hidden);
+  transform: translateY(8px);
+  transition: var(--transition-reveal);
+}
+
+.reveal-body.is-visible {
+  opacity: var(--opacity-visible);
+  transform: none;
+}
+
+.reveal-host.is-cached .reveal-skel {
+  display: none;
+}
+
+.reveal-host.is-cached .reveal-body {
+  opacity: var(--opacity-visible);
+  transform: none;
+  transition: none;
+}
+
+/* —— App flow footer / primary CTA (booking + care flows) —— */
+.app-flow-footer {
+  flex-shrink: 0;
+  width: 100%;
+  background: var(--white);
+  border-top: var(--border-width) solid var(--border-strong);
+  padding: var(--app-flow-footer-pad-top) var(--content-padding) var(--bottom-bar-pad);
+  z-index: 5;
+}
+
+.app-flow-cta {
+  width: 100%;
+  min-height: var(--app-flow-cta-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-4);
+  border: none;
+  border-radius: var(--radius-cta);
+  background: var(--primary);
+  color: var(--text-on-primary);
+  font-size: var(--text-title-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition), opacity var(--transition);
+}
+
+.app-flow-cta:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.app-flow-cta:active:not(:disabled) {
+  opacity: var(--opacity-pressed);
+}
+
+.app-flow-cta:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* Sticky footer CTA — Appointment Details, Ready for Visit (SSOT) */
+.sticky-footer-cta {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--phone-width);
+  background: var(--white);
+  padding: var(--sticky-footer-pad-top) var(--content-padding) var(--sticky-footer-pad-bottom);
+  border-top: var(--border-width) solid var(--border-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sticky-footer-cta-gap);
+  z-index: var(--z-footer);
+}
+
+.sticky-footer-cta.is-pending {
+  opacity: var(--opacity-soft);
+  pointer-events: none;
+}
+
+.sticky-footer-cta__primary {
+  width: 100%;
+  min-height: var(--app-flow-cta-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-4);
+  border: none;
+  border-radius: var(--radius-cta);
+  background: var(--primary);
+  color: var(--text-on-primary);
+  font-size: var(--text-title-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition), opacity var(--transition);
+}
+
+.sticky-footer-cta__primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.sticky-footer-cta__primary:active:not(:disabled) {
+  opacity: var(--opacity-pressed);
+}
+
+.sticky-footer-cta__primary:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.sticky-footer-cta__secondary {
+  display: block;
+  width: 100%;
+  padding: var(--sticky-footer-secondary-pad-y) 0;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Shared header icon control — optical chrome may sit inside a 44×44 hit area */
+.ds-icon-btn {
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  min-width: var(--icon-btn-size);
+  min-height: var(--icon-btn-size);
+  border-radius: var(--icon-btn-radius);
+  border: none;
+  background: var(--icon-surface-ghost);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--icon-color-default);
+  padding: 0;
+  flex-shrink: 0;
+  font: inherit;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), opacity var(--transition);
+}
+
+.ds-icon-btn svg,
+.ds-icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  flex-shrink: 0;
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ds-icon.is-xs,
+.ds-icon-btn.is-xs svg { width: var(--icon-xs); height: var(--icon-xs); }
+.ds-icon.is-sm,
+.ds-icon-btn.is-sm svg { width: var(--icon-sm); height: var(--icon-sm); }
+.ds-icon.is-md,
+.ds-icon-btn.is-md svg { width: var(--icon-md); height: var(--icon-md); }
+.ds-icon.is-lg,
+.ds-icon-btn.is-lg svg { width: var(--icon-lg); height: var(--icon-lg); }
+.ds-icon.is-xl,
+.ds-icon-btn.is-xl svg { width: var(--icon-xl); height: var(--icon-xl); }
+.ds-icon.is-2xl,
+.ds-icon-btn.is-2xl svg { width: var(--icon-2xl); height: var(--icon-2xl); }
+
+.ds-icon-btn.is-muted {
+  color: var(--icon-color-muted);
+}
+
+/* Bordered / secondary surface — Doctor Profile Share & Favorite, Treat filters, etc. */
+.ds-icon-btn.is-subtle {
+  border: var(--icon-btn-border);
+  background: var(--icon-surface-subtle);
+  color: var(--icon-color-muted);
+}
+
+.ds-icon-btn.is-subtle svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+.ds-icon-btn:hover:not(:disabled) {
+  background: var(--icon-surface-muted);
+}
+
+.ds-icon-btn.is-subtle:hover:not(:disabled) {
+  background: var(--icon-surface-muted);
+  border-color: var(--border-strong);
+}
+
+.ds-icon-btn:active:not(:disabled) {
+  background: var(--icon-surface-press);
+  opacity: var(--opacity-pressed);
+}
+
+.ds-icon-btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+.ds-icon-btn:disabled,
+.ds-icon-btn.is-disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.ds-icon-btn.is-selected,
+.ds-icon-btn[aria-pressed='true'] {
+  background: var(--icon-surface-selected);
+  color: var(--icon-color-brand);
+  border-color: var(--primary);
+}
+
+.ds-icon-btn.is-brand {
+  color: var(--icon-color-brand);
+  background: var(--icon-surface-brand);
+}
+
+.ds-icon-btn.is-danger,
+.ds-icon-btn.is-error {
+  color: var(--icon-color-danger);
+}
+
+.ds-icon-btn.is-danger.is-subtle,
+.ds-icon-btn.is-error.is-subtle {
+  background: var(--icon-surface-danger);
+  border-color: var(--danger-bg);
+}
+
+.ds-icon-btn.is-success {
+  color: var(--icon-color-success);
+}
+
+.ds-icon-btn.is-warning {
+  color: var(--icon-color-warning);
+}
+
+/* Soft circular wells (info cells, quick actions) — same stroke geometry as buttons */
+.ds-icon-well {
+  width: var(--icon-well-size);
+  height: var(--icon-well-size);
+  border-radius: var(--icon-btn-radius);
+  border: none;
+  background: var(--icon-surface-brand);
+  color: var(--icon-color-brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ds-icon-well svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ds-icon-well.is-lg {
+  width: var(--icon-well-size-lg);
+  height: var(--icon-well-size-lg);
+}
+
+.ds-icon-well.is-lg svg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+.ds-icon-well.is-info {
+  background: var(--icon-surface-info);
+  color: var(--icon-color-info);
+}
+
+.ds-icon-well.is-success {
+  background: var(--icon-surface-success);
+  color: var(--icon-color-success);
+}
+
+.ds-icon-well.is-warning {
+  background: var(--icon-surface-warning);
+  color: var(--icon-color-warning);
+}
+
+.ds-icon-well.is-danger,
+.ds-icon-well.is-error {
+  background: var(--icon-surface-danger);
+  color: var(--icon-color-danger);
+}
+
+.ds-icon-well.is-muted {
+  background: var(--icon-surface-muted);
+  color: var(--icon-color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

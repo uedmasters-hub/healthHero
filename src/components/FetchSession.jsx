@@ -1,0 +1,45 @@
+import { createContext, useContext, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
+
+const FetchSessionContext = createContext(null)
+
+function sessionScope(pathname) {
+  if (pathname === '/' || pathname === '/search') return 'home'
+  if (pathname.startsWith('/explore')) return 'explore'
+  if (pathname.startsWith('/booking')) return 'booking'
+  const doctor = pathname.match(/^\/doctor\/([^/]+)/)
+  if (doctor) return `doctor:${doctor[1]}`
+  return pathname
+}
+
+export function FetchSessionProvider({ children }) {
+  const { pathname } = useLocation()
+  const scope = sessionScope(pathname)
+  const storeRef = useRef({ scope, loaded: new Set() })
+
+  if (storeRef.current.scope !== scope) {
+    storeRef.current = { scope, loaded: new Set() }
+  }
+
+  const apiRef = useRef({
+    isLoaded: (id) => storeRef.current.loaded.has(id),
+    markLoaded: (id) => {
+      storeRef.current.loaded.add(id)
+    },
+  })
+
+  return (
+    <FetchSessionContext.Provider value={apiRef.current}>
+      {children}
+    </FetchSessionContext.Provider>
+  )
+}
+
+const fallback = {
+  isLoaded: () => false,
+  markLoaded: () => {},
+}
+
+export function useFetchSession() {
+  return useContext(FetchSessionContext) || fallback
+}

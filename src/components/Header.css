@@ -1,0 +1,398 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--content-padding);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.header-logo {
+  width: var(--icon-well-size);
+  height: var(--icon-well-size);
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+}
+
+.location {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-1-5);
+  min-width: 0;
+  min-height: var(--touch-min);
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 0;
+  font-family: inherit;
+}
+
+.location-pin {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  color: var(--primary);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.location-pin svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+.location-name {
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  letter-spacing: var(--letter-snug);
+  line-height: var(--text-heading-line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-arrow {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--duration-normal) var(--ease-standard);
+}
+
+.location-arrow svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.location:hover .location-arrow {
+  transform: translateY(1px);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--white);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-full);
+  padding: var(--space-0-5);
+  padding-left: var(--space-1);
+  flex-shrink: 0;
+}
+
+.notification-btn {
+  position: relative;
+  width: var(--icon-btn-visual);
+  height: var(--icon-btn-visual);
+  min-width: var(--icon-btn-visual);
+  min-height: var(--icon-btn-visual);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--media-bg);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.notification-icon {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.notification-badge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: var(--space-2);
+  height: var(--space-2);
+  background: var(--urgent);
+  border: var(--border-width-strong) solid var(--white);
+  border-radius: var(--radius-full);
+  box-sizing: content-box;
+}
+
+.avatar {
+  position: relative;
+  width: var(--avatar-sm);
+  height: var(--avatar-sm);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.avatar-img {
+  width: var(--avatar-sm);
+  height: var(--avatar-sm);
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  object-position: center 12%;
+  display: block;
+  background: var(--media-bg);
+}
+
+.avatar-placeholder {
+  width: var(--avatar-sm);
+  height: var(--avatar-sm);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-snug);
+  color: var(--white);
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+}
+
+.pro-badge {
+  position: absolute;
+  bottom: -3px;
+  right: -2px;
+  background: var(--primary);
+  color: var(--white);
+  font-size: var(--text-badge-size);
+  font-weight: var(--font-weight-bold);
+  padding: 2px var(--space-1-5);
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+/* Location Modal */
+.location-overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.location-overlay.closing {
+  animation: fadeOut 0.25s ease forwards;
+}
+
+.location-overlay.closing .location-modal {
+  animation: slideDown 0.25s ease forwards;
+  box-shadow: var(--shadow-sheet);
+
+}
+
+.ds-sheet.location-modal {
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+.ds-sheet.location-modal .ds-sheet-header,
+.ds-sheet.location-modal .location-search {
+  padding-left: var(--sheet-pad-x);
+  padding-right: var(--sheet-pad-x);
+}
+
+.location-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.location-modal-header h3 {
+  font-size: var(--text-display-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.location-modal-close {
+  background: var(--bg);
+  border: none;
+  border-radius: var(--radius-full);
+  width: var(--icon-btn-visual);
+  height: var(--icon-btn-visual);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.location-search {
+  padding: 0 var(--content-padding) var(--space-3-5);
+}
+
+.location-search .search-field {
+  height: 54px;
+}
+
+.location-search .search-field-input {
+  font-size: var(--text-heading-size);
+}
+
+.location-list {
+  overflow-y: auto;
+  padding: 0 var(--space-5) 88px;
+  flex: 1;
+}
+
+.location-gps {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3-5);
+  width: 100%;
+  margin-bottom: var(--space-2);
+  padding: var(--space-3-5) var(--space-3-5);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-soft);
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.location-gps.is-selected {
+  background: var(--service-icon-bg);
+  border-color: var(--primary-soft-strong);
+}
+
+.location-gps.is-alert {
+  border-color: var(--danger-bg);
+  background: var(--danger-soft);
+}
+
+.location-gps:disabled {
+  cursor: wait;
+}
+
+.location-gps-mark {
+  width: var(--avatar-sm);
+  height: var(--avatar-sm);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.location-gps-icon {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+}
+
+.location-gps-mark.is-spin .location-gps-icon {
+  animation: locationSpin 0.9s linear infinite;
+}
+
+@keyframes locationSpin {
+  to { transform: rotate(360deg); }
+}
+
+.location-gps-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.location-gps-title {
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+.location-gps-sub {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-secondary);
+}
+
+.location-gps.is-alert .location-gps-sub {
+  color: var(--urgent);
+}
+
+.location-item {
+  display: block;
+  width: 100%;
+  padding: var(--space-4) var(--space-3);
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background var(--transition);
+  text-align: left;
+}
+
+.location-item .reveal-body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.location-item:hover {
+  background: var(--bg);
+}
+
+.location-item.active {
+  background: var(--service-icon-bg);
+}
+
+.location-item-pin {
+  font-size: var(--text-subtitle-size);
+}
+
+.location-item-name {
+  flex: 1;
+  text-align: left;
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.location-item.active .location-item-name {
+  color: var(--primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.location-item-check {
+  flex-shrink: 0;
+}
+
+.location-empty {
+  text-align: center;
+  padding: var(--space-8) 0;
+  color: var(--text-muted);
+  font-size: var(--text-title-size);
+}

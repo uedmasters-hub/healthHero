@@ -1,0 +1,257 @@
+.top-doctors-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+  overscroll-behavior: contain;
+}
+
+.top-doctors-sheet {
+  position: relative;
+  width: 100%;
+  max-width: var(--phone-width);
+  height: var(--app-sheet-max-height);
+  max-height: var(--app-sheet-max-height);
+  background: var(--sheet-surface);
+  border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  box-shadow: var(--shadow-sheet);
+
+}
+
+.top-doctors-overlay.slide-in .top-doctors-sheet {
+  animation: tdSheetUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.top-doctors-overlay.slide-out {
+  pointer-events: none;
+}
+
+.top-doctors-overlay.slide-out .top-doctors-sheet {
+  animation: tdSheetDown 0.34s cubic-bezier(0.32, 0.72, 0.18, 1) both;
+}
+
+.top-doctors-overlay.is-resting .top-doctors-sheet {
+  animation: none;
+  transform: none;
+}
+
+.top-doctors-overlay.is-ghost {
+  opacity: var(--opacity-hidden);
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.24s ease;
+}
+
+.top-doctors-overlay.is-ghost .top-doctors-sheet {
+  animation: none;
+}
+
+.top-doctor-card.is-shared-placeholder {
+  visibility: hidden;
+}
+
+@keyframes tdSheetUp {
+  from { transform: translate3d(0, 100%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes tdSheetDown {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, 100%, 0); }
+}
+
+.top-doctors-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border);
+  border-radius: var(--radius-2xs);
+  margin: var(--space-3) auto;
+  flex-shrink: 0;
+}
+
+.top-doctors-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--content-padding) var(--space-4);
+  background: var(--white);
+  border-bottom: var(--border-width) solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.top-doctors-title {
+  flex: 1;
+  text-align: left;
+  font-size: var(--text-subtitle-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.top-doctors-close-btn {
+  background: none;
+  border: none;
+  padding: var(--space-1);
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.top-doctors-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: min-content;
+  align-content: start;
+  align-items: start;
+  gap: var(--space-3) var(--space-2-5);
+  -webkit-overflow-scrolling: touch;
+}
+
+.top-doctors-list .end-of-page-placeholder {
+  grid-column: 1 / -1;
+  padding: var(--space-2) 0 var(--space-1);
+}
+
+.top-doctors-list .dc-card {
+  min-width: 0;
+  max-width: none;
+  width: 100%;
+  height: auto;
+}
+
+.top-doctor-card {
+  position: relative;
+  height: auto;
+  min-height: min-content;
+}
+
+.top-doctor-skeleton {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px var(--space-4) 22px;
+  overflow: hidden;
+  background: var(--white);
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  opacity: var(--opacity-visible);
+  transition: opacity var(--duration-normal) var(--ease-standard);
+  z-index: 1;
+}
+
+.top-doctor-skeleton.hidden {
+  opacity: var(--opacity-hidden);
+  pointer-events: none;
+}
+
+.top-doctor-skeleton-photo {
+  width: 78px;
+  height: 78px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  margin-bottom: var(--space-3);
+}
+
+.top-doctor-skeleton-name {
+  width: 78%;
+  height: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.top-doctor-skeleton-specialty {
+  width: 64%;
+  height: 12px;
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-2);
+}
+
+.top-doctor-skeleton-exp {
+  width: 72%;
+  height: 22px;
+  border-radius: var(--radius);
+  margin-top: var(--space-3);
+}
+
+.top-doctor-content {
+  height: auto;
+  opacity: var(--opacity-hidden);
+  transform: translateY(6px);
+  transition: opacity 0.38s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.top-doctor-content .dc-card-grid {
+  height: auto;
+}
+
+.top-doctor-content.visible {
+  opacity: var(--opacity-visible);
+  transform: translateY(0) scale(1);
+}
+
+.top-doctors-loading-toast {
+  position: absolute;
+  left: 50%;
+  bottom: var(--bottom-bar-pad);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--primary);
+  color: var(--white);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-2-5) 18px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-modal);
+  z-index: 20;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: tdToastIn 0.22s ease;
+}
+
+.top-doctors-loading-toast.is-leaving {
+  animation: tdToastOut 0.2s ease forwards;
+}
+
+@keyframes tdToastIn {
+  from { opacity: var(--opacity-hidden); transform: translateX(-50%) translateY(12px); }
+  to { opacity: var(--opacity-visible); transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes tdToastOut {
+  from { opacity: var(--opacity-visible); transform: translateX(-50%) translateY(0); }
+  to { opacity: var(--opacity-hidden); transform: translateX(-50%) translateY(12px); }
+}
+
+.top-doctors-pill-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: var(--white);
+  border-radius: var(--radius-full);
+  animation: tdPillSpin 0.6s linear infinite;
+}
+
+@keyframes tdPillSpin {
+  to { transform: rotate(360deg); }
+}

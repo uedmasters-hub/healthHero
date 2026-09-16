@@ -1,0 +1,557 @@
+.previsit-page {
+  background: var(--white);
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.previsit-header-bar {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--content-padding) var(--space-2);
+  background: var(--white);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.previsit-header-spacer {
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  flex-shrink: 0;
+}
+
+.previsit-menu-btn {
+  width: var(--icon-btn-size);
+  height: var(--icon-btn-size);
+  min-width: var(--icon-btn-size);
+  min-height: var(--icon-btn-size);
+  border-radius: var(--icon-btn-radius);
+  border: none;
+  background: var(--icon-surface-ghost);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--icon-color-muted);
+  padding: 0;
+  transition: background var(--transition), color var(--transition), opacity var(--transition);
+}
+
+.previsit-menu-btn svg {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.previsit-header-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.previsit-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--content-padding);
+  padding-bottom: var(--sticky-footer-clearance);
+}
+
+.previsit-page .booking-hero.is-morphing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.previsit-page.is-shared-hero.is-skeleton .previsit-skel-banner {
+  opacity: var(--opacity-soft);
+}
+
+.previsit-skel-banner {
+  height: 72px;
+  border-radius: var(--radius-lg);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.previsit-success-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: var(--success-bg-light);
+  border: var(--border-width) solid var(--success-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3-5) var(--space-4);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.previsit-success-check {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--success-bg);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.previsit-success-title {
+  font-size: var(--text-body-lg-size);
+  font-weight: 650;
+  color: var(--success-text);
+  margin: 0 0 var(--space-1);
+  letter-spacing: -0.2px;
+}
+
+.previsit-success-desc {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.previsit-card {
+  background: var(--white);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.previsit-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.previsit-card-title,
+.previsit-section-title {
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-3);
+}
+
+.previsit-card-header .previsit-card-title {
+  margin: 0;
+}
+
+.previsit-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1) var(--space-2);
+}
+
+.previsit-info-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+  padding: var(--space-2) 0;
+  min-width: 0;
+}
+
+.previsit-info-icon {
+  width: var(--icon-well-size);
+  height: var(--icon-well-size);
+  border-radius: var(--icon-btn-radius);
+  background: var(--icon-surface-brand);
+  color: var(--icon-color-brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.previsit-info-icon svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.previsit-info-label {
+  font-size: var(--text-overline-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.previsit-info-value {
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+
+.previsit-timeline {
+  margin-top: 2px;
+}
+
+.previsit-step {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.previsit-step-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 24px;
+}
+
+.previsit-step-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  border: var(--border-width) solid var(--border);
+}
+
+.previsit-step.completed .previsit-step-icon {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
+.previsit-step.current .previsit-step-icon {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.previsit-step.pending .previsit-step-icon {
+  background: var(--white);
+}
+
+.previsit-step-line {
+  width: 1.5px;
+  flex: 1;
+  min-height: 14px;
+  background: var(--border-strong);
+  margin: var(--space-1) 0;
+}
+
+.previsit-step.completed .previsit-step-line {
+  background: var(--success-border);
+}
+
+.previsit-step.current .previsit-step-line {
+  background: linear-gradient(to bottom, var(--primary), var(--border-strong));
+}
+
+.previsit-step-num {
+  font-size: var(--text-overline-size);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.previsit-step-content {
+  padding-bottom: var(--space-3-5);
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.previsit-step:last-child .previsit-step-content {
+  padding-bottom: 0;
+}
+
+.previsit-step-label {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  letter-spacing: -0.15px;
+}
+
+.previsit-step.completed .previsit-step-label {
+  color: var(--text-secondary);
+  font-weight: 550;
+}
+
+.previsit-step.current .previsit-step-label {
+  color: var(--text-primary);
+}
+
+.previsit-step.pending .previsit-step-label,
+.previsit-step.pending .previsit-step-detail {
+  color: var(--text-muted);
+}
+
+.previsit-step-detail {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.previsit-clinic-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.previsit-map-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: var(--service-icon-bg);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.previsit-clinic-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.previsit-clinic-address {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.previsit-clinic-floor {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.previsit-directions-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+.previsit-floor-badge {
+  font-size: var(--text-overline-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary);
+  background: var(--service-icon-bg);
+  padding: var(--space-1) var(--space-2-5);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.previsit-reminders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2-5);
+  margin-top: 2px;
+}
+
+.previsit-reminder-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+  font-size: var(--text-body-size);
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.previsit-reminder-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+.previsit-section {
+  margin-bottom: var(--space-2);
+}
+
+.previsit-faq-list {
+  background: var(--white);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.previsit-faq-item-wrap + .previsit-faq-item-wrap {
+  border-top: var(--border-width) solid var(--border);
+}
+
+.previsit-faq-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3-5) var(--space-4);
+  border: none;
+  background: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+.previsit-faq-question {
+  flex: 1;
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.previsit-faq-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform var(--transition);
+}
+
+.previsit-faq-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+.previsit-faq-answer {
+  margin: 0;
+  padding: 0 var(--space-4) var(--space-3-5);
+  font-size: var(--text-label-size);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.previsit-sheet-options,
+.previsit-sheet-body {
+  padding-bottom: var(--space-2);
+}
+
+.previsit-sheet-note {
+  font-size: var(--text-body-size);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-3);
+}
+
+.previsit-sheet-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  background: transparent;
+  animation: previsitFadeIn 0.2s ease;
+}
+
+.previsit-sheet-overlay.is-closing {
+  animation: previsitFadeOut 0.25s ease forwards;
+}
+
+.previsit-sheet-overlay.is-closing .previsit-sheet {
+  animation: previsitSlideDown 0.25s ease forwards;
+  box-shadow: var(--shadow-sheet);
+
+}
+
+.previsit-sheet {
+  width: 100%;
+  background: var(--white);
+  border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
+  padding: var(--space-2) var(--space-5) var(--bottom-bar-pad);
+  max-height: 72vh;
+  overflow-y: auto;
+  animation: previsitSlideUp 0.3s ease;
+}
+
+.previsit-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0 var(--space-2);
+}
+
+.previsit-sheet-header h3 {
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+.previsit-sheet-close {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--bg);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.previsit-sheet-option {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: var(--space-3-5) 0;
+  border: none;
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  background: none;
+  font-size: var(--text-body-lg-size);
+  font-family: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.previsit-sheet-option:last-child {
+  border-bottom: none;
+}
+
+.previsit-sheet-option.is-danger {
+  color: var(--danger);
+}
+
+@keyframes previsitFadeIn {
+  from { opacity: var(--opacity-hidden); }
+  to { opacity: var(--opacity-visible); }
+}
+
+@keyframes previsitFadeOut {
+  from { opacity: var(--opacity-visible); }
+  to { opacity: var(--opacity-hidden); }
+}
+
+@keyframes previsitSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes previsitSlideDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}

@@ -1,0 +1,296 @@
+.select-patient {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.select-patient-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--content-padding) var(--space-6);
+}
+
+.select-patient-lead {
+  margin: 0 0 18px;
+  font-size: var(--text-body-lg-size);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.patient-group {
+  margin-bottom: 18px;
+}
+
+.patient-group h2 {
+  margin: 0 0 var(--space-2-5);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.patient-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  padding: var(--space-3-5) var(--space-4);
+  margin-bottom: var(--space-2);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  font-family: inherit;
+}
+
+.patient-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.patient-card.is-selected {
+  border-color: var(--primary);
+  background: var(--service-icon-bg);
+}
+
+.patient-card.is-incomplete {
+  border-style: dashed;
+}
+
+.patient-card-edit {
+  flex-shrink: 0;
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-bold);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.patient-complete-panel {
+  margin: -4px 0 var(--space-4);
+  padding: var(--space-3) var(--space-4) var(--space-1);
+  border: var(--border-width) dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+}
+
+.patient-complete-hint {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-label-size);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.patient-form-error {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--danger, #c0392b);
+}
+
+.patient-card-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  border: var(--border-width-strong) solid var(--border);
+  flex-shrink: 0;
+}
+
+.patient-card.is-selected .patient-card-radio {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 4px var(--primary);
+}
+
+.patient-card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  min-width: 0;
+}
+
+.patient-card-copy strong {
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.patient-card-copy span {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+}
+
+.patient-add {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  margin-top: var(--space-1);
+  border: 1.5px dashed var(--primary);
+  border-radius: var(--radius-lg);
+  background: var(--service-icon-bg);
+  color: var(--primary);
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.patient-add-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-title-size);
+  line-height: 1;
+}
+
+.patient-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3-5);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+}
+
+.patient-field input,
+.patient-field textarea {
+  width: 100%;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-3-5);
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--white);
+  outline: none;
+  box-shadow: none;
+}
+
+.patient-field input:focus,
+.patient-field input:focus-visible,
+.patient-field textarea:focus,
+.patient-field textarea:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.patient-phone-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: var(--space-2);
+}
+
+.patient-cc {
+  margin: 0;
+}
+
+.patient-cc select {
+  width: 100%;
+  height: 100%;
+  min-height: 46px;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 var(--space-2);
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--white);
+  outline: none;
+  box-shadow: none;
+}
+
+.patient-cc select:focus,
+.patient-cc select:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.patient-field-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: var(--space-2-5);
+}
+
+.patient-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.patient-chip-row button {
+  border: var(--border-width) solid var(--border);
+  background: var(--white);
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3-5);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.patient-chip-row button.is-on {
+  border-color: var(--primary);
+  background: var(--service-icon-bg);
+  color: var(--primary);
+}
+
+.patient-text-btn {
+  width: 100%;
+  margin-top: var(--space-2);
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-bold);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.select-patient .app-flow-footer .patient-text-btn {
+  min-height: 36px;
+}

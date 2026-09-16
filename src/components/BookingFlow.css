@@ -1,0 +1,251 @@
+.booking-layout {
+  height: 100%;
+  overflow: hidden;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-layout.explore-layout {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.booking-layout.page-push-in {
+  animation: bookingPushIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.booking-layout.is-under-overlay {
+  animation: none;
+}
+
+@keyframes bookingPushIn {
+  from {
+    transform: translate3d(18%, 0, 0);
+    opacity: var(--opacity-muted);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: var(--opacity-visible);
+  }
+}
+
+.booking-layout.is-success .booking-header {
+  padding-bottom: var(--space-3);
+  flex-shrink: 0;
+}
+
+.booking-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--content-padding) 0;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: calc(var(--content-padding) - 10px);
+}
+
+.back-btn:hover {
+  opacity: var(--opacity-muted);
+}
+
+.booking-header-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-heading-size);
+  line-height: var(--text-heading-line);
+  font-weight: var(--text-heading-weight);
+  color: var(--text-primary);
+}
+
+.booking-header-spacer {
+  width: var(--touch-min);
+}
+
+/* Stepper */
+.stepper {
+  display: flex;
+  gap: var(--space-1-5);
+  padding: var(--space-3-5) var(--content-padding) var(--space-5);
+  flex-shrink: 0;
+}
+
+.stepper-step {
+  flex: 1;
+  height: 3px;
+  border-radius: var(--radius-2xs);
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+
+.stepper-step.active {
+  background: var(--primary);
+}
+
+.stepper-step.completed {
+  background: var(--primary);
+}
+
+/* Page content */
+.booking-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.booking-layout.explore-layout .booking-content {
+  overflow: visible;
+  display: block;
+  flex: none;
+}
+
+.booking-layout.is-success .booking-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-hero {
+  margin: 0 0 var(--space-5);
+}
+
+.booking-hero .dc-card-profile {
+  width: 100%;
+}
+
+.booking-stack {
+  position: relative;
+  min-height: 48vh;
+}
+
+.booking-skel-layer {
+  position: relative;
+  z-index: 2;
+  opacity: var(--opacity-visible);
+  background: var(--white);
+  transition: opacity 0.4s ease;
+}
+
+.booking-skel-layer.is-gone {
+  position: absolute;
+  inset: 0;
+  opacity: var(--opacity-hidden);
+  pointer-events: none;
+}
+
+.booking-body {
+  background: var(--white);
+  opacity: var(--opacity-hidden);
+  pointer-events: none;
+}
+
+.booking-body:not(.is-ready) {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.booking-body.is-ready {
+  position: relative;
+  z-index: 1;
+  opacity: var(--opacity-visible);
+  pointer-events: auto;
+  transition: opacity 0.42s ease;
+}
+
+.booking-hero-skel {
+  pointer-events: none;
+}
+
+.booking-hero-skel .dc-profile-photo {
+  background: var(--avatar-bg);
+}
+
+.booking-skel-line {
+  height: 12px;
+  border-radius: var(--radius-xs);
+  margin-bottom: var(--space-2);
+}
+
+.booking-skel-line.is-name {
+  width: 68%;
+  height: 16px;
+  margin-bottom: var(--space-2);
+}
+
+.booking-skel-line.is-meta {
+  width: 42%;
+  margin-bottom: var(--space-2-5);
+}
+
+.booking-skel-line.is-lead {
+  width: 72%;
+  height: 14px;
+  margin: 0 0 18px;
+}
+
+.booking-skel-chip {
+  display: inline-block;
+  width: 96px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+}
+
+.booking-skel-label {
+  width: 88px;
+  height: 12px;
+  border-radius: var(--radius-xs);
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.booking-skel-strip {
+  height: 72px;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-6);
+}
+
+.booking-skel-chips {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.booking-skel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.booking-skel-slot {
+  height: 44px;
+  border-radius: var(--radius);
+}
+
+.booking-skel-card {
+  height: 72px;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-2-5);
+}
+
+.booking-skel-card.is-tall {
+  height: 168px;
+}

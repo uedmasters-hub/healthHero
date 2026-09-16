@@ -1,0 +1,547 @@
+.postvisit-page {
+  background: var(--white);
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-10);
+}
+
+/* Header */
+.postvisit-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--content-padding);
+  background: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.postvisit-back-btn {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.postvisit-header-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.postvisit-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  background: none;
+  border: none;
+  color: var(--icon-color-brand);
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  min-height: var(--touch-min);
+}
+
+.postvisit-share-btn svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Content */
+.postvisit-content {
+  padding: var(--space-4) var(--content-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Success Banner */
+.postvisit-success-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--success-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.postvisit-success-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.postvisit-success-title {
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.postvisit-success-subtitle {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+}
+
+/* Doctor Card */
+.postvisit-doctor-card {
+  background: var(--white);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.postvisit-doctor-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.postvisit-doctor-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.postvisit-doctor-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.postvisit-doctor-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-subtitle-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--white);
+}
+
+.postvisit-doctor-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  border: var(--border-width-strong) solid var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.postvisit-doctor-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.postvisit-doctor-name {
+  font-size: var(--text-title-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.postvisit-doctor-specialty {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+}
+
+.postvisit-doctor-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--rating);
+}
+
+/* Detail Rows */
+.postvisit-detail-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-width) solid var(--border);
+}
+
+.postvisit-detail-row-last {
+  border-bottom: none;
+}
+
+.postvisit-detail-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.postvisit-detail-label {
+  font-size: var(--text-body-size);
+  color: var(--text-secondary);
+  width: 50px;
+  flex-shrink: 0;
+}
+
+.postvisit-detail-value {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-align: right;
+  flex: 1;
+}
+
+.postvisit-detail-address {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+}
+
+.postvisit-completed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-1-5) var(--space-3-5);
+  border-radius: var(--radius-pill);
+  margin-top: var(--space-4);
+  float: right;
+}
+
+/* Cards */
+.postvisit-card {
+  background: var(--white);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.postvisit-card-title {
+  font-size: var(--text-subtitle-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+/* Care Summary */
+.postvisit-summary-list {
+  list-style: disc;
+  padding-left: var(--space-5);
+  margin: 0 0 var(--space-4);
+}
+
+.postvisit-summary-item {
+  font-size: var(--text-body-size);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: var(--space-2);
+}
+
+.postvisit-summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.postvisit-inline-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Follow-up */
+.postvisit-followup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.postvisit-followup-header .postvisit-card-title {
+  margin-bottom: 0;
+}
+
+.postvisit-followup-badge {
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary);
+  background: var(--info-bg);
+  padding: var(--space-1) var(--space-2-5);
+  border-radius: var(--radius-xs);
+}
+
+.postvisit-followup-desc {
+  font-size: var(--text-body-size);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 var(--space-4);
+}
+
+.postvisit-primary-btn {
+  width: 100%;
+  padding: var(--space-3-5);
+  border-radius: var(--radius);
+  border: none;
+  background: var(--primary);
+  color: var(--white);
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+  transition: opacity var(--transition);
+}
+
+.postvisit-primary-btn:hover {
+  opacity: var(--opacity-pressed);
+}
+
+.postvisit-calendar-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1-5);
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Resources */
+.postvisit-resources-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.postvisit-resource-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3-5) 0;
+  border: none;
+  border-bottom: var(--border-width) solid var(--border);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+}
+
+.postvisit-resource-row:last-child {
+  border-bottom: none;
+}
+
+.postvisit-resource-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--info-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--info);
+  flex-shrink: 0;
+}
+
+.postvisit-resource-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.postvisit-resource-label {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.postvisit-resource-detail {
+  font-size: var(--text-label-size);
+  color: var(--text-secondary);
+  margin-right: var(--space-1);
+}
+
+/* Download Button */
+.postvisit-download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3-5);
+  border-radius: var(--radius);
+  border: var(--border-width-emphasis) solid var(--primary);
+  background: var(--white);
+  color: var(--primary);
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.postvisit-download-btn:hover {
+  background: var(--active-bg);
+}
+
+/* Support Card */
+.postvisit-support-card {
+  background: var(--white);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.postvisit-support-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.postvisit-support-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3-5) 0;
+  border-bottom: var(--border-width) solid var(--border);
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+}
+
+.postvisit-support-row:last-child,
+.postvisit-support-row-last {
+  border-bottom: none;
+}
+
+.postvisit-support-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--info-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--info);
+  flex-shrink: 0;
+}
+
+.postvisit-support-icon-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.postvisit-support-label {
+  flex: 1;
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.postvisit-support-label-warning {
+  color: var(--warning);
+}
+
+/* Reports Section */
+.postvisit-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.postvisit-report-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.postvisit-report-item:hover {
+  background: var(--active-bg);
+}
+
+.postvisit-report-image {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.postvisit-report-info {
+  flex: 1;
+}
+
+.postvisit-report-title {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.postvisit-report-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.postvisit-report-type {
+  font-size: var(--text-caption-size);
+  color: var(--primary);
+  background: var(--info-bg);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-xs);
+}
+
+.postvisit-report-date {
+  font-size: var(--text-caption-size);
+  color: var(--text-muted);
+}

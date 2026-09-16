@@ -1,0 +1,204 @@
+.app-footer {
+  background: var(--bg);
+  padding: var(--space-8) var(--content-padding) calc(var(--nav-height) + var(--frame-footer) + var(--space-6));
+  display: flex;
+  flex-direction: column;
+}
+
+.app-footer-block {
+  border-radius: var(--radius-lg);
+}
+
+.app-footer-block.is-divided {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--border-strong);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.app-footer-block .reveal-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.app-footer-wordmark {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.app-footer-logo {
+  width: var(--icon-well-size-lg);
+  height: var(--icon-well-size-lg);
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.app-footer-name {
+  margin: 0;
+  font-size: var(--text-heading-size);
+  line-height: var(--text-heading-line);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-snug);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.app-footer-badge {
+  flex-shrink: 0;
+  font-size: var(--text-overline-size);
+  line-height: var(--text-overline-line);
+  font-weight: var(--text-overline-weight);
+  letter-spacing: var(--text-overline-tracking);
+  color: var(--info);
+  background: var(--info-bg);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+.app-footer-tagline {
+  margin: 0;
+  max-width: 36ch;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--text-body-weight);
+  color: var(--text-secondary);
+}
+
+.app-footer-heading {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-overline-size);
+  line-height: var(--text-overline-line);
+  font-weight: var(--text-overline-weight);
+  letter-spacing: var(--text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.app-footer-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.app-footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.app-footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--space-8);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-footer-chevron {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  flex-shrink: 0;
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--text-faint);
+}
+
+.app-footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.app-footer-contact-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--icon-well-size-lg);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-footer-well,
+.app-footer-social-btn {
+  width: var(--icon-well-size-lg);
+  height: var(--icon-well-size-lg);
+  min-width: var(--icon-well-size-lg);
+  min-height: var(--icon-well-size-lg);
+  border-radius: var(--radius-full);
+  background: var(--info-bg);
+  color: var(--info);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-footer-well svg,
+.app-footer-social-btn svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.app-footer-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.app-footer-social-btn {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.app-footer-social-btn svg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+.app-footer-legal {
+  margin: var(--space-5) 0 0;
+  text-align: center;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  font-weight: var(--text-caption-weight);
+  color: var(--text-faint);
+}
+
+.app-footer-legal + .app-footer-legal {
+  margin-top: var(--space-1);
+}

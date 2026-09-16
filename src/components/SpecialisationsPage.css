@@ -1,0 +1,212 @@
+.specialisations-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--white);
+  z-index: 200;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  overscroll-behavior: contain;
+}
+
+.specialisations-page {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: var(--white);
+  overscroll-behavior: contain;
+}
+
+.specialisations-overlay.slide-in {
+  animation: slideInFromLeft 0.35s ease forwards;
+}
+
+.specialisations-overlay.slide-out {
+  animation: slideOutToLeft 0.36s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutToLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+.specialisations-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--content-padding) var(--space-3);
+  background: var(--white);
+  border-bottom: var(--border-width) solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.specialisations-back-btn {
+  background: none;
+  border: none;
+  padding: var(--space-1);
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.specialisations-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.specialisations-header-placeholder {
+  width: 30px;
+}
+
+.specialisations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.specialisation-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-2) var(--space-5);
+  min-height: 150px;
+  width: 100%;
+  border: none;
+  border-right: var(--border-width) solid var(--border);
+  border-bottom: var(--border-width) solid var(--border);
+  background: var(--white);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.specialisation-card:nth-child(3n) {
+  border-right: none;
+}
+
+.specialisation-card:hover {
+  background: var(--active-bg);
+}
+
+.specialisation-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.specialisation-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.specialisation-name {
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.3;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.skeleton-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-2);
+  opacity: var(--opacity-visible);
+  transition: opacity 0.3s ease;
+}
+
+.skeleton-layer.hidden {
+  opacity: var(--opacity-hidden);
+  pointer-events: none;
+}
+
+.content-layer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  opacity: var(--opacity-hidden);
+  transform: translateY(10px) scale(0.97);
+  transition: opacity var(--duration-normal) var(--ease-standard), transform 0.2s ease;
+}
+
+.content-layer.visible {
+  opacity: var(--opacity-visible);
+  transform: translateY(0) scale(1);
+}
+
+.skeleton-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius);
+  background: var(--border);
+}
+
+.skeleton-text {
+  width: 70%;
+  height: 12px;
+  border-radius: var(--radius-xs);
+  background: var(--border);
+}
+
+.skeleton-text-sm {
+  width: 50%;
+  height: 10px;
+  border-radius: var(--radius-xs);
+  background: var(--border);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.specialisations-footer {
+  text-align: center;
+  padding: var(--space-10) var(--space-5) 60px;
+  font-size: var(--text-body-size);
+  color: var(--text-muted);
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--border) 25%,
+    var(--border) 37%,
+    var(--border) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}

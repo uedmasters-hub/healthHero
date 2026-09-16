@@ -1,0 +1,161 @@
+.invoice-sheet {
+  max-height: min(88vh, 760px);
+}
+
+.invoice-sheet-body {
+  padding-bottom: var(--space-3);
+}
+
+.invoice-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.invoice-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-bold);
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.invoice-paid-at {
+  font-size: var(--text-caption-size);
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.invoice-ids {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--media-bg);
+  margin-bottom: var(--space-4);
+}
+
+.invoice-label {
+  display: block;
+  font-size: var(--text-caption-size);
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.invoice-ids strong {
+  font-size: var(--text-body-size);
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.invoice-section {
+  margin-bottom: var(--space-4);
+}
+
+.invoice-section h4 {
+  margin: 0 0 var(--space-1-5);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.invoice-primary {
+  margin: 0;
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.invoice-secondary {
+  margin: 2px 0 0;
+  font-size: var(--text-body-size);
+  color: var(--text-secondary);
+}
+
+.invoice-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.invoice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-body-size);
+  color: var(--text-secondary);
+}
+
+.invoice-row strong {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.invoice-row.is-total {
+  margin-top: var(--space-1);
+  padding-top: var(--space-2-5);
+  border-top: var(--border-width) solid var(--border);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.invoice-row.is-total strong {
+  font-size: var(--text-title-size);
+}
+
+.invoice-toast {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-caption-size);
+  color: var(--success-text);
+  background: var(--success-bg-light);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+}
+
+.invoice-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--border);
+}
+
+.invoice-btn {
+  min-height: 44px;
+  border-radius: var(--radius-cta);
+  border: none;
+  font: inherit;
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.invoice-btn.is-primary {
+  grid-column: 1 / -1;
+  background: var(--primary);
+  color: var(--text-on-primary, var(--white));
+}
+
+.invoice-btn.is-secondary {
+  background: var(--active-bg);
+  color: var(--primary);
+}
+
+.invoice-btn.is-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: var(--border-width) solid var(--border);
+}
+
+.invoice-btn:active {
+  opacity: var(--opacity-pressed);
+}
