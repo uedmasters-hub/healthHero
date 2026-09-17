@@ -14,6 +14,12 @@ import ConfirmBooking from './components/ConfirmBooking'
 import DoctorProfile from './components/DoctorProfile'
 import DoctorReviews from './components/DoctorReviews'
 import PatientProfile from './components/PatientProfile'
+import PersonalWorkspace from './components/profile/PersonalWorkspace'
+import MedicalWorkspace from './components/profile/MedicalWorkspace'
+import RecordsWorkspace from './components/profile/RecordsWorkspace'
+import InsuranceWorkspace from './components/profile/InsuranceWorkspace'
+import SupportWorkspace from './components/profile/SupportWorkspace'
+import AccountWorkspace from './components/profile/AccountWorkspace'
 import AppointmentDetail from './components/AppointmentDetail'
 import PreVisitCheckIn from './components/PreVisitCheckIn'
 import PrepareVisit from './components/PrepareVisit'
@@ -88,6 +94,12 @@ function AppRoutes() {
           <Route path="search" element={null} />
           <Route element={<ChildPageLayout />}>
             <Route path="/profile" element={<PatientProfile />} />
+            <Route path="/profile/personal" element={<PersonalWorkspace />} />
+            <Route path="/profile/medical" element={<MedicalWorkspace />} />
+            <Route path="/profile/records" element={<RecordsWorkspace />} />
+            <Route path="/profile/insurance" element={<InsuranceWorkspace />} />
+            <Route path="/profile/support" element={<SupportWorkspace />} />
+            <Route path="/profile/account" element={<AccountWorkspace />} />
             <Route path="/appointment" element={<AppointmentDetail />} />
             <Route path="/prepare-visit" element={<PrepareVisit />} />
             <Route path="/pre-checkin" element={<PreVisitCheckIn />} />

@@ -36,8 +36,14 @@ export default function SettingsPage() {
 
         <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
           <div className="settings-card">
-            <button type="button" className="settings-row" onClick={() => navigate('/profile')}>
+            <button type="button" className="settings-row" onClick={() => navigate('/profile/personal')}>
               <span>Personal details</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 6 15 12 9 18" />
+              </svg>
+            </button>
+            <button type="button" className="settings-row" onClick={() => navigate('/profile/account')}>
+              <span>Account</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="9 6 15 12 9 18" />
               </svg>

@@ -3,6 +3,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AUTH_ERROR, useUser, validateRegisterFields } from '../../user'
 import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit } from './AuthScreen'
+import useProgressiveAuth from './useProgressiveAuth'
+
+const REGISTER_ORDER = ['name', 'email', 'phone', 'password', 'confirm']
+const REGISTER_IDS = {
+  name: 'register-name',
+  email: 'register-email',
+  phone: 'register-phone',
+  password: 'register-password',
+  confirm: 'register-confirm',
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -13,24 +23,21 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
-  const [touched, setTouched] = useState({})
-  const [submitted, setSubmitted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [formError, setFormError] = useState('')
+
+  const fieldErrors = validateRegisterFields({ name, email, phone, password, confirm })
+  const { begin, errorFor } = useProgressiveAuth(REGISTER_ORDER, REGISTER_IDS, fieldErrors)
 
   useEffect(() => {
     const id = window.setTimeout(() => setReady(true), 280)
     return () => window.clearTimeout(id)
   }, [])
 
-  const fieldErrors = validateRegisterFields({ name, email, phone, password, confirm })
-  const show = (key) => (submitted || touched[key]) ? fieldErrors[key] : ''
-
   const onSubmit = async (event) => {
     event.preventDefault()
-    setSubmitted(true)
     setFormError('')
-    if (Object.keys(fieldErrors).length) return
+    if (begin()) return
     setBusy(true)
     try {
       const result = await register({ name, email, phone, password })
@@ -48,6 +55,7 @@ export default function RegisterPage() {
     <AuthLayout
       loading={!ready}
       skeletonFields={5}
+      stage="register"
       title="Create your account"
       subtitle="A few details to keep your care in one place."
       footer={(
@@ -63,8 +71,7 @@ export default function RegisterPage() {
           label="Full name"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-          error={show('name')}
+          error={errorFor('name')}
           autoComplete="name"
           disabled={busy}
           placeholder="Your name"
@@ -75,8 +82,7 @@ export default function RegisterPage() {
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-          error={show('email')}
+          error={errorFor('email')}
           autoComplete="email"
           inputMode="email"
           disabled={busy}
@@ -88,8 +94,7 @@ export default function RegisterPage() {
           type="tel"
           value={phone}
           onChange={(event) => setPhone(event.target.value.replace(/\D/g, '').slice(0, 10))}
-          onBlur={() => setTouched((prev) => ({ ...prev, phone: true }))}
-          error={show('phone')}
+          error={errorFor('phone')}
           autoComplete="tel"
           inputMode="numeric"
           maxLength={10}
@@ -102,9 +107,8 @@ export default function RegisterPage() {
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
-          error={show('password')}
-          hint={!show('password') ? 'At least 8 characters with a letter and a number' : ''}
+          error={errorFor('password')}
+          hint={!errorFor('password') ? 'At least 8 characters with a letter and a number' : ''}
           autoComplete="new-password"
           disabled={busy}
           placeholder="Create a password"
@@ -115,8 +119,7 @@ export default function RegisterPage() {
           type="password"
           value={confirm}
           onChange={(event) => setConfirm(event.target.value)}
-          onBlur={() => setTouched((prev) => ({ ...prev, confirm: true }))}
-          error={show('confirm')}
+          error={errorFor('confirm')}
           autoComplete="new-password"
           disabled={busy}
           placeholder="Re-enter password"

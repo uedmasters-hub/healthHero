@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AUTH_ERROR, useUser, validateLoginFields } from '../../user'
 import AuthField from './AuthField'
-import { AuthLayout, AuthSubmit } from './AuthScreen'
+import { AuthLayout, AuthSubmit, AuthTrust } from './AuthScreen'
+import useProgressiveAuth from './useProgressiveAuth'
+
+const LOGIN_ORDER = ['identifier', 'password']
+const LOGIN_IDS = { identifier: 'login-identifier', password: 'login-password' }
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -10,24 +14,21 @@ export default function LoginPage() {
   const [ready, setReady] = useState(false)
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
-  const [touched, setTouched] = useState({})
-  const [submitted, setSubmitted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [formError, setFormError] = useState('')
+
+  const fieldErrors = validateLoginFields({ identifier, password })
+  const { begin, errorFor } = useProgressiveAuth(LOGIN_ORDER, LOGIN_IDS, fieldErrors)
 
   useEffect(() => {
     const id = window.setTimeout(() => setReady(true), 280)
     return () => window.clearTimeout(id)
   }, [])
 
-  const fieldErrors = validateLoginFields({ identifier, password })
-  const show = (key) => (submitted || touched[key]) ? fieldErrors[key] : ''
-
   const onSubmit = async (event) => {
     event.preventDefault()
-    setSubmitted(true)
     setFormError('')
-    if (fieldErrors.identifier || fieldErrors.password) return
+    if (begin()) return
     setBusy(true)
     try {
       const result = await login(identifier, password)
@@ -44,8 +45,10 @@ export default function LoginPage() {
   return (
     <AuthLayout
       loading={!ready}
+      stage="login"
       title="Welcome back"
       subtitle="Sign in to continue your care."
+      extra={<AuthTrust />}
       footer={(
         <>
           New to Health Hero? <Link to="/register">Create account</Link>
@@ -59,8 +62,7 @@ export default function LoginPage() {
           label="Email or mobile number"
           value={identifier}
           onChange={(event) => setIdentifier(event.target.value)}
-          onBlur={() => setTouched((prev) => ({ ...prev, identifier: true }))}
-          error={show('identifier')}
+          error={errorFor('identifier')}
           autoComplete="username"
           inputMode="email"
           disabled={busy}
@@ -72,11 +74,15 @@ export default function LoginPage() {
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
-          error={show('password')}
+          error={errorFor('password')}
           autoComplete="current-password"
           disabled={busy}
           placeholder="Enter your password"
+          labelAction={(
+            <Link to="/forgot" className="auth-field-link" state={{ identifier }}>
+              Forgot password?
+            </Link>
+          )}
         />
         <AuthSubmit busy={busy} disabled={busy}>
           {busy ? 'Signing in…' : 'Continue'}

@@ -36,8 +36,11 @@ export function emptyHealth() {
 
 export function displayHealthDate(value) {
   if (!value) return ''
+  if (value instanceof Date) return formatAppDate(value)
   const raw = String(value).trim()
-  if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return formatAppDate(raw)
+  if (!raw) return ''
+  const formatted = formatAppDate(raw)
+  if (formatted) return formatted
   return raw
 }
 
@@ -76,6 +79,8 @@ export function createInsurancePolicy(partial = {}) {
     policyNo: String(partial.policyNo || '').trim(),
     validTill: partial.validTill || '',
     type: String(partial.type || 'Health').trim(),
+    coverage: String(partial.coverage || '').trim(),
+    attachments: Array.isArray(partial.attachments) ? partial.attachments : [],
   }
 }
 
@@ -214,6 +219,7 @@ export const LIST_SECTIONS = [
       { key: 'policyNo', label: 'Policy number', required: true },
       { key: 'type', label: 'Type', type: 'chips', options: ['Health', 'Family Floater', 'Critical Illness'] },
       { key: 'validTill', label: 'Valid till', type: 'date' },
+      { key: 'coverage', label: 'Coverage notes', type: 'textarea', placeholder: 'In-patient, cashless network, room rent...' },
     ],
   },
   {
@@ -275,6 +281,45 @@ export function healthItemMeta(item) {
   const date = displayHealthDate(item.date)
   const extra = item.doctor || item.severity || item.status || item.dose || ''
   return [date, extra].filter(Boolean).join(' · ')
+}
+
+function sortStamp(value) {
+  if (!value) return 0
+  const stamp = new Date(value).getTime()
+  return Number.isFinite(stamp) ? stamp : 0
+}
+
+export function healthMemoryTimeline(health, visits = []) {
+  const records = flattenHealth(health)
+    .filter((item) => ['reports', 'prescriptions', 'consultations'].includes(item.kind))
+    .map((item) => ({
+      id: item.id,
+      kind: item.kind,
+      group: item.kind === 'reports' ? 'labs' : item.kind === 'prescriptions' ? 'prescriptions' : 'consults',
+      title: item.title,
+      date: item.date,
+      sort: sortStamp(item.date) || sortStamp(item.createdAt),
+      meta: [item.doctor, item.status, item.dose].filter(Boolean).join(' · '),
+      details: item.details,
+      record: item,
+    }))
+
+  const visitItems = (visits || []).map((visit) => {
+    const date = visit.date?.full || visit.createdAt
+    return {
+      id: visit.engineId || visit.id,
+      kind: 'visit',
+      group: 'visits',
+      title: visit.doctor?.name || visit.specialty || 'Clinic visit',
+      date,
+      sort: sortStamp(date),
+      meta: [visit.visitType, visit.time].filter(Boolean).join(' · '),
+      details: visit.note,
+      record: visit,
+    }
+  })
+
+  return [...records, ...visitItems].sort((a, b) => b.sort - a.sort)
 }
 
 export function listItemTitle(kind, item) {

@@ -15,7 +15,7 @@ export {
   publicUser,
   selfMember,
 } from './models'
-export { validateLogin, validateRegister, validateLoginFields, validateRegisterFields, isValidEmail, isValidIndianMobile, isStrongPassword } from './validation'
+export { validateLogin, validateRegister, validateLoginFields, validateRegisterFields, firstInvalidField, isValidEmail, isValidIndianMobile, isStrongPassword } from './validation'
 export {
   addFamilyMember,
   appendPaymentHistory,
@@ -56,6 +56,7 @@ export {
   findHealthItem,
   flattenHealth,
   healthItemMeta,
+  healthMemoryTimeline,
   itemsForAttachGroup,
   listItemMeta,
   listItemTitle,

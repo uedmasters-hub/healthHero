@@ -32,14 +32,18 @@ export default function AuthField({
   name,
   placeholder,
   maxLength,
+  labelAction,
 }) {
   const [visible, setVisible] = useState(false)
   const isPassword = type === 'password'
   const inputType = isPassword && visible ? 'text' : type
 
   return (
-    <label className={`auth-field ${isPassword ? 'has-toggle' : ''} ${error ? 'is-invalid' : ''} ${value ? 'has-value' : ''}`} htmlFor={id}>
-      <span className="auth-field-label">{label}</span>
+    <div className={`auth-field ${isPassword ? 'has-toggle' : ''} ${error ? 'is-invalid' : ''} ${value ? 'has-value' : ''}`}>
+      <span className="auth-field-head">
+        <label className="auth-field-label" htmlFor={id}>{label}</label>
+        {labelAction}
+      </span>
       <span className="auth-field-control">
         <input
           id={id}
@@ -73,6 +77,6 @@ export default function AuthField({
       ) : hint ? (
         <span className="auth-field-hint" id={`${id}-hint`}>{hint}</span>
       ) : null}
-    </label>
+    </div>
   )
 }

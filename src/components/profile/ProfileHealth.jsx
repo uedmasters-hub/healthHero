@@ -247,7 +247,7 @@ export function RecordViewSheet({ kind, item, onEdit, onClose }) {
   )
 }
 
-export function ProfileEditSheet({ onClose }) {
+export function ProfileEditSheet({ onClose, scope = 'all' }) {
   const { profile, rawUser, saveProfile } = useUser()
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const [form, setForm] = useState(() => ({
@@ -288,66 +288,109 @@ export function ProfileEditSheet({ onClose }) {
     close()
   }
 
-  const ready = form.name.trim().length > 1 && form.gender && (form.age || form.dob) && indianMobile(form.phone).length === 10
+  const showBasic = scope === 'all' || scope === 'basic'
+  const showContact = scope === 'all' || scope === 'contact'
+  const showPassport = scope === 'all' || scope === 'passport'
+  const title = scope === 'basic' ? 'Edit basic details' : scope === 'contact' ? 'Edit contact' : scope === 'passport' ? 'Update health passport' : 'Edit profile'
+
+  const ready = showPassport && !showBasic && !showContact
+    ? true
+    : showContact && !showBasic
+      ? indianMobile(form.phone).length === 10
+      : form.name.trim().length > 1 && form.gender && (form.age || form.dob) && (!showContact || indianMobile(form.phone).length === 10)
 
   return (
     <AppBottomSheet open={isPresented} closing={isClosing} onClose={close} keyboardAware labelledBy="profile-edit-title">
       <div className="health-sheet-head">
-        <h2 id="profile-edit-title">Edit profile</h2>
+        <h2 id="profile-edit-title">{title}</h2>
         <button type="button" className="health-sheet-close" onClick={close} aria-label="Close">×</button>
       </div>
       <div className="health-sheet-body">
         {error ? <p className="health-form-error" role="alert">{error}</p> : null}
-        <label className="health-field">
-          <span>Name</span>
-          <input value={form.name} onChange={(e) => update('name', e.target.value)} />
-        </label>
-        <div className="health-field-row">
+        {showBasic ? (
+          <>
+            <label className="health-field">
+              <span>Name</span>
+              <input value={form.name} onChange={(e) => update('name', e.target.value)} />
+            </label>
+            <div className="health-field-row">
+              <div className="health-field">
+                <span>Date of birth</span>
+                <BirthDateField value={form.dob} onChange={(dob) => update('dob', dob)} />
+              </div>
+              <label className="health-field">
+                <span>Age</span>
+                <input inputMode="numeric" value={form.age} onChange={(e) => update('age', e.target.value.replace(/\D/g, '').slice(0, 3))} />
+              </label>
+            </div>
+            <div className="health-field">
+              <span>Gender</span>
+              <div className="health-chip-row">
+                {GENDERS.map((item) => (
+                  <button type="button" key={item} className={form.gender === item ? 'is-on' : ''} onClick={() => update('gender', item)}>{item}</button>
+                ))}
+              </div>
+            </div>
+            <div className="health-field-row">
+              <label className="health-field">
+                <span>Height</span>
+                <input value={form.height} onChange={(e) => update('height', e.target.value)} placeholder="e.g. 168 cm" />
+              </label>
+              <label className="health-field">
+                <span>Weight</span>
+                <input value={form.weight} onChange={(e) => update('weight', e.target.value)} placeholder="e.g. 65 kg" />
+              </label>
+            </div>
+          </>
+        ) : null}
+        {showPassport ? (
           <div className="health-field">
-            <span>Date of birth</span>
-            <BirthDateField value={form.dob} onChange={(dob) => update('dob', dob)} />
+            <span>Blood group</span>
+            <div className="health-chip-row">
+              {BLOOD_GROUPS.map((item) => (
+                <button type="button" key={item} className={form.bloodGroup === item ? 'is-on' : ''} onClick={() => update('bloodGroup', item)}>{item}</button>
+              ))}
+            </div>
           </div>
-          <label className="health-field">
-            <span>Age</span>
-            <input inputMode="numeric" value={form.age} onChange={(e) => update('age', e.target.value.replace(/\D/g, '').slice(0, 3))} />
-          </label>
-        </div>
-        <div className="health-field">
-          <span>Gender</span>
-          <div className="health-chip-row">
-            {GENDERS.map((item) => (
-              <button type="button" key={item} className={form.gender === item ? 'is-on' : ''} onClick={() => update('gender', item)}>{item}</button>
-            ))}
-          </div>
-        </div>
-        <div className="health-field">
-          <span>Blood group</span>
-          <div className="health-chip-row">
-            {BLOOD_GROUPS.map((item) => (
-              <button type="button" key={item} className={form.bloodGroup === item ? 'is-on' : ''} onClick={() => update('bloodGroup', item)}>{item}</button>
-            ))}
-          </div>
-        </div>
-        <div className="health-field-row">
-          <label className="health-field">
-            <span>Height</span>
-            <input value={form.height} onChange={(e) => update('height', e.target.value)} placeholder="e.g. 168 cm" />
-          </label>
-          <label className="health-field">
-            <span>Weight</span>
-            <input value={form.weight} onChange={(e) => update('weight', e.target.value)} placeholder="e.g. 65 kg" />
-          </label>
-        </div>
-        <label className="health-field">
-          <span>Mobile number</span>
-          <input inputMode="numeric" maxLength={10} value={form.phone} onChange={(e) => update('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} />
-        </label>
-        <label className="health-field">
-          <span>Address</span>
-          <textarea rows={3} value={form.address} onChange={(e) => update('address', e.target.value)} />
-        </label>
+        ) : null}
+        {showContact ? (
+          <>
+            <label className="health-field">
+              <span>Mobile number</span>
+              <input inputMode="numeric" maxLength={10} value={form.phone} onChange={(e) => update('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} />
+            </label>
+            {scope === 'all' ? (
+              <label className="health-field">
+                <span>Address</span>
+                <textarea rows={3} value={form.address} onChange={(e) => update('address', e.target.value)} />
+              </label>
+            ) : null}
+          </>
+        ) : null}
       </div>
-      <button type="button" className="health-sheet-save" disabled={!ready} onClick={save}>Save profile</button>
+      <button type="button" className="health-sheet-save" disabled={!ready} onClick={save}>Save</button>
     </AppBottomSheet>
   )
 }
+
+export function ProfileSheets({ sheet, setSheet }) {
+  if (!sheet) return null
+  if (sheet.mode === 'profile') {
+    return <ProfileEditSheet scope={sheet.scope || 'all'} onClose={() => setSheet(null)} />
+  }
+  if (sheet.mode === 'form') {
+    return <RecordEditorSheet kind={sheet.kind} item={sheet.item} onClose={() => setSheet(null)} />
+  }
+  if (sheet.mode === 'view') {
+    return (
+      <RecordViewSheet
+        kind={sheet.kind}
+        item={sheet.item}
+        onClose={() => setSheet(null)}
+        onEdit={(kind, item) => setSheet({ mode: 'form', kind, item })}
+      />
+    )
+  }
+  return null
+}
+

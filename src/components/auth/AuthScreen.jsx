@@ -26,13 +26,32 @@ export function AuthSkeleton({ fields = 2 }) {
   )
 }
 
+export function AuthTrust() {
+  return (
+    <div className="auth-trust">
+      <p className="auth-trust-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+        HIPAA & GDPR compliant
+      </p>
+      <p className="auth-trust-copy">
+        Your health information is protected with end-to-end encryption and consent-based access.
+      </p>
+    </div>
+  )
+}
+
 export function AuthLayout({
   title,
   subtitle,
   children,
+  extra,
   footer,
   loading,
   skeletonFields = 2,
+  stage = 'default',
 }) {
   return (
     <div className="auth-page">
@@ -44,12 +63,15 @@ export function AuthLayout({
             <img src={ONBOARD_LOGO} alt="" className="auth-logo" />
             <p className="auth-wordmark">Health Hero</p>
           </div>
-          <header className="auth-copy">
-            <h1 className="auth-title">{title}</h1>
-            <p className="auth-subtitle">{subtitle}</p>
-          </header>
-          {children}
-          {footer ? <div className="auth-footer">{footer}</div> : null}
+          <div className="auth-stage" key={stage}>
+            <header className="auth-copy">
+              <h1 className="auth-title">{title}</h1>
+              {subtitle ? <p className="auth-subtitle">{subtitle}</p> : null}
+            </header>
+            {children}
+            {extra}
+            {footer ? <div className="auth-footer">{footer}</div> : null}
+          </div>
         </div>
       )}
     </div>

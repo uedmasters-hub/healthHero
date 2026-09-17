@@ -20,13 +20,13 @@ export function validateLogin({ identifier, password }) {
 
 export function validateLoginFields({ identifier, password }) {
   const errors = {}
-  if (!String(identifier || '').trim()) errors.identifier = AUTH_ERROR.REQUIRED
+  if (!String(identifier || '').trim()) errors.identifier = AUTH_ERROR.IDENTIFIER
   else {
     const id = String(identifier).trim()
     if (id.includes('@') && !isValidEmail(id)) errors.identifier = AUTH_ERROR.EMAIL
     else if (!id.includes('@') && !isValidIndianMobile(id)) errors.identifier = AUTH_ERROR.PHONE
   }
-  if (!password) errors.password = AUTH_ERROR.REQUIRED
+  if (!password) errors.password = AUTH_ERROR.PASSWORD
   return errors
 }
 
@@ -41,7 +41,11 @@ export function validateRegisterFields({ name, email, phone, password, confirm }
   if (!isValidEmail(email)) errors.email = AUTH_ERROR.EMAIL
   if (!isValidIndianMobile(phone)) errors.phone = AUTH_ERROR.PHONE
   if (!isStrongPassword(password)) errors.password = AUTH_ERROR.WEAK
-  if (!confirm) errors.confirm = AUTH_ERROR.REQUIRED
+  if (!confirm) errors.confirm = AUTH_ERROR.CONFIRM
   else if (password !== confirm) errors.confirm = AUTH_ERROR.MISMATCH
   return errors
+}
+
+export function firstInvalidField(order, errors) {
+  return order.find((key) => Boolean(errors?.[key])) || null
 }
