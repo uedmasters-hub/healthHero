@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useUser } from '../../user'
+import { formatHeight, formatPhone, formatWeight, useUser } from '../../user'
 import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, InfoCard, InfoRow, MapThumb, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
@@ -32,32 +32,33 @@ export default function PersonalWorkspace() {
                 extra={profile.dob && profile.age != null ? `${profile.age} years` : ''}
                 emptyLabel="Add date of birth"
               />
-              <InfoRow label="Gender" value={profile.gender} />
-              <InfoRow label="Height" value={profile.height} emptyLabel="Add height" />
-              <InfoRow label="Weight" value={profile.weight} emptyLabel="Add weight" />
+              <InfoRow label="Height" value={formatHeight(profile.height)} emptyLabel="Add height" />
+              <InfoRow label="Weight" value={formatWeight(profile.weight)} emptyLabel="Add weight" />
             </InfoCard>
           </RevealItem>
 
           <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <SectionHead title="Contact" action="Edit" onAction={() => setSheet({ mode: 'profile', scope: 'contact' })} />
             <InfoCard>
-              <InfoRow label="Phone" value={profile.phone} />
+              <InfoRow
+                label="Phone"
+                value={formatPhone(profile.phone)}
+                extra={profile.phoneVerified ? <span className="profile-verified-tag">Verified</span> : null}
+                emptyLabel="Add this detail"
+              />
+              <InfoRow
+                label="Email"
+                value={profile.email}
+                extra={profile.emailVerified ? <span className="profile-verified-tag">Verified</span> : null}
+                emptyLabel="Add this detail"
+              />
               <InfoRow
                 label="Emergency"
                 value={emergencyPhones}
-                emptyLabel="Add an emergency number"
+                extra={emergencyContacts[0]?.name ? `${emergencyContacts[0].name}${emergencyContacts[0].relation ? ` · ${emergencyContacts[0].relation}` : ''}` : null}
+                emptyLabel="Add an emergency contact"
               />
-              <InfoRow label="Email" value={profile.email} />
             </InfoCard>
-            {!emergencyContacts.length ? (
-              <button type="button" className="profile-inline-link" onClick={() => setSheet({ mode: 'form', kind: 'emergencyContacts', item: null })}>
-                Add emergency contact
-              </button>
-            ) : (
-              <button type="button" className="profile-inline-link" onClick={() => setSheet({ mode: 'view', kind: 'emergencyContacts', item: emergencyContacts[0] })}>
-                View emergency contacts
-              </button>
-            )}
           </RevealItem>
 
           <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>

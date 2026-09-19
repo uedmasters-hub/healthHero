@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AUTH_ERROR, useUser, validateRegisterFields } from '../../user'
+import { AUTH_ERROR, validateRegisterFields } from '../../user'
+import { useAuth } from '../../features/auth/hooks/useAuth'
+import OAuthButtons from '../../features/auth/components/OAuthButtons'
+import PasswordStrength from '../../features/auth/components/PasswordStrength'
 import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit } from './AuthScreen'
 import useProgressiveAuth from './useProgressiveAuth'
+import { PhoneInput, toE164 } from '../PhoneInput'
 
 const REGISTER_ORDER = ['name', 'email', 'phone', 'password', 'confirm']
 const REGISTER_IDS = {
@@ -13,14 +17,16 @@ const REGISTER_IDS = {
   password: 'register-password',
   confirm: 'register-confirm',
 }
+const APPLE_ENABLED = import.meta.env.VITE_APPLE_SIGNIN_ENABLED === 'true'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const { register } = useUser()
+  const { signUp, googleSignIn, appleSignIn } = useAuth()
   const [ready, setReady] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [phoneCountry, setPhoneCountry] = useState('+91')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [busy, setBusy] = useState(false)
@@ -40,14 +46,42 @@ export default function RegisterPage() {
     if (begin()) return
     setBusy(true)
     try {
-      const result = await register({ name, email, phone, password })
+      const result = await signUp({ name, email, phone: toE164(phoneCountry, phone), password })
       if (!result.ok) {
         setFormError(result.error || AUTH_ERROR.EXISTS)
+        return
+      }
+      if (result.needsVerification) {
+        navigate('/verify', { replace: true, state: { email } })
         return
       }
       navigate('/', { replace: true })
     } finally {
       setBusy(false)
+    }
+  }
+
+  const onGoogle = async () => {
+    setFormError('')
+    setBusy(true)
+    const result = await googleSignIn()
+    if (!result.ok) {
+      setBusy(false)
+      setFormError(result.error || AUTH_ERROR.OAUTH_FAILED)
+    }
+  }
+
+  const onApple = async () => {
+    if (!APPLE_ENABLED) {
+      setFormError(AUTH_ERROR.APPLE_PENDING)
+      return
+    }
+    setFormError('')
+    setBusy(true)
+    const result = await appleSignIn()
+    if (!result.ok) {
+      setBusy(false)
+      setFormError(result.error || AUTH_ERROR.APPLE_PENDING)
     }
   }
 
@@ -88,18 +122,16 @@ export default function RegisterPage() {
           disabled={busy}
           placeholder="name@email.com"
         />
-        <AuthField
-          id="register-phone"
+        <PhoneInput
           label="Mobile number"
-          type="tel"
           value={phone}
-          onChange={(event) => setPhone(event.target.value.replace(/\D/g, '').slice(0, 10))}
-          error={errorFor('phone')}
-          autoComplete="tel"
-          inputMode="numeric"
-          maxLength={10}
+          country={phoneCountry}
+          onCountryChange={setPhoneCountry}
+          onChange={(val) => setPhone(val)}
+          placeholder="98765 43210"
           disabled={busy}
-          placeholder="10-digit mobile number"
+          error={errorFor('phone')}
+          required
         />
         <AuthField
           id="register-password"
@@ -113,6 +145,7 @@ export default function RegisterPage() {
           disabled={busy}
           placeholder="Create a password"
         />
+        <PasswordStrength value={password} />
         <AuthField
           id="register-confirm"
           label="Confirm password"
@@ -127,6 +160,7 @@ export default function RegisterPage() {
         <AuthSubmit busy={busy} disabled={busy}>
           {busy ? 'Creating account…' : 'Create account'}
         </AuthSubmit>
+        <OAuthButtons onGoogle={onGoogle} onApple={onApple} busy={busy} appleReady={APPLE_ENABLED} />
       </form>
     </AuthLayout>
   )

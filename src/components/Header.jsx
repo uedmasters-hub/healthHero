@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import { SearchField } from './SearchBar'
-import { useNotifications } from './NotificationContext'
 import { useUser } from '../user'
+import NotificationBell from '../features/notifications/components/NotificationBell'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import './Header.css'
@@ -96,9 +96,7 @@ const GpsIcon = () => (
 
 export default function Header() {
   const navigate = useNavigate()
-  const { unreadCount } = useNotifications()
   const { profile, isDemo } = useUser()
-  const hasUnread = unreadCount > 0
   const [selectedCity, setSelectedCity] = useState(profile?.city || 'Delhi')
   const [fromGps, setFromGps] = useState(false)
   const [locateStatus, setLocateStatus] = useState('idle')
@@ -202,18 +200,7 @@ export default function Header() {
         </div>
 
         <div className="header-actions">
-          <button
-            className="notification-btn"
-            type="button"
-            aria-label="Notifications"
-            onClick={() => navigate('/notifications')}
-          >
-            <svg className="notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            {hasUnread ? <span className="notification-badge" /> : null}
-          </button>
+          <NotificationBell />
           <button className="avatar" type="button" onClick={() => navigate('/profile')} aria-label="Open profile">
             {profile?.avatar ? (
               <img src={profile.avatar} alt="" className="avatar-img" />

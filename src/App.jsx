@@ -47,8 +47,10 @@ import PhoneFrame from './components/PhoneFrame'
 import BottomNav from './components/BottomNav'
 import { OnboardingProvider } from './components/Onboarding'
 import AuthGate from './components/auth/AuthGate'
+import { AuthProvider } from './features/auth/AuthProvider'
 import { UserProvider, useUser } from './user'
 import { isHomePath } from './lib/careFlow'
+import DesignSystemLayout from './design-system/DesignSystemLayout'
 
 function ExploreIndexRedirect() {
   const navigate = useNavigate()
@@ -163,14 +165,31 @@ function AppShell() {
   )
 }
 
-function App() {
+function DesignSystemGate() {
+  const location = useLocation()
+  if (!location.pathname.startsWith('/design')) return null
+  return <DesignSystemLayout />
+}
+
+function AppGate() {
+  const location = useLocation()
+  if (location.pathname.startsWith('/design')) return null
   return (
-    <BrowserRouter>
-      <PhoneFrame>
+    <PhoneFrame>
+      <AuthProvider>
         <UserProvider>
           <AppShell />
         </UserProvider>
-      </PhoneFrame>
+      </AuthProvider>
+    </PhoneFrame>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <DesignSystemGate />
+      <AppGate />
     </BrowserRouter>
   )
 }

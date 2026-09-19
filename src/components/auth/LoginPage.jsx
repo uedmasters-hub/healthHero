@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AUTH_ERROR, useUser, validateLoginFields } from '../../user'
+import { AUTH_ERROR, validateLoginFields } from '../../user'
+import { useAuth } from '../../features/auth/hooks/useAuth'
+import OAuthButtons from '../../features/auth/components/OAuthButtons'
 import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit, AuthTrust } from './AuthScreen'
 import useProgressiveAuth from './useProgressiveAuth'
 
 const LOGIN_ORDER = ['identifier', 'password']
 const LOGIN_IDS = { identifier: 'login-identifier', password: 'login-password' }
+const APPLE_ENABLED = import.meta.env.VITE_APPLE_SIGNIN_ENABLED === 'true'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const { login } = useUser()
+  const { signInWithPassword, googleSignIn, appleSignIn, bootError } = useAuth()
   const [ready, setReady] = useState(false)
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
@@ -31,14 +34,42 @@ export default function LoginPage() {
     if (begin()) return
     setBusy(true)
     try {
-      const result = await login(identifier, password)
+      const result = await signInWithPassword(identifier, password)
       if (!result.ok) {
+        if (result.code === 'email_not_confirmed') {
+          navigate('/verify', { replace: true, state: { email: identifier } })
+          return
+        }
         setFormError(result.error || AUTH_ERROR.INVALID)
         return
       }
       navigate('/', { replace: true })
     } finally {
       setBusy(false)
+    }
+  }
+
+  const onGoogle = async () => {
+    setFormError('')
+    setBusy(true)
+    const result = await googleSignIn()
+    if (!result.ok) {
+      setBusy(false)
+      setFormError(result.error || AUTH_ERROR.OAUTH_FAILED)
+    }
+  }
+
+  const onApple = async () => {
+    if (!APPLE_ENABLED) {
+      setFormError(AUTH_ERROR.APPLE_PENDING)
+      return
+    }
+    setFormError('')
+    setBusy(true)
+    const result = await appleSignIn()
+    if (!result.ok) {
+      setBusy(false)
+      setFormError(result.error || AUTH_ERROR.APPLE_PENDING)
     }
   }
 
@@ -56,10 +87,11 @@ export default function LoginPage() {
       )}
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        {formError ? <p className="auth-banner" role="alert">{formError}</p> : null}
+        {formError || bootError ? <p className="auth-banner" role="alert">{formError || bootError}</p> : null}
         <AuthField
           id="login-identifier"
-          label="Email or mobile number"
+          label="Email"
+          type="email"
           value={identifier}
           onChange={(event) => setIdentifier(event.target.value)}
           error={errorFor('identifier')}
@@ -87,6 +119,7 @@ export default function LoginPage() {
         <AuthSubmit busy={busy} disabled={busy}>
           {busy ? 'Signing in…' : 'Continue'}
         </AuthSubmit>
+        <OAuthButtons onGoogle={onGoogle} onApple={onApple} busy={busy} appleReady={APPLE_ENABLED} />
       </form>
     </AuthLayout>
   )

@@ -74,7 +74,7 @@ export function SearchField({
   )
 }
 
-export default function SearchBar({ active = false, query = '', onQueryChange, onCancel }) {
+export default function SearchBar({ active = false, query = '', onQueryChange, onCancel, style }) {
   const navigate = useNavigate()
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 160 })
   const inputRef = useRef(null)
@@ -92,7 +92,7 @@ export default function SearchBar({ active = false, query = '', onQueryChange, o
   }
 
   return (
-    <div className={`search-bar ${active ? 'is-active' : ''}`}>
+    <div className={`search-bar ${active ? 'is-active' : ''}`} style={style}>
       <RevealItem className="search-field-reveal" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
         <SearchField
           inputRef={inputRef}

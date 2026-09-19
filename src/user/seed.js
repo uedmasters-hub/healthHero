@@ -9,45 +9,6 @@ import {
 import { hashSecret, createSalt } from './crypto'
 import { createUserRecord, createMember, createAddress } from './models'
 
-const DEMO_NOTIFICATIONS = [
-  {
-    id: 'n1',
-    title: 'Appointment tomorrow',
-    body: 'Dr. Priya Sharma at 10:30 AM. Don’t forget to complete pre-visit check-in.',
-    time: '2m ago',
-    unread: true,
-    type: 'appointment',
-    to: '/appointment',
-  },
-  {
-    id: 'n2',
-    title: 'Lab results ready',
-    body: 'Your blood test from 20 Sep is available to review.',
-    time: '1h ago',
-    unread: true,
-    type: 'results',
-    to: '/post-visit-summary',
-  },
-  {
-    id: 'n3',
-    title: 'Booking confirmed',
-    body: 'Your visit with Dr. Arjun Mehta is confirmed for Friday.',
-    time: 'Yesterday',
-    unread: false,
-    type: 'booking',
-    to: '/treat',
-  },
-  {
-    id: 'n4',
-    title: 'Prescription refill',
-    body: 'Metformin 500mg can be refilled from Pharmacy.',
-    time: 'Mon',
-    unread: false,
-    type: 'pharmacy',
-    to: '/pharmacy',
-  },
-]
-
 export async function buildDemoUser() {
   const salt = createSalt()
   const passwordHash = await hashSecret(DEMO_PASSWORD, salt)
@@ -128,7 +89,6 @@ export async function buildDemoUser() {
         date: defaultPrescription.patient.date,
       },
     }],
-    notifications: DEMO_NOTIFICATIONS.map((item) => ({ ...item })),
     addresses: [
       createAddress({
         id: 'addr-home',

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { validateLoginFields } from '../../user'
+import { AUTH_ERROR, validateLoginFields } from '../../user'
+import { useAuth } from '../../features/auth/hooks/useAuth'
 import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit, AuthTrust } from './AuthScreen'
 import useProgressiveAuth from './useProgressiveAuth'
@@ -10,11 +11,12 @@ const FORGOT_IDS = { identifier: 'reset-identifier' }
 
 export default function ForgotPasswordPage() {
   const location = useLocation()
+  const { forgotPassword } = useAuth()
   const [ready, setReady] = useState(false)
   const [identifier, setIdentifier] = useState(() => String(location.state?.identifier || ''))
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState(false)
-  const sendTimer = useRef(null)
+  const [formError, setFormError] = useState('')
 
   const identifierError = validateLoginFields({ identifier, password: 'ok' }).identifier
   const fieldErrors = identifierError ? { identifier: identifierError } : {}
@@ -22,20 +24,24 @@ export default function ForgotPasswordPage() {
 
   useEffect(() => {
     const id = window.setTimeout(() => setReady(true), 280)
-    return () => {
-      window.clearTimeout(id)
-      if (sendTimer.current) window.clearTimeout(sendTimer.current)
-    }
+    return () => window.clearTimeout(id)
   }, [])
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault()
+    setFormError('')
     if (begin()) return
     setBusy(true)
-    sendTimer.current = window.setTimeout(() => {
-      setBusy(false)
+    try {
+      const result = await forgotPassword(identifier)
+      if (!result.ok) {
+        setFormError(result.error || AUTH_ERROR.GENERIC)
+        return
+      }
       setSent(true)
-    }, 420)
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -44,8 +50,8 @@ export default function ForgotPasswordPage() {
       stage={sent ? 'sent' : 'forgot'}
       title={sent ? 'Check your inbox' : 'Forgot password?'}
       subtitle={sent
-        ? 'If an account matches that email or mobile number, you’ll receive a reset link shortly.'
-        : 'Enter the email or mobile number on your account.'}
+        ? AUTH_ERROR.RESET_SENT
+        : 'Enter the email on your account.'}
       extra={<AuthTrust />}
       footer={(
         <Link to="/login" className="auth-text-btn">Back to sign in</Link>
@@ -53,9 +59,11 @@ export default function ForgotPasswordPage() {
     >
       {sent ? null : (
         <form className="auth-form" onSubmit={onSubmit} noValidate>
+          {formError ? <p className="auth-banner" role="alert">{formError}</p> : null}
           <AuthField
             id="reset-identifier"
-            label="Email or mobile number"
+            label="Email"
+            type="email"
             value={identifier}
             onChange={(event) => setIdentifier(event.target.value)}
             error={errorFor('identifier')}

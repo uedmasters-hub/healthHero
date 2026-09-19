@@ -1,20 +1,10 @@
-import { createContext, useContext, useMemo } from 'react'
-import { useUser } from '../user'
+import { createContext, useContext } from 'react'
+import useNotificationService from '../features/notifications/useNotifications'
 
 const NotificationContext = createContext(null)
 
 export function NotificationProvider({ children }) {
-  const { notifications, markRead, markAllRead } = useUser()
-
-  const unreadCount = useMemo(
-    () => notifications.filter((item) => item.unread).length,
-    [notifications],
-  )
-
-  const value = useMemo(
-    () => ({ notifications, unreadCount, markRead, markAllRead }),
-    [notifications, unreadCount, markRead, markAllRead],
-  )
+  const value = useNotificationService()
 
   return (
     <NotificationContext.Provider value={value}>

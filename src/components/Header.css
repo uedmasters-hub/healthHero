@@ -4,6 +4,7 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-3) var(--content-padding);
+  overflow: visible;
 }
 
 .header-left {
@@ -92,44 +93,7 @@
   padding: var(--space-0-5);
   padding-left: var(--space-1);
   flex-shrink: 0;
-}
-
-.notification-btn {
-  position: relative;
-  width: var(--icon-btn-visual);
-  height: var(--icon-btn-visual);
-  min-width: var(--icon-btn-visual);
-  min-height: var(--icon-btn-visual);
-  border: none;
-  border-radius: var(--radius-full);
-  background: var(--media-bg);
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.notification-icon {
-  width: var(--icon-lg);
-  height: var(--icon-lg);
-  stroke-width: var(--icon-stroke);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.notification-badge {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  width: var(--space-2);
-  height: var(--space-2);
-  background: var(--urgent);
-  border: var(--border-width-strong) solid var(--white);
-  border-radius: var(--radius-full);
-  box-sizing: content-box;
+  overflow: visible;
 }
 
 .avatar {

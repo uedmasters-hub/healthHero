@@ -21,19 +21,21 @@
 .home-header {
   flex-shrink: 0;
   max-height: calc(var(--touch-min) + var(--space-10));
-  overflow: hidden;
+  overflow: visible;
   opacity: var(--opacity-visible);
   transform: translate3d(0, 0, 0);
   transition: max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease;
 }
 
 .home-header-inner {
+  overflow: visible;
   transform: translate3d(0, 0, 0);
   transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .app.is-search .home-header {
   max-height: 0;
+  overflow: hidden;
   opacity: var(--opacity-hidden);
   pointer-events: none;
 }

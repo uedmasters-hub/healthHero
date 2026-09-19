@@ -2,25 +2,24 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'
 import { flowState } from '../lib/careFlow'
 import { findDuplicateSelfBooking } from '../lib/duplicateBooking'
-import { ageFromDob, groupedPatients, isPatientProfileComplete } from '../lib/patients'
+import { ageFromDob, ageToDob, groupedPatients, isPatientProfileComplete } from '../lib/patients'
 import { indianMobile, useUser } from '../user'
 import { useBooking } from './BookingContext'
 import { BookingReveal, useBookingReveal } from './BookingReveal'
 import DuplicateBookingModal from './DuplicateBookingModal'
 import { BirthDateField } from './DatePicker'
+import { PhoneInput, toE164 } from './PhoneInput'
 import { resolveAppointmentPath } from '../lib/appointmentJourney'
 import './SelectPatient.css'
 
 const RELATIONSHIPS = ['Spouse', 'Parent', 'Sibling', 'Child', 'Other']
 const GENDERS = ['Male', 'Female', 'Other']
-const COUNTRY_CODES = ['+91', '+1', '+44', '+971', '+61', '+65']
 
 const emptyForm = {
   name: '',
   dob: '',
   age: '',
   gender: 'Male',
-  countryCode: '+91',
   phone: '',
   address: '',
   relationship: 'Spouse',
@@ -34,7 +33,6 @@ function formFromPatient(patient) {
     dob: patient.dob || '',
     age: patient.age != null ? String(patient.age) : '',
     gender: patient.gender || '',
-    countryCode: '+91',
     phone: indianMobile(patient.phone),
     address: patient.address || '',
     relationship: patient.relationship || 'Self',
@@ -42,7 +40,7 @@ function formFromPatient(patient) {
   }
 }
 
-function PatientDetailsForm({ form, updateForm, showRelationship, formError }) {
+function PatientDetailsForm({ form, updateForm, showRelationship, formError, phoneCountry, onCountryChange }) {
   return (
     <>
       {formError ? <p className="patient-form-error" role="alert">{formError}</p> : null}
@@ -75,26 +73,15 @@ function PatientDetailsForm({ form, updateForm, showRelationship, formError }) {
           ))}
         </div>
       </div>
-      <div className="patient-field">
-        <span>Contact Number</span>
-        <div className="patient-phone-row">
-          <label className="patient-cc">
-            <span className="sr-only">Country code</span>
-            <select value={form.countryCode} onChange={(e) => updateForm('countryCode', e.target.value)}>
-              {COUNTRY_CODES.map((code) => (
-                <option key={code} value={code}>{code}</option>
-              ))}
-            </select>
-          </label>
-          <input
-            value={form.phone}
-            onChange={(e) => updateForm('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-            placeholder="10-digit number"
-            inputMode="numeric"
-            maxLength={10}
-          />
-        </div>
-      </div>
+      <PhoneInput
+        label="Contact Number"
+        value={form.phone}
+        country={phoneCountry}
+        onCountryChange={onCountryChange}
+        onChange={(val) => updateForm('phone', val)}
+        placeholder="98765 43210"
+        required
+      />
       <label className="patient-field">
         <span>Address</span>
         <textarea rows={3} value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Flat / house, street, city" />
@@ -132,10 +119,15 @@ export default function SelectPatient() {
   const location = useLocation()
   const { setCurrentStep, addingPatient, setAddingPatient } = useOutletContext()
   const { bookings } = useBooking()
-  const { members: patients, addMember, completeSelf } = useUser()
+  const { members: patients, addMember, completeSelf, googleBirthday } = useUser()
   const doctor = location.state?.doctor
   const selfPatient = patients.find((item) => item.relationship === 'Self' || item.id === 'self')
   const selfIncomplete = Boolean(selfPatient && !isPatientProfileComplete(selfPatient))
+
+  // Prefill DOB from Google OAuth when the self profile has no dob yet
+  const effectiveSelf = selfPatient && !selfPatient.dob && googleBirthday
+    ? { ...selfPatient, dob: googleBirthday }
+    : selfPatient
 
   const [selectedId, setSelectedId] = useState(() => {
     if (location.state?.patient?.id) return location.state.patient.id
@@ -145,10 +137,11 @@ export default function SelectPatient() {
     }
     return 'self'
   })
-  const [form, setForm] = useState(() => (selfIncomplete ? formFromPatient(selfPatient) : emptyForm))
+  const [form, setForm] = useState(() => (selfIncomplete ? formFromPatient(effectiveSelf) : emptyForm))
   const [editingSelf, setEditingSelf] = useState(() => selfIncomplete && !location.state?.forSomeoneElse)
   const [formError, setFormError] = useState('')
   const [dupBooking, setDupBooking] = useState(null)
+  const [phoneCountry, setPhoneCountry] = useState('+91')
   const ready = useBookingReveal(`patient:${doctor?.id || 'none'}`, Boolean(doctor && location.state?.date && location.state?.time))
 
   const groups = useMemo(() => groupedPatients(patients), [patients])
@@ -181,7 +174,7 @@ export default function SelectPatient() {
       dob: form.dob,
       age,
       gender: form.gender,
-      phone: form.phone,
+      phone: toE164(phoneCountry, form.phone),
       address: form.address,
     })
     if (!result?.ok) {
@@ -224,7 +217,7 @@ export default function SelectPatient() {
     const created = addMember({
       ...form,
       age,
-      phone: `${form.countryCode} ${form.phone}`,
+      phone: toE164(phoneCountry, form.phone),
       relationship: relationshipValue,
     })
     setSelectedId(created.id)
@@ -243,13 +236,13 @@ export default function SelectPatient() {
   const closeAdd = () => {
     setAddingPatient?.(false)
     if (selectedId === 'self' && (selfIncomplete || editingSelf)) {
-      setForm(formFromPatient(selfPatient))
+      setForm(formFromPatient(effectiveSelf))
     }
   }
 
   const openSelfEditor = (event) => {
     event?.stopPropagation?.()
-    setForm(formFromPatient(selfPatient))
+    setForm(formFromPatient(effectiveSelf))
     setFormError('')
     setSelectedId('self')
     setEditingSelf(true)
@@ -259,7 +252,7 @@ export default function SelectPatient() {
     setSelectedId(patient.id)
     if (patient.relationship === 'Self') {
       if (!isPatientProfileComplete(patient)) {
-        setForm(formFromPatient(patient))
+        setForm(formFromPatient(effectiveSelf))
         setEditingSelf(true)
       }
       return
@@ -270,7 +263,18 @@ export default function SelectPatient() {
   const updateForm = (key, value) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value }
-      if (key === 'dob') next.age = ageFromDob(value) || prev.age
+      if (key === 'dob') {
+        next.age = ageFromDob(value) || prev.age
+      } else if (key === 'age') {
+        const digits = String(value).replace(/\D/g, '').slice(0, 3)
+        next.age = digits
+        if (digits) {
+          const derived = ageToDob(digits, prev.dob)
+          if (derived) next.dob = derived
+        } else if (!prev.dob) {
+          next.dob = ''
+        }
+      }
       return next
     })
   }
@@ -291,7 +295,7 @@ export default function SelectPatient() {
         <>
           <div className="select-patient-scroll">
             <p className="select-patient-lead">Add a patient once and reuse them for future appointments.</p>
-            <PatientDetailsForm form={form} updateForm={updateForm} showRelationship formError={formError} />
+            <PatientDetailsForm form={form} updateForm={updateForm} showRelationship formError={formError} phoneCountry={phoneCountry} onCountryChange={setPhoneCountry} />
           </div>
           <div className="app-flow-footer">
             <button type="button" className="app-flow-cta" disabled={!canSaveMember} onClick={handleSaveNew}>
@@ -354,7 +358,7 @@ export default function SelectPatient() {
                       {isSelf && showSelfEditor && selectedId === 'self' ? (
                         <div className="patient-complete-panel">
                           <p className="patient-complete-hint">Age, gender, and a valid mobile number are required before review.</p>
-                          <PatientDetailsForm form={form} updateForm={updateForm} formError={formError} />
+                          <PatientDetailsForm form={form} updateForm={updateForm} formError={formError} phoneCountry={phoneCountry} onCountryChange={setPhoneCountry} />
                         </div>
                       ) : null}
                     </div>

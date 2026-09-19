@@ -18,7 +18,8 @@ import {
   readPaymentSession,
   writePaymentSession,
 } from '../lib/paymentSession'
-import { appendPaymentHistory, pushNotification } from '../user/store'
+import { appendPaymentHistory } from '../user/store'
+import { notificationService } from '../features/notifications'
 import { getBookingEngine } from './engine'
 import { toLegacyBooking } from './models'
 import { selectActive, selectHomeBooking } from './selectors'
@@ -130,7 +131,7 @@ export function BookingProvider({ children }) {
           label: `Consultation · ${record.doctor?.name || record.providerName || 'Doctor'}`,
           paidAt: record.payment?.paidAt || new Date().toISOString(),
         })
-        pushNotification({
+        notificationService.pushNotification({
           title: 'Booking confirmed',
           body: record.doctor?.name
             ? `Your visit with ${record.doctor.name} is confirmed.`

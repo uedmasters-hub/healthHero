@@ -1,7 +1,7 @@
 import { addFamilyMember, currentUser } from '../user/store'
 import { membersForBooking } from '../user/models'
 
-export { ageFromDob, isPatientProfileComplete } from '../user/models'
+export { ageFromDob, ageToDob, isPatientProfileComplete } from '../user/models'
 
 export const PATIENT_GROUPS = [
   { id: 'self', label: 'Self' },

@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from 'react'
 import { DEMO_USER_ID } from './constants'
 import { emptyHealth } from './health'
+import { useAuth } from '../features/auth/hooks/useAuth'
 import {
   membersForBooking,
   profileView,
@@ -8,16 +9,13 @@ import {
 } from './models'
 import {
   addFamilyMember,
+  checkPhoneDuplicate,
   completeSelfProfile,
   currentUser,
-  ensureDemoUser,
   getUserSnapshot,
-  loginWithPassword,
-  logout as logoutStore,
-  markAllNotificationsRead,
-  markNotificationRead,
+  hydrateProfileFromSupabase,
+  markPhoneVerified,
   patchCurrentUser,
-  registerAccount,
   removeEmergencyContact,
   removeHealthItem,
   removeInsurancePolicy,
@@ -37,26 +35,16 @@ function subscribe(callback) {
 }
 
 export function UserProvider({ children }) {
-  const [ready, setReady] = useState(false)
+  const auth = useAuth()
   const snapshot = useSyncExternalStore(subscribe, getUserSnapshot, getUserSnapshot)
 
-  useEffect(() => {
-    let cancelled = false
-    ensureDemoUser().finally(() => {
-      if (!cancelled) setReady(true)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const login = useCallback((identifier, password) => loginWithPassword(identifier, password), [])
-  const register = useCallback((input) => registerAccount(input), [])
-  const logout = useCallback(() => logoutStore(), [])
   const updateUser = useCallback((partial) => patchCurrentUser(partial), [])
   const addMember = useCallback((input) => addFamilyMember(input), [])
   const completeSelf = useCallback((input) => completeSelfProfile(input), [])
   const saveProfile = useCallback((input) => updatePersonalProfile(input), [])
+  const checkPhone = useCallback((phone) => checkPhoneDuplicate(phone), [])
+  const verifyPhone = useCallback((phone) => markPhoneVerified(phone), [])
+  const hydrateProfile = useCallback(() => hydrateProfileFromSupabase(), [])
   const saveHealthItem = useCallback((kind, input) => upsertHealthItem(kind, input), [])
   const deleteHealthItem = useCallback((kind, id) => removeHealthItem(kind, id), [])
   const saveEmergencyContact = useCallback((input) => upsertEmergencyContact(input), [])
@@ -65,36 +53,39 @@ export function UserProvider({ children }) {
   const deleteInsurancePolicy = useCallback((id) => removeInsurancePolicy(id), [])
   const saveAddress = useCallback((input) => upsertSavedAddress(input), [])
   const deleteAddress = useCallback((id) => removeSavedAddress(id), [])
-  const markRead = useCallback((id) => markNotificationRead(id), [])
-  const markAllRead = useCallback(() => markAllNotificationsRead(), [])
 
   const value = useMemo(() => {
-    const user = snapshot.user
+    const user = auth.isAuthenticated ? snapshot.user : null
     return {
-      ready,
+      ready: auth.ready,
       user: publicUser(user),
       rawUser: user,
       session: snapshot.session,
+      authSession: auth.session,
       profile: profileView(user),
+      emailVerified: auth.emailVerified || false,
+      googleBirthday: auth.googleBirthday || user?.googleBirthday || null,
       members: membersForBooking(user),
       records: user?.records || { consultations: [], reports: [], medications: [] },
       health: user?.health || emptyHealth(),
       emergencyContacts: user?.emergencyContacts || [],
       insurancePolicies: user?.insurancePolicies || [],
-      notifications: user?.notifications || [],
       prescriptions: user?.prescriptions || [],
       addresses: user?.addresses || [],
       paymentHistory: user?.paymentHistory || [],
       pharmacyOrders: user?.pharmacyOrders || [],
       savedInsightIds: user?.savedInsightIds || [],
       isDemo: user?.id === DEMO_USER_ID,
-      login,
-      register,
-      logout,
+      login: auth.signInWithPassword,
+      register: auth.signUp,
+      logout: auth.signOut,
       updateUser,
       addMember,
       completeSelf,
       saveProfile,
+      checkPhone,
+      verifyPhone,
+      hydrateProfile,
       saveHealthItem,
       deleteHealthItem,
       saveEmergencyContact,
@@ -103,13 +94,13 @@ export function UserProvider({ children }) {
       deleteInsurancePolicy,
       saveAddress,
       deleteAddress,
-      markRead,
-      markAllRead,
     }
   }, [
-    ready, snapshot, login, register, logout, updateUser, addMember, completeSelf, saveProfile,
+    auth.ready, auth.isAuthenticated, auth.session, auth.googleBirthday, auth.emailVerified,
+    auth.signInWithPassword, auth.signUp, auth.signOut,
+    snapshot, updateUser, addMember, completeSelf, saveProfile, checkPhone, verifyPhone, hydrateProfile,
     saveHealthItem, deleteHealthItem, saveEmergencyContact, deleteEmergencyContact,
-    saveInsurancePolicy, deleteInsurancePolicy, saveAddress, deleteAddress, markRead, markAllRead,
+    saveInsurancePolicy, deleteInsurancePolicy, saveAddress, deleteAddress,
   ])
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>

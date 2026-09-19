@@ -6,7 +6,7 @@
   flex-shrink: 0;
   position: relative;
   z-index: 3;
-  transition: gap 0.32s cubic-bezier(0.22, 1, 0.36, 1), padding-right 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: gap 0.32s cubic-bezier(0.22, 1, 0.36, 1), padding-right 0.32s cubic-bezier(0.22, 1, 0.36, 1), padding-bottom 0.15s ease-out;
 }
 
 .search-bar.is-active {

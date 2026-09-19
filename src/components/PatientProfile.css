@@ -50,9 +50,11 @@
 }
 
 .user-profile-section-title {
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--text-body-sm-size);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   margin: 0 0 var(--space-3);
 }
 
@@ -151,13 +153,14 @@
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: var(--shadow-xs);
 }
 
 .user-profile-info-row {
   display: flex;
   align-items: center;
-  padding: var(--space-3-5) var(--space-4);
-  border-bottom: var(--border-width) solid var(--border);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-subtle);
 }
 
 .user-profile-info-row:last-child {
@@ -165,19 +168,20 @@
 }
 
 .user-profile-info-label {
-  font-size: var(--text-label-size);
+  font-size: var(--text-body-sm-size);
   color: var(--text-secondary);
-  width: 100px;
+  width: 90px;
   flex-shrink: 0;
 }
 
 .user-profile-info-value {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   flex: 1;
   min-width: 0;
   word-break: break-word;
+  text-align: right;
 }
 
 .user-profile-info-icon {
@@ -230,10 +234,16 @@
   background: none;
   color: var(--primary);
   font-family: inherit;
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--text-body-sm-size);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+}
+
+.health-add-btn:hover {
+  background: var(--active-bg);
 }
 
 .health-add-btn:active,
@@ -628,15 +638,17 @@
 }
 
 .profile-row-aside {
-  margin-left: var(--space-2);
-  font-size: var(--text-label-size);
+  margin-left: var(--space-3);
+  font-size: var(--text-body-sm-size);
   color: var(--text-secondary);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .user-profile-info-value.is-empty {
-  color: var(--text-muted);
+  color: var(--text-faint);
   font-weight: var(--font-weight-medium);
+  font-style: italic;
 }
 
 .profile-guided-empty {
@@ -1025,4 +1037,174 @@
 .support-action span {
   font-size: var(--text-label-size);
   color: var(--text-secondary);
+}
+
+/* ── Phone verify button & badge (used alongside PhoneInput) ──────────── */
+
+.phone-verify-btn {
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-3-5);
+  border: var(--border-width) solid var(--primary);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--primary);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  height: var(--app-flow-cta-height);
+}
+
+.phone-verify-btn:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.phone-verified-badge {
+  flex-shrink: 0;
+  padding: var(--space-1-5) var(--space-2-5);
+  border-radius: var(--radius-full);
+  background: var(--success-bg);
+  color: var(--success-text);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  border: 1px solid var(--success-border);
+}
+
+/* ── OTP flow ─────────────────────────────────────────────────────────── */
+
+.otp-instructions {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-body-size);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.otp-instructions strong {
+  color: var(--text-primary);
+}
+
+.otp-input {
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.25em;
+  font-size: var(--text-body-lg-size);
+}
+
+.otp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+}
+
+.otp-loading-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.otp-loading-text {
+  width: 160px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.otp-loading-text-sm {
+  width: 120px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.otp-resend-btn {
+  display: block;
+  margin: var(--space-3) auto 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.otp-resend-btn:disabled {
+  color: var(--text-muted);
+  cursor: default;
+  text-decoration: none;
+}
+
+/* ── Profile verified tag (display views) ─────────────────────────────── */
+
+.profile-verified-tag {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--success-bg);
+  color: var(--success-text);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid var(--success-border);
+}
+
+/* ── Contact section (email field + divider) ──────────────────────────── */
+
+.contact-email-field {
+  pointer-events: none;
+}
+
+.contact-email-field input {
+  pointer-events: none;
+}
+
+.contact-email-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.contact-email-row input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  opacity: 0.85;
+  cursor: default;
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-3-5);
+  background: var(--white);
+}
+
+.contact-email-row .phone-verified-badge {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.contact-section-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm-size);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.contact-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }

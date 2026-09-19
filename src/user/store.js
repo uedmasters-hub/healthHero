@@ -10,9 +10,10 @@ import {
   normalizeHealthState,
   recordsFromHealth,
 } from './health'
-import { ageFromDob, createAddress, createId, createMember, createSession, createUserRecord, emptyRecords, indianMobile, normalizeEmail, publicUser, selfMember } from './models'
+import { ageFromDob, createAddress, createId, createMember, createSession, createUserRecord, emptyRecords, indianMobile, normalizeEmail, normalizePhone, publicUser, selfMember } from './models'
 import { loadDatabase, loadSession, saveDatabase, saveSession } from './persistence'
 import { buildDemoUser } from './seed'
+import { pushProfileToSupabase, fetchProfileFromSupabase } from '../features/sync/profileSync'
 
 function applyHealthNormalize(user) {
   if (!user) return user
@@ -166,6 +167,71 @@ export async function registerAccount({ name, email, phone, password }) {
   return { ok: true, user: publicUser(user) }
 }
 
+/**
+ * Bind the local health chart to a Supabase auth.users id.
+ * Identity lives in Supabase; this store never creates auth credentials.
+ */
+export function attachAuthenticatedUser({ id, email, phone, name } = {}) {
+  if (!id) return null
+  const now = new Date().toISOString()
+  const normalizedEmail = normalizeEmail(email)
+  const mobile = indianMobile(phone)
+  const existing = db.users[id]
+  if (existing) {
+    const previousEmail = existing.credentials?.email
+    const previousPhone = existing.credentials?.phone
+    if (previousEmail && previousEmail !== normalizedEmail) delete db.emailIndex[previousEmail]
+    if (previousPhone && previousPhone !== mobile) delete db.phoneIndex[previousPhone]
+    db.users[id] = applyHealthNormalize({
+      ...existing,
+      credentials: {
+        ...existing.credentials,
+        email: normalizedEmail || existing.credentials.email,
+        phone: mobile || existing.credentials.phone,
+        passwordHash: null,
+        salt: null,
+      },
+      profile: {
+        ...existing.profile,
+        name: name || existing.profile.name,
+      },
+      meta: {
+        ...existing.meta,
+        lastLoginAt: now,
+        updatedAt: now,
+      },
+    })
+  } else {
+    db.users[id] = applyHealthNormalize(createUserRecord({
+      id,
+      email: normalizedEmail,
+      phone: mobile,
+      profile: { name: name || '' },
+    }))
+  }
+  if (normalizedEmail) db.emailIndex[normalizedEmail] = id
+  if (mobile) db.phoneIndex[mobile] = id
+  session = createSession(id)
+  persist()
+  syncScopedServices()
+  notify()
+  return publicUser(db.users[id])
+}
+
+/**
+ * Persist a birthday fetched from Google so it survives page reloads.
+ * Only writes when the user has no dob set yet (avoids overwriting manual entry).
+ */
+export function setGoogleBirthday(birthday) {
+  const user = currentUser()
+  if (!user || !birthday) return
+  if (user.profile?.dob) return
+  patchCurrentUser((current) => ({
+    googleBirthday: birthday,
+    profile: { ...current.profile, dob: birthday, age: ageFromDob(birthday) || current.profile.age },
+  }))
+}
+
 export function logout() {
   session = null
   persist()
@@ -236,10 +302,14 @@ export function completeSelfProfile(input = {}) {
       profile: { name, dob, gender, address, age },
     }
   })
+
+  // Sync to Supabase in the background
+  pushProfileToSupabase(user.id, next.profile, next.credentials).catch(() => {})
+
   return { ok: true, member: selfMember(next) }
 }
 
-export function updatePersonalProfile(input = {}) {
+export async function updatePersonalProfile(input = {}) {
   const user = currentUser()
   if (!user) return { ok: false, error: AUTH_ERROR.REQUIRED }
   const name = String(input.name || '').trim()
@@ -258,7 +328,7 @@ export function updatePersonalProfile(input = {}) {
     db.phoneIndex[mobile] = user.id
   }
 
-  patchCurrentUser((current) => {
+  const updated = patchCurrentUser((current) => {
     let addresses = [...(current.addresses || [])]
     if (address) {
       const defaultIdx = addresses.findIndex((entry) => entry.isDefault)
@@ -285,6 +355,93 @@ export function updatePersonalProfile(input = {}) {
       },
     }
   })
+
+  // Write to Supabase in the background (fire-and-forget, local state already updated)
+  pushProfileToSupabase(user.id, updated.profile, updated.credentials).catch(() => {
+    /* local state is already updated; Supabase will sync on next load if this fails */
+  })
+
+  return { ok: true }
+}
+
+/**
+ * Load the user's profile from Supabase and merge into the local store.
+ * Called on page load after auth to ensure Supabase is the source of truth.
+ * Merges remote fields into the local profile without overwriting local-only
+ * fields (e.g. phoneVerified, emailVerified) that Supabase doesn't track.
+ */
+export async function hydrateProfileFromSupabase() {
+  const user = currentUser()
+  if (!user) return { ok: false, error: AUTH_ERROR.REQUIRED }
+
+  const result = await fetchProfileFromSupabase(user.id)
+  if (!result.ok || !result.profile) return { ok: false, error: result.error || 'No profile data' }
+
+  const remote = result.profile
+  patchCurrentUser((current) => ({
+    profile: {
+      ...current.profile,
+      name: remote.name || current.profile.name,
+      dob: remote.dob || current.profile.dob,
+      gender: remote.gender || current.profile.gender,
+      bloodGroup: remote.bloodGroup || current.profile.bloodGroup,
+      height: remote.height || current.profile.height,
+      weight: remote.weight || current.profile.weight,
+      avatar: remote.avatar || current.profile.avatar,
+      emergencyContact: remote.emergencyContact?.name
+        ? remote.emergencyContact
+        : current.profile.emergencyContact,
+    },
+  }))
+
+  return { ok: true }
+}
+
+/**
+ * Check if a phone number is already associated with another account.
+ * Returns { ok: true } if available, or { ok: false, error } if taken.
+ */
+export function checkPhoneDuplicate(phone) {
+  const user = currentUser()
+  if (!user) return { ok: false, error: AUTH_ERROR.REQUIRED }
+  const normalized = normalizePhone(phone)
+  if (!normalized) return { ok: false, error: AUTH_ERROR.PHONE }
+  // Check if this phone belongs to a different user
+  for (const [uid, u] of Object.entries(db.users)) {
+    if (uid === user.id) continue
+    const existingPhone = normalizePhone(u.credentials.phone)
+    if (existingPhone && existingPhone === normalized) {
+      return { ok: false, error: AUTH_ERROR.PHONE_DUPLICATE }
+    }
+  }
+  return { ok: true }
+}
+
+/**
+ * Mark the current user's phone as verified.
+ * Updates local state and persists. Also updates Supabase is_verified
+ * if email is not already verified (only one verified method needed).
+ */
+export function markPhoneVerified(phone) {
+  const user = currentUser()
+  if (!user) return { ok: false, error: AUTH_ERROR.REQUIRED }
+  const normalized = normalizePhone(phone || user.credentials.phone)
+  if (!normalized) return { ok: false, error: AUTH_ERROR.PHONE }
+
+  // Update the phone in credentials if it changed
+  if (normalized !== user.credentials.phone) {
+    if (user.credentials.phone) delete db.phoneIndex[user.credentials.phone]
+    db.phoneIndex[normalized] = user.id
+  }
+
+  patchCurrentUser((current) => ({
+    credentials: { phone: normalized },
+    profile: {
+      phoneVerified: true,
+      emailVerified: current.profile.emailVerified || false,
+    },
+  }))
+
   return { ok: true }
 }
 

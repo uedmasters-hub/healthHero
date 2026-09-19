@@ -385,6 +385,7 @@ const extraConsultants = [
 ]
 
 const allDoctors = [...doctors, ...extraConsultants]
+export { allDoctors }
 
 const doctorPhotos = {
   1: '/img/doctors/new/doctor.png',

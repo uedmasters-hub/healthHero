@@ -60,8 +60,19 @@
   gap: var(--space-2-5);
 }
 
+/* ── Notification card ─────────────────────────────────────────────── */
+
 .notification-card {
-  display: block;
+  position: relative;
+  width: 100%;
+}
+
+.notification-card .reveal-body {
+  width: 100%;
+}
+
+.notification-card-inner {
+  display: flex;
   align-items: flex-start;
   gap: var(--space-3);
   width: 100%;
@@ -72,18 +83,50 @@
   background: var(--white);
   cursor: pointer;
   font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-.notification-card .reveal-body {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
+.notification-card-inner:hover {
+  border-color: var(--border-strong);
 }
 
-.notification-card.unread {
+.notification-card.unread .notification-card-inner {
   background: var(--active-bg);
   border-color: var(--primary-soft-strong);
 }
+
+/* ── Dismiss button ────────────────────────────────────────────────── */
+
+.notification-card-dismiss {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+  z-index: 1;
+}
+
+.notification-card:hover .notification-card-dismiss,
+.notification-card:focus-within .notification-card-dismiss {
+  opacity: 1;
+}
+
+.notification-card-dismiss:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+/* ── Icon ──────────────────────────────────────────────────────────── */
 
 .notification-card-icon {
   width: 42px;
@@ -112,10 +155,42 @@
   background: var(--success-bg);
 }
 
-.notification-card-icon.pharmacy {
-  color: var(--urgent);
-  background: var(--white)4ED;
+.notification-card-icon.prescription {
+  color: var(--info);
+  background: var(--info-bg);
 }
+
+.notification-card-icon.vaccination {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.notification-card-icon.insurance {
+  color: var(--info);
+  background: var(--info-bg);
+}
+
+.notification-card-icon.health_tip {
+  color: var(--success-text);
+  background: var(--success-bg-light);
+}
+
+.notification-card-icon.telehealth {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.notification-card-icon.emergency {
+  color: var(--urgent);
+  background: var(--urgent-bg);
+}
+
+.notification-card-icon.profile {
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+}
+
+/* ── Body ──────────────────────────────────────────────────────────── */
 
 .notification-card-body {
   flex: 1;
@@ -158,6 +233,8 @@
   flex-shrink: 0;
   margin-top: var(--space-2);
 }
+
+/* ── Empty state ───────────────────────────────────────────────────── */
 
 .notifications-empty {
   display: flex;

@@ -1,21 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   HEALTH_SECTIONS,
   LIST_SECTIONS,
   ageFromDob,
+  ageToDob,
   displayHealthDate,
   healthItemMeta,
-  indianMobile,
+  isValidPhone,
   listItemMeta,
   listItemTitle,
+  normalizeHeight,
+  normalizeWeight,
+  numericValue,
+  phoneInput,
   useUser,
 } from '../../user'
 import AppBottomSheet from '../AppBottomSheet'
 import { BirthDateField } from '../DatePicker'
+import { PhoneInput, toE164 } from '../PhoneInput'
 import { useAppSheet } from '../PageTransition'
 
 const GENDERS = ['Male', 'Female', 'Other']
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+const OTP_LENGTH = 6
+const MOCK_OTP = '123456'
 
 function sectionConfig(kind) {
   return HEALTH_SECTIONS.find((item) => item.kind === kind)
@@ -63,16 +71,13 @@ function Field({ field, value, onChange }) {
   }
   if (field.type === 'phone') {
     return (
-      <label className="health-field">
-        <span>{field.label}</span>
-        <input
-          inputMode="numeric"
-          maxLength={10}
-          value={indianMobile(value)}
-          onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, 10))}
-          placeholder="10-digit number"
-        />
-      </label>
+      <PhoneInput
+        label={field.label}
+        value={value}
+        onChange={onChange}
+        placeholder="98765 43210"
+        required={field.required}
+      />
     )
   }
   return (
@@ -94,7 +99,7 @@ function formFromItem(section, item) {
 function canSave(section, form) {
   return section.fields.every((field) => {
     if (!field.required) return true
-    if (field.type === 'phone') return indianMobile(form[field.key]).length === 10
+    if (field.type === 'phone') return isValidPhone(form[field.key])
     return String(form[field.key] || '').trim().length > 0
   })
 }
@@ -247,21 +252,176 @@ export function RecordViewSheet({ kind, item, onEdit, onClose }) {
   )
 }
 
+// ── OTP verification sub-flow ──────────────────────────────────────────────
+
+function OtpFlow({ phone, onSuccess, onBack }) {
+  const { checkPhone, verifyPhone } = useUser()
+  const [otp, setOtp] = useState('')
+  const [sending, setSending] = useState(true)
+  const [verifying, setVerifying] = useState(false)
+  const [error, setError] = useState('')
+  const [resent, setResent] = useState(false)
+  const otpRef = useRef(null)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => { mountedRef.current = false }
+  }, [])
+
+  // Step 1: Check duplicate + send OTP (mock)
+  useEffect(() => {
+    let timer
+    const run = async () => {
+      // Check if phone belongs to another account
+      const check = checkPhone(phone)
+      if (!check.ok) {
+        if (mountedRef.current) {
+          setError(check.error)
+          setSending(false)
+        }
+        return
+      }
+      // Simulate OTP sending delay
+      timer = setTimeout(() => {
+        if (mountedRef.current) setSending(false)
+      }, 1200)
+    }
+    run()
+    return () => clearTimeout(timer)
+  }, [phone, checkPhone])
+
+  // Auto-focus OTP input when not sending
+  useEffect(() => {
+    if (!sending && otpRef.current) {
+      otpRef.current.focus()
+    }
+  }, [sending])
+
+  const handleOtpChange = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, OTP_LENGTH)
+    setOtp(digits)
+    setError('')
+  }
+
+  const handleVerify = () => {
+    if (otp.length !== OTP_LENGTH) {
+      setError(`Enter the ${OTP_LENGTH}-digit code.`)
+      return
+    }
+    setVerifying(true)
+    setError('')
+    // Mock verification: accept the demo OTP or any 6 digits in dev
+    setTimeout(() => {
+      if (!mountedRef.current) return
+      const valid = otp === MOCK_OTP || otp.length === OTP_LENGTH
+      if (valid) {
+        verifyPhone(phone)
+        onSuccess()
+      } else {
+        setError('Invalid code. Please try again.')
+        setVerifying(false)
+      }
+    }, 800)
+  }
+
+  const handleResend = () => {
+    setSending(true)
+    setError('')
+    setOtp('')
+    setResent(false)
+    setTimeout(() => {
+      if (mountedRef.current) {
+        setSending(false)
+        setResent(true)
+      }
+    }, 1200)
+  }
+
+  const otpReady = otp.length === OTP_LENGTH && !sending && !verifying
+
+  return (
+    <>
+      <div className="health-sheet-head">
+        <h2>Verify phone number</h2>
+        <button type="button" className="health-sheet-close" onClick={onBack} aria-label="Go back">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      </div>
+      <div className="health-sheet-body">
+        {error ? <p className="health-form-error" role="alert">{error}</p> : null}
+        {sending ? (
+          <div className="otp-loading">
+            <div className="otp-loading-icon shimmer" />
+            <div className="otp-loading-text shimmer" />
+            <div className="otp-loading-text-sm shimmer" />
+          </div>
+        ) : (
+          <>
+            <p className="otp-instructions">
+              Enter the {OTP_LENGTH}-digit code sent to <strong>{phone}</strong>
+            </p>
+            <label className="health-field">
+              <span>Verification code</span>
+              <input
+                ref={otpRef}
+                inputMode="numeric"
+                maxLength={OTP_LENGTH}
+                value={otp}
+                onChange={(e) => handleOtpChange(e.target.value)}
+                placeholder={`${OTP_LENGTH}-digit code`}
+                className="otp-input"
+              />
+            </label>
+            <button
+              type="button"
+              className="otp-resend-btn"
+              onClick={handleResend}
+              disabled={sending}
+            >
+              {resent ? 'Code resent' : 'Resend OTP'}
+            </button>
+          </>
+        )}
+      </div>
+      <button
+        type="button"
+        className="health-sheet-save"
+        disabled={!otpReady}
+        onClick={handleVerify}
+      >
+        {verifying ? 'Verifying...' : 'Verify'}
+      </button>
+    </>
+  )
+}
+
+// ── Profile edit sheet ─────────────────────────────────────────────────────
+
 export function ProfileEditSheet({ onClose, scope = 'all' }) {
-  const { profile, rawUser, saveProfile } = useUser()
+  const { profile, rawUser, saveProfile, emailVerified, emergencyContacts, saveEmergencyContact } = useUser()
   const { isPresented, isClosing, show, hide } = useAppSheet()
+  const primaryEmergency = emergencyContacts[0] || {}
   const [form, setForm] = useState(() => ({
     name: profile?.name || '',
     dob: rawUser?.profile?.dob || '',
     age: profile?.age != null ? String(profile.age) : '',
     gender: profile?.gender || '',
     bloodGroup: profile?.bloodGroup || '',
-    height: profile?.height || '',
-    weight: profile?.weight || '',
-    phone: indianMobile(profile?.phone),
+    height: numericValue(profile?.height),
+    weight: numericValue(profile?.weight),
+    phone: phoneInput(profile?.phoneRaw || profile?.phone || ''),
     address: profile?.address || '',
+    emergencyName: primaryEmergency.name || profile?.emergencyContact?.name || '',
+    emergencyRelation: primaryEmergency.relation || profile?.emergencyContact?.relation || '',
+    emergencyPhone: phoneInput(primaryEmergency.phone || profile?.emergencyContact?.phone || ''),
   }))
+  const [phoneCountry, setPhoneCountry] = useState('+91')
+  const [ecPhoneCountry, setEcPhoneCountry] = useState('+91')
   const [error, setError] = useState('')
+  const [otpView, setOtpView] = useState(false)
 
   useEffect(() => {
     show()
@@ -271,20 +431,76 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
   const update = (key, value) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value }
-      if (key === 'dob') next.age = ageFromDob(value) ? String(ageFromDob(value)) : prev.age
+      if (key === 'dob') {
+        next.age = ageFromDob(value) ? String(ageFromDob(value)) : prev.age
+      } else if (key === 'age') {
+        const digits = String(value).replace(/\D/g, '').slice(0, 3)
+        next.age = digits
+        if (digits) {
+          const derived = ageToDob(digits, prev.dob)
+          if (derived) next.dob = derived
+        } else if (!prev.dob) {
+          next.dob = ''
+        }
+      }
       return next
     })
+    if (key === 'phone' || key === 'emergencyPhone') setError('')
   }
 
-  const save = () => {
-    const result = saveProfile({
+  const saveEcIfFilled = () => {
+    const ecName = form.emergencyName.trim()
+    const ecRelation = form.emergencyRelation.trim()
+    const ecPhone = form.emergencyPhone.trim()
+    if (ecName || ecRelation || ecPhone) {
+      saveEmergencyContact({
+        id: primaryEmergency.id || undefined,
+        name: ecName || 'Emergency contact',
+        relation: ecRelation || 'Family',
+        phone: ecPhone ? toE164(ecPhoneCountry, ecPhone) : primaryEmergency.phone || '',
+      })
+    }
+  }
+
+  const save = async () => {
+    const result = await saveProfile({
       ...form,
+      phone: toE164(phoneCountry, form.phone),
+      height: normalizeHeight(form.height),
+      weight: normalizeWeight(form.weight),
       age: form.age,
     })
     if (!result?.ok) {
       setError(result?.error || 'Please complete the required details.')
       return
     }
+    saveEcIfFilled()
+    close()
+  }
+
+  const handleVerify = () => {
+    if (!isValidPhone(form.phone)) {
+      setError('Enter a valid 10-digit mobile number.')
+      return
+    }
+    setError('')
+    setOtpView(true)
+  }
+
+  const handleOtpSuccess = async () => {
+    setOtpView(false)
+    const result = await saveProfile({
+      ...form,
+      phone: toE164(phoneCountry, form.phone),
+      height: normalizeHeight(form.height),
+      weight: normalizeWeight(form.weight),
+      age: form.age,
+    })
+    if (!result?.ok) {
+      setError(result?.error || 'Please complete the required details.')
+      return
+    }
+    saveEcIfFilled()
     close()
   }
 
@@ -293,11 +509,24 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
   const showPassport = scope === 'all' || scope === 'passport'
   const title = scope === 'basic' ? 'Edit basic details' : scope === 'contact' ? 'Edit contact' : scope === 'passport' ? 'Update health passport' : 'Edit profile'
 
+  const phoneValid = isValidPhone(form.phone)
   const ready = showPassport && !showBasic && !showContact
     ? true
     : showContact && !showBasic
-      ? indianMobile(form.phone).length === 10
-      : form.name.trim().length > 1 && form.gender && (form.age || form.dob) && (!showContact || indianMobile(form.phone).length === 10)
+      ? phoneValid
+      : form.name.trim().length > 1 && form.gender && (form.age || form.dob) && (!showContact || phoneValid)
+
+  if (otpView) {
+    return (
+      <AppBottomSheet open={isPresented} closing={isClosing} onClose={close} keyboardAware labelledBy="otp-verify-title">
+        <OtpFlow
+          phone={toE164(phoneCountry, form.phone)}
+          onSuccess={handleOtpSuccess}
+          onBack={() => { setOtpView(false); setError('') }}
+        />
+      </AppBottomSheet>
+    )
+  }
 
   return (
     <AppBottomSheet open={isPresented} closing={isClosing} onClose={close} keyboardAware labelledBy="profile-edit-title">
@@ -355,10 +584,42 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
         ) : null}
         {showContact ? (
           <>
-            <label className="health-field">
-              <span>Mobile number</span>
-              <input inputMode="numeric" maxLength={10} value={form.phone} onChange={(e) => update('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} />
+            <label className="health-field contact-email-field">
+              <span>Email</span>
+              <div className="contact-email-row">
+                <input value={profile?.email || ''} readOnly tabIndex={-1} />
+                {emailVerified ? <span className="phone-verified-badge">Verified</span> : null}
+              </div>
             </label>
+            <PhoneInput
+              label="Mobile number"
+              value={form.phone}
+              country={phoneCountry}
+              onCountryChange={setPhoneCountry}
+              onChange={(val) => update('phone', val)}
+              placeholder="98765 43210"
+              verified={profile?.phoneVerified}
+            />
+            {!profile?.phoneVerified && phoneValid && (
+              <button type="button" className="phone-verify-btn" onClick={handleVerify}>Verify</button>
+            )}
+            <div className="contact-section-divider"><span>Emergency contact</span></div>
+            <label className="health-field">
+              <span>Name</span>
+              <input value={form.emergencyName} onChange={(e) => update('emergencyName', e.target.value)} placeholder="Contact name" />
+            </label>
+            <label className="health-field">
+              <span>Relation</span>
+              <input value={form.emergencyRelation} onChange={(e) => update('emergencyRelation', e.target.value)} placeholder="e.g. Parent, Spouse" />
+            </label>
+            <PhoneInput
+              label="Phone"
+              value={form.emergencyPhone}
+              country={ecPhoneCountry}
+              onCountryChange={setEcPhoneCountry}
+              onChange={(val) => update('emergencyPhone', val)}
+              placeholder="98765 43210"
+            />
             {scope === 'all' ? (
               <label className="health-field">
                 <span>Address</span>
@@ -393,4 +654,3 @@ export function ProfileSheets({ sheet, setSheet }) {
   }
   return null
 }
-

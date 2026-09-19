@@ -14,6 +14,119 @@ export function ageFromDob(dob) {
   return age
 }
 
+/**
+ * Derive a Date of Birth string (YYYY-MM-DD) from an age in years.
+ * If an existing DOB is provided, its month and day are preserved so the
+ * result stays as close as possible to the original date.  When no DOB is
+ * available, January 1st of the calculated birth year is used.
+ * Returns null for invalid / missing input.
+ */
+export function ageToDob(age, existingDob) {
+  const n = Number(age)
+  if (!Number.isFinite(n) || n < 0 || n > 150) return null
+  const now = new Date()
+  const birthYear = now.getFullYear() - Math.round(n)
+  let month = 0
+  let day = 1
+  if (existingDob) {
+    const match = String(existingDob).match(/^(\d{4})-(\d{2})-(\d{2})/)
+    if (match) {
+      month = Number(match[2]) - 1
+      day = Number(match[3])
+    }
+  }
+  const birthDate = new Date(birthYear, month, day)
+  const mm = String(birthDate.getMonth() + 1).padStart(2, '0')
+  const dd = String(birthDate.getDate()).padStart(2, '0')
+  return `${birthDate.getFullYear()}-${mm}-${dd}`
+}
+
+// ── Height / Weight helpers ────────────────────────────────────────────────
+
+const HEIGHT_UNIT = 'cm'
+const WEIGHT_UNIT = 'kg'
+
+/**
+ * Extract the leading numeric value from a height/weight string.
+ * Returns the raw number (no unit) or null when no digit sequence is found.
+ *   parseMeasurement('168 cm')  → 168
+ *   parseMeasurement('65.5')    → 65.5
+ *   parseMeasurement('')        → null
+ */
+export function parseMeasurement(value) {
+  if (value == null) return null
+  const match = String(value).match(/(\d+(?:\.\d+)?)/)
+  return match ? Number(match[1]) : null
+}
+
+/**
+ * Strip any unit suffix and return just the numeric portion as a string.
+ * Used when loading stored values into the edit form so the user sees only
+ * the number (e.g. "163 cm" → "163", "76" → "76").
+ *   numericValue('163 cm')  → '163'
+ *   numericValue('76')      → '76'
+ *   numericValue('')        → ''
+ */
+export function numericValue(value) {
+  const n = parseMeasurement(value)
+  return n != null ? String(n) : ''
+}
+
+/**
+ * Normalize a stored or raw value for height.
+ * Extracts the number and appends "cm". Strips duplicate unit tokens.
+ * Intended for use on save only, NOT on each keystroke.
+ *   normalizeHeight('163')      → '163 cm'
+ *   normalizeHeight('163 cm')   → '163 cm'
+ *   normalizeHeight('163 cm cm')→ '163 cm'
+ *   normalizeHeight('abc')      → ''
+ */
+export function normalizeHeight(value) {
+  if (value == null) return ''
+  const raw = String(value).trim()
+  if (!raw) return ''
+  const num = raw.match(/(\d+(?:\.\d+)?)/)
+  if (!num) return ''
+  return `${num[1]} ${HEIGHT_UNIT}`
+}
+
+/**
+ * Normalize a stored or raw value for weight.
+ * Same rules as normalizeHeight but with "kg".
+ */
+export function normalizeWeight(value) {
+  if (value == null) return ''
+  const raw = String(value).trim()
+  if (!raw) return ''
+  const num = raw.match(/(\d+(?:\.\d+)?)/)
+  if (!num) return ''
+  return `${num[1]} ${WEIGHT_UNIT}`
+}
+
+/**
+ * Format a stored height for display.
+ * Backward-compatible: plain numbers ("168") are shown as "168 cm".
+ *   formatHeight('168')    → '168 cm'
+ *   formatHeight('168 cm') → '168 cm'
+ *   formatHeight('')       → ''
+ */
+export function formatHeight(value) {
+  if (!value) return ''
+  const n = parseMeasurement(value)
+  return n != null ? `${n} ${HEIGHT_UNIT}` : ''
+}
+
+/**
+ * Format a stored weight for display.
+ *   formatWeight('65')    → '65 kg'
+ *   formatWeight('65 kg') → '65 kg'
+ */
+export function formatWeight(value) {
+  if (!value) return ''
+  const n = parseMeasurement(value)
+  return n != null ? `${n} ${WEIGHT_UNIT}` : ''
+}
+
 export function createId(prefix = 'usr') {
   const rand = Math.random().toString(36).slice(2, 8)
   return `${prefix}_${Date.now().toString(36)}_${rand}`
@@ -34,6 +147,64 @@ export function formatIndianPhone(value = '') {
   const mobile = indianMobile(value)
   if (mobile.length !== 10) return value || ''
   return `+91 ${mobile.slice(0, 5)} ${mobile.slice(5)}`
+}
+
+// ── Flexible phone helpers (international) ──────────────────────────────────
+
+/**
+ * Strip everything except digits. Returns the raw digit string.
+ *   phoneDigits('+1 (415) 555-2671') → '14155552671'
+ *   phoneDigits('91 98765 43210')     → '919876543210'
+ */
+export function phoneDigits(value = '') {
+  return digitsOnly(value)
+}
+
+/**
+ * Format a phone string for the edit form: keep only digits, cap at 10.
+ * Country code is handled separately by PhoneInput.
+ */
+export function phoneInput(value = '') {
+  return phoneDigits(value).slice(0, 10)
+}
+
+/**
+ * Normalize a phone number for storage.
+ * If it already starts with a country code (len >= 11), keep the full digits.
+ * If exactly 10 digits (no country code), prefix with "91" (India default).
+ * Returns the full digit string or empty.
+ *   normalizePhone('4155552671')  → '14155552671'
+ *   normalizePhone('14155552671') → '14155552671'
+ *   normalizePhone('919876543210')→ '919876543210'
+ */
+export function normalizePhone(value = '') {
+  const digits = phoneDigits(value)
+  if (!digits) return ''
+  if (digits.length >= 11) return digits
+  if (digits.length === 10) return `91${digits}`
+  return digits
+}
+
+/**
+ * Format a stored phone for display.
+ *   formatPhone('919876543210')  → '+91 98765 43210'
+ *   formatPhone('14155552671')   → '+1 (415) 555-2671'
+ *   formatPhone('9876543210')    → '+91 98765 43210' (legacy 10-digit)
+ */
+export function formatPhone(value = '') {
+  const digits = phoneDigits(value)
+  if (!digits) return ''
+  if (digits.length === 10) return formatIndianPhone(digits)
+  if (digits.startsWith('91') && digits.length === 12) return formatIndianPhone(digits)
+  return `+${digits}`
+}
+
+/**
+ * Phone validity: exactly 10 digits (local number, country code separate).
+ */
+export function isValidPhone(value = '') {
+  const digits = phoneDigits(value)
+  return digits.length === 10
 }
 
 export function normalizeEmail(value = '') {
@@ -121,6 +292,8 @@ export function createUserRecord({
       avatar: profile.avatar || '',
       emergencyContact: profile.emergencyContact || { name: '', relation: '', phone: '' },
       insurance: profile.insurance || { provider: '', policyNo: '', validTill: '' },
+      phoneVerified: profile.phoneVerified || false,
+      emailVerified: profile.emailVerified || false,
     },
     members: members.map(createMember),
     records: records || emptyRecords(),
@@ -176,7 +349,10 @@ export function profileView(user) {
     id: user.id,
     name: profile.name,
     email: credentials.email,
-    phone: formatIndianPhone(credentials.phone),
+    phone: formatPhone(credentials.phone),
+    phoneRaw: credentials.phone || '',
+    phoneVerified: profile.phoneVerified || false,
+    emailVerified: profile.emailVerified || false,
     dob: profile.dob ? formatAppDate(profile.dob) : '',
     age,
     gender: profile.gender,
