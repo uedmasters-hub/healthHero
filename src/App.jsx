@@ -54,6 +54,11 @@ import { isSupabaseConfigured, supabaseConfigError } from './lib/supabase'
 import DesignSystemLayout from './design-system/DesignSystemLayout'
 import { FabProvider } from './features/fab'
 import { NotificationIsland, NotificationPresentationSync } from './features/notifications'
+import ChatInboxPage from './features/conversations/pages/ChatInboxPage'
+import NewConversationPage from './features/conversations/pages/NewConversationPage'
+import ConversationThreadPage from './features/conversations/pages/ConversationThreadPage'
+import SupportThreadPage from './features/conversations/pages/SupportThreadPage'
+import AgentInboxPage from './features/conversations/pages/AgentInboxPage'
 import AppScrimHost, { useAppScrim } from './components/AppScrim'
 import { SheetPortal } from './components/PageTransition'
 import { PushStack } from './features/pushNav'
@@ -128,6 +133,11 @@ function AppRoutes() {
             <Route path="/calendar" element={<CentersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/chat" element={<ChatInboxPage />} />
+            <Route path="/chat/new" element={<NewConversationPage />} />
+            <Route path="/chat/agent" element={<AgentInboxPage />} />
+            <Route path="/chat/support/:conversationId" element={<SupportThreadPage />} />
+            <Route path="/chat/:conversationId" element={<ConversationThreadPage />} />
             <Route path="/insights/:id" element={<ArticlePage />} />
             <Route path="/explore" element={<ExploreIndexRedirect />} />
             <Route path="/explore/:specialty" element={<ExploreSpecialtyPage />} />

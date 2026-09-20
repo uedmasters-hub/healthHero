@@ -69,7 +69,7 @@ export default function PharmacyPage() {
   }, [hide])
 
   const openLiveChat = useCallback(() => {
-    navigate('/profile/support', {
+    navigate('/chat', {
       state: { origin: 'pharmacy', returnTo: '/pharmacy' },
     })
   }, [navigate])

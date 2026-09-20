@@ -17,6 +17,7 @@ export const PRESENTATION_MODE = Object.freeze({
  * Ordered for readability; first match wins via `some`.
  */
 export const CRITICAL_FLOW_RULES = Object.freeze([
+  (p) => p.startsWith('/chat'),
   (p) => p.startsWith('/booking'),
   (p) => p.startsWith('/process-payment'),
   (p) => p.startsWith('/verify-payment'),

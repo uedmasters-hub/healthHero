@@ -26,6 +26,7 @@ export const HUB_ACTIONS = Object.freeze([
  */
 export const FAB_ROUTE_RULES = Object.freeze([
   // ── Hidden (focused workflows) ───────────────────────────────────────
+  { test: (p) => p.startsWith('/chat'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/booking'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/process-payment'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/auth/confirm'), mode: FAB_MODE.HIDDEN },

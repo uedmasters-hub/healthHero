@@ -85,7 +85,7 @@ export function FabProvider({ children }) {
       return
     }
     if (action.id === 'chat') {
-      navigate('/profile/support')
+      navigate('/chat')
       return
     }
     if (action.id === 'find-treatment') {

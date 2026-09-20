@@ -16,8 +16,12 @@ export default function SupportWorkspace() {
           </RevealItem>
 
           <RevealItem className="support-actions" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
-            <a className="support-action" href={`mailto:${CARE_SUPPORT.email}?subject=Health%20Hero%20support`}>
-              <strong>Message</strong>
+            <button type="button" className="support-action" onClick={() => navigate('/chat')}>
+              <strong>Messages</strong>
+              <span>Open Conversation Center</span>
+            </button>
+            <a className="support-action" href={`mailto:${CARE_SUPPORT.email}?subject=eMedicalls%20support`}>
+              <strong>Email</strong>
               <span>Write to {CARE_SUPPORT.email}</span>
             </a>
             <a className="support-action is-call" href={`tel:${CARE_SUPPORT.phone}`}>
