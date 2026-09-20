@@ -753,7 +753,7 @@ export default function ProcessPayment() {
                 <span className="pay-wallet-label">Available balance</span>
                 <strong className="pay-wallet-balance">{formatMoney(walletMethod?.balance ?? 0)}</strong>
                 <p className="pay-sheet-hint">
-                  Pay from your HealthHero wallet. Eligible for this consultation.
+                  Pay from your eMedicalls wallet. Eligible for this consultation.
                   No additional details are required.
                 </p>
               </div>

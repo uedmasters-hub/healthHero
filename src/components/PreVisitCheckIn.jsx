@@ -157,7 +157,7 @@ export default function PreVisitCheckIn() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = 'healthhero-appointment.ics'
+    link.download = 'emedicalls-appointment.ics'
     link.click()
     URL.revokeObjectURL(url)
   }

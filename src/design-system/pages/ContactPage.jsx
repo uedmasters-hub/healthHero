@@ -5,7 +5,7 @@ export default function ContactPage() {
         <div className="ds-page-breadcrumb">Contact</div>
         <h1 className="ds-page-title">Contact us</h1>
         <p className="ds-page-description">
-          Reach the Health Hero Design System team for support, contributions, and feedback.
+          Reach the eMedicalls Design System team for support, contributions, and feedback.
         </p>
       </div>
 
@@ -51,9 +51,9 @@ export default function ContactPage() {
       </div>
 
       <h2>FAQ</h2>
-      <h3>Can I use the design system in a non-Health Hero project?</h3>
+      <h3>Can I use the design system in a non-eMedicalls project?</h3>
       <p>
-        The design system is internal to Health Hero. However, the design principles and
+        The design system is internal to eMedicalls. However, the design principles and
         documentation approach may be useful as reference for building your own system.
       </p>
 

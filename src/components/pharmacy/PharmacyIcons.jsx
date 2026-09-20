@@ -1,4 +1,4 @@
-/** Shared pharmacy icon set — stroke language matches Health Hero services. */
+/** Shared pharmacy icon set — stroke language matches eMedicalls services. */
 
 export function PharmacyIcon({ name, size = 22 }) {
   const common = {

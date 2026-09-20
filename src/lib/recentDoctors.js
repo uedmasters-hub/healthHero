@@ -1,4 +1,6 @@
-const STORAGE_KEY = 'healthhero:viewed-doctors'
+import { BRAND_STORAGE } from './brand'
+
+const STORAGE_KEY = BRAND_STORAGE.recentDoctors
 const LIMIT = 40
 
 function readIds() {

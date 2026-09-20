@@ -55,13 +55,13 @@ export default function ColorPage() {
         <div className="ds-page-breadcrumb">Foundations / Color</div>
         <h1 className="ds-page-title">Color</h1>
         <p className="ds-page-description">
-          The color system that defines Health Hero's visual identity — 50+ semantic tokens for brand, surfaces, text, status, and borders.
+          The color system that defines eMedicalls' visual identity — 50+ semantic tokens for brand, surfaces, text, status, and borders.
         </p>
       </div>
 
       <Section title="Color philosophy">
         <p>
-          Every color in Health Hero serves a purpose. Our palette is anchored by a single indigo primary
+          Every color in eMedicalls serves a purpose. Our palette is anchored by a single indigo primary
           (<code>#5B5FC6</code>) with semantic status colors for feedback. Colors are never decorative —
           they communicate state, hierarchy, and meaning across the entire application.
         </p>

@@ -18,7 +18,7 @@ export default function AccountWorkspace() {
         <>
           <RevealItem className="account-member" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
             <p>Membership</p>
-            <h2>{isDemo ? 'Health Hero PRO' : 'Health Hero member'}</h2>
+            <h2>{isDemo ? 'eMedicalls PRO' : 'eMedicalls member'}</h2>
             <span>{profile?.email}</span>
           </RevealItem>
 
@@ -41,7 +41,7 @@ export default function AccountWorkspace() {
           <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
             <SectionHead title="Devices" />
             <InfoCard>
-              <InfoRow label="This device" value="Health Hero web" extra="Active" />
+              <InfoRow label="This device" value="eMedicalls web" extra="Active" />
             </InfoCard>
           </RevealItem>
 

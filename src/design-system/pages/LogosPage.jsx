@@ -5,13 +5,13 @@ export default function LogosPage() {
         <div className="ds-page-breadcrumb">Foundations / Logos</div>
         <h1 className="ds-page-title">Logos</h1>
         <p className="ds-page-description">
-          Health Hero brand mark usage, clear space, and sizing guidelines.
+          eMedicalls brand mark usage, clear space, and sizing guidelines.
         </p>
       </div>
 
       <h2>Brand mark</h2>
       <p>
-        The Health Hero logo consists of the brand mark and wordmark. Use the horizontal
+        The eMedicalls logo consists of the brand mark and wordmark. Use the horizontal
         lockup when space permits; use the mark alone only at small sizes where the wordmark
         becomes illegible.
       </p>
@@ -30,7 +30,7 @@ export default function LogosPage() {
               color: 'white', fontWeight: 700, fontSize: 16,
             }}>H</div>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', letterSpacing: '-0.3px' }}>Health Hero</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', letterSpacing: '-0.3px' }}>eMedicalls</div>
               <div style={{ fontSize: 11, color: '#6b7280', letterSpacing: '0.04em' }}>DESIGN SYSTEM</div>
             </div>
           </div>

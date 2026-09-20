@@ -39,7 +39,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS insurance_policies_source_idx ON public.insura
 CREATE UNIQUE INDEX IF NOT EXISTS notifications_source_idx ON public.notifications (user_id, source_id);
 
 INSERT INTO public.organizations (id, name, type)
-VALUES ('00000000-0000-4000-a000-000000000000', 'Health Hero', 'healthcare_network')
+VALUES ('00000000-0000-4000-a000-000000000000', 'eMedicalls', 'healthcare_network')
 ON CONFLICT (id) DO NOTHING;
 
 DO $$

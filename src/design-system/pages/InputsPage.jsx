@@ -14,7 +14,7 @@ export default function InputsPage() {
 
       <Section title="Overview">
         <p>
-          Health Hero uses two input patterns: the standard form input (<code>AuthField</code>)
+          eMedicalls uses two input patterns: the standard form input (<code>AuthField</code>)
           for authentication and forms, and the search field (<code>SearchField</code>) for
           discovery. Both share the same visual language but serve different interaction contexts.
         </p>

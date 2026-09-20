@@ -6,8 +6,9 @@
 import { requireSupabase } from '../../lib/supabase'
 import { STORAGE_KEYS as USER_KEYS } from '../../user/constants'
 import { STORAGE_KEYS as BOOKING_KEYS } from '../../booking/constants'
+import { BRAND_STORAGE } from '../../lib/brand'
 
-const FLAG = (userId) => `healthhero:supabase-sync.v1:${userId}`
+const FLAG = (userId) => `${BRAND_STORAGE.syncPrefix}${userId}`
 
 function parseJson(raw) {
   try {

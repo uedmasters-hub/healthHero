@@ -7,14 +7,14 @@ export default function SkeletonsPage() {
         <div className="ds-page-breadcrumb">Components / Skeletons</div>
         <h1 className="ds-page-title">Skeletons</h1>
         <p className="ds-page-description">
-          Loading placeholders that communicate content is being fetched — part of Health Hero's
+          Loading placeholders that communicate content is being fetched — part of eMedicalls'
           stagger reveal system that creates seamless content transitions.
         </p>
       </div>
 
       <Section title="Overview">
         <p>
-          Health Hero uses a sophisticated loading system built on three primitives:
+          eMedicalls uses a sophisticated loading system built on three primitives:
           <code>.shimmer</code> (animated gradient), <code>.reveal-host</code> (container),
           and <code>.reveal-body</code> (real content). The system is powered by the
           <code>useStaggerReveal</code> hook and <code>RevealItem</code> component.

@@ -1,6 +1,6 @@
 # Authentication
 
-Health Hero identity is Supabase Auth. Care data stays in the existing `src/user` health chart, keyed by `auth.users.id`. Do not create a second login system or store passwords in the client.
+eMedicalls identity is Supabase Auth. Care data stays in the existing `src/user` health chart, keyed by `auth.users.id`. Do not create a second login system or store passwords in the client.
 
 ```
 auth.users          Supabase-managed credentials / JWT
@@ -107,6 +107,25 @@ In the Supabase SQL editor, run the identity migrations (or `supabase db push`),
 5. Returning users: Splash → Home
 
 Never clear the Supabase session when onboarding finishes.
+
+## Email branding (Supabase)
+
+Configure every auth email to use **eMedicalls** as the product and sender name:
+
+1. Supabase → **Authentication → Email Templates**  
+   Replace any “Health Hero” / project placeholder with **eMedicalls** in subject + body (Confirm signup, Magic Link, Reset password, Invite, Email change).
+2. Supabase → **Project Settings → Authentication** (or SMTP)  
+   - **Sender name:** `eMedicalls`  
+   - **From email:** your verified domain (e.g. `noreply@emedicalls.com`)
+3. Optional custom SMTP: set From Name to `eMedicalls` so OTP / Magic Link / recovery emails stay consistent.
+
+Logo in emails (if templates support HTML):  
+`https://www.emedicalls.com/img/health_hero.svg`
+
+## Brand storage migration
+
+Auth and local keys moved from `healthhero.*` → `emedicalls.*`.  
+`src/lib/migrateBrandStorage.js` copies legacy keys once on boot so existing sessions survive the rebrand.
 
 ## Session ownership (no duplicates)
 

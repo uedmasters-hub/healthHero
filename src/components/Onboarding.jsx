@@ -9,6 +9,7 @@ import {
   preloadOnboardAssets,
   resolveOnboardingCompleted,
 } from '../lib/onboarding'
+import { BRAND_NAME } from '../lib/brand'
 import { useAuth } from '../features/auth/hooks/useAuth'
 import './Onboarding.css'
 
@@ -269,7 +270,7 @@ function Onboarding({ onComplete }) {
       className={`onboard ${onContent ? 'is-content' : 'is-splash'} ${leaving ? 'is-leaving' : ''} ${dragging ? 'is-dragging' : ''}`}
       data-dir={dir}
       role="dialog"
-      aria-label="Welcome to Health Hero"
+      aria-label={`Welcome to ${BRAND_NAME}`}
       aria-modal="true"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -279,7 +280,7 @@ function Onboarding({ onComplete }) {
       <div className="onboard-splash" aria-hidden={onContent}>
         <div className="onboard-brand">
           <img src={ONBOARD_LOGO} alt="" className="onboard-logo" />
-          <p className="onboard-wordmark">Health Hero</p>
+          <p className="onboard-wordmark">{BRAND_NAME}</p>
         </div>
       </div>
 

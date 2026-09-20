@@ -22,7 +22,7 @@ export default function ElevationPage() {
 
       <h2>Elevation philosophy</h2>
       <p>
-        Elevation in Health Hero is communicated through shadows, not color changes. Higher
+        Elevation in eMedicalls is communicated through shadows, not color changes. Higher
         elevation means the surface is closer to the user — like a modal floating above the page.
         Each elevation level has a specific purpose.
       </p>

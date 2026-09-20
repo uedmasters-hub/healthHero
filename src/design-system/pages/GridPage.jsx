@@ -11,7 +11,7 @@ export default function GridPage() {
 
       <h2>Mobile-first layout</h2>
       <p>
-        Health Hero is primarily a mobile-first product. The base layout uses a single-column
+        eMedicalls is primarily a mobile-first product. The base layout uses a single-column
         structure with consistent horizontal padding defined by <code>--page-padding</code> (20px).
       </p>
 
@@ -68,7 +68,7 @@ export default function GridPage() {
       <div className="ds-callout ds-callout-info">
         <span className="ds-callout-icon">ℹ</span>
         <div>
-          Health Hero's phone frame constrains content to 440px. The design system documentation
+          eMedicalls' phone frame constrains content to 440px. The design system documentation
           site uses full browser width for optimal reading experience.
         </div>
       </div>

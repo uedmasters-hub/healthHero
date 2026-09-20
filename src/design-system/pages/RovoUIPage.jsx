@@ -8,7 +8,7 @@ export default function RovoUIPage() {
         <h1 className="ds-page-title">Rovo UI patterns</h1>
         <p className="ds-page-description">
           Internal reusable patterns and product-level compositions built on top of the core design system.
-          These patterns represent real implementations in the Health Hero application.
+          These patterns represent real implementations in the eMedicalls application.
         </p>
       </div>
 

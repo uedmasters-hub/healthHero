@@ -28,7 +28,7 @@ export default function SpacingPage() {
 
       <h2>The spacing scale</h2>
       <p>
-        Health Hero uses a 4px base unit with half-steps for fine-tuning. All spacing values
+        eMedicalls uses a 4px base unit with half-steps for fine-tuning. All spacing values
         are expressed as CSS custom properties for consistency and easy modification.
       </p>
 

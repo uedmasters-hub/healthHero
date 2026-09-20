@@ -1,8 +1,9 @@
 import { createContext, useContext } from 'react'
+import { BRAND_LOGO_PATH, BRAND_STORAGE } from './brand'
 import { requireSupabase } from './supabase'
 
-export const ONBOARDING_KEY = 'healthhero.onboardingComplete'
-export const ONBOARDING_USER_PREFIX = 'healthhero.onboardingComplete.user:'
+export const ONBOARDING_KEY = BRAND_STORAGE.onboarding
+export const ONBOARDING_USER_PREFIX = BRAND_STORAGE.onboardingUserPrefix
 
 export const OnboardingActiveContext = createContext(false)
 export const OnboardingStatusContext = createContext('pending')
@@ -17,7 +18,7 @@ export function useOnboardingStatus() {
   return useContext(OnboardingStatusContext)
 }
 
-export const ONBOARD_LOGO = '/img/health_hero.svg'
+export const ONBOARD_LOGO = BRAND_LOGO_PATH
 
 export const ONBOARD_SLIDES = [
   {

@@ -1,4 +1,4 @@
--- Identity and RBAC foundation for Health Hero.
+-- Identity and RBAC foundation for eMedicalls.
 -- auth.users remains the credential store.
 -- public.users is the app profile; patients/doctors/staff extend it later.
 -- Apply with: supabase db push   or paste into the SQL editor.

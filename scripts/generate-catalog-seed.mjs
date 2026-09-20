@@ -69,7 +69,7 @@ AS $$
 $$;`,
   '',
   "INSERT INTO public.organizations (id, name, type)",
-  "VALUES ('00000000-0000-4000-a000-000000000000', 'Health Hero', 'healthcare_network')",
+  "VALUES ('00000000-0000-4000-a000-000000000000', 'eMedicalls', 'healthcare_network')",
   'ON CONFLICT (id) DO NOTHING;',
   '',
 ]

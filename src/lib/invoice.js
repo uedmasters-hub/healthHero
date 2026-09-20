@@ -82,7 +82,7 @@ export function formatInvoiceDateTime(date) {
 export function invoiceToPlainText(invoice) {
   if (!invoice) return ''
   const lines = [
-    'HealthHero Invoice',
+    'eMedicalls Invoice',
     `Booking ID: ${invoice.bookingId}`,
     `Payment ID: ${invoice.paymentId}`,
     `Date: ${formatInvoiceDateTime(invoice.paidAt)}`,
@@ -109,7 +109,7 @@ export async function downloadInvoiceText(invoice) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `healthhero-invoice-${invoice.bookingId}.txt`
+  link.download = `emedicalls-invoice-${invoice.bookingId}.txt`
   link.click()
   URL.revokeObjectURL(url)
 }
@@ -119,7 +119,7 @@ export async function shareInvoice(invoice) {
   try {
     if (navigator.share) {
       await navigator.share({
-        title: `HealthHero Invoice ${invoice.bookingId}`,
+        title: `eMedicalls Invoice ${invoice.bookingId}`,
         text,
       })
       return 'shared'

@@ -5,7 +5,7 @@ const cards = [
   { title: 'Foundations', desc: 'Design tokens, color, typography, spacing, motion, and more.', link: '/design/foundations/color', icon: '🧱' },
   { title: 'Components', desc: 'Reusable UI components with usage guidelines and code examples.', link: '/design/components/buttons', icon: '🧩' },
   { title: 'Rovo UI', desc: 'Internal reusable patterns and AI-powered design tools.', link: '/design/rovo-ui', icon: '🤖' },
-  { title: 'Tools', desc: 'Design and development tools for the Health Hero ecosystem.', link: '/design/tools', icon: '🛠' },
+  { title: 'Tools', desc: 'Design and development tools for the eMedicalls ecosystem.', link: '/design/tools', icon: '🛠' },
   { title: 'Contact', desc: 'Reach the design system team for support and contributions.', link: '/design/contact', icon: '📬' },
 ]
 
@@ -13,10 +13,10 @@ export default function HomePage() {
   return (
     <>
       <div className="ds-page-header">
-        <div className="ds-page-breadcrumb">Health Hero</div>
+        <div className="ds-page-breadcrumb">eMedicalls</div>
         <h1 className="ds-page-title">Design System</h1>
         <p className="ds-page-description">
-          The single source of truth for designers and developers building Health Hero products.
+          The single source of truth for designers and developers building eMedicalls products.
           Clean, scalable, and documentation-first.
         </p>
       </div>
@@ -48,10 +48,10 @@ export default function HomePage() {
         ))}
       </div>
 
-      <h2>What is the Health Hero Design System?</h2>
+      <h2>What is the eMedicalls Design System?</h2>
       <p>
-        The Health Hero Design System is a comprehensive set of design standards, documentation,
-        and reusable components that ensure consistency across all Health Hero products. It serves
+        The eMedicalls Design System is a comprehensive set of design standards, documentation,
+        and reusable components that ensure consistency across all eMedicalls products. It serves
         as the single source of truth for both designers and developers.
       </p>
 
@@ -59,7 +59,7 @@ export default function HomePage() {
         <span className="ds-callout-icon">ℹ</span>
         <div>
           This documentation site is an internal tool. It is completely isolated from the main
-          Health Hero application and uses the full browser width for optimal reading experience.
+          eMedicalls application and uses the full browser width for optimal reading experience.
         </div>
       </div>
 
@@ -69,7 +69,7 @@ export default function HomePage() {
         <li><strong>Consistency</strong> — Shared tokens and patterns eliminate drift across surfaces.</li>
         <li><strong>Accessibility</strong> — Inclusive by default; WCAG 2.1 AA compliance is the baseline.</li>
         <li><strong>Efficiency</strong> — Reusable primitives reduce cognitive load and ship speed.</li>
-        <li><strong>Premium feel</strong> — Refined motion, spacing, and typography that reflect Health Hero's quality.</li>
+        <li><strong>Premium feel</strong> — Refined motion, spacing, and typography that reflect eMedicalls' quality.</li>
       </ul>
     </>
   )

@@ -14,7 +14,7 @@ export default function SkeletonStrategyPage() {
 
       <Section title="Overview">
         <p>
-          Health Hero's skeleton strategy is built on three layers: the <code>shimmer</code>
+          eMedicalls' skeleton strategy is built on three layers: the <code>shimmer</code>
           primitive (animated gradient), the <code>reveal-host/reveal-skel/reveal-body</code>
           CSS pattern (fade + slide transition), and the <code>useStaggerReveal</code> hook
           (orchestrates timing for lists). This system ensures loading states feel intentional

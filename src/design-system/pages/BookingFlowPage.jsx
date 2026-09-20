@@ -14,7 +14,7 @@ export default function BookingFlowPage() {
 
       <Section title="Overview">
         <p>
-          The booking flow is the core transactional pattern in Health Hero. It guides users
+          The booking flow is the core transactional pattern in eMedicalls. It guides users
           through selecting a doctor, choosing a time slot, selecting the patient, and confirming
           the booking with payment details. Each step is a separate route under <code>/booking</code>.
         </p>

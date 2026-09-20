@@ -8,13 +8,13 @@ export default function OverlaySystemPage() {
         <h1 className="ds-page-title">Overlay System</h1>
         <p className="ds-page-description">
           Bottom sheets, modals, lightboxes, and full-screen overlays — the spatial layering
-          system for contextual content in Health Hero.
+          system for contextual content in eMedicalls.
         </p>
       </div>
 
       <Section title="Overview">
         <p>
-          Health Hero uses a layered overlay system to present contextual content without
+          eMedicalls uses a layered overlay system to present contextual content without
           leaving the current screen. Each overlay type serves a specific purpose and follows
           consistent patterns for dismissal, animation, and interaction.
         </p>
@@ -106,7 +106,7 @@ export default function OverlaySystemPage() {
 
       <Section title="Shared transitions">
         <p>
-          Health Hero uses View Transitions API for smooth transitions between screens.
+          eMedicalls uses View Transitions API for smooth transitions between screens.
           The <code>useSharedHeroTransition</code> hook enables doctor images and elements
           to animate between list and detail views.
         </p>

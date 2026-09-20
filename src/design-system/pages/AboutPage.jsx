@@ -5,13 +5,13 @@ export default function AboutPage() {
         <div className="ds-page-breadcrumb">Get started / About</div>
         <h1 className="ds-page-title">About the design system</h1>
         <p className="ds-page-description">
-          History, goals, and governance of the Health Hero Design System.
+          History, goals, and governance of the eMedicalls Design System.
         </p>
       </div>
 
       <h2>Why a design system?</h2>
       <p>
-        As Health Hero grew from a single mobile app to a multi-surface healthcare platform,
+        As eMedicalls grew from a single mobile app to a multi-surface healthcare platform,
         inconsistencies emerged. Different teams used different shades of purple, different
         border radii, different spacing scales. The design system was created to solve this —
         providing a shared vocabulary that keeps every screen feeling like part of the same product.
@@ -19,7 +19,7 @@ export default function AboutPage() {
 
       <h2>Goals</h2>
       <ul>
-        <li><strong>Consistency</strong> — Every Health Hero surface should feel familiar.</li>
+        <li><strong>Consistency</strong> — Every eMedicalls surface should feel familiar.</li>
         <li><strong>Speed</strong> — Ship features faster by composing from a shared component library.</li>
         <li><strong>Quality</strong> — Built-in accessibility, performance, and responsive behavior.</li>
         <li><strong>Scalability</strong> — New teams and products adopt the system without reinventing patterns.</li>
@@ -28,7 +28,7 @@ export default function AboutPage() {
 
       <h2>Governance</h2>
       <p>
-        The design system is maintained by the Health Hero Design Systems team with contributions
+        The design system is maintained by the eMedicalls Design Systems team with contributions
         from product squads. Changes follow a structured process:
       </p>
       <ol>

@@ -1,4 +1,6 @@
-const STORAGE_KEY = 'hh_notifications'
+import { BRAND_STORAGE } from '../../lib/brand'
+
+const STORAGE_KEY = BRAND_STORAGE.notifications
 
 function read() {
   try {

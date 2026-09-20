@@ -40,7 +40,7 @@ const SEED_NOTIFICATIONS = [
   },
   {
     title: 'Prescription refill reminder',
-    body: 'Metformin 500mg refill is due. Order from HealthHero Pharmacy for doorstep delivery.',
+    body: 'Metformin 500mg refill is due. Order from eMedicalls Pharmacy for doorstep delivery.',
     type: Types.PRESCRIPTION,
     priority: Priority.NORMAL,
     to: '/pharmacy',
@@ -48,7 +48,7 @@ const SEED_NOTIFICATIONS = [
   },
   {
     title: 'Vaccination due',
-    body: 'Your annual flu vaccine is due. Schedule at your nearest HealthHero clinic.',
+    body: 'Your annual flu vaccine is due. Schedule at your nearest eMedicalls clinic.',
     type: Types.VACCINATION,
     priority: Priority.HIGH,
     to: '/treat',

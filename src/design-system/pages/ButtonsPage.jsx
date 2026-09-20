@@ -7,14 +7,14 @@ export default function ButtonsPage() {
         <div className="ds-page-breadcrumb">Components / Buttons</div>
         <h1 className="ds-page-title">Buttons</h1>
         <p className="ds-page-description">
-          Interactive elements that trigger actions — the primary way users interact with Health Hero.
+          Interactive elements that trigger actions — the primary way users interact with eMedicalls.
           Used across booking flows, appointment details, navigation, and more.
         </p>
       </div>
 
       <Section title="Overview">
         <p>
-          Health Hero uses three button patterns defined in <code>src/index.css</code>:
+          eMedicalls uses three button patterns defined in <code>src/index.css</code>:
           the full-width CTA button (<code>.app-flow-cta</code>), the sticky footer CTA
           (<code>.sticky-footer-cta__primary</code>), and icon buttons (<code>.ds-icon-btn</code>).
           Each serves a specific layout context.

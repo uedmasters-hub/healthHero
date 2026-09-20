@@ -1,5 +1,5 @@
 /**
- * Canonical public origin for Health Hero production auth redirects.
+ * Canonical public origin for eMedicalls production auth redirects.
  * Never use a Vercel preview / SSO-protected *.vercel.app host here.
  */
 export const PRODUCTION_APP_ORIGIN = 'https://www.emedicalls.com'

@@ -4,8 +4,9 @@ import {
   removeUserReview,
   upsertUserReview,
 } from '../user/store'
+import { BRAND_STORAGE } from '../lib/brand'
 
-const STORAGE_KEY = 'healthhero.reviews.v2'
+const STORAGE_KEY = BRAND_STORAGE.reviews
 
 function review({ id, author, date, rating, text, patientId = null, createdAt }) {
   return { id, author, date, rating, text, patientId, createdAt: createdAt || Date.parse(`${date} 12:00:00 GMT`) }

@@ -1,14 +1,19 @@
+import { BRAND_STORAGE } from '../lib/brand'
+
 export const USER_DB_VERSION = 1
 
 export const STORAGE_KEYS = Object.freeze({
-  DB: 'healthhero:users.v1',
-  SESSION: 'healthhero:session.v1',
+  DB: BRAND_STORAGE.usersDb,
+  SESSION: BRAND_STORAGE.session,
 })
 
 export const DEMO_USER_ID = 'user_raemsh'
 export const DEMO_EMAIL = 'ramesh@email.com'
 export const DEMO_PHONE = '9845271970'
-export const DEMO_PASSWORD = 'HealthHero@123'
+/** Local demo chart password (not Supabase Auth). */
+export const DEMO_PASSWORD = 'eMedicalls@123'
+/** Accepted when migrating an older local demo hash. */
+export const DEMO_PASSWORD_LEGACY = 'HealthHero@123'
 
 export const AUTH_ERROR = Object.freeze({
   INVALID: 'Check your email and password, then try again.',
@@ -25,11 +30,11 @@ export const AUTH_ERROR = Object.freeze({
   NAME: 'Enter your full name.',
   UNVERIFIED: 'Verify your email before signing in. Check your inbox for a confirmation link.',
   EXPIRED: 'This link or session has expired. Request a new one and try again.',
-  NETWORK: 'We could not reach Health Hero. Check your connection and try again.',
+  NETWORK: 'We could not reach eMedicalls. Check your connection and try again.',
   GENERIC: 'Something went wrong. Please try again.',
   OAUTH_CANCELLED: 'Sign-in was cancelled. You can try again when you are ready.',
   OAUTH_FAILED: 'We could not complete social sign-in. Try email or try again later.',
-  APPLE_PENDING: 'Apple Sign-In will be available once Health Hero credentials are configured.',
+  APPLE_PENDING: 'Apple Sign-In will be available once eMedicalls credentials are configured.',
   RESET_SENT: 'If an account matches that email, you will receive a reset link shortly.',
   OTP_INVALID: 'That code is incorrect. Try again.',
   OTP_EXPIRED: 'This code has expired.',

@@ -77,10 +77,12 @@ export const CONFIRMED_APPOINTMENT_STATUSES = Object.freeze([
 
 export const HOME_VISIBLE_STATUSES = CONFIRMED_APPOINTMENT_STATUSES
 
+import { BRAND_STORAGE } from '../lib/brand'
+
 export const STORAGE_KEYS = Object.freeze({
-  DB: 'healthhero:booking-engine:v2',
-  ACTIVE_ID: 'healthhero:booking-engine:active-id:v2',
-  LEGACY_PAYMENT: 'healthhero:payment-session.v2',
+  DB: BRAND_STORAGE.bookingDb,
+  ACTIVE_ID: BRAND_STORAGE.bookingActive,
+  LEGACY_PAYMENT: BRAND_STORAGE.bookingPaymentLegacy,
 })
 
 export const ENGINE_VERSION = 2

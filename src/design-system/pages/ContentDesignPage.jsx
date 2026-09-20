@@ -5,13 +5,13 @@ export default function ContentDesignPage() {
         <div className="ds-page-breadcrumb">Get started / Content design</div>
         <h1 className="ds-page-title">Content design</h1>
         <p className="ds-page-description">
-          Writing guidelines for Health Hero interfaces — clear, compassionate, and action-oriented.
+          Writing guidelines for eMedicalls interfaces — clear, compassionate, and action-oriented.
         </p>
       </div>
 
       <h2>Voice and tone</h2>
       <p>
-        Health Hero speaks with clarity and warmth. We are professional but never cold,
+        eMedicalls speaks with clarity and warmth. We are professional but never cold,
         reassuring but never patronizing. Our language helps users feel confident in their
         healthcare decisions.
       </p>

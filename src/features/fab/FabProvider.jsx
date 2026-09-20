@@ -32,7 +32,7 @@ export function useFab() {
 
 async function runShare(share, url) {
   const payload = {
-    title: share?.title || 'Health Hero',
+    title: share?.title || 'eMedicalls',
     text: share?.text || '',
     url: url || window.location.href,
   }
@@ -52,7 +52,7 @@ async function runShare(share, url) {
 }
 
 function openDirections() {
-  const q = encodeURIComponent('HealthHero clinic near me')
+  const q = encodeURIComponent('eMedicalls clinic near me')
   window.open(`https://www.google.com/maps/search/?api=1&query=${q}`, '_blank', 'noopener,noreferrer')
 }
 

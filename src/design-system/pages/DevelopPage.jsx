@@ -5,7 +5,7 @@ export default function DevelopPage() {
         <div className="ds-page-breadcrumb">Get started / Develop</div>
         <h1 className="ds-page-title">Develop</h1>
         <p className="ds-page-description">
-          Technical guidelines for implementing Health Hero components and patterns.
+          Technical guidelines for implementing eMedicalls components and patterns.
         </p>
       </div>
 

@@ -1,4 +1,5 @@
 import { ONBOARD_LOGO } from '../lib/onboarding'
+import { BRAND_NAME, BRAND_NAME_LEGAL, BRAND_SUPPORT_EMAIL } from '../lib/brand'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import './AppFooter.css'
@@ -29,7 +30,7 @@ const CONTACT = [
   },
   {
     id: 'email',
-    label: 'support@healthhero.com',
+    label: BRAND_SUPPORT_EMAIL,
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
         <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -117,7 +118,7 @@ export default function AppFooter({ page = 'home' }) {
   })
 
   return (
-    <footer className="app-footer" aria-label="Health Hero">
+    <footer className="app-footer" aria-label={BRAND_NAME}>
       <RevealItem
         className="app-footer-block"
         revealed={isRevealed(0)}
@@ -127,7 +128,7 @@ export default function AppFooter({ page = 'home' }) {
         <div className="app-footer-brand">
           <div className="app-footer-wordmark">
             <img src={ONBOARD_LOGO} alt="" className="app-footer-logo" />
-            <p className="app-footer-name">Health Hero</p>
+            <p className="app-footer-name">{BRAND_NAME}</p>
             <span className="app-footer-badge">24/7 Care</span>
           </div>
           <p className="app-footer-tagline">
@@ -192,7 +193,7 @@ export default function AppFooter({ page = 'home' }) {
             </button>
           ))}
         </div>
-        <p className="app-footer-legal">© 2026 HealthHero Technologies Private Limited.</p>
+        <p className="app-footer-legal">© 2026 {BRAND_NAME_LEGAL}.</p>
         <p className="app-footer-legal">ISO 27001 Certified • Secure Medical Records</p>
       </RevealItem>
     </footer>

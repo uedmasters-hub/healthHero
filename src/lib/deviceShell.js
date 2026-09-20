@@ -1,5 +1,5 @@
 /**
- * Device-aware shell detection for Health Hero.
+ * Device-aware shell detection for eMedicalls.
  *
  * Uses viewport geometry + input capability (+ UA as a phone/tablet hint),
  * not a single fixed width breakpoint. Phones render edge-to-edge (PWA);

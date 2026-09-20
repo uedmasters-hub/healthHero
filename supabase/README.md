@@ -1,6 +1,6 @@
 # Supabase
 
-Health Hero uses the linked project `hgfvajxmyhrckihjiswo`.
+eMedicalls uses the linked project `hgfvajxmyhrckihjiswo`.
 
 Identity: `auth.users` → `public.users` → `patients` / `doctors` / `staff`.
 

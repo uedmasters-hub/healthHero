@@ -23,7 +23,7 @@ export default function MotionPage() {
 
       <h2>Motion philosophy</h2>
       <p>
-        Motion in Health Hero serves three purposes: it guides attention, provides feedback,
+        Motion in eMedicalls serves three purposes: it guides attention, provides feedback,
         and creates spatial relationships. Every animation should feel purposeful — never decorative.
       </p>
 

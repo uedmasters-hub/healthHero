@@ -3,6 +3,7 @@ import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import { SearchField } from './SearchBar'
 import { useUser } from '../user'
+import { BRAND_LOGO_PATH, BRAND_NAME } from '../lib/brand'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import HeaderActions from './home/HeaderActions'
@@ -177,8 +178,8 @@ export default function Header({ endAccessory = null }) {
         <div className="header-left">
           <img
             className="header-logo"
-            src="/img/health_hero.svg"
-            alt="HealthHero"
+            src={BRAND_LOGO_PATH}
+            alt={BRAND_NAME}
             width={36}
             height={36}
           />

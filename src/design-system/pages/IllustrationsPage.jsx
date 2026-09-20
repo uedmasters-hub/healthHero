@@ -11,7 +11,7 @@ export default function IllustrationsPage() {
 
       <h2>Illustration style</h2>
       <p>
-        Health Hero illustrations use a friendly, minimal style with the primary color palette.
+        eMedicalls illustrations use a friendly, minimal style with the primary color palette.
         They are never photorealistic — they communicate concepts simply and warmly.
       </p>
 
@@ -51,7 +51,7 @@ export default function IllustrationsPage() {
       <h2>Creating illustrations</h2>
       <p>
         All illustrations should be created as SVG for scalability. Export from Figma using
-        the Health Hero illustration template. Optimize SVGs before committing to remove
+        the eMedicalls illustration template. Optimize SVGs before committing to remove
         unnecessary metadata.
       </p>
 

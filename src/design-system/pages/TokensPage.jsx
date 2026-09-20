@@ -5,7 +5,7 @@ export default function TokensPage() {
         <div className="ds-page-breadcrumb">Foundations / Tokens</div>
         <h1 className="ds-page-title">Design tokens</h1>
         <p className="ds-page-description">
-          The primitive values that define Health Hero's visual language — colors, spacing, typography, and more.
+          The primitive values that define eMedicalls' visual language — colors, spacing, typography, and more.
         </p>
       </div>
 

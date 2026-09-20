@@ -1,11 +1,12 @@
 import useStaggerReveal from '../useStaggerReveal'
 import { usePushBack } from '../../features/pushNav'
+import { BRAND_SUPPORT_EMAIL } from '../../lib/brand'
 import '../PatientProfile.css'
 
 export const CARE_SUPPORT = {
   phone: '+919845271970',
   phoneLabel: '+91 9845 271 970',
-  email: 'support@healthhero.com',
+  email: BRAND_SUPPORT_EMAIL,
 }
 
 export function dash(value) {

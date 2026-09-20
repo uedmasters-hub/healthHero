@@ -251,7 +251,7 @@ export default function ConfirmBooking() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = 'healthhero-appointment.ics'
+    link.download = 'emedicalls-appointment.ics'
     link.click()
     URL.revokeObjectURL(url)
   }
@@ -260,7 +260,7 @@ export default function ConfirmBooking() {
     const text = `Appointment with Dr. ${doctor.name} on ${dateStr} at ${time} (${visitType || 'In-Person'}). ${doctor.address}`
     try {
       if (navigator.share) {
-        await navigator.share({ title: 'HealthHero appointment', text })
+        await navigator.share({ title: 'eMedicalls appointment', text })
         return
       }
     } catch {

@@ -1,5 +1,5 @@
 const typeScale = [
-  { name: 'Display', size: '22px', line: '1.25', weight: '700', sample: 'Health Hero', token: '--text-display-size' },
+  { name: 'Display', size: '22px', line: '1.25', weight: '700', sample: 'eMedicalls', token: '--text-display-size' },
   { name: 'Subtitle', size: '18px', line: '1.3', weight: '600', sample: 'Your health, simplified', token: '--text-subtitle-size' },
   { name: 'Heading', size: '17px', line: '1.3', weight: '600', sample: 'Upcoming appointments', token: '--text-heading-size' },
   { name: 'Title', size: '16px', line: '1.3', weight: '600', sample: 'Dr. Priya Sharma', token: '--text-title-size' },
@@ -24,7 +24,7 @@ export default function TypographyPage() {
 
       <h2>Typeface</h2>
       <p>
-        Health Hero uses <strong>Inter</strong> as the primary typeface. It is a highly legible
+        eMedicalls uses <strong>Inter</strong> as the primary typeface. It is a highly legible
         sans-serif designed for screen readability, with excellent support for Indian languages.
       </p>
       <pre><code>{`font-family: var(--font-sans);

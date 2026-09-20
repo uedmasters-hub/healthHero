@@ -1,12 +1,13 @@
 import { ONBOARD_LOGO } from '../../lib/onboarding'
+import { BRAND_NAME } from '../../lib/brand'
 import './Auth.css'
 
 export function AuthSplash() {
   return (
-    <div className="auth-splash" role="status" aria-label="Health Hero">
+    <div className="auth-splash" role="status" aria-label={BRAND_NAME}>
       <div className="auth-brand">
         <img src={ONBOARD_LOGO} alt="" className="auth-logo" />
-        <p className="auth-wordmark">Health Hero</p>
+        <p className="auth-wordmark">{BRAND_NAME}</p>
       </div>
     </div>
   )
@@ -61,7 +62,7 @@ export function AuthLayout({
         <div className="auth-sheet">
           <div className="auth-brand is-compact">
             <img src={ONBOARD_LOGO} alt="" className="auth-logo" />
-            <p className="auth-wordmark">Health Hero</p>
+            <p className="auth-wordmark">{BRAND_NAME}</p>
           </div>
           <div className="auth-stage" key={stage} data-stage={stage}>
             <header className="auth-copy">

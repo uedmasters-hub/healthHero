@@ -1,7 +1,7 @@
 /**
  * @file src/features/auth/services/oauth.js
  * CSRF-safe OAuth via Supabase PKCE. Google is live; Apple is architected
- * and callable, but Health Hero does not require Apple credentials yet.
+ * and callable, but eMedicalls does not require Apple credentials yet.
  */
 import { AUTH_ERROR } from '../../../user/constants'
 import { AUTH_CONFIRM_PATH } from '../types'

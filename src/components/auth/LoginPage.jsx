@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { BRAND_NAME } from '../../lib/brand'
 import { AUTH_ERROR, isValidEmail, normalizeEmail, validateLoginFields } from '../../user'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import OAuthButtons from '../../features/auth/components/OAuthButtons'
@@ -119,7 +120,7 @@ export default function LoginPage() {
       extra={<AuthTrust />}
       footer={(
         <>
-          New to Health Hero? <Link to="/register">Create account</Link>
+          New to {BRAND_NAME}? <Link to="/register">Create account</Link>
         </>
       )}
     >

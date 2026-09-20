@@ -74,7 +74,7 @@ export const FAB_ROUTE_RULES = Object.freeze([
       label: 'Share Profile',
       icon: 'share',
       kind: 'share',
-      share: { title: 'Doctor on Health Hero', text: 'Check out this doctor on Health Hero' },
+      share: { title: 'Doctor on eMedicalls', text: 'Check out this doctor on eMedicalls' },
     },
   },
   {
@@ -127,7 +127,7 @@ export const FAB_ROUTE_RULES = Object.freeze([
       label: 'Share Report',
       icon: 'share',
       kind: 'share',
-      share: { title: 'Health report', text: 'My health report from Health Hero' },
+      share: { title: 'Health report', text: 'My health report from eMedicalls' },
     },
   },
   {
@@ -138,7 +138,7 @@ export const FAB_ROUTE_RULES = Object.freeze([
       label: 'Share Report',
       icon: 'share',
       kind: 'share',
-      share: { title: 'Health records', text: 'My health records from Health Hero' },
+      share: { title: 'Health records', text: 'My health records from eMedicalls' },
     },
   },
   {

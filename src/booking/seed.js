@@ -38,7 +38,7 @@ const SEED_CATALOG = [
     id: 'seed_pharmacy_delivery_in',
     serviceType: SERVICE_TYPE.PHARMACY_DELIVERY,
     status: BOOKING_STATUS.UPCOMING,
-    providerName: 'HealthHero Pharmacy',
+    providerName: 'eMedicalls Pharmacy',
     providerSubtitle: 'Prescription delivery',
     providerIcon: 'pharmacy',
     days: 0,

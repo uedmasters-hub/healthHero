@@ -1,3 +1,5 @@
+import { BRAND_STORAGE } from '../../lib/brand'
+
 export const NOTIFICATION_TYPES = {
   APPOINTMENT: 'appointment',
   PRESCRIPTION: 'prescription',
@@ -20,4 +22,4 @@ export const NOTIFICATION_PRIORITY = {
 
 export const MAX_NOTIFICATIONS = 100
 export const AUTO_GENERATE_INTERVAL_MS = 10 * 60 * 1000
-export const SEED_KEY = 'hh_notifications_seeded_v2'
+export const SEED_KEY = BRAND_STORAGE.notificationsSeed

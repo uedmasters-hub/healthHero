@@ -7,14 +7,14 @@ export default function CardsPage() {
         <div className="ds-page-breadcrumb">Components / Cards</div>
         <h1 className="ds-page-title">Cards</h1>
         <p className="ds-page-description">
-          Surface containers that group related content — the primary content unit in Health Hero.
+          Surface containers that group related content — the primary content unit in eMedicalls.
           Includes standard cards, doctor cards with 4 variants, and appointment cards.
         </p>
       </div>
 
       <Section title="Overview">
         <p>
-          Health Hero uses two card primitives defined in <code>src/index.css</code>:
+          eMedicalls uses two card primitives defined in <code>src/index.css</code>:
           <code>.ds-card</code> (elevated with shadow) and <code>.ds-card-flat</code> (no shadow).
           The <code>DoctorCard</code> component extends these with 4 layout variants:
           <code>row</code>, <code>grid</code>, <code>list</code>, and <code>profile</code>.

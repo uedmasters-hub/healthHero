@@ -14,7 +14,7 @@ export default function AuthFlowPage() {
 
       <Section title="Overview">
         <p>
-          Health Hero uses a "lazy auth" pattern: users can browse without logging in.
+          eMedicalls uses a "lazy auth" pattern: users can browse without logging in.
           Authentication is only required when they perform actions that need a session
           (booking, profile access, insights). The auth flow supports login, registration,
           OTP verification, and password reset.

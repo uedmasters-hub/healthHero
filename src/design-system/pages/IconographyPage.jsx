@@ -14,13 +14,13 @@ export default function IconographyPage() {
         <div className="ds-page-breadcrumb">Foundations / Iconography</div>
         <h1 className="ds-page-title">Iconography</h1>
         <p className="ds-page-description">
-          Consistent icon usage across Health Hero — sizing, styling, and placement guidelines.
+          Consistent icon usage across eMedicalls — sizing, styling, and placement guidelines.
         </p>
       </div>
 
       <h2>Icon system</h2>
       <p>
-        Health Hero uses SVG icons with a consistent 2px stroke weight. Icons are
+        eMedicalls uses SVG icons with a consistent 2px stroke weight. Icons are
         functional — they clarify meaning, not decorate. Every icon should have a text
         label or accessible aria-label.
       </p>

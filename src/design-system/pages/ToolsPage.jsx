@@ -5,7 +5,7 @@ export default function ToolsPage() {
         <div className="ds-page-breadcrumb">Tools</div>
         <h1 className="ds-page-title">Tools</h1>
         <p className="ds-page-description">
-          Design and development tools that power the Health Hero design system workflow.
+          Design and development tools that power the eMedicalls design system workflow.
         </p>
       </div>
 

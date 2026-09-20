@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
       stage={done ? 'reset-done' : 'reset'}
       title={done ? 'Password updated' : 'Set a new password'}
       subtitle={done
-        ? 'You are signed in. Taking you to Health Hero…'
+        ? 'You are signed in. Taking you to eMedicalls…'
         : canReset
           ? 'Choose a strong password for your account.'
           : 'This reset link is invalid or has expired.'}

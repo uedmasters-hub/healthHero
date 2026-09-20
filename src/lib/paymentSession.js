@@ -1,5 +1,7 @@
 /** Payment session SSOT — checkout, OTP, and incomplete-booking persistence */
 
+import { BRAND_STORAGE } from './brand'
+
 let sessionScope = 'anon'
 
 export function setPaymentSessionScope(userId) {
@@ -7,7 +9,7 @@ export function setPaymentSessionScope(userId) {
 }
 
 function paymentStorageKey() {
-  return `healthhero:payment-session.v3:${sessionScope}`
+  return `${BRAND_STORAGE.paymentSessionPrefix}${sessionScope}`
 }
 
 export const PAYMENT_WINDOW_MS = 10 * 60 * 1000
@@ -34,7 +36,7 @@ export const PAYMENT_METHODS = [
     id: 'wallet',
     label: 'Health Wallet',
     kind: 'wallet',
-    subtitle: 'Pay from your HealthHero wallet balance.',
+    subtitle: 'Pay from your eMedicalls wallet balance.',
     balance: 2500,
   },
   {

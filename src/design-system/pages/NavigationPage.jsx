@@ -14,7 +14,7 @@ export default function NavigationPage() {
 
       <Section title="Overview">
         <p>
-          Health Hero uses three navigation patterns: a persistent bottom navigation bar with an
+          eMedicalls uses three navigation patterns: a persistent bottom navigation bar with an
           animated pill indicator, screen headers with back/title/actions, and overlay navigation
           for specialisations and top doctors lists.
         </p>

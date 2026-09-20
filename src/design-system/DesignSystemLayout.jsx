@@ -142,8 +142,8 @@ function Sidebar() {
       <aside className={`ds-sidebar ${mobileOpen ? 'is-open' : ''}`}>
         <div className="ds-sidebar-header">
           <NavLink to="/design" className="ds-sidebar-logo">
-            <div className="ds-sidebar-logo-icon">H</div>
-            <span className="ds-sidebar-logo-text">Health Hero DS</span>
+            <div className="ds-sidebar-logo-icon">e</div>
+            <span className="ds-sidebar-logo-text">eMedicalls DS</span>
             <span className="ds-sidebar-logo-badge">v1.0</span>
           </NavLink>
         </div>
@@ -176,7 +176,7 @@ function Sidebar() {
           ))}
         </nav>
         <div className="ds-sidebar-footer">
-          <span>Health Hero Design System</span>
+          <span>eMedicalls Design System</span>
           <span>v1.0.0</span>
         </div>
       </aside>

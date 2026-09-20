@@ -1,11 +1,13 @@
 /**
  * @file src/lib/supabase.js
- * Browser-only Supabase client for Health Hero.
+ * Browser-only Supabase client for eMedicalls.
  *
  * Auth redirects always resolve to `${window.location.origin}/auth/confirm`
  * (with a safe production fallback), never a Vercel SSO-protected host.
  */
+import './migrateBrandStorage'
 import { createClient } from '@supabase/supabase-js'
+import { AUTH_STORAGE_KEY } from './brand'
 import {
   AUTH_CONFIRM_PATH,
   PRODUCTION_APP_ORIGIN,
@@ -42,7 +44,7 @@ export const supabase = isSupabaseConfigured && !supabaseConfigError
         autoRefreshToken: true,
         detectSessionInUrl: true,
         flowType: 'pkce',
-        storageKey: 'healthhero.auth.v1',
+        storageKey: AUTH_STORAGE_KEY,
       },
     })
   : null

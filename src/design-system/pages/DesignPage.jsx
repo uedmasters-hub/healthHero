@@ -5,19 +5,19 @@ export default function DesignPage() {
         <div className="ds-page-breadcrumb">Get started / Design</div>
         <h1 className="ds-page-title">Design</h1>
         <p className="ds-page-description">
-          Principles, guidelines, and workflows for designing Health Hero products.
+          Principles, guidelines, and workflows for designing eMedicalls products.
         </p>
       </div>
 
       <h2>Design principles</h2>
       <p>
-        Every design decision in Health Hero should be grounded in these principles.
+        Every design decision in eMedicalls should be grounded in these principles.
         They guide us toward products that feel cohesive, trustworthy, and premium.
       </p>
 
       <h3>User-first</h3>
       <p>
-        Health Hero serves patients during vulnerable moments. Every interface must prioritize
+        eMedicalls serves patients during vulnerable moments. Every interface must prioritize
         clarity over decoration. Reduce cognitive load by presenting only what the user needs,
         when they need it.
       </p>
@@ -67,7 +67,7 @@ export default function DesignPage() {
 
       <h2>Tools we use</h2>
       <ul>
-        <li><strong>Figma</strong> — Primary design tool with the Health Hero component library.</li>
+        <li><strong>Figma</strong> — Primary design tool with the eMedicalls component library.</li>
         <li><strong>Storybook</strong> — Component documentation and visual testing.</li>
         <li><strong>This documentation site</strong> — The canonical source for guidelines and token references.</li>
       </ul>
