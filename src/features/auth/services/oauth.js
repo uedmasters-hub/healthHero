@@ -4,6 +4,7 @@
  * and callable, but Health Hero does not require Apple credentials yet.
  */
 import { AUTH_ERROR } from '../../../user/constants'
+import { AUTH_CALLBACK_PATH } from '../types'
 import { authRedirectTo, requireSupabase } from '../../../lib/supabase'
 import { mapAuthError } from './authService'
 
@@ -19,7 +20,7 @@ const GOOGLE_OAUTH_SCOPES = [
   'https://www.googleapis.com/auth/user.birthday.read',
 ].join(' ')
 
-async function startOAuth(provider, { redirectTo = '/' } = {}) {
+async function startOAuth(provider, { redirectTo = AUTH_CALLBACK_PATH } = {}) {
   const options = {
     redirectTo: authRedirectTo(redirectTo),
     skipBrowserRedirect: false,
@@ -64,4 +65,45 @@ export function oauthErrorFromLocation(search = window.location.search, hash = w
   if (!error) return null
   if (error === 'access_denied' || /cancel/i.test(description)) return AUTH_ERROR.OAUTH_CANCELLED
   return mapAuthError({ message: description || error }, AUTH_ERROR.OAUTH_FAILED)
+}
+
+/** True while the URL still carries an OAuth / magic-link callback payload. */
+export function hasAuthCallbackParams(search = window.location.search, hash = window.location.hash) {
+  const query = new URLSearchParams(search)
+  const hashQuery = new URLSearchParams(String(hash || '').replace(/^#/, ''))
+  return Boolean(
+    query.get('code')
+    || hashQuery.get('access_token')
+    || hashQuery.get('refresh_token')
+    || hashQuery.get('provider_token'),
+  )
+}
+
+/**
+ * Strip OAuth / recovery callback params so refresh does not re-process the
+ * redirect. Safe to call repeatedly (idempotent).
+ */
+export function scrubAuthRedirectParams() {
+  if (typeof window === 'undefined') return
+  try {
+    const url = new URL(window.location.href)
+    const keys = ['code', 'state', 'error', 'error_description', 'error_code']
+    let changed = false
+    keys.forEach((key) => {
+      if (url.searchParams.has(key)) {
+        url.searchParams.delete(key)
+        changed = true
+      }
+    })
+    const hash = String(url.hash || '').replace(/^#/, '')
+    if (hash && /access_token|refresh_token|type=|provider_token|code=/.test(hash)) {
+      url.hash = ''
+      changed = true
+    }
+    if (!changed) return
+    const next = `${url.pathname}${url.search}${url.hash}`
+    window.history.replaceState(window.history.state || {}, document.title, next)
+  } catch {
+    /* ignore */
+  }
 }

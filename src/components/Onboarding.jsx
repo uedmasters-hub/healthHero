@@ -4,11 +4,12 @@ import {
   ONBOARD_LOGO,
   ONBOARD_SLIDES,
   OnboardingActiveContext,
-  hasCompletedOnboarding,
-  markOnboardingComplete,
+  OnboardingStatusContext,
+  persistOnboardingCompleted,
   preloadOnboardAssets,
+  resolveOnboardingCompleted,
 } from '../lib/onboarding'
-import { logout as clearSession } from '../user/store'
+import { useAuth } from '../features/auth/hooks/useAuth'
 import './Onboarding.css'
 
 const LAST = ONBOARD_SLIDES.length
@@ -61,23 +62,61 @@ function ArtCard({ slide, delta, ready }) {
   )
 }
 
+/**
+ * Product onboarding runs only after Supabase auth is established.
+ * Never clears the auth session. Completion is persisted to public.users
+ * with a per-user local cache for fast startup.
+ */
 export function OnboardingProvider({ children }) {
-  const [active, setActive] = useState(() => !hasCompletedOnboarding())
+  const { ready, isAuthenticated, user } = useAuth()
+  const userId = user?.id || null
+  const [status, setStatus] = useState('pending')
 
   useEffect(() => {
-    if (!hasCompletedOnboarding()) clearSession()
-  }, [])
+    if (!ready) {
+      setStatus('pending')
+      return undefined
+    }
+
+    if (!isAuthenticated || !userId) {
+      // Guests skip product onboarding; AuthGate sends them to Login.
+      setStatus('done')
+      return undefined
+    }
+
+    let cancelled = false
+    setStatus('pending')
+    resolveOnboardingCompleted(userId).then((complete) => {
+      if (cancelled) return
+      setStatus(complete ? 'done' : 'needed')
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [ready, isAuthenticated, userId])
+
+  const active = status === 'needed'
+
+  const onComplete = useCallback(async () => {
+    if (userId) {
+      await persistOnboardingCompleted(userId)
+    }
+    setStatus('done')
+  }, [userId])
 
   return (
-    <OnboardingActiveContext.Provider value={active}>
-      {children}
-      <Onboarding onComplete={() => setActive(false)} />
-    </OnboardingActiveContext.Provider>
+    <OnboardingStatusContext.Provider value={status}>
+      <OnboardingActiveContext.Provider value={active}>
+        {children}
+        {active ? <Onboarding onComplete={onComplete} /> : null}
+      </OnboardingActiveContext.Provider>
+    </OnboardingStatusContext.Provider>
   )
 }
 
 function Onboarding({ onComplete }) {
-  const [open, setOpen] = useState(() => !hasCompletedOnboarding())
+  const [open, setOpen] = useState(true)
   const [leaving, setLeaving] = useState(false)
   const [step, setStep] = useState(0)
   const [dir, setDir] = useState(1)
@@ -166,7 +205,6 @@ function Onboarding({ onComplete }) {
 
   const finish = useCallback(() => {
     if (leaving) return
-    markOnboardingComplete()
     setLeaving(true)
     later(() => {
       setOpen(false)

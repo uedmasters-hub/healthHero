@@ -28,6 +28,7 @@ export const FAB_ROUTE_RULES = Object.freeze([
   // ── Hidden (focused workflows) ───────────────────────────────────────
   { test: (p) => p.startsWith('/booking'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/process-payment'), mode: FAB_MODE.HIDDEN },
+  { test: (p) => p.startsWith('/auth/callback'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/verify-payment'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/verify'), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/login'), mode: FAB_MODE.HIDDEN },

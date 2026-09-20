@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AUTH_ERROR, validateLoginFields } from '../../user'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import OAuthButtons from '../../features/auth/components/OAuthButtons'
@@ -13,12 +13,15 @@ const APPLE_ENABLED = import.meta.env.VITE_APPLE_SIGNIN_ENABLED === 'true'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { signInWithPassword, googleSignIn, appleSignIn, bootError } = useAuth()
   const [ready, setReady] = useState(false)
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
-  const [formError, setFormError] = useState('')
+  const [formError, setFormError] = useState(() => (
+    String(location.state?.authCallbackError || '')
+  ))
 
   const fieldErrors = validateLoginFields({ identifier, password })
   const { begin, errorFor } = useProgressiveAuth(LOGIN_ORDER, LOGIN_IDS, fieldErrors)

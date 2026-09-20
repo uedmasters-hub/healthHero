@@ -6,6 +6,7 @@
 import { AUTH_ERROR } from '../../../user/constants'
 import { normalizeEmail } from '../../../user/models'
 import { authRedirectTo, requireSupabase } from '../../../lib/supabase'
+import { AUTH_CALLBACK_PATH } from '../types'
 
 function isNetworkFailure(error) {
   const message = String(error?.message || error || '')
@@ -78,6 +79,27 @@ export async function getCurrentSession() {
   return { session: data.session || null }
 }
 
+/**
+ * Exchange a PKCE ?code= from the current URL exactly once.
+ * Safe no-op when no code is present.
+ */
+export async function exchangeCodeFromUrl(href = typeof window !== 'undefined' ? window.location.href : '') {
+  if (!href) return { session: null }
+  let code = ''
+  try {
+    const url = new URL(href)
+    code = url.searchParams.get('code') || ''
+  } catch {
+    return { session: null }
+  }
+  if (!code) return { session: null }
+
+  const supabase = requireSupabase()
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+  if (error) return { session: null, error: mapAuthError(error) }
+  return { session: data.session || null, user: data.user || null }
+}
+
 export async function signInWithPassword(email, password) {
   const supabase = requireSupabase()
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -96,7 +118,7 @@ export async function signUpWithPassword({ name, email, phone, password }) {
     email: normalizeEmail(email),
     password,
     options: {
-      emailRedirectTo: authRedirectTo('/verify'),
+      emailRedirectTo: authRedirectTo(AUTH_CALLBACK_PATH),
       data: {
         full_name: String(name || '').trim(),
         phone: String(phone || '').trim(),
@@ -120,7 +142,7 @@ export async function signUpWithPassword({ name, email, phone, password }) {
 export async function requestPasswordReset(email) {
   const supabase = requireSupabase()
   const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
-    redirectTo: authRedirectTo('/reset'),
+    redirectTo: authRedirectTo(`${AUTH_CALLBACK_PATH}?next=reset`),
   })
   if (error) return { ok: false, error: mapAuthError(error) }
   return { ok: true }
@@ -138,7 +160,7 @@ export async function resendVerification(email) {
   const { error } = await supabase.auth.resend({
     type: 'signup',
     email: normalizeEmail(email),
-    options: { emailRedirectTo: authRedirectTo('/verify') },
+    options: { emailRedirectTo: authRedirectTo(AUTH_CALLBACK_PATH) },
   })
   if (error) return { ok: false, error: mapAuthError(error) }
   return { ok: true }

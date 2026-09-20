@@ -20,6 +20,7 @@ export const CRITICAL_FLOW_RULES = Object.freeze([
   (p) => p.startsWith('/booking'),
   (p) => p.startsWith('/process-payment'),
   (p) => p.startsWith('/verify-payment'),
+  (p) => p.startsWith('/auth/callback'),
   (p) => p.startsWith('/verify'),
   (p) => p.startsWith('/otp'),
   (p) => p.startsWith('/video'),

@@ -3,6 +3,10 @@
  * Owns the Supabase JWT session. Restores login on launch, refreshes tokens,
  * and mirrors identity into the local health-chart store without duplicating
  * auth.users. public.users is read-only from the client (created by trigger).
+ *
+ * Boot rule: routing must wait until the first auth state is resolved
+ * (INITIAL_SESSION / first onAuthStateChange). Never route on a premature
+ * getSession() null during the OAuth PKCE URL exchange.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
@@ -24,7 +28,7 @@ import {
   subscribeAuth,
   updatePassword as updateRemotePassword,
 } from './services/authService'
-import { signInWithApple, signInWithGoogle, oauthErrorFromLocation } from './services/oauth'
+import { signInWithApple, signInWithGoogle, oauthErrorFromLocation, scrubAuthRedirectParams, hasAuthCallbackParams } from './services/oauth'
 import { migrateLocalDataToSupabase } from '../sync/localDataMigrator'
 
 const AuthContext = createContext(null)
@@ -55,30 +59,68 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     let cancelled = false
+    let bootstrapped = false
 
-    getCurrentSession().then(({ session: next, error }) => {
-      if (cancelled) return
-      if (error) setBootError(error)
-      applyLocalChart(next)
-      setSession(next)
+    const finishBoot = (nextSession, event) => {
+      if (cancelled || bootstrapped) return
+      bootstrapped = true
+      const oauthError = oauthErrorFromLocation()
+      if (oauthError) setBootError(oauthError)
+      scrubAuthRedirectParams()
+      applyLocalChart(nextSession)
+      setSession(nextSession)
+      if (event) setLastEvent(event)
       setReady(true)
-    })
+    }
 
     const unsubscribe = subscribeAuth((event, next) => {
       if (cancelled) return
-      setLastEvent(event)
+
       if (event === 'PASSWORD_RECOVERY') setIsRecovery(true)
       if (event === 'SIGNED_OUT') setIsRecovery(false)
       if (event === 'USER_UPDATED') setIsRecovery(false)
+
+      if (!bootstrapped) {
+        // PKCE exchange may emit INITIAL_SESSION(null) before SIGNED_IN.
+        // Keep splash up and do not scrub ?code= until we have a session
+        // or the callback params are gone / timed out.
+        if (!next && hasAuthCallbackParams()) {
+          return
+        }
+        finishBoot(next, event)
+        return
+      }
+
+      setLastEvent(event)
       applyLocalChart(next)
       setSession(next)
     })
 
-    const oauthError = oauthErrorFromLocation()
-    if (oauthError) setBootError(oauthError)
+    // Fallback if onAuthStateChange never unlocks routing.
+    const fallbackTimer = window.setTimeout(() => {
+      if (cancelled || bootstrapped) return
+      getCurrentSession().then(({ session: next, error }) => {
+        if (cancelled || bootstrapped) return
+        if (error) setBootError(error)
+        // If a callback is still pending and session is empty, wait a bit more.
+        if (!next && hasAuthCallbackParams()) return
+        finishBoot(next, 'FALLBACK_SESSION')
+      })
+    }, 2800)
+
+    const forceTimer = window.setTimeout(() => {
+      if (cancelled || bootstrapped) return
+      getCurrentSession().then(({ session: next, error }) => {
+        if (cancelled || bootstrapped) return
+        if (error) setBootError(error)
+        finishBoot(next, 'FORCE_SESSION')
+      })
+    }, 6000)
 
     return () => {
       cancelled = true
+      window.clearTimeout(fallbackTimer)
+      window.clearTimeout(forceTimer)
       unsubscribe()
     }
   }, [])

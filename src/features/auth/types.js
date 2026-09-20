@@ -52,6 +52,16 @@ export const AUTH_PATHS = Object.freeze({
   forgot: '/forgot',
   reset: '/reset',
   verify: '/verify',
+  callback: '/auth/callback',
 })
 
-export const GUEST_PATHS = Object.freeze(Object.values(AUTH_PATHS))
+/** Shared PKCE / email / OAuth landing path (must stay public on Vercel). */
+export const AUTH_CALLBACK_PATH = AUTH_PATHS.callback
+
+export const GUEST_PATHS = Object.freeze([
+  AUTH_PATHS.login,
+  AUTH_PATHS.register,
+  AUTH_PATHS.forgot,
+  AUTH_PATHS.reset,
+  AUTH_PATHS.verify,
+])

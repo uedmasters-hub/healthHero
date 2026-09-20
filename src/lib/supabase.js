@@ -10,11 +10,22 @@
  * - autoRefreshToken: refresh JWTs before expiry
  * - detectSessionInUrl: complete email-confirm, recovery, and OAuth redirects
  * - flowType pkce: CSRF-safe OAuth / magic-link exchange
+ *
+ * Redirects always use getAppOrigin() so production email / OAuth links hit
+ * the public site (e.g. https://www.emedicalls.com), never a protected
+ * preview deployment URL.
  */
 import { createClient } from '@supabase/supabase-js'
 
 const url = import.meta.env.VITE_SUPABASE_URL
 const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+
+/** Canonical public origin for auth redirects (no trailing slash). */
+const configuredOrigin = String(
+  import.meta.env.VITE_APP_ORIGIN
+  || import.meta.env.VITE_PUBLIC_APP_URL
+  || '',
+).trim().replace(/\/$/, '')
 
 export const isSupabaseConfigured = Boolean(url && publishableKey)
 
@@ -40,12 +51,18 @@ export const supabase = isSupabaseConfigured && !supabaseConfigError
     })
   : null
 
+/**
+ * Public app origin used in every Supabase redirectTo / emailRedirectTo.
+ * Prefer VITE_APP_ORIGIN in production so callbacks never target a
+ * Deployment-Protection-gated *.vercel.app URL.
+ */
 export function getAppOrigin() {
+  if (configuredOrigin) return configuredOrigin
   if (typeof window === 'undefined') return ''
   return window.location.origin
 }
 
-export function authRedirectTo(pathname = '/') {
+export function authRedirectTo(pathname = '/auth/callback') {
   const path = pathname.startsWith('/') ? pathname : `/${pathname}`
   return `${getAppOrigin()}${path}`
 }
