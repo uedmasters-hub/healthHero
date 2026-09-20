@@ -56,6 +56,15 @@ function isAuthConfirmRoute() {
   return path === AUTH_CONFIRM_PATH || path === AUTH_PATHS.callback
 }
 
+/** OTP screens own their errors — never inherit boot/session noise. */
+function shouldSurfaceBootOAuthError() {
+  if (typeof window === 'undefined') return false
+  if (isAuthConfirmRoute()) return false
+  const path = window.location.pathname
+  if (path === AUTH_PATHS.verify || path === AUTH_PATHS.otp) return false
+  return true
+}
+
 function applyLocalChart(session) {
   if (session?.user) {
     attachAuthenticatedUser(chartIdentityFromUser(session.user))
@@ -80,9 +89,9 @@ export function AuthProvider({ children }) {
     const finishBoot = (nextSession, event) => {
       if (cancelled || bootstrapped) return
       bootstrapped = true
-      // Surface OAuth errors from the URL, but leave scrubbing to /auth/confirm
-      // so PKCE ?code= is never stripped mid-exchange.
-      if (!isAuthConfirmRoute()) {
+      // Surface OAuth errors from the URL on Login/Register only.
+      // /auth/confirm owns callback errors; /verify and /otp stay neutral.
+      if (shouldSurfaceBootOAuthError()) {
         const oauthError = oauthErrorFromLocation()
         if (oauthError) setBootError(oauthError)
       }
@@ -115,11 +124,11 @@ export function AuthProvider({ children }) {
     })
 
     // Fallback if onAuthStateChange never unlocks routing.
+    // Do not promote session-restore failures into user-facing expiry banners.
     const fallbackTimer = window.setTimeout(() => {
       if (cancelled || bootstrapped) return
-      getCurrentSession().then(({ session: next, error }) => {
+      getCurrentSession().then(({ session: next }) => {
         if (cancelled || bootstrapped) return
-        if (error) setBootError(error)
         if (!next && hasAuthCallbackParams()) return
         finishBoot(next, 'FALLBACK_SESSION')
       })
@@ -127,9 +136,8 @@ export function AuthProvider({ children }) {
 
     const forceTimer = window.setTimeout(() => {
       if (cancelled || bootstrapped) return
-      getCurrentSession().then(({ session: next, error }) => {
+      getCurrentSession().then(({ session: next }) => {
         if (cancelled || bootstrapped) return
-        if (error) setBootError(error)
         finishBoot(next, 'FORCE_SESSION')
       })
     }, 6000)
@@ -187,7 +195,9 @@ export function AuthProvider({ children }) {
   ), [])
 
   const sendEmailOtp = useCallback(async (email) => sendEmailOtpRemote(email), [])
-  const verifyEmailOtp = useCallback(async (email, token) => verifyEmailOtpRemote(email, token), [])
+  const verifyEmailOtp = useCallback(async (email, token, options) => (
+    verifyEmailOtpRemote(email, token, options)
+  ), [])
 
   const signUp = useCallback(async (input) => signUpWithPassword(input), [])
 

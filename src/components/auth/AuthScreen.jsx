@@ -63,7 +63,7 @@ export function AuthLayout({
             <img src={ONBOARD_LOGO} alt="" className="auth-logo" />
             <p className="auth-wordmark">Health Hero</p>
           </div>
-          <div className="auth-stage" key={stage}>
+          <div className="auth-stage" key={stage} data-stage={stage}>
             <header className="auth-copy">
               <h1 className="auth-title">{title}</h1>
               {subtitle ? <p className="auth-subtitle">{subtitle}</p> : null}

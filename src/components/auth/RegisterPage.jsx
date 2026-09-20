@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AUTH_ERROR, validateRegisterFields } from '../../user'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import OAuthButtons from '../../features/auth/components/OAuthButtons'
@@ -19,16 +19,31 @@ const REGISTER_IDS = {
 }
 const APPLE_ENABLED = import.meta.env.VITE_APPLE_SIGNIN_ENABLED === 'true'
 
+function draftFromState(state) {
+  const draft = state?.registerDraft
+  if (!draft || typeof draft !== 'object') return null
+  return {
+    name: String(draft.name || ''),
+    email: String(draft.email || ''),
+    phone: String(draft.phone || ''),
+    phoneCountry: String(draft.phoneCountry || '+91'),
+    password: String(draft.password || ''),
+    confirm: String(draft.confirm || ''),
+  }
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { signUp, googleSignIn, appleSignIn } = useAuth()
+  const restored = draftFromState(location.state)
   const [ready, setReady] = useState(false)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [phoneCountry, setPhoneCountry] = useState('+91')
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm] = useState('')
+  const [name, setName] = useState(() => restored?.name || '')
+  const [email, setEmail] = useState(() => restored?.email || '')
+  const [phone, setPhone] = useState(() => restored?.phone || '')
+  const [phoneCountry, setPhoneCountry] = useState(() => restored?.phoneCountry || '+91')
+  const [password, setPassword] = useState(() => restored?.password || '')
+  const [confirm, setConfirm] = useState(() => restored?.confirm || '')
   const [busy, setBusy] = useState(false)
   const [formError, setFormError] = useState('')
 
@@ -52,7 +67,13 @@ export default function RegisterPage() {
         return
       }
       if (result.needsVerification) {
-        navigate('/verify', { replace: true, state: { email } })
+        navigate('/verify', {
+          replace: true,
+          state: {
+            email,
+            registerDraft: { name, email, phone, phoneCountry, password, confirm },
+          },
+        })
         return
       }
       navigate('/', { replace: true })

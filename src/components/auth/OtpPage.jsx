@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+/**
+ * Email OTP login verification — same reusable OTP experience as signup verify.
+ */
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { AUTH_ERROR, isValidEmail, normalizeEmail } from '../../user'
+import { isValidEmail, normalizeEmail } from '../../user'
 import { useAuth } from '../../features/auth/hooks/useAuth'
-import AuthField from './AuthField'
-import { AuthLayout, AuthSubmit } from './AuthScreen'
-
-const OTP_LENGTH = 6
+import EmailOtpVerify from '../../features/auth/components/EmailOtpVerify'
 
 export default function OtpPage() {
   const navigate = useNavigate()
@@ -13,11 +13,6 @@ export default function OtpPage() {
   const { verifyEmailOtp, sendEmailOtp } = useAuth()
   const email = normalizeEmail(location.state?.email || '')
   const [ready, setReady] = useState(false)
-  const [code, setCode] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [resendBusy, setResendBusy] = useState(false)
-  const [formError, setFormError] = useState('')
-  const [info, setInfo] = useState('')
 
   useEffect(() => {
     if (!email || !isValidEmail(email)) {
@@ -28,97 +23,36 @@ export default function OtpPage() {
     return () => window.clearTimeout(id)
   }, [email, navigate])
 
-  useEffect(() => {
-    if (!ready) return undefined
-    const id = window.setTimeout(() => {
-      document.getElementById('otp-code')?.focus()
-    }, 40)
-    return () => window.clearTimeout(id)
-  }, [ready])
-
-  const onVerify = async (event) => {
-    event.preventDefault()
-    setFormError('')
-    setInfo('')
-    const token = String(code || '').replace(/\D/g, '')
-    if (token.length !== OTP_LENGTH) {
-      setFormError(AUTH_ERROR.OTP_INVALID)
-      return
-    }
-    setBusy(true)
-    try {
-      const result = await verifyEmailOtp(email, token)
-      if (!result.ok) {
-        setFormError(result.error || AUTH_ERROR.OTP_INVALID)
-        return
-      }
+  const onVerify = useCallback(async (token) => {
+    const result = await verifyEmailOtp(email, token, { type: 'email' })
+    if (result.ok) {
       navigate('/', { replace: true })
-    } finally {
-      setBusy(false)
     }
-  }
+    return result
+  }, [email, verifyEmailOtp, navigate])
 
-  const onResend = async () => {
-    setFormError('')
-    setInfo('')
-    setResendBusy(true)
-    try {
-      const result = await sendEmailOtp(email)
-      if (!result.ok) {
-        setFormError(result.error || AUTH_ERROR.GENERIC)
-        return
-      }
-      setInfo('A new code is on its way.')
-    } finally {
-      setResendBusy(false)
-    }
-  }
+  const onResend = useCallback(async () => sendEmailOtp(email), [email, sendEmailOtp])
+
+  const onChangeEmail = useCallback(() => {
+    navigate('/login', { replace: true, state: { email } })
+  }, [navigate, email])
 
   return (
-    <AuthLayout
-      loading={!ready}
-      stage="otp"
+    <EmailOtpVerify
+      email={email}
       title="Enter your code"
-      subtitle={email ? `We sent a 6-digit code to ${email}.` : 'Check your email for a 6-digit code.'}
+      supportingText="Enter the 6-digit code sent to your email"
+      stage="otp"
+      loading={!ready}
+      onVerify={onVerify}
+      onResend={onResend}
+      onChangeEmail={onChangeEmail}
+      confirmationUrl=""
       footer={(
         <>
-          Wrong email? <Link to="/login">Go back</Link>
+          Wrong email? <Link to="/login" state={{ email }}>Go back</Link>
         </>
       )}
-    >
-      <form className="auth-form" onSubmit={onVerify} noValidate>
-        {formError ? <p className="auth-banner" role="alert">{formError}</p> : null}
-        {info ? <p className="auth-banner auth-banner--info" role="status">{info}</p> : null}
-        <AuthField
-          id="otp-code"
-          label="Verification code"
-          type="text"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          value={code}
-          onChange={(event) => {
-            const next = String(event.target.value || '').replace(/\D/g, '').slice(0, OTP_LENGTH)
-            setCode(next)
-          }}
-          disabled={busy}
-          placeholder="••••••"
-          maxLength={OTP_LENGTH}
-        />
-        <AuthSubmit busy={busy} disabled={busy || code.length !== OTP_LENGTH}>
-          {busy ? 'Verifying…' : 'Verify code'}
-        </AuthSubmit>
-        <div className="auth-otp-resend">
-          <button
-            type="button"
-            className="auth-text-btn"
-            onClick={onResend}
-            disabled={busy || resendBusy}
-          >
-            {resendBusy ? 'Sending…' : 'Resend code'}
-          </button>
-          <p className="auth-otp-hint">Magic Link in the email also works.</p>
-        </div>
-      </form>
-    </AuthLayout>
+    />
   )
 }

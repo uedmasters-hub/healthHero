@@ -1,26 +1,46 @@
 /**
- * @file src/features/auth/pages/VerifyEmailPage.jsx
- * Email confirmation waiting room. Completes automatically after the
- * Supabase redirect; otherwise the patient can resend the link.
+ * Signup email OTP verification — primary in-app experience.
+ * Magic Link / confirmationUrl is a secondary browser fallback only when provided.
  */
-import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { AUTH_ERROR } from '../../../user'
-import { AuthLayout, AuthSubmit, AuthTrust } from '../../../components/auth/AuthScreen'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { isValidEmail, normalizeEmail } from '../../../user'
 import { useAuth } from '../hooks/useAuth'
+import EmailOtpVerify from '../components/EmailOtpVerify'
+
+function resolveConfirmationUrl(stateUrl, queryUrl) {
+  const raw = String(stateUrl || queryUrl || '').trim()
+  if (!raw) return ''
+  try {
+    const url = new URL(raw)
+    // Never treat login / register as a confirmation deep link.
+    if (/\/(login|register)\/?$/i.test(url.pathname)) return ''
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return ''
+    return url.toString()
+  } catch {
+    return ''
+  }
+}
 
 export default function VerifyEmailPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAuthenticated, resendEmail, user } = useAuth()
+  const [params] = useSearchParams()
+  const { isAuthenticated, verifyEmailOtp, resendEmail, user } = useAuth()
   const [ready, setReady] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [sent, setSent] = useState(false)
-  const [error, setError] = useState('')
-  const email = String(location.state?.email || user?.email || '')
+
+  const email = normalizeEmail(location.state?.email || user?.email || '')
+  const registerDraft = location.state?.registerDraft || null
+  const confirmationUrl = useMemo(
+    () => resolveConfirmationUrl(
+      location.state?.confirmationUrl,
+      params.get('confirmation_url') || params.get('confirmationUrl'),
+    ),
+    [location.state?.confirmationUrl, params],
+  )
 
   useEffect(() => {
-    const id = window.setTimeout(() => setReady(true), 280)
+    const id = window.setTimeout(() => setReady(true), 240)
     return () => window.clearTimeout(id)
   }, [])
 
@@ -28,44 +48,42 @@ export default function VerifyEmailPage() {
     if (isAuthenticated) navigate('/', { replace: true })
   }, [isAuthenticated, navigate])
 
-  const onResend = async (event) => {
-    event.preventDefault()
-    if (!email) {
-      setError(AUTH_ERROR.EMAIL)
-      return
+  const onVerify = useCallback(async (token) => {
+    if (!email || !isValidEmail(email)) {
+      return { ok: false, error: 'Enter a valid email address.', reason: 'other' }
     }
-    setBusy(true)
-    setError('')
-    try {
-      const result = await resendEmail(email)
-      if (!result.ok) {
-        setError(result.error || AUTH_ERROR.GENERIC)
-        return
-      }
-      setSent(true)
-    } finally {
-      setBusy(false)
+    const result = await verifyEmailOtp(email, token, { type: 'signup' })
+    if (result.ok) {
+      navigate('/', { replace: true })
     }
-  }
+    return result
+  }, [email, verifyEmailOtp, navigate])
+
+  const onResend = useCallback(async () => {
+    if (!email) return { ok: false, error: 'Enter a valid email address.' }
+    return resendEmail(email)
+  }, [email, resendEmail])
+
+  const onChangeEmail = useCallback(() => {
+    navigate('/register', {
+      replace: true,
+      state: registerDraft ? { registerDraft } : { registerDraft: { email } },
+    })
+  }, [navigate, registerDraft, email])
 
   return (
-    <AuthLayout
-      loading={!ready}
-      stage="verify"
+    <EmailOtpVerify
+      email={email}
       title="Verify your email"
-      subtitle={email
-        ? `We sent a confirmation link to ${email}. Open it to activate your Health Hero account.`
-        : 'Open the confirmation link we sent to activate your Health Hero account.'}
-      extra={<AuthTrust />}
+      supportingText="Enter the 6-digit code sent to your email"
+      stage="verify"
+      loading={!ready}
+      onVerify={onVerify}
+      onResend={onResend}
+      onChangeEmail={onChangeEmail}
+      confirmationUrl={confirmationUrl}
+      openAppLabel="Open eMedicalls"
       footer={<Link to="/login" className="auth-text-btn">Back to sign in</Link>}
-    >
-      <form className="auth-form" onSubmit={onResend}>
-        {error ? <p className="auth-banner" role="alert">{error}</p> : null}
-        {sent ? <p className="auth-banner is-success" role="status">A new confirmation email is on its way.</p> : null}
-        <AuthSubmit busy={busy} disabled={busy || !email}>
-          {busy ? 'Sending…' : 'Resend confirmation'}
-        </AuthSubmit>
-      </form>
-    </AuthLayout>
+    />
   )
 }

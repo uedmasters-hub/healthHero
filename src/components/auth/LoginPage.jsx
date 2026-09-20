@@ -24,7 +24,9 @@ export default function LoginPage() {
     bootError,
   } = useAuth()
   const [ready, setReady] = useState(false)
-  const [identifier, setIdentifier] = useState('')
+  const [identifier, setIdentifier] = useState(() => (
+    String(location.state?.email || location.state?.identifier || '')
+  ))
   const [password, setPassword] = useState('')
   const [usePassword, setUsePassword] = useState(false)
   const [busy, setBusy] = useState(false)

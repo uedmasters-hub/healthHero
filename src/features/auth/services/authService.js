@@ -42,7 +42,8 @@ export function mapAuthError(error, fallback = AUTH_ERROR.GENERIC) {
   ) {
     return AUTH_ERROR.OTP_INVALID
   }
-  if (/expired|invalid.*link/i.test(message)) {
+  // Magic-link / email-link expiry only — do not treat JWT/session restore as this.
+  if (/expired.*link|link.*expired|invalid.*(magic )?link/i.test(message)) {
     return AUTH_ERROR.EXPIRED
   }
   if (code === 'over_email_send_rate_limit' || /rate limit/i.test(message)) {
@@ -139,17 +140,55 @@ export async function sendEmailOtp(email) {
 }
 
 /** Verify the in-app OTP code. Session is established without leaving the app. */
-export async function verifyEmailOtp(email, token) {
+export async function verifyEmailOtp(email, token, { type = 'email' } = {}) {
   const supabase = requireSupabase()
+  const otpType = type === 'signup' ? 'signup' : 'email'
   const { data, error } = await supabase.auth.verifyOtp({
     email: normalizeEmail(email),
     token: String(token || '').trim(),
-    type: 'email',
+    type: otpType,
   })
   if (error) {
-    return { ok: false, error: mapAuthError(error, AUTH_ERROR.OTP_INVALID), code: error.code }
+    const classified = classifyOtpVerifyError(error)
+    return {
+      ok: false,
+      error: classified.error,
+      code: error.code,
+      reason: classified.reason,
+    }
   }
-  return { ok: true, session: data.session, user: data.user }
+  return { ok: true, session: data.session, user: data.user, reason: null }
+}
+
+/**
+ * Classify verifyOtp failures only. Never treat session-restore noise as OTP expiry.
+ * reason: 'expired' | 'invalid' | 'other'
+ */
+export function classifyOtpVerifyError(error) {
+  const message = String(error?.message || '')
+  const code = String(error?.code || error?.name || '')
+
+  if (
+    code === 'otp_expired'
+    || /otp.*expired|expired.*otp|token has expired|token is expired/i.test(message)
+  ) {
+    return { reason: 'expired', error: AUTH_ERROR.OTP_EXPIRED }
+  }
+
+  if (
+    /session.*expired|expired.*session|invalid.*session|session.*invalid/i.test(message)
+  ) {
+    return { reason: 'expired', error: AUTH_ERROR.OTP_EXPIRED }
+  }
+
+  if (
+    code === 'otp_disabled'
+    || /invalid.*(otp|token|code)|token.*invalid|otp.*invalid|wrong.*(otp|code)|one.?time/i.test(message)
+  ) {
+    return { reason: 'invalid', error: AUTH_ERROR.OTP_INVALID }
+  }
+
+  return { reason: 'other', error: mapAuthError(error, AUTH_ERROR.OTP_INVALID) }
 }
 
 export async function signUpWithPassword({ name, email, phone, password }) {
