@@ -25,7 +25,7 @@ export default function AppBottomSheet({
   labelledBy,
   className = '',
   sheetClassName = '',
-  portalTo = 'app',
+  portalTo = 'screen',
   dismissOnSwipe = false,
   snapPoints = null,
   keyboardAware = false,

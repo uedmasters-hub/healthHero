@@ -1,0 +1,300 @@
+/*
+  HeaderActions — zero-drift avatar anchor
+  ────────────────────────────────────────
+  Slot:           44×44 (enlarged avatar footprint)
+  Avatar layout:  36×36, position absolute, right: 0
+  Transform:      scale(44/36) from origin right center → fills slot
+  Shell:          88×44, right: -4px (4px pad past avatar)
+  Bell:           36×36, right: 44px (avatar 36 + gap 8)
+
+  Avatar’s right edge is pinned to the slot’s right edge forever.
+  Scale only grows/shrinks leftward — no layout, no padding shifts.
+*/
+
+.header-actions {
+  --ha-bell: 36px;
+  --ha-avatar: 36px;
+  --ha-pad: 4px;
+  --ha-gap: 8px;
+  --ha-slot: 44px;
+  --ha-shell-full: 88px;
+  --ha-shell-tight: 44px;
+  --ha-enlarge: calc(44 / 36);
+  --ha-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ha-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  /* Bell sits left of avatar: avatar(36) + gap(8) */
+  --ha-bell-right: calc(var(--ha-avatar) + var(--ha-gap));
+
+  position: relative;
+  flex-shrink: 0;
+  width: var(--ha-slot);
+  height: var(--ha-slot);
+  overflow: visible;
+  line-height: 0;
+}
+
+/* White pill — right edge is 4px past the avatar (padding) */
+.header-actions__shell {
+  position: absolute;
+  right: calc(var(--ha-pad) * -1);
+  top: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  width: var(--ha-shell-full);
+  height: var(--ha-slot);
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #eeeff3;
+  transform-origin: right center;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Invisible fly-to target — same geometry as the bell slot */
+.header-actions__bell-target {
+  position: absolute;
+  right: var(--ha-bell-right);
+  top: 50%;
+  z-index: 0;
+  width: var(--ha-bell);
+  height: var(--ha-bell);
+  margin-top: calc(var(--ha-bell) / -2);
+  pointer-events: none;
+}
+
+/* Bell slot — absolute, never pushes the avatar */
+.header-actions__bell {
+  position: absolute;
+  right: var(--ha-bell-right);
+  top: 50%;
+  z-index: 2;
+  width: var(--ha-bell);
+  height: var(--ha-bell);
+  margin-top: calc(var(--ha-bell) / -2);
+  overflow: visible;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.header-actions__bell.is-island-land {
+  animation: ha-bell-island-land 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ha-bell-island-land {
+  0% { transform: scale3d(1, 1, 1); }
+  35% { transform: scale3d(1.14, 1.14, 1); }
+  68% { transform: scale3d(0.94, 0.94, 1); }
+  100% { transform: scale3d(1, 1, 1); }
+}
+
+/* ── Avatar: pinned right:0, enlarge from right origin ── */
+.header-actions .header-actions__avatar.profile-avatar,
+.header-actions .profile-avatar {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  z-index: 3;
+  box-sizing: border-box;
+  width: var(--ha-avatar) !important;
+  height: var(--ha-avatar) !important;
+  min-width: var(--ha-avatar) !important;
+  min-height: var(--ha-avatar) !important;
+  max-width: var(--ha-avatar);
+  max-height: var(--ha-avatar);
+  margin: calc(var(--ha-avatar) / -2) 0 0 0;
+  padding: 0 !important;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+  transform-origin: right center;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-actions .profile-avatar-img,
+.header-actions .profile-avatar-placeholder {
+  display: block;
+  width: var(--ha-avatar);
+  height: var(--ha-avatar);
+  border-radius: 9999px;
+}
+
+.header-actions .profile-avatar-img {
+  object-fit: cover;
+  object-position: center 12%;
+  background: var(--media-bg, #e8eaf0);
+}
+
+.header-actions .profile-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--primary-light, #7b8cff) 0%,
+    var(--primary-dark, #3d4db8) 100%
+  );
+}
+
+.header-actions .profile-avatar-pro {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  z-index: 4;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--primary, #4f5bd5);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+/* ═══════════════ enlarged (idle) ═══════════════ */
+.header-actions--enlarged .header-actions__shell {
+  display: none;
+}
+
+.header-actions--avatar-enlarged .profile-avatar {
+  transform: scale(var(--ha-enlarge));
+}
+
+.header-actions--avatar-compact .profile-avatar {
+  transform: scale3d(1, 1, 1);
+}
+
+/* ═══════════════ visible / holding ═══════════════ */
+.header-actions--visible .header-actions__shell,
+.header-actions--holding .header-actions__shell,
+.header-actions--dock-ready .header-actions__shell {
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+}
+
+/* ═══════════════ EXIT ═══════════════ */
+
+.header-actions--exit-bell .header-actions__shell,
+.header-actions--exit-hold .header-actions__shell {
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+}
+
+/* Collapse shell toward avatar (right origin) */
+.header-actions--exit-collapse .header-actions__shell {
+  animation: ha-shell-collapse 340ms var(--ha-spring) forwards;
+}
+
+/* Absorb: avatar grows left from pinned right edge */
+.header-actions--exit-absorb .header-actions__shell {
+  width: var(--ha-shell-tight);
+  right: calc(var(--ha-pad) * -1);
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+}
+
+.header-actions--exit-absorb .profile-avatar {
+  animation: ha-avatar-absorb 300ms var(--ha-spring) forwards;
+}
+
+/* Dissolve shell — avatar already enlarged, still pinned */
+.header-actions--exit-dissolve .header-actions__shell {
+  width: var(--ha-shell-tight);
+  right: calc(var(--ha-pad) * -1);
+  animation: ha-shell-dissolve 220ms var(--ha-soft) forwards;
+}
+
+.header-actions--exit-dissolve .profile-avatar {
+  transform: scale(var(--ha-enlarge));
+}
+
+/* ═══════════════ ENTER ═══════════════ */
+
+.header-actions--enter-shell .header-actions__shell {
+  animation: ha-shell-enter 380ms var(--ha-spring) forwards;
+}
+
+.header-actions--avatar-shrinking .profile-avatar {
+  animation: ha-avatar-shrink 380ms var(--ha-spring) forwards;
+}
+
+.header-actions--enter-bell .header-actions__shell,
+.header-actions--enter-badge .header-actions__shell,
+.header-actions--dock-ready .header-actions__shell {
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+}
+
+/* ═══════════════ Keyframes ═══════════════ */
+
+@keyframes ha-shell-collapse {
+  0% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(calc(var(--ha-shell-tight) / var(--ha-shell-full)), 1, 1);
+  }
+}
+
+/* Grow left from fixed right edge */
+@keyframes ha-avatar-absorb {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+  100% {
+    transform: scale(var(--ha-enlarge));
+  }
+}
+
+@keyframes ha-shell-dissolve {
+  0% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale3d(0.92, 0.92, 1);
+  }
+}
+
+@keyframes ha-shell-enter {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.55, 0.55, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* Shrink toward fixed right edge */
+@keyframes ha-avatar-shrink {
+  0% {
+    transform: scale(var(--ha-enlarge));
+  }
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-actions__shell,
+  .header-actions .profile-avatar,
+  .header-actions--exit-collapse .header-actions__shell,
+  .header-actions--exit-absorb .profile-avatar,
+  .header-actions--exit-dissolve .header-actions__shell,
+  .header-actions--enter-shell .header-actions__shell,
+  .header-actions--avatar-shrinking .profile-avatar {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

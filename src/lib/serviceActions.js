@@ -32,6 +32,9 @@ export function resolveServiceAction(name) {
   if (name === 'Video Consultation' || name === 'Virtual Visit') {
     return { kind: 'discover', visitType: VIDEO_CALL }
   }
+  if (name === 'Pharmacy' || name === 'Online Pharmacy' || name === 'Medicine Delivery') {
+    return { kind: 'route', to: '/pharmacy' }
+  }
   const specialty = CONSULTATION_SPECIALTIES[name]
   if (specialty) {
     return { kind: 'specialty', specialty: canonicalSpecialty(specialty) }
@@ -47,6 +50,11 @@ export function runServiceAction(name, { navigate, onCloseOverlays, onComingSoon
   }
 
   onCloseOverlays?.()
+
+  if (action.kind === 'route' && action.to) {
+    navigate(action.to, { state: { origin: 'services', returnTo: '/' } })
+    return
+  }
 
   if (action.kind === 'discover') {
     navigate('/booking', {

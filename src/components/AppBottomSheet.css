@@ -3,11 +3,11 @@
 .ds-sheet-overlay {
   position: absolute;
   inset: 0;
-  z-index: var(--z-sheet);
+  z-index: var(--z-scrim-elevated, 8100);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  /* Dim is owned by .dark-overlay (var(--overlay)); sheet layer stays clear to avoid double-tint */
+  /* Dim is owned by the global AppScrim on #phone-screen */
   background: transparent;
   animation: dsSheetFadeIn var(--duration-normal) var(--ease-standard) forwards;
 }

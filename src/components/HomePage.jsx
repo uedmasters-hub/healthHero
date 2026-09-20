@@ -9,13 +9,13 @@ import Services from './Services'
 import TopDoctors from './TopDoctors'
 import HealthInsights from './HealthInsights'
 import AppFooter from './AppFooter'
+import { HeaderSearchButton } from './home/SharedSearchIcon'
 import { useTransition } from './PageTransition'
 import { useSharedHero } from './SharedHero'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
+import useSearchScrollCompact from '../hooks/useSearchScrollCompact'
+import { freezeNow } from '../lib/scrollLock'
 import { isHomePath } from '../lib/careFlow'
-
-const COMPACT_START = 0
-const COMPACT_END = 80
 
 export default function HomePage() {
   const location = useLocation()
@@ -23,11 +23,22 @@ export default function HomePage() {
   const { isAnyOverlayActive } = useTransition()
   const shared = useSharedHero()
   const stageRef = useRef(null)
+  const searchBarRef = useRef(null)
+
   const searchActive = location.pathname === '/search'
   const isFront = isHomePath(location.pathname)
   const [query, setQuery] = useState('')
-  const [scrollPad, setScrollPad] = useState(0)
   const freezeHome = !isFront || searchActive || isAnyOverlayActive || Boolean(shared?.active)
+  const searchOrigin = location.state?.searchOrigin
+  const searchPlaceholder = location.state?.searchPlaceholder
+  const searchReturnTo = location.state?.returnTo
+  const isPharmacySearch = searchOrigin === 'pharmacy'
+
+  const headerSearchVisible = useSearchScrollCompact({
+    stageRef,
+    searchRef: searchBarRef,
+    enabled: isFront && !searchActive,
+  })
 
   useRegisteredScroller('home', stageRef)
   useScrollLock('home', freezeHome)
@@ -36,38 +47,57 @@ export default function HomePage() {
     if (!searchActive) setQuery('')
   }, [searchActive])
 
-  useEffect(() => {
-    const el = stageRef.current
-    if (!el) return
-    const onScroll = () => {
-      const y = el.scrollTop
-      const ratio = Math.min(1, Math.max(0, (y - COMPACT_START) / (COMPACT_END - COMPACT_START)))
-      setScrollPad(ratio)
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
+  const openSearch = () => {
+    freezeNow('home')
+    navigate('/search')
+  }
 
-  const bottomPad = 16 - scrollPad * 12
+  const closeSearch = () => {
+    navigate(isPharmacySearch ? (searchReturnTo || '/pharmacy') : '/')
+  }
 
   return (
     <div className={`app ${searchActive ? 'is-search' : ''} ${isAnyOverlayActive ? 'is-dimmed' : ''}`}>
-      <div className="home-header" aria-hidden={searchActive} {...(searchActive ? { inert: true } : {})}>
+      <div
+        className="home-header"
+        aria-hidden={searchActive}
+        {...(searchActive ? { inert: true } : {})}
+      >
         <div className="home-header-inner">
-          <Header />
+          <Header
+            endAccessory={(
+              <HeaderSearchButton
+                visible={headerSearchVisible}
+                onClick={openSearch}
+              />
+            )}
+          />
         </div>
       </div>
 
-      <SearchBar
-        active={searchActive}
-        query={query}
-        onQueryChange={setQuery}
-        onCancel={() => navigate('/')}
-        style={{ paddingBottom: `${bottomPad}px` }}
-      />
+      {searchActive ? (
+        <SearchBar
+          active
+          query={query}
+          onQueryChange={setQuery}
+          onCancel={closeSearch}
+          idlePlaceholder={isPharmacySearch ? searchPlaceholder : undefined}
+          activePlaceholder={isPharmacySearch ? searchPlaceholder : undefined}
+        />
+      ) : null}
 
       <div className="home-body">
         <div className="home-stage" ref={stageRef}>
+          {!searchActive ? (
+            <SearchBar
+              scrollMode
+              barRef={searchBarRef}
+              query={query}
+              onQueryChange={setQuery}
+              onCancel={() => navigate('/')}
+            />
+          ) : null}
+
           <div className="home-feed" aria-hidden={searchActive} {...(searchActive ? { inert: true } : {})}>
             <Categories />
             <BookAppointment />

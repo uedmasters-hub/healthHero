@@ -1,0 +1,27 @@
+/*
+  Global viewport scrim — one continuous layer over status bar + app.
+  Elevated overlays (sheets, Quick Care, modals) sit above --z-scrim-elevated.
+*/
+
+.app-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scrim, 8000);
+  background: rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Cover notch / rounded screen edge continuously */
+  border-radius: inherit;
+}
+
+.app-scrim.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-scrim {
+    transition-duration: 0.01ms;
+  }
+}

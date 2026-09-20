@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { canonicalSpecialty, loadExploreListState } from '../data/specialisations'
 import { goBackToOrigin } from '../lib/careFlow'
 import { useTransition } from './PageTransition'
+import { usePushBack } from '../features/pushNav'
 import DoctorList from './DoctorList'
 import './BookingFlow.css'
 
@@ -14,6 +15,9 @@ export default function ExploreSpecialtyPage() {
   const specialty = canonicalSpecialty(decodeURIComponent(raw || ''))
   const scrollRootRef = useRef(null)
   const saved = loadExploreListState(specialty)
+  const goBack = usePushBack(() => {
+    goBackToOrigin(navigate, location, { openSpecialisations, openTopDoctors })
+  })
 
   useLayoutEffect(() => {
     const el = scrollRootRef.current
@@ -22,14 +26,10 @@ export default function ExploreSpecialtyPage() {
     }
   }, [specialty, saved?.scrollY])
 
-  const goBack = () => {
-    goBackToOrigin(navigate, location, { openSpecialisations, openTopDoctors })
-  }
-
   return (
-    <div className="booking-layout explore-layout" ref={scrollRootRef}>
+    <div className="booking-layout explore-layout page-push-in" ref={scrollRootRef}>
       <div className="booking-header">
-        <button className="back-btn" onClick={goBack} aria-label="Back">
+        <button className="back-btn" data-push-back onClick={goBack} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />

@@ -24,6 +24,9 @@
   overflow: visible;
   opacity: var(--opacity-visible);
   transform: translate3d(0, 0, 0);
+  position: relative;
+  z-index: 5;
+  background: var(--white);
   transition: max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease;
 }
 
@@ -121,21 +124,7 @@
 }
 
 .dark-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--overlay);
-  z-index: 1;
-  pointer-events: none;
-  opacity: var(--opacity-hidden);
-  transition: opacity 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.dark-overlay.active {
-  z-index: 150;
-  opacity: var(--opacity-visible);
+  display: none;
 }
 
 @keyframes fadeIn {

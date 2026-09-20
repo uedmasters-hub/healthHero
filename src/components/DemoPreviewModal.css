@@ -1,12 +1,12 @@
 .demo-preview-overlay {
   position: absolute;
   inset: 0;
-  z-index: calc(var(--z-sheet) + 40);
+  z-index: var(--z-scrim-elevated, 8100);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-6);
-  background: rgba(15, 23, 42, 0.36);
+  background: transparent;
   animation: demoPreviewFadeIn 0.2s ease;
 }
 

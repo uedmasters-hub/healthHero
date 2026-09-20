@@ -6,6 +6,7 @@ import { isPreviewPath } from '../lib/previewModules'
 import { useDemoPreview } from './DemoPreviewModal'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
+import { usePushBack } from '../features/pushNav'
 import './NotificationsPage.css'
 
 const typeIcon = {
@@ -75,6 +76,7 @@ const typeIcon = {
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
+  const goHome = usePushBack('/')
   const { currentBooking } = useBooking()
   const { notifications, unreadCount, markRead, markAllRead, clearNotification } = useNotifications()
   const { show: showDemoPreview } = useDemoPreview()
@@ -83,7 +85,11 @@ export default function NotificationsPage() {
   const openItem = (item) => {
     markRead(item.id)
     if (!item.to) return
-    if (item.type === 'pharmacy' || isPreviewPath(item.to)) {
+    if (item.type === 'pharmacy' || item.to === '/pharmacy') {
+      navigate('/pharmacy')
+      return
+    }
+    if (isPreviewPath(item.to)) {
       showDemoPreview()
       return
     }
@@ -95,9 +101,9 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="notifications-page">
+    <div className="notifications-page page-push-in">
       <div className="notifications-header">
-        <button className="notifications-back" type="button" onClick={() => navigate('/')} aria-label="Back">
+        <button className="notifications-back" data-push-back type="button" onClick={goHome} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />

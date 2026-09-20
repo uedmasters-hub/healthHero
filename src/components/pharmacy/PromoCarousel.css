@@ -1,0 +1,211 @@
+.promo-carousel {
+  padding: 0;
+}
+
+.promo-carousel__scroller {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: var(--content-padding);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.promo-carousel__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.promo-carousel__scroller.is-single {
+  overflow-x: hidden;
+  scroll-snap-type: none;
+}
+
+.promo-carousel__track {
+  display: flex;
+  align-items: stretch;
+  gap: var(--card-gap);
+  padding-left: var(--content-padding);
+  padding-right: var(--content-padding);
+}
+
+.promo-carousel__slide {
+  flex: 0 0 min(88%, calc(var(--phone-width, 390px) - var(--space-10) * 2.5));
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  min-width: 0;
+}
+
+.promo-carousel__scroller.is-single .promo-carousel__slide {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+}
+
+/* Cool neutral → soft blue — only expressive surface on the page */
+.promo-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 168px;
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  border: var(--border-width) solid var(--border);
+  background: linear-gradient(145deg, #f7f8fb 0%, #f0f3fa 38%, #e8ecf8 72%, #e4e9f6 100%);
+  box-shadow: var(--shadow-card);
+  transform: scale(0.96);
+  transform-origin: center center;
+  opacity: 0.9;
+  transition:
+    transform 0.35s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity 0.35s var(--ease-standard, ease);
+}
+
+.promo-card.is-active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Tone variants stay in the same cool family — no saturated pastels */
+.promo-card--refill,
+.promo-card--rx,
+.promo-card--essentials,
+.promo-card--pharmacist {
+  background: linear-gradient(145deg, #f7f8fb 0%, #f0f3fa 38%, #e8ecf8 72%, #e4e9f6 100%);
+}
+
+.promo-card--rx {
+  background: linear-gradient(150deg, #f8f9fb 0%, #eef2f8 50%, #e6ebf5 100%);
+}
+
+.promo-card--essentials {
+  background: linear-gradient(150deg, #f7f8fc 0%, #eef1f9 55%, #e7ebf6 100%);
+}
+
+.promo-card--pharmacist {
+  background: linear-gradient(150deg, #f8f9fb 0%, #f1f3f9 50%, #e9edf6 100%);
+}
+
+.promo-card__copy {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  max-width: 58%;
+}
+
+.promo-card__title {
+  margin: 0;
+  font-size: var(--text-heading-size, 18px);
+  line-height: 1.25;
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.promo-card__body {
+  margin: 0;
+  font-size: var(--text-caption-size, 12.5px);
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.promo-card__cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding: var(--space-2-5) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: var(--white);
+  font: inherit;
+  font-size: var(--text-label-size, 13px);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: transform 0.18s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.promo-card__cta:active {
+  transform: scale(0.97);
+}
+
+.promo-card__visual {
+  position: absolute;
+  right: -4%;
+  bottom: -8%;
+  width: 48%;
+  height: 108%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.promo-card__orb {
+  position: absolute;
+  right: 12%;
+  top: 18%;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(91, 95, 198, 0.08);
+  filter: blur(2px);
+}
+
+.promo-card__orb.is-soft {
+  right: 28%;
+  top: 48%;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.promo-card__image {
+  position: absolute;
+  right: 4%;
+  bottom: 6%;
+  width: 86%;
+  height: auto;
+  max-height: 92%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(15, 18, 28, 0.1));
+  transform: translate3d(0, 0, 0) scale(1);
+  transition: transform 0.45s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.promo-card.is-active .promo-card__image {
+  transform: translate3d(-2%, -2%, 0) scale(1.04);
+}
+
+.promo-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-1-5);
+  padding: var(--space-3) var(--content-padding) 0;
+}
+
+.promo-carousel__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition:
+    width 0.22s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
+    background 0.22s ease;
+}
+
+.promo-carousel__dot.is-active {
+  width: 18px;
+  border-radius: 999px;
+  background: var(--primary);
+}

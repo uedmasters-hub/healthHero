@@ -16,25 +16,29 @@ import { createClient } from '@supabase/supabase-js'
 const url = import.meta.env.VITE_SUPABASE_URL
 const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
-if (!url || !publishableKey) {
-  throw new Error(
-    'Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. Add them to .env.local.',
-  )
-}
+export const isSupabaseConfigured = Boolean(url && publishableKey)
 
-if (/service_role|secret/i.test(publishableKey)) {
-  throw new Error('Refusing to initialize Supabase with a secret or service-role key in the client.')
-}
+export const supabaseConfigError = (() => {
+  if (!url || !publishableKey) {
+    return 'Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. Add them in Vercel Project Settings → Environment Variables (and .env.local for local), then redeploy.'
+  }
+  if (/service_role|secret/i.test(publishableKey)) {
+    return 'Refusing to initialize Supabase with a secret or service-role key in the client.'
+  }
+  return null
+})()
 
-export const supabase = createClient(url, publishableKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    storageKey: 'healthhero.auth.v1',
-  },
-})
+export const supabase = isSupabaseConfigured && !supabaseConfigError
+  ? createClient(url, publishableKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce',
+        storageKey: 'healthhero.auth.v1',
+      },
+    })
+  : null
 
 export function getAppOrigin() {
   if (typeof window === 'undefined') return ''
@@ -44,4 +48,11 @@ export function getAppOrigin() {
 export function authRedirectTo(pathname = '/') {
   const path = pathname.startsWith('/') ? pathname : `/${pathname}`
   return `${getAppOrigin()}${path}`
+}
+
+export function requireSupabase() {
+  if (!supabase) {
+    throw new Error(supabaseConfigError || 'Supabase is not configured.')
+  }
+  return supabase
 }

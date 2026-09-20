@@ -1,6 +1,7 @@
 import { createNotification, sortByNewest, Types, Priority } from './models'
 import { MAX_NOTIFICATIONS, AUTO_GENERATE_INTERVAL_MS, SEED_KEY } from './constants'
 import * as repo from './repository'
+import { emitIncoming } from './island'
 
 let listeners = []
 let autoTimer = null
@@ -251,6 +252,9 @@ export function clearAll() {
 export function pushNotification(data) {
   const notification = createNotification(data)
   prune(repo.append(notification))
+  // Island pending must register BEFORE subscribers see the new unread count,
+  // otherwise the badge pops immediately and the toast never “owns” the entry.
+  emitIncoming(notification)
   notify()
   return notification
 }
@@ -260,6 +264,7 @@ export function startAutoGenerate() {
   autoTimer = setInterval(() => {
     const notification = generateNotification()
     prune(repo.append(notification))
+    emitIncoming(notification)
     notify()
   }, AUTO_GENERATE_INTERVAL_MS)
 }

@@ -3,10 +3,12 @@ import { useUser } from '../user'
 import { HOME_VISIBLE_STATUSES, useBookingStore } from '../booking'
 import { CARE_SUPPORT, NavGroup, NavRow, ProfileIcons, ProfilePage } from './profile/ProfileChrome'
 import RevealItem from './RevealItem'
+import { usePushBack } from '../features/pushNav'
 import './PatientProfile.css'
 
 export default function PatientProfile() {
   const navigate = useNavigate()
+  const goHome = usePushBack('/')
   const { profile, isDemo, logout, health } = useUser()
   const { bookings } = useBookingStore()
 
@@ -24,7 +26,7 @@ export default function PatientProfile() {
   return (
     <ProfilePage
       title="My Profile"
-      onBack={() => navigate('/')}
+      onBack={goHome}
       dataset="profile-hub"
       action={(
         <button type="button" className="profile-header-edit" onClick={() => navigate('/profile/personal')}>

@@ -93,8 +93,8 @@
   --toggle-off: #D1D5DB;
 
   /* —— Overlay / Scrim —— */
-  --overlay: rgba(15, 23, 42, 0.35);
-  --overlay-strong: rgba(15, 23, 42, 0.5);
+  --overlay: rgba(0, 0, 0, 0.12);
+  --overlay-strong: rgba(0, 0, 0, 0.18);
   --overlay-dark: var(--overlay);
   --overlay-lightbox: #0c0e14;
   --surface-lightbox: #1c1d22;
@@ -316,6 +316,12 @@
   --z-footer: 100;
   --z-overlay: 1000;
   --z-sheet: 1001;
+  /* Phone-screen layers — scrim covers status bar; elevated UI sits above */
+  --z-status: 20;
+  --z-home-indicator: 25;
+  --z-scrim: 8000;
+  --z-scrim-elevated: 8100;
+  --z-lightbox: 8200;
 }
 
 /* —— Base —— */
@@ -343,6 +349,48 @@ body {
 #root {
   background: transparent;
   position: relative;
+}
+
+/* Native phone shell — full-bleed tokens (preview keeps mock frame values) */
+html.is-native-shell {
+  --phone-width: 100dvw;
+  --phone-height: 100dvh;
+  --phone-scale: 1;
+  --frame-footer: env(safe-area-inset-bottom, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --frame-backdrop: var(--white);
+}
+
+html.is-native-shell,
+html.is-native-shell body,
+html.is-native-shell #root {
+  width: 100dvw;
+  height: 100dvh;
+  max-width: 100dvw;
+  max-height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html.is-native-shell body {
+  background: var(--white);
+}
+
+/* Island sits just below the safe-area padding on #phone-screen */
+html.is-native-shell .notif-island__card {
+  top: 8px;
+}
+
+html.is-native-shell .bottom-nav {
+  max-width: none;
+  width: 100%;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+html.is-native-shell .quick-care {
+  right: calc(20px + env(safe-area-inset-right, 0px));
 }
 
 ::-webkit-scrollbar {

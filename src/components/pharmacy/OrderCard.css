@@ -1,0 +1,109 @@
+.order-list {
+  padding: 0 var(--content-padding);
+}
+
+.order-list__header {
+  margin-bottom: var(--section-header-gap);
+}
+
+.order-list__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+}
+
+/* Host is the button; layout lives on .reveal-body (RevealItem). */
+.order-card {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.2s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.order-card .reveal-body {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3-5, 14px);
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3-5, 14px) var(--space-4);
+  min-height: 0;
+}
+
+.order-card:hover {
+  background: var(--active-bg);
+}
+
+.order-card:active {
+  transform: scale(0.985);
+  box-shadow: var(--shadow-sm);
+}
+
+.order-card__thumb {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md, 12px);
+  background: var(--active-bg, #f7f8fa);
+  border: var(--border-width) solid var(--border-subtle, var(--border));
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-card__thumb img {
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.order-card__copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-1-5);
+}
+
+.order-card__name {
+  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  letter-spacing: -0.15px;
+}
+
+.order-card__window {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+.order-card__chevron {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted, #9ca3af);
+}

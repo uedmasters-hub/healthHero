@@ -1,0 +1,65 @@
+/*
+  Search sits OUTSIDE the capsule.
+  Positioned inside .header-actions so we can clear the full shell width.
+*/
+.header-actions .header-search-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center center;
+  will-change: opacity, transform, right;
+  /* Left of the 44px avatar slot when capsule is hidden */
+  right: calc(var(--ha-slot) + 12px);
+  transition:
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    right 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Left of the full Bell+Avatar capsule when shell is present */
+.header-actions--has-shell .header-search-btn {
+  right: calc(var(--ha-shell-full) - var(--ha-pad) + 12px);
+}
+
+.header-actions .header-search-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.header-actions .header-search-btn.is-hidden {
+  opacity: 0;
+  transform: scale3d(0, 0, 1);
+  pointer-events: none;
+}
+
+.header-actions .header-search-btn.is-visible {
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+  pointer-events: auto;
+}
+
+.header-actions .header-search-btn.is-visible:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-actions .header-search-btn {
+    transition-duration: 0.01ms !important;
+  }
+}

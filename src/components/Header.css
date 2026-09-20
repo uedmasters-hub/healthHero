@@ -14,6 +14,14 @@
   min-width: 0;
 }
 
+.header-end {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .header-logo {
   width: var(--icon-well-size);
   height: var(--icon-well-size);
@@ -83,75 +91,12 @@
   transform: translateY(1px);
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  background: var(--white);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-full);
-  padding: var(--space-0-5);
-  padding-left: var(--space-1);
-  flex-shrink: 0;
-  overflow: visible;
-}
-
-.avatar {
-  position: relative;
-  width: var(--avatar-sm);
-  height: var(--avatar-sm);
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  overflow: visible;
-}
-
-.avatar-img {
-  width: var(--avatar-sm);
-  height: var(--avatar-sm);
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  object-position: center 12%;
-  display: block;
-  background: var(--media-bg);
-}
-
-.avatar-placeholder {
-  width: var(--avatar-sm);
-  height: var(--avatar-sm);
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-snug);
-  color: var(--white);
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
-}
-
-.pro-badge {
-  position: absolute;
-  bottom: -3px;
-  right: -2px;
-  background: var(--primary);
-  color: var(--white);
-  font-size: var(--text-badge-size);
-  font-weight: var(--font-weight-bold);
-  padding: 2px var(--space-1-5);
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.3px;
-  line-height: 1.2;
-}
-
 /* Location Modal */
 .location-overlay {
   position: absolute;
   inset: 0;
   background: transparent;
-  z-index: 1000;
+  z-index: var(--z-scrim-elevated, 8100);
   display: flex;
   align-items: flex-end;
   animation: fadeIn 0.2s ease forwards;
@@ -164,7 +109,6 @@
 .location-overlay.closing .location-modal {
   animation: slideDown 0.25s ease forwards;
   box-shadow: var(--shadow-sheet);
-
 }
 
 .ds-sheet.location-modal {

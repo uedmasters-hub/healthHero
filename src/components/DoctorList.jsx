@@ -276,7 +276,7 @@ export default function DoctorList({
     }
 
     return (
-      <SheetPortal>
+      <SheetPortal to="screen">
         <div className={`filter-overlay ${isClosing ? 'closing' : ''}`} onClick={closeFilter}>
           <div className="filter-modal" onClick={(e) => e.stopPropagation()}>
             <div className="filter-modal-header">

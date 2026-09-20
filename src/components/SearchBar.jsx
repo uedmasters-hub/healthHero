@@ -5,8 +5,17 @@ import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import './SearchBar.css'
 
-const SearchIcon = () => (
-  <svg className="search-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+export const SearchIcon = ({ className = 'search-field-icon', iconRef }) => (
+  <svg
+    ref={iconRef}
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="11" cy="11" r="8" />
     <path d="M21 21l-4.35-4.35" />
   </svg>
@@ -34,10 +43,11 @@ export function SearchField({
   readOnly = false,
   inputRef,
   onKeyDown,
+  iconRef,
 }) {
   return (
     <label className="search-field">
-      <SearchIcon />
+      <SearchIcon iconRef={iconRef} />
       <input
         ref={inputRef}
         type="text"
@@ -74,7 +84,19 @@ export function SearchField({
   )
 }
 
-export default function SearchBar({ active = false, query = '', onQueryChange, onCancel, style }) {
+export default function SearchBar({
+  active = false,
+  query = '',
+  onQueryChange,
+  onCancel,
+  style,
+  iconRef,
+  barRef,
+  scrollMode = false,
+  idlePlaceholder = 'Search Doctor',
+  activePlaceholder = 'Search doctors, services...',
+  onOpenSearch,
+}) {
   const navigate = useNavigate()
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 160 })
   const inputRef = useRef(null)
@@ -87,16 +109,29 @@ export default function SearchBar({ active = false, query = '', onQueryChange, o
 
   const openSearch = () => {
     if (active) return
+    if (typeof onOpenSearch === 'function') {
+      onOpenSearch()
+      return
+    }
     freezeNow('home')
     navigate('/search')
   }
 
   return (
-    <div className={`search-bar ${active ? 'is-active' : ''}`} style={style}>
+    <div
+      ref={barRef}
+      className={[
+        'search-bar',
+        active ? 'is-active' : '',
+        scrollMode ? 'is-scroll-mode' : '',
+      ].filter(Boolean).join(' ')}
+      style={style}
+    >
       <RevealItem className="search-field-reveal" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
         <SearchField
           inputRef={inputRef}
-          placeholder={active ? 'Search doctors, services...' : 'Search Doctor'}
+          iconRef={iconRef}
+          placeholder={active ? activePlaceholder : idlePlaceholder}
           value={query}
           onChange={(e) => onQueryChange?.(e.target.value)}
           readOnly={!active}

@@ -111,6 +111,14 @@ export function unlock(name) {
   unfreeze(entry)
 }
 
+/** Drop a lock immediately (e.g. page remount after freezeNow left count 0). */
+export function clearLock(name) {
+  const entry = locks.get(name)
+  if (!entry) return
+  locks.delete(name)
+  unfreeze(entry)
+}
+
 export function isLocked(name) {
   return locks.has(name)
 }

@@ -15,6 +15,7 @@ import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
 import { markDoctorViewed } from '../lib/recentDoctors'
 import useNow from '../hooks/useNow'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
+import { usePushBack } from '../features/pushNav'
 import './DoctorProfile.css'
 
 const LOGO_BADGES = [
@@ -200,10 +201,10 @@ export default function DoctorProfile() {
   const cases = casesLabel(doctor.reviews?.total)
   const statRating = doctor.reviews?.rating ?? doctor.rating
 
-  const goBack = () => {
+  const goBack = usePushBack(() => {
     if (sharedFlow) shared.startClose()
     goBackToOrigin(navigate, location, { openTopDoctors, openSpecialisations })
-  }
+  })
 
   const bookAppointment = () => {
     if (!selectedTime || selectedWindow?.isPast) return
@@ -232,7 +233,7 @@ export default function DoctorProfile() {
       className={`doctor-profile ${sharedFlow ? 'is-shared-hero' : restore?.topDoctors ? 'is-under-overlay' : 'page-push-in'} ${showSkeletons ? 'is-skeleton' : ''} ${contentReady ? 'is-content-ready' : ''} has-cta`}
     >
       <div className="profile-header">
-        <button type="button" className="ds-icon-btn is-xl profile-back-btn" onClick={goBack} aria-label="Back">
+        <button type="button" className="ds-icon-btn is-xl profile-back-btn" data-push-back onClick={goBack} aria-label="Back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />

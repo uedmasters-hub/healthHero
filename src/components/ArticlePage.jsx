@@ -12,6 +12,7 @@ import { flowState, goBackToOrigin } from '../lib/careFlow'
 import { useTransition } from './PageTransition'
 import { BookingReveal, useBookingReveal } from './BookingReveal'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
+import { usePushBack } from '../features/pushNav'
 import InsightCard from './InsightCard'
 import './HealthInsights.css'
 import './ArticlePage.css'
@@ -65,6 +66,7 @@ export default function ArticlePage() {
   const scrollRef = useRef(null)
   const [saved, setSaved] = useState(() => isInsightSaved(id))
   const contentReady = useBookingReveal(`article:${id}`, Boolean(article))
+  const goBack = usePushBack(() => goBackToOrigin(navigate, location, { openInsights }))
 
   useRegisteredScroller(`article:${id}`, scrollRef)
   useScrollLock(`article:${id}`, Boolean(article) && !contentReady)
@@ -81,8 +83,6 @@ export default function ArticlePage() {
   }, [article, navigate])
 
   if (!article) return null
-
-  const goBack = () => goBackToOrigin(navigate, location, { openInsights })
 
   const openRelated = (next) => {
     if (!next?.id || next.id === article.id) return
@@ -117,7 +117,8 @@ export default function ArticlePage() {
         <div className="article-header-side is-start">
           <button
             type="button"
-            className="ds-icon-btn is-subtle is-md"
+            className="ds-icon-btn is-subtle is-md article-back-btn"
+            data-push-back
             onClick={goBack}
             aria-label="Back"
           >

@@ -3,7 +3,7 @@
  * Uploads localStorage health-chart and booking JSON into Supabase once per user.
  * Identity remains auth.users → public.users. This never writes passwords.
  */
-import { supabase } from '../../lib/supabase'
+import { requireSupabase } from '../../lib/supabase'
 import { STORAGE_KEYS as USER_KEYS } from '../../user/constants'
 import { STORAGE_KEYS as BOOKING_KEYS } from '../../booking/constants'
 
@@ -105,7 +105,7 @@ function doctorUuid(id) {
 
 async function upsert(table, rows, onConflict) {
   if (!rows.length) return
-  const { error } = await supabase.from(table).upsert(rows, { onConflict })
+  const { error } = await requireSupabase().from(table).upsert(rows, { onConflict })
   if (error) throw error
 }
 
@@ -125,7 +125,7 @@ export async function migrateLocalDataToSupabase(user) {
   const { first, last } = splitName(profile.name || user.user_metadata?.full_name || user.email)
   const uid = user.id
 
-  await supabase.from('patient_profiles').upsert({
+  await requireSupabase().from('patient_profiles').upsert({
     user_id: uid,
     first_name: first,
     last_name: last,
@@ -278,9 +278,9 @@ export async function migrateLocalDataToSupabase(user) {
 
   const insightIds = localUser?.savedInsightIds || []
   if (insightIds.length) {
-    const { data: rows } = await supabase.from('articles').select('id, slug').in('slug', insightIds)
+    const { data: rows } = await requireSupabase().from('articles').select('id, slug').in('slug', insightIds)
     const links = (rows || []).map((row) => ({ user_id: uid, article_id: row.id }))
-    if (links.length) await supabase.from('saved_insights').upsert(links, { onConflict: 'user_id,article_id' })
+    if (links.length) await requireSupabase().from('saved_insights').upsert(links, { onConflict: 'user_id,article_id' })
   }
 
   const bookings = bookingState?.bookings || []

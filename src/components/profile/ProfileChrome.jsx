@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom'
 import useStaggerReveal from '../useStaggerReveal'
+import { usePushBack } from '../../features/pushNav'
 import '../PatientProfile.css'
 
 export const CARE_SUPPORT = {
@@ -14,14 +14,14 @@ export function dash(value) {
 }
 
 export function ProfilePage({ title, onBack, action, children, dataset }) {
-  const navigate = useNavigate()
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 160, dataset })
-  const goBack = onBack || (() => navigate('/profile'))
+  const defaultBack = usePushBack('/profile')
+  const goBack = onBack || defaultBack
 
   return (
     <div className="user-profile-page page-push-in">
       <div className="user-profile-header-bar">
-        <button type="button" className="user-profile-back-btn" onClick={goBack} aria-label="Back">
+        <button type="button" className="user-profile-back-btn" data-push-back onClick={goBack} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />

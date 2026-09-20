@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { SheetPortal } from './PageTransition'
+import { useAppScrim } from './AppScrim'
 import './DemoPreviewModal.css'
 
 const CLOSE_MS = 200
@@ -60,6 +61,7 @@ export function DemoPreviewProvider({ children }) {
 
 export default function DemoPreviewModal({ closing = false, onClose }) {
   const ctaRef = useRef(null)
+  useAppScrim(!closing)
 
   useEffect(() => {
     ctaRef.current?.focus()
@@ -77,7 +79,7 @@ export default function DemoPreviewModal({ closing = false, onClose }) {
   }, [onClose])
 
   return (
-    <SheetPortal>
+    <SheetPortal to="screen">
       <div
         className={`demo-preview-overlay ${closing ? 'is-closing' : ''}`}
         onClick={onClose}

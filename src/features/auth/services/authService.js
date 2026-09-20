@@ -5,7 +5,7 @@
  */
 import { AUTH_ERROR } from '../../../user/constants'
 import { normalizeEmail } from '../../../user/models'
-import { authRedirectTo, supabase } from '../../../lib/supabase'
+import { authRedirectTo, requireSupabase } from '../../../lib/supabase'
 
 function isNetworkFailure(error) {
   const message = String(error?.message || error || '')
@@ -72,12 +72,14 @@ export function chartIdentityFromUser(user) {
 }
 
 export async function getCurrentSession() {
+  const supabase = requireSupabase()
   const { data, error } = await supabase.auth.getSession()
   if (error) return { session: null, error: mapAuthError(error) }
   return { session: data.session || null }
 }
 
 export async function signInWithPassword(email, password) {
+  const supabase = requireSupabase()
   const { data, error } = await supabase.auth.signInWithPassword({
     email: normalizeEmail(email),
     password,
@@ -89,6 +91,7 @@ export async function signInWithPassword(email, password) {
 }
 
 export async function signUpWithPassword({ name, email, phone, password }) {
+  const supabase = requireSupabase()
   const { data, error } = await supabase.auth.signUp({
     email: normalizeEmail(email),
     password,
@@ -115,6 +118,7 @@ export async function signUpWithPassword({ name, email, phone, password }) {
 }
 
 export async function requestPasswordReset(email) {
+  const supabase = requireSupabase()
   const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
     redirectTo: authRedirectTo('/reset'),
   })
@@ -123,12 +127,14 @@ export async function requestPasswordReset(email) {
 }
 
 export async function updatePassword(password) {
+  const supabase = requireSupabase()
   const { data, error } = await supabase.auth.updateUser({ password })
   if (error) return { ok: false, error: mapAuthError(error) }
   return { ok: true, user: data.user }
 }
 
 export async function resendVerification(email) {
+  const supabase = requireSupabase()
   const { error } = await supabase.auth.resend({
     type: 'signup',
     email: normalizeEmail(email),
@@ -139,6 +145,7 @@ export async function resendVerification(email) {
 }
 
 export async function signOut() {
+  const supabase = requireSupabase()
   const { error } = await supabase.auth.signOut()
   if (error && !isNetworkFailure(error)) return { ok: false, error: mapAuthError(error) }
   return { ok: true }
@@ -146,6 +153,7 @@ export async function signOut() {
 
 export async function loadAppUser(userId) {
   if (!userId) return null
+  const supabase = requireSupabase()
   const { data, error } = await supabase
     .from('users')
     .select('id, email, full_name, phone, role, status, created_at, updated_at')
@@ -192,6 +200,7 @@ export async function fetchGoogleBirthday(session) {
 }
 
 export function subscribeAuth(callback) {
+  const supabase = requireSupabase()
   const { data } = supabase.auth.onAuthStateChange((event, session) => {
     callback(event, session)
   })

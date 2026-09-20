@@ -1,12 +1,12 @@
 .dup-overlay {
   position: absolute;
   inset: 0;
-  z-index: 1400;
+  z-index: var(--z-scrim-elevated, 8100);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-6);
-  background: rgba(15, 23, 42, 0.4);
+  background: transparent;
   animation: dupFadeIn 0.2s ease;
 }
 

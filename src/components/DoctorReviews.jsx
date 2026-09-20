@@ -10,6 +10,7 @@ import {
   updateDoctorReview,
 } from '../data/reviews'
 import { flowState } from '../lib/careFlow'
+import { usePushBack } from '../features/pushNav'
 import './DoctorReviews.css'
 
 function StarPick({ value, onChange }) {
@@ -64,6 +65,7 @@ export default function DoctorReviews() {
   const navigate = useNavigate()
   const location = useLocation()
   const doctor = getDoctorById(id)
+  const goBack = usePushBack(() => navigate(`/doctor/${id}`, { state: flowState(location) }))
   const [tick, setTick] = useState(0)
   const items = useMemo(() => getDoctorReviews(id), [id, tick])
   const summary = useMemo(() => getDoctorReviewSummary(id), [id, tick])
@@ -111,8 +113,9 @@ export default function DoctorReviews() {
         <button
           type="button"
           className="reviews-back"
+          data-push-back
           aria-label="Back"
-          onClick={() => navigate(`/doctor/${id}`, { state: flowState(location) })}
+          onClick={goBack}
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />

@@ -1,0 +1,42 @@
+/* Shared large-title tab chrome (Treat / Pharmacy / Centers language) */
+
+.tab-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5) var(--space-2);
+  background: var(--white);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.tab-page-header__left {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-page-header__title {
+  font-size: var(--text-hero-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 2px;
+  letter-spacing: -0.4px;
+}
+
+.tab-page-header__subtitle {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.tab-page-header__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--space-2);
+}
+
+.tab-page-header__actions .ds-icon-btn.is-subtle {
+  margin-top: 2px;
+}

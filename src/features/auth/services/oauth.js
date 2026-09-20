@@ -4,7 +4,7 @@
  * and callable, but Health Hero does not require Apple credentials yet.
  */
 import { AUTH_ERROR } from '../../../user/constants'
-import { authRedirectTo, supabase } from '../../../lib/supabase'
+import { authRedirectTo, requireSupabase } from '../../../lib/supabase'
 import { mapAuthError } from './authService'
 
 export const OAUTH_PROVIDERS = Object.freeze({
@@ -29,7 +29,7 @@ async function startOAuth(provider, { redirectTo = '/' } = {}) {
     options.scopes = GOOGLE_OAUTH_SCOPES
   }
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await requireSupabase().auth.signInWithOAuth({
     provider,
     options,
   })

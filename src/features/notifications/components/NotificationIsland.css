@@ -1,0 +1,200 @@
+/* Portaled onto #phone-screen — sits just under the status bar */
+.notif-island {
+  position: absolute;
+  inset: 0;
+  z-index: 10050;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.notif-island__card {
+  position: absolute;
+  top: 58px; /* status bar (~54px) + gap */
+  left: 50%;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: calc(100% - 28px);
+  max-width: 360px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 22px;
+  background: rgba(22, 24, 32, 0.96);
+  color: #f5f6fa;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow:
+    0 14px 36px rgba(15, 18, 28, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  transform: translate3d(-50%, -12px, 0) scale(0.92);
+  transform-origin: center center;
+  opacity: 0;
+  will-change: transform, opacity;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.notif-island__card--enter {
+  animation: notif-island-enter 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.notif-island__card--mode-toast.notif-island__card--enter {
+  animation: notif-island-toast-enter 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.notif-island__card--hold {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0) scale(1);
+}
+
+.notif-island__card--mode-toast.notif-island__card--hold {
+  transform: translate3d(-50%, 0, 0);
+}
+
+.notif-island__card--absorb {
+  animation: none;
+  pointer-events: none;
+  /* Keep the same rectangular card — no early fade / morph */
+  opacity: 1;
+  overflow: hidden;
+}
+
+.notif-island__card--dismiss {
+  animation: notif-island-dismiss 0.28s cubic-bezier(0.33, 1, 0.68, 1) both;
+  pointer-events: none;
+}
+
+/* Non-home: reverse the entrance — slide up, no shrink-to-nothing */
+.notif-island__card--toast-exit {
+  animation: notif-island-toast-exit 0.42s cubic-bezier(0.33, 1, 0.68, 1) both;
+  pointer-events: none;
+}
+
+.notif-island__glyph {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 1px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.notif-island__glyph svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.notif-island__glyph--appointment,
+.notif-island__glyph--booking,
+.notif-island__glyph--telehealth {
+  background: rgba(79, 91, 213, 0.35);
+}
+
+.notif-island__glyph--results,
+.notif-island__glyph--prescription {
+  background: rgba(16, 185, 129, 0.28);
+}
+
+.notif-island__glyph--emergency,
+.notif-island__glyph--vaccination {
+  background: rgba(194, 65, 12, 0.32);
+}
+
+.notif-island__glyph--insurance,
+.notif-island__glyph--profile,
+.notif-island__glyph--health_tip {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.notif-island__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.notif-island__title {
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.notif-island__body {
+  font-size: 12.5px;
+  font-weight: 450;
+  line-height: 1.35;
+  color: rgba(245, 246, 250, 0.72);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@keyframes notif-island-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -14px, 0) scale(0.9);
+  }
+  62% {
+    opacity: 1;
+    transform: translate3d(-50%, 1px, 0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+}
+
+@keyframes notif-island-toast-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -32px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes notif-island-dismiss {
+  0% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -28px, 0) scale(0.94);
+  }
+}
+
+@keyframes notif-island-toast-exit {
+  0% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -36px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notif-island__card--enter,
+  .notif-island__card--dismiss,
+  .notif-island__card--toast-exit {
+    animation-duration: 0.01ms !important;
+  }
+}

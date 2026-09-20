@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import { SearchField } from './SearchBar'
 import { useUser } from '../user'
-import NotificationBell from '../features/notifications/components/NotificationBell'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
+import HeaderActions from './home/HeaderActions'
 import './Header.css'
 
 const indianCities = [
@@ -94,9 +93,9 @@ const GpsIcon = () => (
   </svg>
 )
 
-export default function Header() {
-  const navigate = useNavigate()
-  const { profile, isDemo } = useUser()
+/** Home header — location + optional end accessory + HeaderActions. */
+export default function Header({ endAccessory = null }) {
+  const { profile } = useUser()
   const [selectedCity, setSelectedCity] = useState(profile?.city || 'Delhi')
   const [fromGps, setFromGps] = useState(false)
   const [locateStatus, setLocateStatus] = useState('idle')
@@ -199,16 +198,8 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="header-actions">
-          <NotificationBell />
-          <button className="avatar" type="button" onClick={() => navigate('/profile')} aria-label="Open profile">
-            {profile?.avatar ? (
-              <img src={profile.avatar} alt="" className="avatar-img" />
-            ) : (
-              <span className="avatar-placeholder">{profile?.initials || 'U'}</span>
-            )}
-            {isDemo ? <span className="pro-badge">PRO</span> : null}
-          </button>
+        <div className="header-end">
+          <HeaderActions searchSlot={endAccessory} />
         </div>
       </header>
 
@@ -221,61 +212,61 @@ export default function Header() {
           sheetClassName="location-modal"
           showHandle
         >
-              <div className="ds-sheet-header location-modal-header">
-                <h3 id="location-sheet-title">Select City</h3>
-                <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-              <div className="location-search">
-                <SearchField
-                  placeholder="Search city..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
-              <div className="location-list" ref={cityReveal.containerRef}>
-                <button
-                  type="button"
-                  className={`location-gps ${fromGps ? 'is-selected' : ''} ${locateStatus === 'locating' ? 'is-busy' : ''} ${locateStatus === 'denied' || locateStatus === 'error' ? 'is-alert' : ''}`}
-                  onClick={useCurrentLocation}
-                  disabled={locateStatus === 'locating'}
-                >
-                  <span className={`location-gps-mark ${locateStatus === 'locating' ? 'is-spin' : ''}`}>
-                    <GpsIcon />
-                  </span>
-                  <span className="location-gps-copy">
-                    <span className="location-gps-title">{gpsTitle}</span>
-                    <span className="location-gps-sub">{gpsSub}</span>
-                  </span>
-                </button>
+          <div className="ds-sheet-header location-modal-header">
+            <h3 id="location-sheet-title">Select City</h3>
+            <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div className="location-search">
+            <SearchField
+              placeholder="Search city..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="location-list" ref={cityReveal.containerRef}>
+            <button
+              type="button"
+              className={`location-gps ${fromGps ? 'is-selected' : ''} ${locateStatus === 'locating' ? 'is-busy' : ''} ${locateStatus === 'denied' || locateStatus === 'error' ? 'is-alert' : ''}`}
+              onClick={useCurrentLocation}
+              disabled={locateStatus === 'locating'}
+            >
+              <span className={`location-gps-mark ${locateStatus === 'locating' ? 'is-spin' : ''}`}>
+                <GpsIcon />
+              </span>
+              <span className="location-gps-copy">
+                <span className="location-gps-title">{gpsTitle}</span>
+                <span className="location-gps-sub">{gpsSub}</span>
+              </span>
+            </button>
 
-                {filteredCities.map((city, i) => (
-                  <RevealItem
-                    as="button"
-                    key={city}
-                    className={`location-item ${selectedCity === city && !fromGps ? 'active' : ''}`}
-                    revealed={cityReveal.isRevealed(i)}
-                    cached={cityReveal.isCached}
-                    ref={cityReveal.setItemRef(i)}
-                    onClick={() => pickCity(city)}
-                  >
-                    <span className="location-item-pin">📍</span>
-                    <span className="location-item-name">{city}</span>
-                    {selectedCity === city && !fromGps && (
-                      <svg className="location-item-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </RevealItem>
-                ))}
-                {filteredCities.length === 0 && (
-                  <div className="location-empty">No cities found</div>
+            {filteredCities.map((city, i) => (
+              <RevealItem
+                as="button"
+                key={city}
+                className={`location-item ${selectedCity === city && !fromGps ? 'active' : ''}`}
+                revealed={cityReveal.isRevealed(i)}
+                cached={cityReveal.isCached}
+                ref={cityReveal.setItemRef(i)}
+                onClick={() => pickCity(city)}
+              >
+                <span className="location-item-pin">📍</span>
+                <span className="location-item-name">{city}</span>
+                {selectedCity === city && !fromGps && (
+                  <svg className="location-item-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 )}
-              </div>
+              </RevealItem>
+            ))}
+            {filteredCities.length === 0 && (
+              <div className="location-empty">No cities found</div>
+            )}
+          </div>
         </AppBottomSheet>
       )}
     </>

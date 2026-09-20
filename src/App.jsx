@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import './App.css'
 import { BookingProvider } from './components/BookingContext'
@@ -43,14 +43,20 @@ import TopDoctorsOverlay from './components/TopDoctorsOverlay'
 import ArticlePage from './components/ArticlePage'
 import { SharedHeroProvider } from './components/SharedHero'
 import { DemoPreviewProvider } from './components/DemoPreviewModal'
-import PhoneFrame from './components/PhoneFrame'
+import AppShell from './components/AppShell'
 import BottomNav from './components/BottomNav'
 import { OnboardingProvider } from './components/Onboarding'
 import AuthGate from './components/auth/AuthGate'
 import { AuthProvider } from './features/auth/AuthProvider'
 import { UserProvider, useUser } from './user'
 import { isHomePath } from './lib/careFlow'
+import { isSupabaseConfigured, supabaseConfigError } from './lib/supabase'
 import DesignSystemLayout from './design-system/DesignSystemLayout'
+import { FabProvider } from './features/fab'
+import { NotificationIsland, NotificationPresentationSync } from './features/notifications'
+import AppScrimHost, { useAppScrim } from './components/AppScrim'
+import { SheetPortal } from './components/PageTransition'
+import { PushStack } from './features/pushNav'
 
 function ExploreIndexRedirect() {
   const navigate = useNavigate()
@@ -64,18 +70,21 @@ function ExploreIndexRedirect() {
   return null
 }
 
-function DarkOverlay() {
+/** Bridges TransitionProvider overlay state → global phone-screen scrim. */
+function OverlayScrimBridge() {
   const { isAnyOverlayActive } = useTransition()
-  return <div className={`dark-overlay ${isAnyOverlayActive ? 'active' : ''}`} />
+  useAppScrim(isAnyOverlayActive)
+  return null
 }
 
 function ChildPageLayout() {
   const location = useLocation()
   const { isAnyOverlayActive } = useTransition()
-  const dimInner = isAnyOverlayActive && !isHomePath(location.pathname)
+  const onHome = isHomePath(location.pathname)
+  const dimInner = isAnyOverlayActive && !onHome
   return (
-    <div className={`page-layer-inner ${dimInner ? 'is-dimmed' : ''}`}>
-      <Outlet />
+    <div className={`page-layer-inner ${dimInner ? 'is-dimmed' : ''} ${onHome ? 'is-empty' : ''}`}>
+      <PushStack />
     </div>
   )
 }
@@ -92,9 +101,10 @@ function AppRoutes() {
           <HomePage />
         </div>
         <Routes>
-          <Route index element={null} />
-          <Route path="search" element={null} />
+          {/* Pathless layout stays mounted so push→home pop can finish animating. */}
           <Route element={<ChildPageLayout />}>
+            <Route index element={null} />
+            <Route path="search" element={null} />
             <Route path="/profile" element={<PatientProfile />} />
             <Route path="/profile/personal" element={<PersonalWorkspace />} />
             <Route path="/profile/medical" element={<MedicalWorkspace />} />
@@ -132,16 +142,28 @@ function AppRoutes() {
           </Route>
         </Routes>
       </div>
-      <DarkOverlay />
-      {isSpecialisationsOpen && <ExploreSpecialisationsPage />}
-      {(isTopDoctorsOpen || isTopDoctorsSlidingOut) && <TopDoctorsOverlay />}
-      <ServicesBottomSheet />
-      <InsightsBottomSheet />
+      <OverlayScrimBridge />
+      {isSpecialisationsOpen && (
+        <SheetPortal to="screen">
+          <ExploreSpecialisationsPage />
+        </SheetPortal>
+      )}
+      {(isTopDoctorsOpen || isTopDoctorsSlidingOut) && (
+        <SheetPortal to="screen">
+          <TopDoctorsOverlay />
+        </SheetPortal>
+      )}
+      <SheetPortal to="screen">
+        <ServicesBottomSheet />
+      </SheetPortal>
+      <SheetPortal to="screen">
+        <InsightsBottomSheet />
+      </SheetPortal>
     </>
   )
 }
 
-function AppShell() {
+function AppProviders() {
   const { user } = useUser()
   return (
     <BookingProvider key={user?.id || 'anon'}>
@@ -152,8 +174,13 @@ function AppShell() {
               <DemoPreviewProvider>
                 <FetchSessionProvider>
                   <SharedHeroProvider>
-                    <AppRoutes />
-                    <BottomNav />
+                    <FabProvider>
+                      <AppRoutes />
+                      <BottomNav />
+                      <NotificationPresentationSync />
+                      <NotificationIsland />
+                      <AppScrimHost />
+                    </FabProvider>
                   </SharedHeroProvider>
                 </FetchSessionProvider>
               </DemoPreviewProvider>
@@ -171,17 +198,49 @@ function DesignSystemGate() {
   return <DesignSystemLayout />
 }
 
+function ConfigErrorScreen({ message }) {
+  return (
+    <div
+      style={{
+        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 12,
+        padding: 24,
+        textAlign: 'center',
+        background: '#fff',
+        color: '#1a1a2e',
+        fontFamily: 'inherit',
+      }}
+    >
+      <h1 style={{ margin: 0, fontSize: 22 }}>Configuration needed</h1>
+      <p style={{ margin: 0, maxWidth: 320, lineHeight: 1.45, color: '#5c5c70', fontSize: 14 }}>
+        {message}
+      </p>
+    </div>
+  )
+}
+
 function AppGate() {
   const location = useLocation()
   if (location.pathname.startsWith('/design')) return null
+  if (!isSupabaseConfigured) {
+    return (
+      <AppShell>
+        <ConfigErrorScreen message={supabaseConfigError} />
+      </AppShell>
+    )
+  }
   return (
-    <PhoneFrame>
+    <AppShell>
       <AuthProvider>
         <UserProvider>
-          <AppShell />
+          <AppProviders />
         </UserProvider>
       </AuthProvider>
-    </PhoneFrame>
+    </AppShell>
   )
 }
 

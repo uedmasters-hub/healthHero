@@ -12,6 +12,60 @@
   padding: 20px;
 }
 
+/* —— Native phone PWA: full-bleed, no mockup chrome —— */
+.phone-stage.is-native {
+  width: 100dvw;
+  height: 100dvh;
+  max-width: 100dvw;
+  max-height: 100dvh;
+  padding: 0;
+  align-items: stretch;
+  justify-content: stretch;
+  background: var(--white);
+}
+
+.phone-stage.is-native .phone-scale {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.phone-stage.is-native .phone-frame {
+  position: absolute;
+  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  transform: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.phone-stage.is-native .phone-btn,
+.phone-stage.is-native .phone-status-bar,
+.phone-stage.is-native .phone-footer {
+  display: none;
+}
+
+.phone-stage.is-native .phone-screen {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  /* Safe areas — top/sides on the screen; bottom via --frame-footer on nav/FAB */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  box-sizing: border-box;
+}
+
 .phone-scale {
   width: calc((var(--phone-width) + 28px) * var(--phone-scale, 1));
   height: calc((var(--phone-height) + 28px) * var(--phone-scale, 1));
@@ -50,7 +104,7 @@
 
 .phone-status-bar {
   position: relative;
-  z-index: 10000;
+  z-index: var(--z-status, 20);
   flex-shrink: 0;
   height: 54px;
   display: flex;
@@ -133,7 +187,7 @@
 .phone-screen.rx-open .phone-status-bar {
   background: transparent;
   color: #fff;
-  z-index: 10003;
+  z-index: var(--z-lightbox, 8200);
 }
 
 .phone-screen.rx-open .phone-status-icons {
@@ -141,7 +195,7 @@
 }
 
 .phone-screen.rx-open .phone-footer {
-  z-index: 10004;
+  z-index: calc(var(--z-lightbox, 8200) + 1);
 }
 
 .phone-screen.rx-open .phone-home-bar {
@@ -154,7 +208,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 10001;
+  z-index: var(--z-home-indicator, 25);
   height: 34px;
   display: flex;
   align-items: flex-end;

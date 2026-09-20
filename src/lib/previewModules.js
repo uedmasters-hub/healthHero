@@ -6,7 +6,7 @@ export const PREVIEW_SERVICE_TYPES = new Set([
   SERVICE_TYPE.HOME_CARE_NURSING,
 ])
 
-export const PREVIEW_PATHS = new Set(['/pharmacy'])
+export const PREVIEW_PATHS = new Set([])
 
 export function isPreviewServiceType(serviceType) {
   return PREVIEW_SERVICE_TYPES.has(serviceType)

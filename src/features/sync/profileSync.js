@@ -4,7 +4,7 @@
  * - pushProfileToSupabase: writes local profile fields → patient_profiles + public.users
  * - hydrateProfileFromSupabase: reads patient_profiles → merges into local store
  */
-import { supabase } from '../../lib/supabase'
+import { requireSupabase } from '../../lib/supabase'
 
 function splitName(name = '') {
   const parts = String(name).trim().split(/\s+/).filter(Boolean)
@@ -51,7 +51,7 @@ export async function pushProfileToSupabase(userId, profile, credentials) {
   const { first, last } = splitName(profile.name || '')
 
   // 1. Upsert patient_profiles (detailed profile data)
-  const { error: profileError } = await supabase
+  const { error: profileError } = await requireSupabase()
     .from('patient_profiles')
     .upsert({
       user_id: userId,
@@ -78,7 +78,7 @@ export async function pushProfileToSupabase(userId, profile, credentials) {
   if (credentials?.phone) userUpdate.phone = credentials.phone
 
   if (Object.keys(userUpdate).length) {
-    const { error: userError } = await supabase
+    const { error: userError } = await requireSupabase()
       .from('users')
       .update(userUpdate)
       .eq('id', userId)
@@ -101,7 +101,7 @@ export async function pushProfileToSupabase(userId, profile, credentials) {
 export async function fetchProfileFromSupabase(userId) {
   if (!userId) return { ok: false, error: 'No user ID' }
 
-  const { data, error } = await supabase
+  const { data, error } = await requireSupabase()
     .from('patient_profiles')
     .select('first_name, last_name, date_of_birth, gender, blood_group, height_cm, weight_kg, avatar_url, emergency_contact_name, emergency_contact_phone, emergency_contact_relation')
     .eq('user_id', userId)

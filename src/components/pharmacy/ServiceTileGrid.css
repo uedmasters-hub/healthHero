@@ -1,0 +1,88 @@
+.service-tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--card-gap);
+  padding: 0 var(--content-padding);
+}
+
+.service-tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card-bg);
+  text-align: left;
+  font: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform 0.22s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 0.22s ease,
+    background 0.2s ease;
+}
+
+.service-tile .reveal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 108px;
+  padding: var(--space-5) var(--space-4);
+  box-sizing: border-box;
+}
+
+.service-tile:hover {
+  background: var(--active-bg);
+}
+
+.service-tile:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-sm);
+}
+
+.service-tile__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: var(--radius-md, 12px);
+  background: transparent;
+  color: var(--icon-color-brand, var(--primary));
+}
+
+.service-tile--mint .service-tile__icon { color: var(--success); }
+.service-tile--sky .service-tile__icon { color: var(--info); }
+.service-tile--lavender .service-tile__icon { color: var(--primary); }
+.service-tile--peach .service-tile__icon { color: var(--warning); }
+
+.service-tile__icon svg {
+  width: var(--icon-2xl, 24px);
+  height: var(--icon-2xl, 24px);
+  stroke-width: var(--icon-stroke, 2);
+}
+
+.service-tile__label {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  letter-spacing: -0.15px;
+  padding-right: var(--space-5);
+  text-wrap: balance;
+}
+
+.service-tile__chevron {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #9ca3af);
+  display: inline-flex;
+  pointer-events: none;
+}

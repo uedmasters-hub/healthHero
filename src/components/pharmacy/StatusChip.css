@@ -1,0 +1,33 @@
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px var(--space-2-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+/* Soft semantic fills — match app chip language */
+.status-chip.is-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-chip.is-info {
+  background: var(--info-bg);
+  color: var(--info);
+}
+
+.status-chip.is-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.status-chip.is-danger {
+  background: var(--danger-bg, #fee2e2);
+  color: var(--danger, #c0392b);
+}

@@ -1,7 +1,7 @@
 .top-doctors-overlay {
   position: absolute;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--z-scrim-elevated, 8100);
   overflow: hidden;
   display: flex;
   align-items: flex-end;
