@@ -4,7 +4,7 @@
  * and callable, but Health Hero does not require Apple credentials yet.
  */
 import { AUTH_ERROR } from '../../../user/constants'
-import { AUTH_CALLBACK_PATH } from '../types'
+import { AUTH_CONFIRM_PATH } from '../types'
 import { authRedirectTo, requireSupabase } from '../../../lib/supabase'
 import { mapAuthError } from './authService'
 
@@ -20,14 +20,30 @@ const GOOGLE_OAUTH_SCOPES = [
   'https://www.googleapis.com/auth/user.birthday.read',
 ].join(' ')
 
-async function startOAuth(provider, { redirectTo = AUTH_CALLBACK_PATH } = {}) {
+async function startOAuth(provider, { redirectTo = AUTH_CONFIRM_PATH } = {}) {
+  const safeRedirect = authRedirectTo(redirectTo)
+
+  // Hard fail in the client if a protected host ever slipped through —
+  // better than sending the user to vercel.com/login.
+  if (/vercel\.app|vercel\.com/i.test(safeRedirect)) {
+    return {
+      ok: false,
+      error: 'Sign-in is misconfigured: OAuth must return to emedicalls.com, not a Vercel URL.',
+    }
+  }
+
   const options = {
-    redirectTo: authRedirectTo(redirectTo),
+    redirectTo: safeRedirect,
     skipBrowserRedirect: false,
   }
 
   if (provider === 'google') {
     options.scopes = GOOGLE_OAUTH_SCOPES
+    options.queryParams = {
+      // Keep consent on Google's domain; avoid intermediate hosted UIs.
+      access_type: 'offline',
+      prompt: 'select_account',
+    }
   }
 
   const { data, error } = await requireSupabase().auth.signInWithOAuth({
@@ -42,7 +58,26 @@ async function startOAuth(provider, { redirectTo = AUTH_CALLBACK_PATH } = {}) {
         : mapAuthError(error, AUTH_ERROR.OAUTH_FAILED),
     }
   }
-  return { ok: true, url: data?.url || null }
+
+  // Defense: if Supabase returned an authorize URL that embeds a bad
+  // redirect_to, refuse before navigating.
+  const authorizeUrl = data?.url || ''
+  try {
+    if (authorizeUrl) {
+      const parsed = new URL(authorizeUrl)
+      const embedded = parsed.searchParams.get('redirect_to') || ''
+      if (embedded && /vercel\.app|vercel\.com\/login/i.test(decodeURIComponent(embedded))) {
+        return {
+          ok: false,
+          error: 'Sign-in is misconfigured: Supabase Site URL must be https://www.emedicalls.com.',
+        }
+      }
+    }
+  } catch {
+    /* ignore parse errors; Supabase will still navigate */
+  }
+
+  return { ok: true, url: authorizeUrl || null, redirectTo: safeRedirect }
 }
 
 export function signInWithGoogle() {

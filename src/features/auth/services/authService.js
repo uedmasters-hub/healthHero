@@ -6,7 +6,7 @@
 import { AUTH_ERROR } from '../../../user/constants'
 import { normalizeEmail } from '../../../user/models'
 import { authRedirectTo, requireSupabase } from '../../../lib/supabase'
-import { AUTH_CALLBACK_PATH } from '../types'
+import { AUTH_CONFIRM_PATH } from '../types'
 
 function isNetworkFailure(error) {
   const message = String(error?.message || error || '')
@@ -33,7 +33,16 @@ export function mapAuthError(error, fallback = AUTH_ERROR.GENERIC) {
   ) {
     return AUTH_ERROR.EXISTS
   }
-  if (code === 'otp_expired' || /expired|invalid.*link|token has expired/i.test(message)) {
+  if (code === 'otp_expired' || /token has expired|otp.*expired|expired.*otp/i.test(message)) {
+    return AUTH_ERROR.EXPIRED
+  }
+  if (
+    code === 'otp_disabled'
+    || /invalid.*(otp|token|code)|token.*invalid|otp.*invalid|one-time/i.test(message)
+  ) {
+    return AUTH_ERROR.OTP_INVALID
+  }
+  if (/expired|invalid.*link/i.test(message)) {
     return AUTH_ERROR.EXPIRED
   }
   if (code === 'over_email_send_rate_limit' || /rate limit/i.test(message)) {
@@ -112,13 +121,44 @@ export async function signInWithPassword(email, password) {
   return { ok: true, session: data.session, user: data.user }
 }
 
+/**
+ * Primary email sign-in: send a 6-digit OTP (+ Magic Link fallback in the email).
+ * Magic Link resolves through /auth/confirm.
+ */
+export async function sendEmailOtp(email) {
+  const supabase = requireSupabase()
+  const { error } = await supabase.auth.signInWithOtp({
+    email: normalizeEmail(email),
+    options: {
+      emailRedirectTo: authRedirectTo(AUTH_CONFIRM_PATH),
+      shouldCreateUser: true,
+    },
+  })
+  if (error) return { ok: false, error: mapAuthError(error), code: error.code }
+  return { ok: true }
+}
+
+/** Verify the in-app OTP code. Session is established without leaving the app. */
+export async function verifyEmailOtp(email, token) {
+  const supabase = requireSupabase()
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: normalizeEmail(email),
+    token: String(token || '').trim(),
+    type: 'email',
+  })
+  if (error) {
+    return { ok: false, error: mapAuthError(error, AUTH_ERROR.OTP_INVALID), code: error.code }
+  }
+  return { ok: true, session: data.session, user: data.user }
+}
+
 export async function signUpWithPassword({ name, email, phone, password }) {
   const supabase = requireSupabase()
   const { data, error } = await supabase.auth.signUp({
     email: normalizeEmail(email),
     password,
     options: {
-      emailRedirectTo: authRedirectTo(AUTH_CALLBACK_PATH),
+      emailRedirectTo: authRedirectTo(AUTH_CONFIRM_PATH),
       data: {
         full_name: String(name || '').trim(),
         phone: String(phone || '').trim(),
@@ -142,7 +182,7 @@ export async function signUpWithPassword({ name, email, phone, password }) {
 export async function requestPasswordReset(email) {
   const supabase = requireSupabase()
   const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
-    redirectTo: authRedirectTo(`${AUTH_CALLBACK_PATH}?next=reset`),
+    redirectTo: authRedirectTo(`${AUTH_CONFIRM_PATH}?next=reset`),
   })
   if (error) return { ok: false, error: mapAuthError(error) }
   return { ok: true }
@@ -160,7 +200,7 @@ export async function resendVerification(email) {
   const { error } = await supabase.auth.resend({
     type: 'signup',
     email: normalizeEmail(email),
-    options: { emailRedirectTo: authRedirectTo(AUTH_CALLBACK_PATH) },
+    options: { emailRedirectTo: authRedirectTo(AUTH_CONFIRM_PATH) },
   })
   if (error) return { ok: false, error: mapAuthError(error) }
   return { ok: true }
@@ -221,6 +261,7 @@ export async function fetchGoogleBirthday(session) {
   }
 }
 
+/** Single subscription point — AuthProvider owns this; do not duplicate elsewhere. */
 export function subscribeAuth(callback) {
   const supabase = requireSupabase()
   const { data } = supabase.auth.onAuthStateChange((event, session) => {

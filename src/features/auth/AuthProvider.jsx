@@ -7,6 +7,8 @@
  * Boot rule: routing must wait until the first auth state is resolved
  * (INITIAL_SESSION / first onAuthStateChange). Never route on a premature
  * getSession() null during the OAuth PKCE URL exchange.
+ *
+ * Scrubbing of ?code= is owned by /auth/confirm — not here — to avoid races.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
@@ -22,13 +24,21 @@ import {
   loadAppUser,
   requestPasswordReset,
   resendVerification,
+  sendEmailOtp as sendEmailOtpRemote,
   signInWithPassword as signInWithEmail,
   signOut as signOutRemote,
   signUpWithPassword,
   subscribeAuth,
   updatePassword as updateRemotePassword,
+  verifyEmailOtp as verifyEmailOtpRemote,
 } from './services/authService'
-import { signInWithApple, signInWithGoogle, oauthErrorFromLocation, scrubAuthRedirectParams, hasAuthCallbackParams } from './services/oauth'
+import {
+  signInWithApple,
+  signInWithGoogle,
+  oauthErrorFromLocation,
+  hasAuthCallbackParams,
+} from './services/oauth'
+import { AUTH_CONFIRM_PATH, AUTH_PATHS } from './types'
 import { migrateLocalDataToSupabase } from '../sync/localDataMigrator'
 
 const AuthContext = createContext(null)
@@ -38,6 +48,12 @@ function locationLooksLikeRecovery() {
   const hash = new URLSearchParams(String(window.location.hash || '').replace(/^#/, ''))
   const search = new URLSearchParams(window.location.search)
   return hash.get('type') === 'recovery' || search.get('type') === 'recovery'
+}
+
+function isAuthConfirmRoute() {
+  if (typeof window === 'undefined') return false
+  const path = window.location.pathname
+  return path === AUTH_CONFIRM_PATH || path === AUTH_PATHS.callback
 }
 
 function applyLocalChart(session) {
@@ -64,9 +80,12 @@ export function AuthProvider({ children }) {
     const finishBoot = (nextSession, event) => {
       if (cancelled || bootstrapped) return
       bootstrapped = true
-      const oauthError = oauthErrorFromLocation()
-      if (oauthError) setBootError(oauthError)
-      scrubAuthRedirectParams()
+      // Surface OAuth errors from the URL, but leave scrubbing to /auth/confirm
+      // so PKCE ?code= is never stripped mid-exchange.
+      if (!isAuthConfirmRoute()) {
+        const oauthError = oauthErrorFromLocation()
+        if (oauthError) setBootError(oauthError)
+      }
       applyLocalChart(nextSession)
       setSession(nextSession)
       if (event) setLastEvent(event)
@@ -82,8 +101,7 @@ export function AuthProvider({ children }) {
 
       if (!bootstrapped) {
         // PKCE exchange may emit INITIAL_SESSION(null) before SIGNED_IN.
-        // Keep splash up and do not scrub ?code= until we have a session
-        // or the callback params are gone / timed out.
+        // Keep splash up until we have a session or callback params clear.
         if (!next && hasAuthCallbackParams()) {
           return
         }
@@ -102,7 +120,6 @@ export function AuthProvider({ children }) {
       getCurrentSession().then(({ session: next, error }) => {
         if (cancelled || bootstrapped) return
         if (error) setBootError(error)
-        // If a callback is still pending and session is empty, wait a bit more.
         if (!next && hasAuthCallbackParams()) return
         finishBoot(next, 'FALLBACK_SESSION')
       })
@@ -147,8 +164,6 @@ export function AuthProvider({ children }) {
     })
   }, [session?.user?.id, isRecovery])
 
-  // Hydrate profile from Supabase on every login/reload so the local store
-  // reflects the latest database state (source of truth).
   useEffect(() => {
     if (!session?.user?.id || isRecovery) return
     hydrateProfileFromSupabase().catch(() => {
@@ -156,11 +171,6 @@ export function AuthProvider({ children }) {
     })
   }, [session?.user?.id, isRecovery])
 
-  // Fetch birthday from Google People API after a Google OAuth sign-in.
-  // The provider_token is only present immediately after a Google session
-  // is established; it is not available on reload (Supabase strips it from
-  // the persisted session).  We therefore store the result in the local
-  // health-chart so it survives reloads.
   useEffect(() => {
     if (!session?.provider_token || !session?.user?.id) return
     let cancelled = false
@@ -175,6 +185,9 @@ export function AuthProvider({ children }) {
   const signInWithPassword = useCallback(async (email, password) => (
     signInWithEmail(email, password)
   ), [])
+
+  const sendEmailOtp = useCallback(async (email) => sendEmailOtpRemote(email), [])
+  const verifyEmailOtp = useCallback(async (email, token) => verifyEmailOtpRemote(email, token), [])
 
   const signUp = useCallback(async (input) => signUpWithPassword(input), [])
 
@@ -212,6 +225,8 @@ export function AuthProvider({ children }) {
       googleBirthday,
       emailVerified,
       signInWithPassword,
+      sendEmailOtp,
+      verifyEmailOtp,
       signUp,
       signOut,
       forgotPassword,
@@ -222,8 +237,8 @@ export function AuthProvider({ children }) {
     }
   }, [
     ready, session, appUser, lastEvent, isRecovery, bootError, googleBirthday,
-    signInWithPassword, signUp, signOut, forgotPassword, updatePassword,
-    resendEmail, googleSignIn, appleSignIn,
+    signInWithPassword, sendEmailOtp, verifyEmailOtp, signUp, signOut,
+    forgotPassword, updatePassword, resendEmail, googleSignIn, appleSignIn,
   ])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

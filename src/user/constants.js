@@ -31,4 +31,6 @@ export const AUTH_ERROR = Object.freeze({
   OAUTH_FAILED: 'We could not complete social sign-in. Try email or try again later.',
   APPLE_PENDING: 'Apple Sign-In will be available once Health Hero credentials are configured.',
   RESET_SENT: 'If an account matches that email, you will receive a reset link shortly.',
+  OTP_INVALID: 'Enter the 6-digit code from your email and try again.',
+  OTP_SENT: 'Check your email for a one-time code.',
 })

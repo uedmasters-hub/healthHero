@@ -2,30 +2,26 @@
  * @file src/lib/supabase.js
  * Browser-only Supabase client for Health Hero.
  *
- * Uses the publishable (anon) key exclusively. The Secret / Service Role key
- * must never appear in this bundle, environment prefixes, or client storage.
- *
- * Session handling:
- * - persistSession: restore login across reloads via localStorage
- * - autoRefreshToken: refresh JWTs before expiry
- * - detectSessionInUrl: complete email-confirm, recovery, and OAuth redirects
- * - flowType pkce: CSRF-safe OAuth / magic-link exchange
- *
- * Redirects always use getAppOrigin() so production email / OAuth links hit
- * the public site (e.g. https://www.emedicalls.com), never a protected
- * preview deployment URL.
+ * Auth redirects always resolve to `${window.location.origin}/auth/confirm`
+ * (with a safe production fallback), never a Vercel SSO-protected host.
  */
 import { createClient } from '@supabase/supabase-js'
+import {
+  AUTH_CONFIRM_PATH,
+  PRODUCTION_APP_ORIGIN,
+  authConfirmUrl,
+  buildAuthRedirectUrl,
+  resolveAppOrigin,
+} from './appOrigin'
 
 const url = import.meta.env.VITE_SUPABASE_URL
 const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
-/** Canonical public origin for auth redirects (no trailing slash). */
 const configuredOrigin = String(
   import.meta.env.VITE_APP_ORIGIN
   || import.meta.env.VITE_PUBLIC_APP_URL
   || '',
-).trim().replace(/\/$/, '')
+).trim()
 
 export const isSupabaseConfigured = Boolean(url && publishableKey)
 
@@ -51,20 +47,24 @@ export const supabase = isSupabaseConfigured && !supabaseConfigError
     })
   : null
 
-/**
- * Public app origin used in every Supabase redirectTo / emailRedirectTo.
- * Prefer VITE_APP_ORIGIN in production so callbacks never target a
- * Deployment-Protection-gated *.vercel.app URL.
- */
 export function getAppOrigin() {
-  if (configuredOrigin) return configuredOrigin
-  if (typeof window === 'undefined') return ''
-  return window.location.origin
+  return resolveAppOrigin({
+    configured: configuredOrigin || PRODUCTION_APP_ORIGIN,
+    windowOrigin: typeof window !== 'undefined' ? window.location.origin : '',
+    isProd: Boolean(import.meta.env.PROD),
+  })
 }
 
-export function authRedirectTo(pathname = '/auth/callback') {
-  const path = pathname.startsWith('/') ? pathname : `/${pathname}`
-  return `${getAppOrigin()}${path}`
+/** Absolute redirect for OAuth / magic link / recovery — defaults to /auth/confirm. */
+export function authRedirectTo(pathname = AUTH_CONFIRM_PATH) {
+  if (!pathname || pathname === AUTH_CONFIRM_PATH || pathname === '/auth/confirm') {
+    return authConfirmUrl()
+  }
+  if (pathname.startsWith('/auth/confirm?') || pathname.startsWith(`${AUTH_CONFIRM_PATH}?`)) {
+    const q = pathname.includes('?') ? pathname.slice(pathname.indexOf('?') + 1) : ''
+    return authConfirmUrl(q)
+  }
+  return buildAuthRedirectUrl(pathname, configuredOrigin || PRODUCTION_APP_ORIGIN)
 }
 
 export function requireSupabase() {
@@ -73,3 +73,5 @@ export function requireSupabase() {
   }
   return supabase
 }
+
+export { AUTH_CONFIRM_PATH, PRODUCTION_APP_ORIGIN, authConfirmUrl }

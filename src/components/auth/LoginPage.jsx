@@ -1,30 +1,49 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { AUTH_ERROR, validateLoginFields } from '../../user'
+import { AUTH_ERROR, isValidEmail, normalizeEmail, validateLoginFields } from '../../user'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import OAuthButtons from '../../features/auth/components/OAuthButtons'
 import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit, AuthTrust } from './AuthScreen'
 import useProgressiveAuth from './useProgressiveAuth'
 
-const LOGIN_ORDER = ['identifier', 'password']
-const LOGIN_IDS = { identifier: 'login-identifier', password: 'login-password' }
+const OTP_ORDER = ['identifier']
+const OTP_IDS = { identifier: 'login-identifier' }
+const PASSWORD_ORDER = ['identifier', 'password']
+const PASSWORD_IDS = { identifier: 'login-identifier', password: 'login-password' }
 const APPLE_ENABLED = import.meta.env.VITE_APPLE_SIGNIN_ENABLED === 'true'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { signInWithPassword, googleSignIn, appleSignIn, bootError } = useAuth()
+  const {
+    signInWithPassword,
+    sendEmailOtp,
+    googleSignIn,
+    appleSignIn,
+    bootError,
+  } = useAuth()
   const [ready, setReady] = useState(false)
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
+  const [usePassword, setUsePassword] = useState(false)
   const [busy, setBusy] = useState(false)
   const [formError, setFormError] = useState(() => (
     String(location.state?.authCallbackError || '')
   ))
 
-  const fieldErrors = validateLoginFields({ identifier, password })
-  const { begin, errorFor } = useProgressiveAuth(LOGIN_ORDER, LOGIN_IDS, fieldErrors)
+  const fieldErrors = usePassword
+    ? validateLoginFields({ identifier, password })
+    : {
+      identifier: !String(identifier || '').trim()
+        ? AUTH_ERROR.IDENTIFIER
+        : (!isValidEmail(identifier) ? AUTH_ERROR.EMAIL : undefined),
+    }
+  const { begin, errorFor } = useProgressiveAuth(
+    usePassword ? PASSWORD_ORDER : OTP_ORDER,
+    usePassword ? PASSWORD_IDS : OTP_IDS,
+    fieldErrors,
+  )
 
   useEffect(() => {
     const id = window.setTimeout(() => setReady(true), 280)
@@ -37,16 +56,27 @@ export default function LoginPage() {
     if (begin()) return
     setBusy(true)
     try {
-      const result = await signInWithPassword(identifier, password)
-      if (!result.ok) {
-        if (result.code === 'email_not_confirmed') {
-          navigate('/verify', { replace: true, state: { email: identifier } })
+      if (usePassword) {
+        const result = await signInWithPassword(identifier, password)
+        if (!result.ok) {
+          if (result.code === 'email_not_confirmed') {
+            navigate('/verify', { replace: true, state: { email: identifier } })
+            return
+          }
+          setFormError(result.error || AUTH_ERROR.INVALID)
           return
         }
-        setFormError(result.error || AUTH_ERROR.INVALID)
+        navigate('/', { replace: true })
         return
       }
-      navigate('/', { replace: true })
+
+      const email = normalizeEmail(identifier)
+      const result = await sendEmailOtp(email)
+      if (!result.ok) {
+        setFormError(result.error || AUTH_ERROR.GENERIC)
+        return
+      }
+      navigate('/otp', { replace: true, state: { email } })
     } finally {
       setBusy(false)
     }
@@ -79,9 +109,11 @@ export default function LoginPage() {
   return (
     <AuthLayout
       loading={!ready}
-      stage="login"
+      stage={usePassword ? 'login-password' : 'login-otp'}
       title="Welcome back"
-      subtitle="Sign in to continue your care."
+      subtitle={usePassword
+        ? 'Sign in with your password to continue.'
+        : 'Enter your email — we will send a one-time code.'}
       extra={<AuthTrust />}
       footer={(
         <>
@@ -103,25 +135,42 @@ export default function LoginPage() {
           disabled={busy}
           placeholder="name@email.com"
         />
-        <AuthField
-          id="login-password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          error={errorFor('password')}
-          autoComplete="current-password"
-          disabled={busy}
-          placeholder="Enter your password"
-          labelAction={(
-            <Link to="/forgot" className="auth-field-link" state={{ identifier }}>
-              Forgot password?
-            </Link>
-          )}
-        />
+        {usePassword ? (
+          <AuthField
+            id="login-password"
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            error={errorFor('password')}
+            autoComplete="current-password"
+            disabled={busy}
+            placeholder="Enter your password"
+            labelAction={(
+              <Link to="/forgot" className="auth-field-link" state={{ identifier }}>
+                Forgot password?
+              </Link>
+            )}
+          />
+        ) : null}
         <AuthSubmit busy={busy} disabled={busy}>
-          {busy ? 'Signing in…' : 'Continue'}
+          {busy
+            ? (usePassword ? 'Signing in…' : 'Sending code…')
+            : (usePassword ? 'Sign in' : 'Continue')}
         </AuthSubmit>
+        <p className="auth-mode-switch">
+          <button
+            type="button"
+            className="auth-text-btn"
+            disabled={busy}
+            onClick={() => {
+              setFormError('')
+              setUsePassword((v) => !v)
+            }}
+          >
+            {usePassword ? 'Use email code instead' : 'Sign in with password'}
+          </button>
+        </p>
         <OAuthButtons onGoogle={onGoogle} onApple={onApple} busy={busy} appleReady={APPLE_ENABLED} />
       </form>
     </AuthLayout>

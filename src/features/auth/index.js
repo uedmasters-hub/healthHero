@@ -5,7 +5,14 @@
  */
 export { AuthProvider, useAuth } from './AuthProvider'
 export { useSession } from './hooks/useSession'
-export { GUEST_PATHS, AUTH_PATHS, AUTH_CALLBACK_PATH, APP_ROLES } from './types'
+export {
+  GUEST_PATHS,
+  AUTH_PATHS,
+  AUTH_CONFIRM_PATH,
+  AUTH_CALLBACK_PATH,
+  APP_ROLES,
+} from './types'
+export { default as AuthConfirmPage } from './pages/AuthConfirmPage'
 export { default as AuthCallbackPage } from './pages/AuthCallbackPage'
 export { default as ProtectedRoute } from './components/ProtectedRoute'
 export { default as GuestRoute } from './components/GuestRoute'
