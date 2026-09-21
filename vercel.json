@@ -1,5 +1,10 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/((?!img/|assets/|favicon\\.svg|icons\\.svg|manifest\\.webmanifest).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/auth/confirm",
@@ -13,6 +18,12 @@
       "headers": [
         { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" },
         { "key": "CDN-Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/img/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ]

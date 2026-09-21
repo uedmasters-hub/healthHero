@@ -4,6 +4,7 @@
  */
 import { BOOKING_STATUS } from '../../booking/constants'
 import { flowState } from '../../lib/careFlow'
+import { resolveProviderPhoto } from '../../lib/providerPhoto'
 
 /** Statuses where messaging the care provider is allowed. */
 export const PROVIDER_CHAT_ENABLED_STATUSES = Object.freeze([
@@ -86,6 +87,6 @@ export function providerMetadataFromBooking(booking = {}) {
     visit_label: visitLabel || booking.slot || booking.time || '',
     booking_status: booking.status || '',
     doctor_id: doctor.id ?? null,
-    photo: doctor.photo || '',
+    photo: resolveProviderPhoto(booking) || resolveProviderPhoto(doctor) || '',
   }
 }

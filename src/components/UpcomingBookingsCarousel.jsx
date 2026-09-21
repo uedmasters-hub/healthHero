@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import { getDoctorById } from '../data/doctors'
 import { getAppointmentJourney } from '../lib/appointmentJourney'
+import { resolveProviderPhoto } from '../lib/providerPhoto'
 import {
   HOME_CAROUSEL_LIMIT,
   getServiceCta,
@@ -15,16 +16,8 @@ import RevealItem from './RevealItem'
 import { useSharedHero } from './SharedHero'
 import { useDemoPreview } from './DemoPreviewModal'
 import { isPreviewServiceType } from '../lib/previewModules'
+import ProviderAvatar from './ProviderAvatar'
 import './BookAppointment.css'
-
-const doctorImages = {
-  1: '/img/doctors/doctor-w1.png',
-  2: '/img/doctors/doctor-m1.png',
-  3: '/img/doctors/doctor-w2.png',
-  4: '/img/doctors/doctor-m2.png',
-  5: '/img/doctors/doctor-w3.png',
-  6: '/img/doctors/doctor-m3.png',
-}
 
 function displayName(name) {
   if (!name) return 'Provider'
@@ -128,7 +121,7 @@ function UpcomingBookingCard({
   const title = booking.providerName || displayName(doctor.name)
   const subtitle = booking.providerSubtitle
     || [serviceMeta.label, doctor.specialty || doctor.experience].filter(Boolean).join(' · ')
-  const photo = doctor.photo || doctorImages[doctor.id] || fullDoctor?.photo
+  const photo = resolveProviderPhoto({ ...fullDoctor, ...doctor }) || resolveProviderPhoto(booking)
   const showRating = doctor.rating != null && (serviceType === 'doctor_consultation' || serviceType === 'virtual_consultation')
   const cta = getServiceCta(booking, journey.cta)
   const badge = journey.badge || serviceMeta.shortLabel
@@ -193,15 +186,17 @@ function UpcomingBookingCard({
         </div>
 
         <div className="upcoming-top">
-          <div className={`upcoming-avatar ${photo ? '' : 'is-icon'}`}>
-            {photo ? (
-              <img src={photo} alt="" className="upcoming-avatar-img" />
-            ) : (
+          <ProviderAvatar
+            className={`upcoming-avatar ${photo ? '' : 'is-icon'}`}
+            imgClassName="upcoming-avatar-img"
+            doctor={{ ...fullDoctor, ...doctor }}
+            src={photo}
+            placeholder={(
               <span className="upcoming-avatar-icon">
                 <ServiceIcon type={booking.providerIcon || serviceMeta.icon} />
               </span>
             )}
-          </div>
+          />
           <div className="upcoming-info">
             <div className="upcoming-name-row">
               <span className="upcoming-doctor-name">{title}</span>

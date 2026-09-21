@@ -5,6 +5,7 @@ import {
   LEGACY_STATUS_MAP,
   PAYMENT_STATUS,
 } from './constants'
+import { resolveProviderPhoto } from '../lib/providerPhoto'
 
 export function createId(prefix = 'bk') {
   const rand = Math.random().toString(36).slice(2, 8)
@@ -45,7 +46,7 @@ export function snapshotDoctor(doctor = {}) {
     rating: doctor.rating ?? null,
     experience: doctor.experience || '',
     address: doctor.address || '',
-    photo: doctor.photo || '',
+    photo: resolveProviderPhoto(doctor) || '',
     fee: doctor.fee ?? null,
     phone: doctor.phone || '',
   }

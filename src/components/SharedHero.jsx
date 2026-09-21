@@ -3,6 +3,7 @@ import { displayDoctorName, relativeRect } from '../lib/geometry'
 import { freezeNow } from '../lib/scrollLock'
 import { SheetPortal } from './PageTransition'
 import { formatMoney } from '../lib/paymentSession'
+import { resolveProviderPhoto } from '../lib/providerPhoto'
 import './SharedHero.css'
 
 const SharedHeroContext = createContext(null)
@@ -23,7 +24,7 @@ function isUsableRect(rect) {
 }
 
 function MorphCard({ doctor, layout }) {
-  const photo = doctor?.photo || '/img/doctors/new/doctor.png'
+  const photo = resolveProviderPhoto(doctor) || '/img/doctors/new/doctor.png'
   const name = displayDoctorName(doctor?.name)
   const specialty = doctor?.specialty || 'Specialist'
   const experience = doctor?.experience || ''

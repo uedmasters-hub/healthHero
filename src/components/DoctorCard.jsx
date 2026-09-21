@@ -3,18 +3,8 @@ import { flowState } from '../lib/careFlow'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import { useSharedHero } from './SharedHero'
 import { formatMoney } from '../lib/paymentSession'
+import { resolveProviderPhoto } from '../lib/providerPhoto'
 import './DoctorCard.css'
-
-const doctorImages = {
-  1: '/img/doctors/new/doctor.png',
-  2: '/img/doctors/doctor-m1.png',
-  3: '/img/doctors/doctor-w2.png',
-  4: '/img/doctors/doctor-m2.png',
-  5: '/img/doctors/doctor-w3.png',
-  6: '/img/doctors/doctor-m3.png',
-  7: '/img/doctors/doctor-w1.png',
-  8: '/img/doctors/doctor-m1.png',
-}
 
 function displayName(name) {
   if (!name) return 'Doctor'
@@ -48,7 +38,7 @@ export default function DoctorCard({
   const isBooking = context === 'booking'
   const isIdentity = context === 'identity'
 
-  const photo = doctor?.photo || doctorImages[doctor?.id] || '/img/doctors/new/doctor.png'
+  const photo = resolveProviderPhoto(doctor) || '/img/doctors/new/doctor.png'
   const name = displayName(doctor?.name)
   const specialty = doctor?.specialty || 'Specialist'
   const experience = doctor?.experience || ''

@@ -1,0 +1,68 @@
+/* Shared provider avatar frame — size/border come from parent class when needed. */
+
+.provider-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.provider-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 1;
+  transition: opacity 160ms ease;
+}
+
+.provider-avatar.is-loading .provider-avatar__img {
+  opacity: 0;
+}
+
+.provider-avatar__shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.28) 45%,
+    rgba(255, 255, 255, 0.12) 90%
+  );
+  background-size: 200% 100%;
+  animation: provider-avatar-shine 1.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.provider-avatar__fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+}
+
+.provider-avatar.is-loading .provider-avatar__fallback {
+  opacity: 0;
+}
+
+@keyframes provider-avatar-shine {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .provider-avatar__shine {
+    animation: none;
+  }
+
+  .provider-avatar__img {
+    transition: none;
+  }
+}

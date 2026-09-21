@@ -211,6 +211,10 @@
   color: var(--white);
 }
 
+.upcoming-avatar .provider-avatar__fallback {
+  color: var(--white);
+}
+
 .upcoming-avatar-icon {
   display: inline-flex;
   width: var(--icon-2xl);
