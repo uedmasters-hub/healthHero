@@ -40,7 +40,14 @@ export {
   getServiceCta,
 } from './serviceTypes'
 
-export { getBookingEngine, createBookingEngine, bindBookingEngine } from './engine'
+export { getBookingEngine, createBookingEngine, bindBookingEngine, getBoundBookingUserId } from './engine'
+export { createRepository, createAppointmentRepository, IMMUTABLE_APPOINTMENT_STATUSES } from './repository'
+export {
+  syncAppointmentRecord,
+  hydrateAppointmentsFromRemote,
+  mapAppointmentStatus,
+  toAppointmentRow,
+} from './appointmentSync'
 export { BookingProvider, useBooking, useBookingEngine } from './BookingProvider'
 export {
   useBookingStore,

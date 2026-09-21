@@ -200,6 +200,7 @@ export default function PreVisitCheckIn() {
         userId: user.id,
         bookingRef: bookingId,
         bookingStatus: currentBooking.status,
+        bookingRecord: currentBooking,
         subject: `Chat with ${doctorName.startsWith('Dr.') ? doctorName : `Dr. ${doctorName}`}`,
         metadata: providerMetadataFromBooking(currentBooking),
         providerUserId: currentBooking.doctor?.userId || currentBooking.doctor?.authUserId || null,

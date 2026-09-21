@@ -4,6 +4,10 @@ Persistent provider and support messaging for eMedicalls. In-visit telehealth ch
 
 Concepts (message kinds, inbox/thread mental model) are adapted from Tabcom’s client model. Tabcom’s zero-retention Socket.IO relay, presence masking, and collaboration boards are **not** used — messages live in Postgres with Supabase Realtime and Storage.
 
+## Booking SSOT
+
+Treat, Ready for Visit, Home carousel, Notifications deep-links, and provider chat all read bookings from the same **AppointmentRepository** (`src/booking` engine). Provider conversations store `booking_ref` (= local booking id) and optionally `appointment_id` (Postgres mirror). Creating chat never deletes or re-keys a booking — it only upserts the durable `appointments` row so refresh can restore the visit if local storage is cleared.
+
 ## Schema
 
 | Table | Role |

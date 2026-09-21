@@ -214,7 +214,7 @@ export function careHistoryTabForRecord(record, now = new Date()) {
   if ([BOOKING_STATUS.DRAFT].includes(record.status)) return null
   // Active = in-progress care / payment / checked-in — not merely “soon”.
   if (
-    [BOOKING_STATUS.CHECKED_IN, BOOKING_STATUS.PENDING_PAYMENT, BOOKING_STATUS.PAYMENT_PROCESSING].includes(
+    [BOOKING_STATUS.CHECKED_IN, BOOKING_STATUS.PENDING_PAYMENT, BOOKING_STATUS.PAYMENT_PROCESSING, 'in_progress', 'consultation_active'].includes(
       record.status,
     )
   ) {

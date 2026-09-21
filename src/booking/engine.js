@@ -7,7 +7,8 @@ import {
   toLegacyBooking,
 } from './models'
 import { createLocalPersistence } from './persistence'
-import { createRepository } from './repository'
+import { createRepository, IMMUTABLE_APPOINTMENT_STATUSES } from './repository'
+import { syncAppointmentRecord } from './appointmentSync'
 import {
   applyPaymentExpired,
   applyPaymentProcessing,
@@ -96,7 +97,11 @@ const STATUS_KEEP_RANK = {
   [BOOKING_STATUS.DRAFT]: -1,
 }
 
-/** Collapse duplicate visit fingerprints left by older adopt/setCurrent paths. */
+/**
+ * Collapse duplicate visit fingerprints left by older adopt/setCurrent paths.
+ * Never hard-deletes immutable care rows (confirmed → cancelled) — those UUIDs
+ * must stay stable for Treat, Chat booking_ref, and care history.
+ */
 function purgeDuplicateBookings(repo) {
   const groups = new Map()
   repo.getAll().forEach((record) => {
@@ -118,11 +123,17 @@ function purgeDuplicateBookings(repo) {
     list.slice(1).forEach((dup) => {
       // Never remove stable demo seeds if the keeper is a transient draft.
       if (String(dup.id).startsWith('seed_') && !String(list[0].id).startsWith('seed_')) return
-      repo.remove(dup.id)
-      removed += 1
+      if (IMMUTABLE_APPOINTMENT_STATUSES.includes(dup.status)) return
+      const result = repo.remove(dup.id)
+      if (result) removed += 1
     })
   })
   return removed
+}
+
+function mirrorAppointment(record, ownerId) {
+  if (!record?.id || !ownerId) return
+  syncAppointmentRecord(record, ownerId).catch(() => {})
 }
 
 export function createBookingEngine({
@@ -136,6 +147,7 @@ export function createBookingEngine({
   purgeDuplicateBookings(repo)
 
   const withOwner = (input) => ({ ...input, userId: userId || input.userId || null })
+  const ownerId = () => userId || null
 
   const pendingCheckout = readPaymentSession()
   if (pendingCheckout && (seedCarousel || loaded.bookings.length > 0 || pendingCheckout.draftBooking)) {
@@ -155,9 +167,32 @@ export function createBookingEngine({
     getBookings: () => repo.getAll(),
     getById: (id) => repo.getById(id),
     getActive: () => repo.getActive(),
+    getUserId: () => ownerId(),
     getHomeBooking: () => selectHomeBooking(repo.getState()),
     getCurrentLegacy: () => selectLegacyCurrent(repo.getState()),
     getResumePath: (id) => selectResumePath(id ? repo.getById(id) : repo.getActive()),
+
+    /** Re-insert a booking by stable id without changing UUID (hydrate / recover). */
+    restoreRecord(record) {
+      if (!record?.id) return null
+      const existing = repo.getById(record.id)
+      const merged = createBookingRecord(withOwner({
+        ...(existing || {}),
+        ...record,
+        id: record.id,
+        meta: {
+          ...(existing?.meta || {}),
+          ...(record.meta || {}),
+          updatedAt: new Date().toISOString(),
+        },
+      }))
+      const { record: saved } = repo.upsert(merged, {
+        event: BOOKING_EVENT.RESUMED,
+        payload: { source: 'restore' },
+        silent: false,
+      })
+      return saved
+    },
 
     setActive(id) {
       repo.setActive(id)
@@ -402,6 +437,7 @@ export function createBookingEngine({
         throw e
       }
 
+      mirrorAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -438,8 +474,13 @@ export function createBookingEngine({
       const next = transitionBooking(current, BOOKING_STATUS.CHECKED_IN, {
         event: BOOKING_EVENT.CHECKED_IN,
       })
+      next.meta = {
+        ...(next.meta || {}),
+        checkedInAt: new Date().toISOString(),
+      }
       const { record } = repo.upsert(next, { event: BOOKING_EVENT.CHECKED_IN })
       repo.setActive(record.id)
+      mirrorAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -450,6 +491,7 @@ export function createBookingEngine({
         event: BOOKING_EVENT.CHECKIN_CANCELLED,
       })
       const { record } = repo.upsert(next, { event: BOOKING_EVENT.CHECKIN_CANCELLED })
+      mirrorAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -469,6 +511,7 @@ export function createBookingEngine({
         repo.setActive(home?.id || null)
       }
       clearPaymentSession()
+      mirrorAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -541,6 +584,7 @@ export function createBookingEngine({
       })
       repo.setActive(record.id)
       clearPaymentSession()
+      mirrorAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -658,6 +702,10 @@ export function bindBookingEngine(userId = null) {
 export function getBookingEngine() {
   if (!singleton) bindBookingEngine(null)
   return singleton
+}
+
+export function getBoundBookingUserId() {
+  return boundUserId && boundUserId !== 'anon' ? boundUserId : null
 }
 
 export function __resetBookingEngineForTests() {

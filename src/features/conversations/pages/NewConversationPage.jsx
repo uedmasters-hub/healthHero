@@ -95,6 +95,7 @@ export default function NewConversationPage() {
         userId: user.id,
         bookingRef: booking.id,
         bookingStatus: booking.status,
+        bookingRecord: booking,
         subject: `Chat with ${doctorDisplayName(booking)}`,
         metadata: providerMetadataFromBooking(booking),
         providerUserId: booking.doctor?.userId || booking.doctor?.authUserId || null,

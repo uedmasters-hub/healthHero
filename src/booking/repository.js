@@ -1,7 +1,25 @@
-/** In-memory repository with optimistic write + rollback */
+/**
+ * AppointmentRepository — in-memory store with optimistic write + rollback.
+ * Booking UUIDs (client ids) are immutable after creation; callers must transition
+ * status rather than deleting confirmed / checked-in / completed rows.
+ */
 
 import { appendHistory, createBookingRecord } from './models'
-import { BOOKING_EVENT } from './constants'
+import { BOOKING_EVENT, BOOKING_STATUS } from './constants'
+
+/** Statuses that must never be hard-deleted from the repository. */
+export const IMMUTABLE_APPOINTMENT_STATUSES = Object.freeze([
+  BOOKING_STATUS.CONFIRMED,
+  BOOKING_STATUS.UPCOMING,
+  BOOKING_STATUS.CHECKED_IN,
+  BOOKING_STATUS.COMPLETED,
+  BOOKING_STATUS.CANCELLED,
+  BOOKING_STATUS.RESCHEDULED,
+  BOOKING_STATUS.NO_SHOW,
+  BOOKING_STATUS.REFUNDED,
+  'in_progress',
+  'consultation_active',
+])
 
 export function createRepository(initial = { bookings: [], activeBookingId: null }) {
   let bookings = [...(initial.bookings || [])]
@@ -108,9 +126,16 @@ export function createRepository(initial = { bookings: [], activeBookingId: null
       notify()
     },
 
+    /**
+     * Hard-delete only for disposable drafts / expired checkout shells.
+     * Confirmed care rows refuse removal so Treat / Chat / history keep the same UUID.
+     */
     remove(id) {
       const prev = bookings.find((b) => b.id === id)
       if (!prev) return null
+      if (IMMUTABLE_APPOINTMENT_STATUSES.includes(prev.status)) {
+        return null
+      }
       bookings = bookings.filter((b) => b.id !== id)
       if (activeBookingId === id) {
         activeBookingId = bookings.find((b) => b.status === 'confirmed' || b.status === 'upcoming' || b.status === 'pending_payment')?.id
@@ -128,3 +153,7 @@ export function createRepository(initial = { bookings: [], activeBookingId: null
     },
   }
 }
+
+/** Canonical name used by Treat, Chat, Notifications, and care history. */
+export const createAppointmentRepository = createRepository
+

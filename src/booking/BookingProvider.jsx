@@ -23,6 +23,7 @@ import { notificationService } from '../features/notifications'
 import { getBookingEngine } from './engine'
 import { toLegacyBooking } from './models'
 import { selectActive, selectHomeBooking } from './selectors'
+import { hydrateAppointmentsFromRemote } from './appointmentSync'
 
 const BookingContext = createContext(null)
 
@@ -44,23 +45,35 @@ export function BookingProvider({ children }) {
   const writingRef = useRef(false)
 
   useEffect(() => {
-    let session = readPaymentSession()
-    if (!session) {
-      const active = engine.getActive()
-      if (active?.checkout) {
-        session = {
-          ...active.checkout,
-          draftBooking: active.checkout.draftBooking || toLegacyBooking(active),
-          bookingEngineId: active.id,
+    let cancelled = false
+    const run = async () => {
+      let session = readPaymentSession()
+      if (!session) {
+        const active = engine.getActive()
+        if (active?.checkout) {
+          session = {
+            ...active.checkout,
+            draftBooking: active.checkout.draftBooking || toLegacyBooking(active),
+            bookingEngineId: active.id,
+          }
         }
       }
+      if (session) {
+        setPaymentSessionState(session)
+        engine.syncPaymentSession(session)
+      }
+      engine.purgeDuplicates?.()
+
+      const uid = engine.getUserId?.() || null
+      if (uid) {
+        await hydrateAppointmentsFromRemote(engine, uid)
+      }
+      if (!cancelled) setHydrated(true)
     }
-    if (session) {
-      setPaymentSessionState(session)
-      engine.syncPaymentSession(session)
+    run()
+    return () => {
+      cancelled = true
     }
-    engine.purgeDuplicates?.()
-    setHydrated(true)
   }, [engine])
 
   // Active booking is the focused record for management screens.

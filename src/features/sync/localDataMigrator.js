@@ -7,6 +7,7 @@ import { requireSupabase } from '../../lib/supabase'
 import { STORAGE_KEYS as USER_KEYS } from '../../user/constants'
 import { STORAGE_KEYS as BOOKING_KEYS } from '../../booking/constants'
 import { BRAND_STORAGE } from '../../lib/brand'
+import { toAppointmentRow } from '../../booking/appointmentSync'
 
 const FLAG = (userId) => `${BRAND_STORAGE.syncPrefix}${userId}`
 
@@ -49,59 +50,11 @@ function asDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null
 }
 
-function asTime(value) {
-  if (!value) return null
-  const text = String(value.time || value || '')
-  const match = text.match(/(\d{1,2}):(\d{2})/)
-  if (!match) return null
-  return `${match[1].padStart(2, '0')}:${match[2]}:00`
-}
-
 function mapSeverity(value) {
   const key = String(value || '').toLowerCase().replace(/\s+/g, '_')
   if (['mild', 'moderate', 'severe', 'life_threatening'].includes(key)) return key
   if (key === 'critical') return 'severe'
   return 'moderate'
-}
-
-function mapVisit(value) {
-  const key = String(value || '').toLowerCase()
-  if (key.includes('video')) return 'video'
-  if (key.includes('phone')) return 'phone'
-  if (key.includes('home')) return 'home_visit'
-  if (key.includes('emergency')) return 'emergency'
-  return 'in_person'
-}
-
-function mapService(value) {
-  const key = String(value || '').toLowerCase()
-  if (key.includes('virtual') || key.includes('video')) return 'virtual_consultation'
-  if (key.includes('pharm')) return 'pharmacy_delivery'
-  if (key.includes('home')) return 'home_care_nursing'
-  if (key.includes('lab')) return 'lab_test'
-  if (key.includes('ambulance')) return 'ambulance'
-  if (key.includes('emergency')) return 'emergency'
-  return 'doctor_consultation'
-}
-
-function mapAppointmentStatus(value) {
-  const key = String(value || 'draft')
-  const allowed = [
-    'draft', 'pending_payment', 'payment_processing', 'confirmed', 'upcoming',
-    'checked_in', 'in_progress', 'completed', 'cancelled', 'rescheduled',
-    'no_show', 'expired', 'refunded',
-  ]
-  if (allowed.includes(key)) return key
-  if (key === 'booked') return 'confirmed'
-  if (key === 'payment_pending') return 'pending_payment'
-  return 'draft'
-}
-
-function doctorUuid(id) {
-  if (id == null || id === '') return null
-  const n = Number(id)
-  if (!Number.isFinite(n) || n < 1) return null
-  return `00000000-0000-4000-a000-${String(n).padStart(12, '0')}`
 }
 
 async function upsert(table, rows, onConflict) {
@@ -285,22 +238,10 @@ export async function migrateLocalDataToSupabase(user) {
   }
 
   const bookings = bookingState?.bookings || []
-  await upsert('appointments', bookings.map((item) => ({
-    user_id: uid,
-    patient_id: uid,
-    client_id: String(item.id),
-    provider_id: doctorUuid(item.doctor?.id),
-    service_type: mapService(item.serviceType),
-    status: mapAppointmentStatus(item.status),
-    visit_type: mapVisit(item.schedule?.visitType || item.visitType),
-    scheduled_date: asDate(item.schedule?.date),
-    scheduled_time: asTime(item.schedule),
-    duration_minutes: Number(item.schedule?.duration) || 30,
-    notes: item.note || null,
-    reason_for_visit: item.reason || item.note || null,
-    version: Number(item.version) || 1,
-    client_payload: item,
-  })), 'user_id,client_id')
+  const appointmentRows = bookings
+    .map((item) => toAppointmentRow(item, uid))
+    .filter(Boolean)
+  await upsert('appointments', appointmentRows, 'user_id,client_id')
 
   window.localStorage.setItem(FLAG(user.id), '1')
   return { ok: true, skipped: false }

@@ -3,6 +3,8 @@
  * Inspired by Tabcom inbox/thread patterns; messages are stored (not relayed).
  */
 import { requireSupabase, isSupabaseConfigured } from '../../lib/supabase'
+import { getBookingEngine } from '../../booking/engine'
+import { syncAppointmentRecord } from '../../booking/appointmentSync'
 import {
   CONVERSATION_KIND,
   CONVERSATION_STATUS,
@@ -141,6 +143,7 @@ export async function getConversation(conversationId) {
 /**
  * Get or create a provider conversation permanently linked to a booking.
  * Uses SECURITY DEFINER RPC — no client inserts into conversation_participants.
+ * Never mutates, deletes, or re-keys the underlying booking; only reads status.
  */
 export async function getOrCreateProviderConversation({
   userId,
@@ -151,6 +154,7 @@ export async function getOrCreateProviderConversation({
   metadata = {},
   providerUserId = null,
   bookingStatus = null,
+  bookingRecord = null,
 } = {}) {
   if (!userId) return { ok: false, error: 'Sign in to start a conversation.' }
   if (!bookingRef && !appointmentId && !pharmacyOrderId) {
@@ -159,10 +163,21 @@ export async function getOrCreateProviderConversation({
 
   const supabase = requireSupabase()
 
+  // Ensure durable appointments mirror exists before chat links booking_ref.
+  // Chat itself never deletes or rewrites booking status.
+  let linkedAppointmentId = appointmentId
+  if (!linkedAppointmentId && bookingRef) {
+    const engineRecord = getBookingEngine().getById(bookingRef)
+    const record = engineRecord || bookingRecord
+    if (record) {
+      linkedAppointmentId = await syncAppointmentRecord(record, userId)
+    }
+  }
+
   const { data, error } = await supabase.rpc('create_provider_conversation', {
     p_booking_ref: bookingRef || null,
     p_booking_status: bookingStatus || metadata?.booking_status || null,
-    p_appointment_id: appointmentId || null,
+    p_appointment_id: linkedAppointmentId || null,
     p_subject: subject || 'Care conversation',
     p_metadata: {
       ...metadata,
@@ -188,7 +203,7 @@ export async function getOrCreateProviderConversation({
         kind: CONVERSATION_KIND.PROVIDER,
         status: CONVERSATION_STATUS.OPEN,
         booking_ref: payload.booking_ref || bookingRef || null,
-        appointment_id: payload.appointment_id || appointmentId || null,
+        appointment_id: payload.appointment_id || linkedAppointmentId || null,
         metadata,
       },
       conversationId,
