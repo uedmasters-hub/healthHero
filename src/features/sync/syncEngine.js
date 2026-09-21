@@ -10,7 +10,7 @@ import { migrateLocalDataToSupabase } from './localDataMigrator'
 import { hydrateAppointmentsFromRemote } from '../../booking/appointmentSync'
 import { hydrateProviders } from '../providers'
 import { hydrateCenters } from '../providers/centersRepository'
-import { startRealtimeHub, stopRealtimeHub } from './realtimeHub'
+import { startRealtimeHub, stopRealtimeHub, restartRealtimeHub } from './realtimeHub'
 import * as notifService from '../notifications/service'
 
 export { mirrorAppointment, mirrorProfile } from './mirrors'
@@ -75,7 +75,16 @@ function scheduleNotificationPull(userId) {
   notifPullTimer = window.setTimeout(() => {
     notifPullTimer = null
     handleNotificationsPull({ userId }).catch(() => {})
-  }, 350)
+  }, 800)
+}
+
+function handleNotificationRealtimeEvent(payload) {
+  try {
+    notifService.applyLiveChange(payload)
+  } catch {
+    // Fall back to reconcile if the payload can't be applied.
+    if (state.userId) scheduleNotificationPull(state.userId)
+  }
 }
 
 async function flushOutbox() {
@@ -180,8 +189,8 @@ async function bootstrapSession(sessionUser) {
           const eng = await loadEngine()
           hydrateAppointmentsFromRemote(eng, sessionUser.id).catch(() => {})
         },
-        onNotificationsChange: () => {
-          scheduleNotificationPull(sessionUser.id)
+        onNotificationEvent: (payload) => {
+          handleNotificationRealtimeEvent(payload)
         },
       })
 
@@ -235,15 +244,32 @@ export function startSyncRuntime() {
     setState({ online, status: online ? (state.userId ? 'ready' : 'idle') : 'offline' })
     if (online && state.userId) {
       scheduleFlush(200)
-      bootstrapSession(state.sessionUser).catch(() => {})
+      restartRealtimeHub()
+      scheduleNotificationPull(state.userId)
+      if (state.status === 'idle' || state.status === 'error') {
+        bootstrapSession(state.sessionUser).catch(() => {})
+      }
     }
   })
+
+  const onVisibility = () => {
+    if (typeof document === 'undefined') return
+    if (document.visibilityState !== 'visible') return
+    if (!state.userId || !isOnline()) return
+    restartRealtimeHub()
+    scheduleNotificationPull(state.userId)
+    scheduleFlush(100)
+  }
+  window.addEventListener('visibilitychange', onVisibility)
+  window.addEventListener('focus', onVisibility)
 
   hydrateProviders().catch(() => {})
   hydrateCenters().catch(() => {})
 
   return () => {
     unsub()
+    window.removeEventListener('visibilitychange', onVisibility)
+    window.removeEventListener('focus', onVisibility)
     if (connectivityStop) {
       connectivityStop()
       connectivityStop = null

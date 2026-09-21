@@ -14,6 +14,7 @@ import {
   markAllRemoteRead,
   deleteRemoteNotification,
   deleteAllRemote,
+  mapRemoteRow,
 } from './remote'
 import { isOnline } from '../sync/connectivity'
 import { enqueueOutbox } from '../sync/outbox'
@@ -22,6 +23,8 @@ import { isSupabaseConfigured } from '../../lib/supabase'
 let listeners = []
 let autoTimer = null
 let pullGeneration = 0
+let appliedPullGeneration = 0
+let lastLiveEventAt = 0
 let bound = false
 const pendingReadIds = new Set()
 let pendingMarkAllRead = false
@@ -153,16 +156,20 @@ export function unbindOwner() {
 }
 
 /**
- * Replace local mirror with remote rows (authoritative).
- * Ignores stale responses via generation token.
- * Preserves in-flight local mutations so optimistic UI isn't clobbered.
+ * Replace local mirror with remote rows (authoritative reconcile).
+ * Discards stale pulls when a newer pull already applied, or when a live
+ * event landed after this pull started (live patch already fresher).
  */
-export function applyRemoteSnapshot(userId, rows, { generation } = {}) {
+export function applyRemoteSnapshot(userId, rows, { generation, startedAt } = {}) {
   if (userId && repo.getOwner() && userId !== repo.getOwner()) {
     return { ok: false, stale: true }
   }
-  if (generation != null && generation !== pullGeneration) {
+  if (generation != null && generation < appliedPullGeneration) {
     return { ok: false, stale: true }
+  }
+  // A live event beat this pull — don't clobber fresher patches.
+  if (startedAt != null && startedAt < lastLiveEventAt) {
+    return mergeRemoteSnapshot(rows, { generation })
   }
 
   let list = (rows || []).slice(0, MAX_NOTIFICATIONS)
@@ -183,13 +190,101 @@ export function applyRemoteSnapshot(userId, rows, { generation } = {}) {
   }
 
   repo.replaceAll(list)
+  if (generation != null) appliedPullGeneration = generation
   notify()
   return { ok: true, count: list.length, unreadCount: list.filter((n) => n.unread).length }
 }
 
+/** Upsert remote rows into the current mirror without dropping live patches. */
+function mergeRemoteSnapshot(rows, { generation } = {}) {
+  const byId = new Map(repo.getAll().map((n) => [n.id, n]))
+  for (const row of rows || []) {
+    if (!row?.id) continue
+    if (pendingDeleteAll || pendingDeleteIds.has(row.id)) continue
+    const next = { ...row }
+    if (pendingMarkAllRead || pendingReadIds.has(next.id)) next.unread = false
+    byId.set(next.id, next)
+  }
+  const remoteIds = new Set((rows || []).map((r) => r.id))
+  // Drop local rows that remote no longer has (unless pending create)
+  for (const id of [...byId.keys()]) {
+    if (!remoteIds.has(id) && !pendingDeleteIds.has(id)) {
+      // Keep only if it has no remoteId yet (optimistic local create)
+      const item = byId.get(id)
+      if (item?.remoteId) byId.delete(id)
+    }
+  }
+  const list = Array.from(byId.values())
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, MAX_NOTIFICATIONS)
+  repo.replaceAll(list)
+  if (generation != null) appliedPullGeneration = Math.max(appliedPullGeneration, generation)
+  notify()
+  return { ok: true, merged: true, count: list.length, unreadCount: list.filter((n) => n.unread).length }
+}
+
+/**
+ * Apply a single postgres_changes event instantly (no network round-trip).
+ * Badge + list update together from the same notify().
+ */
+export function applyLiveChange(payload) {
+  if (!payload || !ownerId()) return { ok: false }
+
+  lastLiveEventAt = Date.now()
+  const eventType = String(payload.eventType || payload.event || '').toUpperCase()
+  const row = payload.new || null
+  const old = payload.old || null
+
+  if (eventType === 'DELETE') {
+    const raw = old || row
+    if (!raw) return { ok: false }
+    const id = String(raw.source_id || raw.id || '')
+    if (!id) return { ok: false }
+    if (pendingDeleteAll) return { ok: true, skipped: true }
+    pendingDeleteIds.delete(id)
+    repo.remove(id)
+    if (raw.id && String(raw.id) !== id) repo.remove(String(raw.id))
+    repo.getAll()
+      .filter((n) => n.remoteId && n.remoteId === raw.id)
+      .forEach((n) => repo.remove(n.id))
+    notify()
+    return { ok: true, event: 'DELETE', id }
+  }
+
+  if (!row) return { ok: false }
+  const mapped = mapRemoteRow(row)
+  if (!mapped) return { ok: false }
+
+  if (pendingDeleteAll || pendingDeleteIds.has(mapped.id)) {
+    return { ok: true, skipped: true }
+  }
+  if (pendingMarkAllRead || pendingReadIds.has(mapped.id)) {
+    mapped.unread = false
+    if (row.status === 'read') pendingReadIds.delete(mapped.id)
+  }
+
+  const existing = repo.getById(mapped.id)
+  const list = repo.getAll().filter((n) => (
+    n.id !== mapped.id && n.remoteId !== mapped.remoteId
+  ))
+  list.unshift(mapped)
+  list.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+  repo.replaceAll(list.slice(0, MAX_NOTIFICATIONS))
+
+  if (eventType === 'INSERT' && mapped.unread && !existing) {
+    emitIncoming(mapped)
+  }
+
+  notify()
+  return { ok: true, event: eventType, id: mapped.id }
+}
+
 export function beginPullGeneration() {
   pullGeneration += 1
-  return pullGeneration
+  return {
+    generation: pullGeneration,
+    startedAt: Date.now(),
+  }
 }
 
 export function currentPullGeneration() {

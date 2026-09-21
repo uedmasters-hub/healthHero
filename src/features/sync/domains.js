@@ -31,12 +31,12 @@ export async function handleAppointmentUpsert({ userId, recordId }) {
 
 /**
  * Pull remote notifications and REPLACE the local mirror (remote is SSOT).
- * Stale responses are discarded via pull generation.
+ * Stale responses are discarded via pull generation / live-event clocks.
  */
 export async function handleNotificationsPull({ userId }) {
   if (!userId || !isSupabaseConfigured) return { ok: false, deferred: true }
 
-  const generation = notifService.beginPullGeneration()
+  const { generation, startedAt } = notifService.beginPullGeneration()
   const result = await fetchRemoteNotifications(userId)
   if (!result.ok) {
     if (result.deferred) return result
@@ -44,12 +44,13 @@ export async function handleNotificationsPull({ userId }) {
   }
 
   const mapped = (result.rows || []).map(mapRemoteRow).filter(Boolean)
-  const applied = notifService.applyRemoteSnapshot(userId, mapped, { generation })
+  const applied = notifService.applyRemoteSnapshot(userId, mapped, { generation, startedAt })
   if (applied?.stale) return { ok: true, stale: true }
   return {
     ok: true,
     count: applied.count,
     unreadCount: applied.unreadCount,
+    merged: applied.merged || false,
   }
 }
 
