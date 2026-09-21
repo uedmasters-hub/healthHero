@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
-import { getDoctorById } from '../data/doctors'
 import { getAppointmentJourney } from '../lib/appointmentJourney'
-import { resolveProviderPhoto } from '../lib/providerPhoto'
 import {
   HOME_CAROUSEL_LIMIT,
   getServiceCta,
-  getServiceMeta,
-  resolveServiceType,
+  presentBookingCard,
   useHomeCarousel,
 } from '../booking'
 import useStaggerReveal from './useStaggerReveal'
@@ -18,44 +15,6 @@ import { useDemoPreview } from './DemoPreviewModal'
 import { isPreviewServiceType } from '../lib/previewModules'
 import ProviderAvatar from './ProviderAvatar'
 import './BookAppointment.css'
-
-function displayName(name) {
-  if (!name) return 'Provider'
-  return String(name).replace(/^Dr\.?\s*/i, '')
-}
-
-function formatDate(date) {
-  const dateValue = date?.full instanceof Date ? date.full : new Date(date?.full || date)
-  if (Number.isNaN(dateValue.getTime())) return ''
-  return dateValue.toLocaleDateString('en-IN', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  })
-}
-
-function formatTimeRange(time, duration) {
-  if (!time) return ''
-  const [timePart, modifier] = String(time).split(' ')
-  let [hours, minutes] = timePart.split(':').map(Number)
-  const isPM = (modifier || '').toUpperCase() === 'PM'
-  if (isPM && hours !== 12) hours += 12
-  if (!isPM && hours === 12) hours = 0
-  const durMins = parseInt(duration, 10) || 30
-  const startMins = hours * 60 + (minutes || 0)
-  const endMinsTotal = startMins + durMins
-  const endHours = Math.floor(endMinsTotal / 60) % 24
-  const endMins = endMinsTotal % 60
-
-  const clock = (h24, m) => {
-    const mer = h24 >= 12 ? 'PM' : 'AM'
-    let h = h24 % 12
-    if (h === 0) h = 12
-    return `${h}:${String(m).padStart(2, '0')} ${mer}`
-  }
-
-  return `${clock(hours, minutes || 0)} - ${clock(endHours, endMins)}`
-}
 
 function ServiceIcon({ type }) {
   if (type === 'pharmacy') {
@@ -113,16 +72,21 @@ function UpcomingBookingCard({
   const { show: showDemoPreview } = useDemoPreview()
   const { adoptBooking, getResumePath } = useBooking()
 
-  const serviceType = resolveServiceType(booking)
-  const serviceMeta = getServiceMeta(serviceType)
+  const presented = presentBookingCard(booking)
+  const {
+    doctor,
+    serviceType,
+    serviceMeta,
+    title,
+    subtitle,
+    photo,
+    showRating,
+    rating,
+    dateLabel,
+    timeLabel,
+  } = presented
+
   const journey = getAppointmentJourney(booking)
-  const doctor = booking.doctor || {}
-  const fullDoctor = doctor.id ? getDoctorById(doctor.id) : null
-  const title = booking.providerName || displayName(doctor.name)
-  const subtitle = booking.providerSubtitle
-    || [serviceMeta.label, doctor.specialty || doctor.experience].filter(Boolean).join(' · ')
-  const photo = resolveProviderPhoto({ ...fullDoctor, ...doctor }) || resolveProviderPhoto(booking)
-  const showRating = doctor.rating != null && (serviceType === 'doctor_consultation' || serviceType === 'virtual_consultation')
   const cta = getServiceCta(booking, journey.cta)
   const badge = journey.badge || serviceMeta.shortLabel
   const badgeTone = journey.badgeTone || journey.status || 'booked'
@@ -146,7 +110,7 @@ function UpcomingBookingCard({
     const sourceEl = sharedSourceRef?.current
     if (shared?.startOpen && sourceEl && doctor?.id) {
       shared.startOpen({
-        doctor: { ...fullDoctor, ...doctor },
+        doctor,
         sourceEl,
         runNavigate: go,
         targetLayout: journey.targetLayout,
@@ -187,9 +151,9 @@ function UpcomingBookingCard({
 
         <div className="upcoming-top">
           <ProviderAvatar
-            className={`upcoming-avatar ${photo ? '' : 'is-icon'}`}
+            className="upcoming-avatar"
             imgClassName="upcoming-avatar-img"
-            doctor={{ ...fullDoctor, ...doctor }}
+            doctor={doctor}
             src={photo}
             placeholder={(
               <span className="upcoming-avatar-icon">
@@ -203,7 +167,7 @@ function UpcomingBookingCard({
               {showRating ? (
                 <span className="upcoming-rating">
                   <span className="upcoming-rating-star" aria-hidden="true">★</span>
-                  {doctor.rating}
+                  {rating}
                 </span>
               ) : null}
             </div>
@@ -219,7 +183,7 @@ function UpcomingBookingCard({
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            <span>{formatDate(booking.date)}</span>
+            <span>{dateLabel || '—'}</span>
           </div>
           <span className="upcoming-divider" aria-hidden="true" />
           <div className="upcoming-detail">
@@ -227,7 +191,7 @@ function UpcomingBookingCard({
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
             </svg>
-            <span>{formatTimeRange(booking.time, booking.duration)}</span>
+            <span>{timeLabel || '—'}</span>
           </div>
         </div>
 

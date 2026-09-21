@@ -3,7 +3,8 @@ import { flowState } from '../lib/careFlow'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import { useSharedHero } from './SharedHero'
 import { formatMoney } from '../lib/paymentSession'
-import { resolveProviderPhoto } from '../lib/providerPhoto'
+import { presentBookingCard } from '../booking'
+import ProviderAvatar from './ProviderAvatar'
 import './DoctorCard.css'
 
 function displayName(name) {
@@ -38,23 +39,26 @@ export default function DoctorCard({
   const isBooking = context === 'booking'
   const isIdentity = context === 'identity'
 
-  const photo = resolveProviderPhoto(doctor) || '/img/doctors/new/doctor.png'
-  const name = displayName(doctor?.name)
-  const specialty = doctor?.specialty || 'Specialist'
-  const experience = doctor?.experience || ''
-  const rating = doctor?.rating ?? 4.8
-  const phone = doctor?.phone || `+91987654321${doctor?.id || 0}`
+  const presented = presentBookingCard({ doctor, serviceType: 'doctor_consultation' })
+  const merged = presented?.doctor || doctor || {}
+  const photo = presented?.photo || '/img/doctors/new/doctor.png'
+  const name = displayName(merged?.name || doctor?.name)
+  const specialty = merged?.specialty || doctor?.specialty || 'Specialist'
+  const experience = merged?.experience || doctor?.experience || ''
+  const rating = merged?.rating ?? doctor?.rating ?? 4.8
+  const phone = merged?.phone || doctor?.phone || `+91987654321${merged?.id || doctor?.id || 0}`
+  const doctorForNav = { ...doctor, ...merged, photo, name, specialty, experience, rating, phone }
 
   const sharedState = () => flowState(location, { origin, preferredVisitType, returnTo, restore })
 
   const handleClick = (e) => {
     if (isBooking || disableNavigate) return
     if (isIdentity) {
-      guard(doctor, ({ forSomeoneElse }) => {
+      guard(doctorForNav, ({ forSomeoneElse }) => {
         if (forSomeoneElse) {
           navigate('/booking/slot', {
             state: flowState(sharedState(), {
-              doctor,
+              doctor: doctorForNav,
               returnTo: origin === 'appointment' ? '/appointment' : (returnTo || location.pathname),
               fromProfile: origin === 'appointment',
               forSomeoneElse: true,
@@ -62,32 +66,32 @@ export default function DoctorCard({
           })
           return
         }
-        if (doctor?.id) {
+        if (doctorForNav?.id) {
           onBeforeNavigate?.()
-          navigate(`/doctor/${doctor.id}`, { replace, state: sharedState() })
+          navigate(`/doctor/${doctorForNav.id}`, { replace, state: sharedState() })
           onAfterNavigate?.()
         }
       })
       return
     }
-    if (variant === 'grid' && shared?.startOpen && doctor?.id) {
+    if (variant === 'grid' && shared?.startOpen && doctorForNav?.id) {
       shared.startOpen({
-        doctor,
+        doctor: doctorForNav,
         sourceEl: e.currentTarget,
         restore,
         swap: Boolean(replace && shared.active),
         hideBook: true,
         runNavigate: () => {
           onBeforeNavigate?.()
-          navigate(`/doctor/${doctor.id}`, { replace, state: sharedState() })
+          navigate(`/doctor/${doctorForNav.id}`, { replace, state: sharedState() })
           onAfterNavigate?.()
         },
       })
       return
     }
     onBeforeNavigate?.()
-    if (doctor?.id) {
-      navigate(`/doctor/${doctor.id}`, { replace, state: sharedState() })
+    if (doctorForNav?.id) {
+      navigate(`/doctor/${doctorForNav.id}`, { replace, state: sharedState() })
       onAfterNavigate?.()
     }
   }
@@ -96,16 +100,16 @@ export default function DoctorCard({
     e.stopPropagation()
     onBeforeNavigate?.()
     if (onBookNow) {
-      onBookNow(doctor)
+      onBookNow(doctorForNav)
       onAfterNavigate?.()
       return
     }
-    if (doctor?.id) {
-      guard(doctor, ({ forSomeoneElse }) => {
+    if (doctorForNav?.id) {
+      guard(doctorForNav, ({ forSomeoneElse }) => {
         navigate('/booking/slot', {
           state: flowState(sharedState(), {
-            doctor,
-            returnTo: returnTo || `/doctor/${doctor.id}`,
+            doctor: doctorForNav,
+            returnTo: returnTo || `/doctor/${doctorForNav.id}`,
             fromProfile: Boolean(returnTo && returnTo.startsWith('/doctor/')),
             forSomeoneElse,
           }),
@@ -130,7 +134,13 @@ export default function DoctorCard({
     return (
       <>
       <button type="button" className={`dc-identity ${className}`} onClick={handleClick} disabled={disableNavigate}>
-        <img className="dc-identity-photo" src={photo} alt="" />
+        <ProviderAvatar
+          className="dc-identity-photo"
+          imgClassName="dc-identity-photo-img"
+          doctor={doctorForNav}
+          src={photo}
+          alt=""
+        />
         <div className="dc-identity-info">
           <h3 className="dc-identity-name">{name}</h3>
           <p className="dc-identity-specialty">
@@ -152,7 +162,12 @@ export default function DoctorCard({
       <>
       <div className={`dc-card dc-card-profile ${className}`}>
         <div className="dc-profile-photo">
-          <img src={photo} alt="" />
+          <ProviderAvatar
+            doctor={doctorForNav}
+            src={photo}
+            imgClassName="dc-profile-photo-img"
+            alt=""
+          />
         </div>
         <div className="dc-profile-copy">
           <div className="dc-title-row">
@@ -164,9 +179,9 @@ export default function DoctorCard({
           </div>
           <p className="dc-specialty">{specialty}</p>
           {experience ? <span className="dc-exp">{experience}</span> : null}
-          {doctor?.fee != null ? (
+          {doctorForNav?.fee != null ? (
             <p className="dc-fee">
-              <strong>{formatMoney(doctor.fee)}*</strong> Consultation fee
+              <strong>{formatMoney(doctorForNav.fee)}*</strong> Consultation fee
             </p>
           ) : null}
         </div>
@@ -190,13 +205,13 @@ export default function DoctorCard({
   }
 
   if (variant === 'list') {
-    const visitTypes = doctor?.visitTypes || []
+  const visitTypes = doctorForNav?.visitTypes || doctor?.visitTypes || []
     return (
       <>
       <div className={`dc-card dc-card-list ${className}`} onClick={handleClick}>
         <div className="dc-list-top">
           <div className="dc-grid-photo">
-            <img src={photo} alt="" />
+            <ProviderAvatar doctor={doctorForNav} src={photo} alt="" />
           </div>
           <div className="dc-list-copy">
             <div className="dc-title-row">
@@ -217,23 +232,23 @@ export default function DoctorCard({
         </div>
 
         <div className="dc-list-details">
-          {doctor?.address ? (
+          {doctorForNav?.address ? (
             <p className="dc-list-row">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              {doctor.address}
+              {doctorForNav.address}
             </p>
           ) : null}
           <div className="dc-list-tags">
-            {doctor?.travelTime ? (
+            {doctorForNav?.travelTime || doctor?.travelTime ? (
               <span className="dc-list-tag">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                {doctor.travelTime}
+                {doctorForNav.travelTime || doctor.travelTime}
               </span>
             ) : null}
             {visitTypes.map((type) => (
@@ -253,15 +268,15 @@ export default function DoctorCard({
               </span>
             ))}
           </div>
-          {doctor?.availability ? (
-            <p className="dc-list-avail">{doctor.availability}</p>
+          {doctorForNav?.availability || doctor?.availability ? (
+            <p className="dc-list-avail">{doctorForNav.availability || doctor.availability}</p>
           ) : null}
         </div>
 
         <div className="dc-list-footer">
-          {doctor?.fee != null ? (
+          {doctorForNav?.fee != null ? (
             <p className="dc-fee">
-              <strong>{formatMoney(doctor.fee)}*</strong> Consultation fee
+              <strong>{formatMoney(doctorForNav.fee)}*</strong> Consultation fee
             </p>
           ) : <span />}
           <button type="button" className="dc-book" onClick={handleBookNow}>
@@ -294,7 +309,7 @@ export default function DoctorCard({
         tabIndex={0}
       >
         <div className="dc-grid-photo">
-          <img src={photo} alt="" />
+          <ProviderAvatar doctor={doctorForNav} src={photo} alt="" />
         </div>
         <h3 className="dc-name">{name}</h3>
         <p className="dc-grid-meta">
@@ -315,7 +330,7 @@ export default function DoctorCard({
     <>
     <div className={`dc-card ${isBooking ? 'dc-card-booking' : ''} ${className}`} onClick={handleClick}>
       <div className="dc-media">
-        <img src={photo} alt={name} />
+        <ProviderAvatar doctor={doctorForNav} src={photo} alt={name} />
       </div>
       <div className="dc-content">
         <div className="dc-info">

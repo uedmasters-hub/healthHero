@@ -29,7 +29,9 @@
   align-self: stretch;
 }
 
-.dc-media img {
+.dc-media img,
+.dc-media .provider-avatar,
+.dc-media .provider-avatar__img {
   position: absolute;
   top: 0;
   left: 0;
@@ -38,6 +40,10 @@
   object-fit: cover;
   object-position: left center;
   pointer-events: none;
+}
+
+.dc-media .provider-avatar {
+  display: flex;
 }
 
 .dc-content {
@@ -253,6 +259,19 @@
   display: block;
 }
 
+.dc-identity-photo.provider-avatar {
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.dc-identity-photo .dc-identity-photo-img,
+.dc-identity-photo .provider-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .dc-identity-info {
   flex: 1;
   min-width: 0;
@@ -316,12 +335,18 @@
   margin-bottom: var(--space-3);
 }
 
-.dc-grid-photo img {
+.dc-grid-photo img,
+.dc-grid-photo .provider-avatar,
+.dc-grid-photo .provider-avatar__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center top;
   display: block;
+}
+
+.dc-grid-photo .provider-avatar {
+  display: flex;
 }
 
 .dc-card-grid .dc-name {
@@ -545,12 +570,19 @@
   flex-shrink: 0;
 }
 
-.dc-profile-photo img {
+.dc-profile-photo img,
+.dc-profile-photo .provider-avatar,
+.dc-profile-photo .provider-avatar__img,
+.dc-profile-photo .dc-profile-photo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center top;
   display: block;
+}
+
+.dc-profile-photo .provider-avatar {
+  display: flex;
 }
 
 .dc-profile-copy {

@@ -24,6 +24,16 @@
   opacity: 0;
 }
 
+.provider-avatar.is-ready .provider-avatar__img {
+  opacity: 1;
+}
+
+/* Keep circle dimensions stable — never shrink when placeholder shows */
+.provider-avatar.is-placeholder,
+.provider-avatar.is-loading {
+  /* frame comes from parent (.upcoming-avatar etc.) */
+}
+
 .provider-avatar__shine {
   position: absolute;
   inset: 0;

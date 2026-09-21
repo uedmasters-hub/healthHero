@@ -59,3 +59,4 @@ export {
   useCareHistory,
   useRouteBookingId,
 } from './hooks'
+export { presentBookingCard, resolveCatalogDoctor } from './presentBooking'

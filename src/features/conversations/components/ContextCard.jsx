@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { formatTicketId } from '../ticket'
 import { formatBookingStatusLabel } from '../bookingChat'
 import { CONVERSATION_KIND } from '../types'
+import { presentBookingCard } from '../../../booking'
+import ProviderAvatar from '../../../components/ProviderAvatar'
 
 function titleCase(value) {
   const raw = String(value || '').replace(/_/g, ' ').trim()
@@ -10,13 +12,16 @@ function titleCase(value) {
   return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
-function doctorName(meta, booking) {
-  const name = meta.provider_name || booking?.doctor?.name
+function doctorName(meta, booking, presented) {
+  const name = presented?.doctor?.name || meta.provider_name || booking?.doctor?.name
   if (!name) return '—'
   return name.startsWith('Dr.') ? name : `Dr. ${name}`
 }
 
-function visitLabel(booking, meta) {
+function visitLabel(booking, meta, presented) {
+  if (presented?.timeLabel || presented?.dateLabel) {
+    return [presented.dateLabel, presented.timeLabel].filter(Boolean).join(' · ') || '—'
+  }
   if (booking?.date?.dayName || booking?.slot || booking?.time) {
     const day = booking?.date?.dayName || ''
     const slot = booking?.slot || booking?.time || ''
@@ -34,23 +39,36 @@ export default function ContextCard({ conversation, booking = null, compact = fa
   const isPharmacy = Boolean(conversation?.pharmacy_order_id || meta.pharmacy)
   const isProvider = !isSupport && !isPharmacy
 
+  const presented = isProvider
+    ? presentBookingCard(booking || {
+      doctor: {
+        id: meta.doctor_id,
+        name: meta.provider_name,
+        specialty: meta.specialty,
+        photo: meta.photo,
+      },
+      providerName: meta.provider_name,
+      serviceType: 'doctor_consultation',
+    })
+    : null
+
   const statusLabel = formatBookingStatusLabel(
     booking?.status || meta.booking_status || conversation?.status,
   )
 
   const title = isSupport
     ? (ticket?.ticket_id ? formatTicketId(ticket.ticket_id) : 'Support ticket')
-    : doctorName(meta, booking)
+    : doctorName(meta, booking, presented)
 
   const subtitle = isSupport
     ? `${titleCase(ticket?.category || 'general')} · ${titleCase(ticket?.status || conversation?.status || 'open')}`
     : [
-        meta.specialty || booking?.doctor?.specialty || '',
+        presented?.doctor?.specialty || meta.specialty || booking?.doctor?.specialty || '',
         statusLabel,
       ].filter(Boolean).join(' · ') || 'Care chat'
 
-  const linkedBookingLabel = booking?.doctor?.name
-    ? `${doctorName(meta, booking)}${statusLabel ? ` · ${statusLabel}` : ''}`
+  const linkedBookingLabel = booking?.doctor?.name || presented?.doctor?.name
+    ? `${doctorName(meta, booking, presented)}${statusLabel ? ` · ${statusLabel}` : ''}`
     : (conversation?.booking_ref || null)
 
   const visitType = String(booking?.visitType || meta.visit_type || '').toLowerCase()
@@ -64,9 +82,19 @@ export default function ContextCard({ conversation, booking = null, compact = fa
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span>
-          <strong>{isSupport && compact ? 'Ticket details' : (isProvider ? 'Appointment' : title)}</strong>
-          <span>{subtitle}</span>
+        <span className="chat-context-toggle-main">
+          {isProvider ? (
+            <ProviderAvatar
+              className="chat-context-avatar"
+              doctor={presented?.doctor}
+              src={presented?.photo || meta.photo}
+              size={40}
+            />
+          ) : null}
+          <span>
+            <strong>{isSupport && compact ? 'Ticket details' : (isProvider ? 'Appointment' : title)}</strong>
+            <span>{subtitle}</span>
+          </span>
         </span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <polyline points={open ? '6 14 12 8 18 14' : '6 10 12 16 18 10'} />
@@ -115,15 +143,15 @@ export default function ContextCard({ conversation, booking = null, compact = fa
             <>
               <div className="chat-context-row">
                 <span>Doctor</span>
-                <b>{doctorName(meta, booking)}</b>
+                <b>{doctorName(meta, booking, presented)}</b>
               </div>
               <div className="chat-context-row">
                 <span>Specialty</span>
-                <b>{meta.specialty || booking?.doctor?.specialty || '—'}</b>
+                <b>{presented?.doctor?.specialty || meta.specialty || booking?.doctor?.specialty || '—'}</b>
               </div>
               <div className="chat-context-row">
                 <span>Visit</span>
-                <b>{visitLabel(booking, meta)}</b>
+                <b>{visitLabel(booking, meta, presented)}</b>
               </div>
               <div className="chat-context-row">
                 <span>Status</span>

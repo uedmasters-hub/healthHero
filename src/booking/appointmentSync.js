@@ -6,6 +6,9 @@
 import { requireSupabase, isSupabaseConfigured } from '../lib/supabase'
 import { BOOKING_STATUS } from './constants'
 import { createBookingRecord, reviveBookingRecord, toLegacyBooking } from './models'
+import { resolveCatalogDoctor } from './presentBooking'
+import { getDoctorPhoto } from '../data/doctors'
+import { resolveProviderPhoto } from '../lib/providerPhoto'
 
 function mapVisit(value) {
   const key = String(value || '').toLowerCase()
@@ -245,20 +248,39 @@ export async function recoverMissingBookingsFromConversations(engine, userId) {
         payload?.status || meta.booking_status || BOOKING_STATUS.CHECKED_IN,
       )
 
+      const nameHint = meta.provider_name
+        || String(convo.subject || '').replace(/^Chat with\s+/i, '')
+        || 'Care provider'
+      const catalog = resolveCatalogDoctor({
+        doctor: { id: meta.doctor_id ?? null, name: nameHint },
+        providerName: nameHint,
+      })
+      const doctor = {
+        id: meta.doctor_id ?? catalog?.id ?? null,
+        name: catalog?.name || nameHint,
+        specialty: meta.specialty || catalog?.specialty || '',
+        rating: catalog?.rating ?? null,
+        experience: catalog?.experience || '',
+        address: catalog?.address || '',
+        photo: resolveProviderPhoto({
+          id: meta.doctor_id ?? catalog?.id,
+          photo: meta.photo || (catalog ? getDoctorPhoto(catalog.id) : ''),
+          name: nameHint,
+        }) || '',
+      }
+
       const record = payload
-        ? reviveBookingRecord({ ...payload, id: ref, status })
+        ? reviveBookingRecord({
+          ...payload,
+          id: ref,
+          status,
+          doctor: { ...(payload.doctor || {}), ...doctor, ...(payload.doctor?.photo ? {} : { photo: doctor.photo }) },
+        })
         : createBookingRecord({
           id: ref,
           userId,
           status,
-          doctor: {
-            id: meta.doctor_id ?? null,
-            name: meta.provider_name
-              || String(convo.subject || '').replace(/^Chat with\s+/i, '')
-              || 'Care provider',
-            specialty: meta.specialty || '',
-            photo: meta.photo || '',
-          },
+          doctor,
           schedule: {
             visitType: meta.visit_type || '',
             time: '',
