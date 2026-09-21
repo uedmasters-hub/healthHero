@@ -119,6 +119,15 @@
   margin: 0;
 }
 
+.previsit-chat-error {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--danger-bg);
+  color: var(--danger);
+  font-size: var(--text-caption-size);
+}
+
 .previsit-card {
   background: var(--white);
   border: var(--border-width) solid var(--border);

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePushBack } from '../../pushNav'
 import { useAuth } from '../../auth/hooks/useAuth'
-import { listInbox, subscribeInbox } from '../index'
+import { chatLaunchState, listInbox, subscribeInbox } from '../index'
 import { CONVERSATION_KIND } from '../types'
 import ConversationListItem from '../components/ConversationListItem'
 import '../Chat.css'
@@ -40,6 +40,18 @@ export default function ChatInboxPage() {
     return subscribeInbox(user?.id, { onChange: refresh })
   }, [ready, user?.id, refresh])
 
+  const openThread = (item) => {
+    navigate(threadPath(item), {
+      state: chatLaunchState('/chat', { from: 'inbox' }),
+    })
+  }
+
+  const openNew = () => {
+    navigate('/chat/new', {
+      state: chatLaunchState('/chat', { from: 'inbox' }),
+    })
+  }
+
   const provider = conversations.filter((c) => c.kind === CONVERSATION_KIND.PROVIDER)
   const support = conversations.filter((c) => c.kind === CONVERSATION_KIND.SUPPORT)
 
@@ -52,7 +64,7 @@ export default function ChatInboxPage() {
           </svg>
         </button>
         <h1 className="chat-header-title">Chat</h1>
-        <button type="button" className="chat-header-action" onClick={() => navigate('/chat/new')}>
+        <button type="button" className="chat-header-action" onClick={openNew}>
           New
         </button>
       </header>
@@ -65,7 +77,7 @@ export default function ChatInboxPage() {
           <div className="chat-empty">
             <h2>Your messages</h2>
             <p>Chat with your care providers about a booking, or open a support ticket.</p>
-            <button type="button" className="chat-empty-cta" onClick={() => navigate('/chat/new')}>
+            <button type="button" className="chat-empty-cta" onClick={openNew}>
               Start a conversation
             </button>
           </div>
@@ -79,7 +91,7 @@ export default function ChatInboxPage() {
                 <ConversationListItem
                   key={c.id}
                   conversation={c}
-                  onClick={(item) => navigate(threadPath(item))}
+                  onClick={openThread}
                 />
               ))}
             </div>
@@ -94,7 +106,7 @@ export default function ChatInboxPage() {
                 <ConversationListItem
                   key={c.id}
                   conversation={c}
-                  onClick={(item) => navigate(threadPath(item))}
+                  onClick={openThread}
                 />
               ))}
             </div>

@@ -140,6 +140,7 @@ export async function getConversation(conversationId) {
 
 /**
  * Get or create a provider conversation permanently linked to a booking.
+ * Uses SECURITY DEFINER RPC — no client inserts into conversation_participants.
  */
 export async function getOrCreateProviderConversation({
   userId,
@@ -149,6 +150,7 @@ export async function getOrCreateProviderConversation({
   subject = null,
   metadata = {},
   providerUserId = null,
+  bookingStatus = null,
 } = {}) {
   if (!userId) return { ok: false, error: 'Sign in to start a conversation.' }
   if (!bookingRef && !appointmentId && !pharmacyOrderId) {
@@ -157,61 +159,49 @@ export async function getOrCreateProviderConversation({
 
   const supabase = requireSupabase()
 
-  let query = supabase
-    .from('conversations')
-    .select('*')
-    .eq('kind', CONVERSATION_KIND.PROVIDER)
-    .in('status', [CONVERSATION_STATUS.OPEN, CONVERSATION_STATUS.ESCALATED])
-
-  if (bookingRef) query = query.eq('booking_ref', bookingRef)
-  else if (pharmacyOrderId) query = query.eq('pharmacy_order_id', pharmacyOrderId)
-  else query = query.eq('appointment_id', appointmentId)
-
-  const { data: existing } = await query.maybeSingle()
-  if (existing) {
-    await ensureParticipant(existing.id, userId, PARTICIPANT_ROLE.PATIENT)
-    if (providerUserId) {
-      await ensureParticipant(existing.id, providerUserId, PARTICIPANT_ROLE.PROVIDER)
-    }
-    return { ok: true, conversation: existing, created: false }
-  }
-
-  const { data: created, error } = await supabase
-    .from('conversations')
-    .insert({
-      kind: CONVERSATION_KIND.PROVIDER,
-      status: CONVERSATION_STATUS.OPEN,
-      subject: subject || 'Care conversation',
-      booking_ref: bookingRef || null,
-      appointment_id: appointmentId || null,
-      pharmacy_order_id: pharmacyOrderId || null,
-      created_by: userId,
-      metadata,
-    })
-    .select('*')
-    .single()
+  const { data, error } = await supabase.rpc('create_provider_conversation', {
+    p_booking_ref: bookingRef || null,
+    p_booking_status: bookingStatus || metadata?.booking_status || null,
+    p_appointment_id: appointmentId || null,
+    p_subject: subject || 'Care conversation',
+    p_metadata: {
+      ...metadata,
+      ...(pharmacyOrderId ? { pharmacy_order_id: pharmacyOrderId } : {}),
+    },
+    p_provider_user_id: providerUserId || null,
+  })
 
   if (error) return { ok: false, error: mapError(error) }
 
-  await ensureParticipant(created.id, userId, PARTICIPANT_ROLE.PATIENT)
-  if (providerUserId) {
-    await ensureParticipant(created.id, providerUserId, PARTICIPANT_ROLE.PROVIDER)
+  const payload = data && typeof data === 'object' ? data : null
+  const conversationId = payload?.conversation_id
+  if (!conversationId) {
+    return { ok: false, error: 'Conversation was created but no id was returned.' }
   }
 
-  await insertEvent(created.id, EVENT_TYPE.CREATED, userId, {
-    kind: CONVERSATION_KIND.PROVIDER,
-    booking_ref: bookingRef,
-  })
+  const loaded = await getConversation(conversationId)
+  if (!loaded.ok) {
+    return {
+      ok: true,
+      conversation: {
+        id: conversationId,
+        kind: CONVERSATION_KIND.PROVIDER,
+        status: CONVERSATION_STATUS.OPEN,
+        booking_ref: payload.booking_ref || bookingRef || null,
+        appointment_id: payload.appointment_id || appointmentId || null,
+        metadata,
+      },
+      conversationId,
+      created: Boolean(payload.created),
+    }
+  }
 
-  await supabase.from('messages').insert({
-    conversation_id: created.id,
-    sender_id: null,
-    sender_role: PARTICIPANT_ROLE.SYSTEM,
-    message_type: MESSAGE_TYPE.SYSTEM,
-    body: 'Conversation started for your booking. Messages stay with this visit.',
-  })
-
-  return { ok: true, conversation: created, created: true }
+  return {
+    ok: true,
+    conversation: loaded.conversation,
+    conversationId,
+    created: Boolean(payload.created),
+  }
 }
 
 /**
@@ -344,7 +334,6 @@ export async function sendMessage({
   }
 
   const supabase = requireSupabase()
-  await ensureParticipant(conversationId, userId, senderRole)
 
   const { data, error } = await supabase
     .from('messages')

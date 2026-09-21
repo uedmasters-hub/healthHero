@@ -21,7 +21,10 @@ const PUSH_DETAIL_RULES = Object.freeze([
   (p) => p === '/notifications',
   (p) => p.startsWith('/explore/'),
   (p) => p === '/appointment',
+  (p) => p === '/pre-checkin',
+  (p) => p === '/prepare-visit',
   (p) => p === '/post-visit-summary',
+  (p) => p === '/chat' || p.startsWith('/chat/'),
 ])
 
 export const PUSH_MOTION = Object.freeze({

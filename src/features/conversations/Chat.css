@@ -84,8 +84,8 @@
   opacity: 0.55;
 }
 
-.chat-context.is-compact {
-  margin-bottom: var(--space-2);
+.chat-context.is-provider {
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border-subtle, var(--primary-soft)));
 }
 
 .chat-context.is-compact .chat-context-body {

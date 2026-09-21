@@ -178,6 +178,41 @@
   background: var(--primary-dark);
 }
 
+.dc-chat {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--primary-soft, color-mix(in srgb, var(--primary) 14%, var(--white)));
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+}
+
+.dc-chat svg {
+  width: 20px;
+  height: 20px;
+}
+
+.dc-chat:hover {
+  background: color-mix(in srgb, var(--primary) 22%, var(--white));
+}
+
+.dc-chat:active {
+  transform: scale(0.96);
+}
+
+.dc-chat:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: default;
+  transform: none;
+}
+
 .dc-card-booking {
   cursor: default;
 }

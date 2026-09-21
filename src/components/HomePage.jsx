@@ -14,7 +14,7 @@ import { useTransition } from './PageTransition'
 import { useSharedHero } from './SharedHero'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
 import useSearchScrollCompact from '../hooks/useSearchScrollCompact'
-import { freezeNow } from '../lib/scrollLock'
+import { clearLock, freezeNow } from '../lib/scrollLock'
 import { isHomePath } from '../lib/careFlow'
 
 export default function HomePage() {
@@ -42,6 +42,11 @@ export default function HomePage() {
 
   useRegisteredScroller('home', stageRef)
   useScrollLock('home', freezeHome)
+
+  // Drop stale freezeNow / touch locks once Home is front again (e.g. after chat).
+  useEffect(() => {
+    if (!freezeHome) clearLock('home')
+  }, [freezeHome])
 
   useEffect(() => {
     if (!searchActive) setQuery('')

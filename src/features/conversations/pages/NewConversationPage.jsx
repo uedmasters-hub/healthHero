@@ -1,12 +1,17 @@
 import { useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { usePushBack } from '../../pushNav'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { useBookingStore } from '../../../booking'
-import { BOOKING_STATUS } from '../../../booking/constants'
 import {
+  chatLaunchState,
   createSupportConversation,
+  formatBookingStatusLabel,
   getOrCreateProviderConversation,
+  isProviderChatEnabled,
+  providerMetadataFromBooking,
+  providerThreadPath,
+  resolveChatReturnTo,
   SUPPORT_CATEGORY,
 } from '../index'
 import '../Chat.css'
@@ -24,9 +29,17 @@ function supportThreadPath(conversationId) {
   return `/chat/support/${conversationId}`
 }
 
+function doctorDisplayName(booking) {
+  const name = booking?.doctor?.name
+  if (!name) return 'Care provider'
+  return name.startsWith('Dr.') ? name : `Dr. ${name}`
+}
+
 export default function NewConversationPage() {
   const navigate = useNavigate()
-  const goBack = usePushBack('/chat')
+  const location = useLocation()
+  const inboxReturn = resolveChatReturnTo(location, '/chat')
+  const goBack = usePushBack(inboxReturn)
   const { user } = useAuth()
   const { bookings } = useBookingStore()
   const [mode, setMode] = useState(null) // provider | support
@@ -37,16 +50,43 @@ export default function NewConversationPage() {
   const [linkBookingId, setLinkBookingId] = useState('')
   const submittingRef = useRef(false)
 
-  const eligibleBookings = useMemo(
+  const threadState = (extra = {}) => chatLaunchState(location, {
+    from: location.state?.from || 'inbox',
+    returnTo: location.state?.returnTo || '/chat',
+    ...extra,
+  })
+
+  /** Support may link any non-draft / non-cancelled booking. */
+  const linkableBookings = useMemo(
     () => (bookings || []).filter((b) => (
       b?.id
-      && ![BOOKING_STATUS.DRAFT, BOOKING_STATUS.CANCELLED].includes(b.status)
+      && b.status
+      && b.status !== 'draft'
+      && b.status !== 'cancelled'
     )),
+    [bookings],
+  )
+
+  /** Provider chat only for checked-in (and other chat-enabled) visits. */
+  const providerBookings = useMemo(
+    () => (bookings || [])
+      .filter((b) => b?.id && isProviderChatEnabled(b))
+      .slice()
+      .sort((a, b) => {
+        const aAt = new Date(a.updatedAt || a.createdAt || 0).getTime()
+        const bAt = new Date(b.updatedAt || b.createdAt || 0).getTime()
+        return bAt - aAt
+      }),
     [bookings],
   )
 
   const startProvider = async (booking) => {
     if (!user?.id || !booking?.id || busy || submittingRef.current) return
+    if (!isProviderChatEnabled(booking)) {
+      setError('Message your provider after you check in for the visit.')
+      return
+    }
+
     submittingRef.current = true
     setBusy(true)
     setError('')
@@ -54,21 +94,22 @@ export default function NewConversationPage() {
       const result = await getOrCreateProviderConversation({
         userId: user.id,
         bookingRef: booking.id,
-        subject: booking.doctor?.name
-          ? `Chat with ${booking.doctor.name}`
-          : 'Care conversation',
-        metadata: {
-          provider_name: booking.doctor?.name || '',
-          specialty: booking.doctor?.specialty || '',
-          visit_type: booking.visitType || booking.visit_type || '',
-          visit_label: booking.slot || '',
-        },
+        bookingStatus: booking.status,
+        subject: `Chat with ${doctorDisplayName(booking)}`,
+        metadata: providerMetadataFromBooking(booking),
+        providerUserId: booking.doctor?.userId || booking.doctor?.authUserId || null,
       })
       if (!result.ok) {
         setError(result.error || 'Could not start conversation.')
         return
       }
-      navigate(`/chat/${result.conversation.id}`, { replace: true })
+      navigate(providerThreadPath(result.conversationId || result.conversation.id), {
+        replace: true,
+        state: threadState({
+          conversation: result.conversation,
+          fromCreate: result.created,
+        }),
+      })
     } finally {
       submittingRef.current = false
       setBusy(false)
@@ -93,7 +134,7 @@ export default function NewConversationPage() {
     setBusy(true)
     setError('')
     try {
-      const linked = eligibleBookings.find((b) => b.id === linkBookingId)
+      const linked = linkableBookings.find((b) => b.id === linkBookingId)
       const result = await createSupportConversation({
         userId: user.id,
         category,
@@ -114,11 +155,11 @@ export default function NewConversationPage() {
 
       navigate(supportThreadPath(conversationId), {
         replace: true,
-        state: {
+        state: threadState({
           fromCreate: true,
           conversation: result.conversation,
           ticket: result.ticket,
-        },
+        }),
       })
     } catch (err) {
       setError(err?.message || 'Could not create support ticket. Nothing was saved — try again.')
@@ -146,7 +187,7 @@ export default function NewConversationPage() {
           <>
             <button type="button" className="chat-choice-card" onClick={() => setMode('provider')} disabled={busy}>
               <strong>Message a care provider</strong>
-              <span>Choose an existing booking to open a permanent chat for that visit.</span>
+              <span>Opens a permanent chat for a checked-in visit.</span>
             </button>
             <button type="button" className="chat-choice-card" onClick={() => setMode('support')} disabled={busy}>
               <strong>Contact support</strong>
@@ -158,17 +199,17 @@ export default function NewConversationPage() {
         {mode === 'provider' ? (
           <>
             <button type="button" className="chat-header-action" onClick={() => setMode(null)} disabled={busy}>Back</button>
-            <p className="chat-section-label">Your bookings</p>
-            {!eligibleBookings.length ? (
+            <p className="chat-section-label">Checked-in visits</p>
+            {!providerBookings.length ? (
               <div className="chat-empty">
-                <h2>No bookings yet</h2>
-                <p>Book a visit first, then you can chat with that provider here.</p>
-                <button type="button" className="chat-empty-cta" onClick={() => navigate('/booking')}>
-                  Book appointment
+                <h2>No visits ready for chat</h2>
+                <p>Message your provider after you check in for an appointment.</p>
+                <button type="button" className="chat-empty-cta" onClick={() => navigate('/treat')}>
+                  View appointments
                 </button>
               </div>
             ) : (
-              eligibleBookings.map((booking) => (
+              providerBookings.map((booking) => (
                 <button
                   key={booking.id}
                   type="button"
@@ -176,10 +217,11 @@ export default function NewConversationPage() {
                   disabled={busy}
                   onClick={() => startProvider(booking)}
                 >
-                  <strong>{booking.doctor?.name || 'Provider'}</strong>
+                  <strong>{doctorDisplayName(booking)}</strong>
                   <span>
                     {booking.doctor?.specialty || 'Care'}
-                    {booking.status ? ` · ${booking.status}` : ''}
+                    {' · '}
+                    {formatBookingStatusLabel(booking.status)}
                   </span>
                 </button>
               ))
@@ -213,9 +255,9 @@ export default function NewConversationPage() {
               disabled={busy}
             >
               <option value="">No linked booking</option>
-              {eligibleBookings.map((booking) => (
+              {linkableBookings.map((booking) => (
                 <option key={booking.id} value={booking.id}>
-                  {booking.doctor?.name || 'Booking'} — {booking.status}
+                  {doctorDisplayName(booking)} — {formatBookingStatusLabel(booking.status)}
                 </option>
               ))}
             </select>

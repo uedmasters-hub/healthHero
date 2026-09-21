@@ -47,7 +47,16 @@ Example: `SUP-2609-001245`.
 | `/chat/support/:id` | Support ticket thread |
 | `/chat/agent` | Staff/admin ticket filter stub |
 
-Support create uses RPC `create_support_conversation` (atomic: ticket id → conversation → participant → ticket → first message). Client navigates to `/chat/support/:conversationId` on success.
+## Provider chat
+
+Eligible when booking status is `checked_in`, `in_progress` / `consultation_active`, or `completed` (`isProviderChatEnabled`).
+
+Creation uses SECURITY DEFINER RPC `create_provider_conversation` (validates ownership + eligibility, reuses or creates conversation + patient participant, optional provider participant). Clients never insert into `conversation_participants` directly.
+
+- Ready for Visit: chat icon on the doctor card only while chat-enabled.
+- FAB → Chat → New → Provider: eligible bookings with labels like “Checked in”.
+- Thread reuses Conversation Center messages + Realtime; context card shows appointment, doctor, status, and healthcare actions.
+
 
 FAB Live Chat and pharmacy support CTAs navigate to `/chat`. FAB is hidden and notification toasts are quiet on `/chat*`.
 

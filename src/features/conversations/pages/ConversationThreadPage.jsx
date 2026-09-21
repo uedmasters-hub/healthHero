@@ -9,6 +9,7 @@ import {
   listEvents,
   listMessages,
   markRead,
+  resolveChatReturnTo,
   sendMessage,
   subscribeConversation,
   uploadChatAttachment,
@@ -20,6 +21,7 @@ import ContextCard from '../components/ContextCard'
 import MessageBubble, { SystemEventRow } from '../components/MessageBubble'
 import ChatComposer from '../components/ChatComposer'
 import { formatTicketId } from '../ticket'
+import { formatBookingStatusLabel } from '../bookingChat'
 import '../Chat.css'
 
 const AGENT_FILTERS = [
@@ -40,7 +42,11 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
   const { conversationId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const goBack = usePushBack('/chat')
+  const backTarget = resolveChatReturnTo(location, '/chat')
+  // Prefer history pop so PushStack keeps the underlay (Ready for Visit, inbox, …).
+  const goBack = usePushBack(
+    location.state?.returnTo || location.state?.from ? -1 : backTarget,
+  )
   const { user, appUser } = useAuth()
   const seed = location.state?.conversation || null
   const [conversation, setConversation] = useState(seed)
@@ -80,6 +86,12 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
   useEffect(() => {
     load()
   }, [load])
+
+  // Dismiss keyboard when leaving chat so iOS doesn't leave a stale scroll trap.
+  useEffect(() => () => {
+    const active = document.activeElement
+    if (active && typeof active.blur === 'function') active.blur()
+  }, [])
 
   useEffect(() => {
     if (!conversationId) return undefined
@@ -153,10 +165,19 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
   const ticketId = formatTicketId(ticket?.ticket_id)
   const ticketStatus = titleCase(ticket?.status || conversation?.status || 'open')
   const ticketCategory = titleCase(ticket?.category || conversation?.metadata?.category || 'general')
+  const isProvider = conversation?.kind === CONVERSATION_KIND.PROVIDER
+    || (!isSupport && Boolean(conversation?.booking_ref))
 
-  const title = isSupport
-    ? ticketId
-    : (conversation?.metadata?.provider_name || conversation?.subject || 'Chat')
+  const providerNameRaw = conversation?.metadata?.provider_name || booking?.doctor?.name || conversation?.subject || 'Care provider'
+  const providerTitle = providerNameRaw.startsWith('Dr.') || providerNameRaw === 'Care provider'
+    ? providerNameRaw
+    : `Dr. ${providerNameRaw}`
+  const providerStatus = formatBookingStatusLabel(
+    booking?.status || conversation?.metadata?.booking_status,
+  )
+  const providerSpecialty = conversation?.metadata?.specialty || booking?.doctor?.specialty || ''
+
+  const title = isSupport ? ticketId : providerTitle
 
   const onSend = async (text) => {
     if (!user?.id || !conversationId || sending) return
@@ -236,8 +257,8 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
   const composerReady = Boolean(conversation) && !loading && !error
 
   return (
-    <div className={`chat-page page-push-in ${isSupport ? 'is-support-thread' : ''}`}>
-      <header className={`chat-header ${isSupport ? 'is-support' : ''}`}>
+    <div className={`chat-page page-push-in ${isSupport ? 'is-support-thread' : ''} ${isProvider ? 'is-provider-thread' : ''}`}>
+      <header className={`chat-header ${isSupport ? 'is-support' : ''} ${isProvider ? 'is-provider' : ''}`}>
         <button type="button" className="chat-header-back" onClick={goBack} aria-label="Back" data-push-back>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -250,6 +271,17 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
               <span className="chat-header-pill is-status">{ticketStatus || 'Open'}</span>
               <span className="chat-header-dot" aria-hidden="true">·</span>
               <span>{ticketCategory || 'Support'}</span>
+            </p>
+          ) : null}
+          {isProvider ? (
+            <p className="chat-header-sub">
+              {providerStatus ? (
+                <span className="chat-header-pill is-status">{providerStatus}</span>
+              ) : null}
+              {providerStatus && providerSpecialty ? (
+                <span className="chat-header-dot" aria-hidden="true">·</span>
+              ) : null}
+              {providerSpecialty ? <span>{providerSpecialty}</span> : null}
             </p>
           ) : null}
         </div>
@@ -315,6 +347,7 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
           onSend={onSend}
           onAttach={onAttach}
           onKeyboardInsetChange={onKeyboardInsetChange}
+          accept={isProvider ? 'image/*,application/pdf' : 'image/*,application/pdf,audio/*'}
         />
       </div>
     </div>

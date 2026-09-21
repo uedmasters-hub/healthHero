@@ -36,6 +36,9 @@ export default function DoctorCard({
   hideBook = false,
   onBookNow,
   recentlyViewed = false,
+  showChat = false,
+  onChat,
+  chatBusy = false,
 }) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -127,6 +130,12 @@ export default function DoctorCard({
     window.location.href = `tel:${phone.replace(/\s/g, '')}`
   }
 
+  const handleChat = (e) => {
+    e.stopPropagation()
+    if (chatBusy) return
+    onChat?.(e)
+  }
+
   if (isIdentity) {
     return (
       <>
@@ -171,6 +180,19 @@ export default function DoctorCard({
             </p>
           ) : null}
         </div>
+        {showChat && typeof onChat === 'function' ? (
+          <button
+            type="button"
+            className="dc-chat"
+            onClick={handleChat}
+            disabled={chatBusy}
+            aria-label={`Message ${name}`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </button>
+        ) : null}
       </div>
       {modal}
       </>

@@ -4,6 +4,8 @@
  */
 export * from './types'
 export * from './ticket'
+export * from './bookingChat'
+export { resolveChatReturnTo } from './chatNav'
 export {
   listInbox,
   getConversation,

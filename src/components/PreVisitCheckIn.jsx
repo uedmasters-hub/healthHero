@@ -18,6 +18,14 @@ import {
   withBookingStatus,
 } from '../lib/appointmentJourney'
 import AppointmentMenuOptions from './AppointmentMenuOptions'
+import { useAuth } from '../features/auth/hooks/useAuth'
+import {
+  getOrCreateProviderConversation,
+  isProviderChatEnabled,
+  providerMetadataFromBooking,
+  providerThreadPath,
+  chatLaunchState,
+} from '../features/conversations'
 import './PreVisitCheckIn.css'
 
 const faqItems = [
@@ -48,7 +56,10 @@ export default function PreVisitCheckIn() {
   const heroRef = useRef(null)
   const [expandedFaq, setExpandedFaq] = useState(null)
   const [sheet, setSheet] = useState(null)
+  const [chatBusy, setChatBusy] = useState(false)
+  const [chatError, setChatError] = useState('')
   const { isPresented, isClosing, show, hide } = useAppSheet()
+  const { user } = useAuth()
   const ready = useBookingReveal(
     `previsit:${currentBooking?.doctor?.id || 'none'}`,
     Boolean(currentBooking) && (!shared?.active || shared.phase === 'settled'),
@@ -84,6 +95,7 @@ export default function PreVisitCheckIn() {
   const appointmentStart = getAppointmentStart(date, time)
   const actions = getAppointmentActions(currentBooking, now, { surface: 'ready' })
   const { menuItems, primaryCta, canCancelCheckIn } = actions
+  const canMessageProvider = isProviderChatEnabled(currentBooking)
 
   const dateStr = date.full.toLocaleDateString('en-IN', {
     weekday: 'short',
@@ -167,6 +179,46 @@ export default function PreVisitCheckIn() {
     navigate('/', { replace: true })
   }
 
+  const openProviderChat = async () => {
+    if (chatBusy) return
+    if (!isProviderChatEnabled(currentBooking)) return
+    if (!user?.id) {
+      setChatError('Sign in to message your care provider.')
+      return
+    }
+    const bookingId = currentBooking.id || currentBooking.engineId
+    if (!bookingId) {
+      setChatError('This booking is missing an id. Try refreshing and check in again.')
+      return
+    }
+
+    setChatBusy(true)
+    setChatError('')
+    try {
+      const doctorName = currentBooking.doctor?.name || 'your doctor'
+      const result = await getOrCreateProviderConversation({
+        userId: user.id,
+        bookingRef: bookingId,
+        bookingStatus: currentBooking.status,
+        subject: `Chat with ${doctorName.startsWith('Dr.') ? doctorName : `Dr. ${doctorName}`}`,
+        metadata: providerMetadataFromBooking(currentBooking),
+        providerUserId: currentBooking.doctor?.userId || currentBooking.doctor?.authUserId || null,
+      })
+      if (!result.ok) {
+        setChatError(result.error || 'Could not open provider chat.')
+        return
+      }
+      navigate(
+        providerThreadPath(result.conversationId || result.conversation.id),
+        { state: chatLaunchState('/pre-checkin', { from: 'ready-for-visit' }) },
+      )
+    } catch (err) {
+      setChatError(err?.message || 'Could not open provider chat.')
+    } finally {
+      setChatBusy(false)
+    }
+  }
+
   const confirmCancelAppointment = () => {
     setCurrentBooking(null)
     closeSheet()
@@ -244,8 +296,19 @@ export default function PreVisitCheckIn() {
         )}
 
         <div className={`booking-hero ${hideHero ? 'is-morphing' : ''}`} ref={heroRef}>
-          <DoctorCard doctor={doctor} variant="profile" disableNavigate />
+          <DoctorCard
+            doctor={doctor}
+            variant="profile"
+            disableNavigate
+            showChat={canMessageProvider}
+            onChat={canMessageProvider ? openProviderChat : undefined}
+            chatBusy={chatBusy}
+          />
         </div>
+
+        {chatError ? (
+          <p className="previsit-chat-error" role="alert">{chatError}</p>
+        ) : null}
 
         <BookingReveal
           ready={contentReady}

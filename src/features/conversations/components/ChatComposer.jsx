@@ -10,6 +10,7 @@ export default function ChatComposer({
   onSend,
   onAttach,
   onKeyboardInsetChange,
+  accept = 'image/*,application/pdf',
 }) {
   const [text, setText] = useState('')
   const [keyboardInset, setKeyboardInset] = useState(0)
@@ -32,8 +33,10 @@ export default function ChatComposer({
     return () => {
       vv.removeEventListener('resize', sync)
       vv.removeEventListener('scroll', sync)
+      setKeyboardInset(0)
+      onKeyboardInsetChange?.(0)
     }
-  }, [])
+  }, [onKeyboardInsetChange])
 
   useEffect(() => {
     onKeyboardInsetChange?.(keyboardInset)
@@ -59,7 +62,7 @@ export default function ChatComposer({
       <input
         ref={fileRef}
         type="file"
-        accept="image/*,application/pdf,audio/*"
+        accept={accept}
         hidden
         onChange={(event) => {
           const file = event.target.files?.[0]

@@ -86,7 +86,9 @@ export default function AgentInboxPage() {
               <ConversationListItem
                 key={c.id}
                 conversation={c}
-                onClick={(item) => navigate(`/chat/support/${item.id}`)}
+                onClick={(item) => navigate(`/chat/support/${item.id}`, {
+                  state: { returnTo: '/chat/agent', from: 'agent' },
+                })}
               />
             ))}
           </div>

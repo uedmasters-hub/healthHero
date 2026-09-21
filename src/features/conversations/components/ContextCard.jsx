@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatTicketId } from '../ticket'
+import { formatBookingStatusLabel } from '../bookingChat'
 import { CONVERSATION_KIND } from '../types'
 
 function titleCase(value) {
@@ -9,28 +10,54 @@ function titleCase(value) {
   return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
+function doctorName(meta, booking) {
+  const name = meta.provider_name || booking?.doctor?.name
+  if (!name) return '—'
+  return name.startsWith('Dr.') ? name : `Dr. ${name}`
+}
+
+function visitLabel(booking, meta) {
+  if (booking?.date?.dayName || booking?.slot || booking?.time) {
+    const day = booking?.date?.dayName || ''
+    const slot = booking?.slot || booking?.time || ''
+    return [day, slot].filter(Boolean).join(' · ') || '—'
+  }
+  return meta.visit_label || '—'
+}
+
 export default function ContextCard({ conversation, booking = null, compact = false }) {
   const navigate = useNavigate()
-  const [open, setOpen] = useState(!compact)
+  const [open, setOpen] = useState(true)
   const isSupport = conversation?.kind === CONVERSATION_KIND.SUPPORT
   const ticket = conversation?.support_ticket
   const meta = conversation?.metadata || {}
   const isPharmacy = Boolean(conversation?.pharmacy_order_id || meta.pharmacy)
+  const isProvider = !isSupport && !isPharmacy
+
+  const statusLabel = formatBookingStatusLabel(
+    booking?.status || meta.booking_status || conversation?.status,
+  )
 
   const title = isSupport
     ? (ticket?.ticket_id ? formatTicketId(ticket.ticket_id) : 'Support ticket')
-    : (meta.provider_name || booking?.doctor?.name || conversation?.subject || 'Care conversation')
+    : doctorName(meta, booking)
 
   const subtitle = isSupport
     ? `${titleCase(ticket?.category || 'general')} · ${titleCase(ticket?.status || conversation?.status || 'open')}`
-    : (meta.specialty || booking?.doctor?.specialty || booking?.status || 'Booking chat')
+    : [
+        meta.specialty || booking?.doctor?.specialty || '',
+        statusLabel,
+      ].filter(Boolean).join(' · ') || 'Care chat'
 
   const linkedBookingLabel = booking?.doctor?.name
-    ? `${booking.doctor.name}${booking.status ? ` · ${booking.status}` : ''}`
+    ? `${doctorName(meta, booking)}${statusLabel ? ` · ${statusLabel}` : ''}`
     : (conversation?.booking_ref || null)
 
+  const visitType = String(booking?.visitType || meta.visit_type || '').toLowerCase()
+  const isVideo = visitType === 'video' || visitType.includes('video')
+
   return (
-    <div className={`chat-context ${compact ? 'is-compact' : ''}`}>
+    <div className={`chat-context ${compact ? 'is-compact' : ''} ${isProvider ? 'is-provider' : ''}`}>
       <button
         type="button"
         className="chat-context-toggle"
@@ -38,7 +65,7 @@ export default function ContextCard({ conversation, booking = null, compact = fa
         aria-expanded={open}
       >
         <span>
-          <strong>{isSupport && compact ? 'Ticket details' : title}</strong>
+          <strong>{isSupport && compact ? 'Ticket details' : (isProvider ? 'Appointment' : title)}</strong>
           <span>{subtitle}</span>
         </span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -77,7 +104,7 @@ export default function ContextCard({ conversation, booking = null, compact = fa
               </div>
               <div className="chat-context-row">
                 <span>Status</span>
-                <b>{meta.order_status || booking?.status || 'pending'}</b>
+                <b>{meta.order_status || statusLabel || 'pending'}</b>
               </div>
               <div className="chat-context-row">
                 <span>ETA</span>
@@ -87,8 +114,8 @@ export default function ContextCard({ conversation, booking = null, compact = fa
           ) : (
             <>
               <div className="chat-context-row">
-                <span>Provider</span>
-                <b>{meta.provider_name || booking?.doctor?.name || '—'}</b>
+                <span>Doctor</span>
+                <b>{doctorName(meta, booking)}</b>
               </div>
               <div className="chat-context-row">
                 <span>Specialty</span>
@@ -96,22 +123,20 @@ export default function ContextCard({ conversation, booking = null, compact = fa
               </div>
               <div className="chat-context-row">
                 <span>Visit</span>
-                <b>
-                  {booking?.date?.dayName
-                    ? `${booking.date.dayName} · ${booking.slot || ''}`
-                    : (meta.visit_label || '—')}
-                </b>
+                <b>{visitLabel(booking, meta)}</b>
               </div>
               <div className="chat-context-row">
                 <span>Status</span>
-                <b>{booking?.status || conversation?.status || '—'}</b>
+                <b>{statusLabel || '—'}</b>
               </div>
               <div className="chat-context-actions">
-                {booking?.visitType === 'video' || meta.visit_type === 'video' ? (
+                {isVideo ? (
                   <button
                     type="button"
                     className="chat-context-action"
-                    onClick={() => navigate('/prepare-visit', { state: { bookingId: booking?.id || conversation.booking_ref } })}
+                    onClick={() => navigate('/prepare-visit', {
+                      state: { bookingId: booking?.id || conversation.booking_ref },
+                    })}
                   >
                     Join Consultation
                   </button>
@@ -119,14 +144,24 @@ export default function ContextCard({ conversation, booking = null, compact = fa
                 <button
                   type="button"
                   className="chat-context-action"
-                  onClick={() => navigate('/profile/records')}
+                  onClick={() => navigate('/profile/records', {
+                    state: {
+                      intent: 'upload_prescription',
+                      bookingId: booking?.id || conversation.booking_ref,
+                    },
+                  })}
                 >
                   Upload Prescription
                 </button>
                 <button
                   type="button"
                   className="chat-context-action"
-                  onClick={() => navigate('/profile/records')}
+                  onClick={() => navigate('/profile/records', {
+                    state: {
+                      intent: 'share_report',
+                      bookingId: booking?.id || conversation.booking_ref,
+                    },
+                  })}
                 >
                   Share Report
                 </button>
