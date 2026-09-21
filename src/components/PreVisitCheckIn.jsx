@@ -62,7 +62,8 @@ export default function PreVisitCheckIn() {
   const { user } = useAuth()
   const ready = useBookingReveal(
     `previsit:${currentBooking?.doctor?.id || 'none'}`,
-    Boolean(currentBooking) && (!shared?.active || shared.phase === 'settled'),
+    Boolean(currentBooking),
+    { instant: Boolean(currentBooking) },
   )
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function PreVisitCheckIn() {
     currentBooking && shared?.active && String(shared.doctor?.id) === String(currentBooking.doctor?.id),
   )
   const hideHero = sharedFlow && shared.phase !== 'settled' && shared.phase !== 'hero-settled'
-  const contentReady = (!sharedFlow || shared.phase === 'settled') && ready
+  const contentReady = Boolean(currentBooking) && ready
 
   useLayoutEffect(() => {
     if (shared?.phase === 'preparing' && currentBooking && String(shared.doctor?.id) === String(currentBooking.doctor?.id) && heroRef.current) {
@@ -264,7 +265,7 @@ export default function PreVisitCheckIn() {
   }[sheet?.type] || 'Appointment'
 
   return (
-    <div className={`previsit-page ${sharedFlow ? 'is-shared-hero' : ''} ${!contentReady ? 'is-skeleton' : ''} ${contentReady ? 'is-content-ready' : ''}`}>
+    <div className={`previsit-page ${sharedFlow ? 'is-shared-hero' : ''} ${contentReady ? 'is-content-ready' : ''}`}>
       <div className="previsit-header-bar">
         <div className="previsit-header-spacer" aria-hidden="true" />
         <h1 className="previsit-header-title">Ready for Visit</h1>
@@ -278,23 +279,19 @@ export default function PreVisitCheckIn() {
       </div>
 
       <div className="previsit-body">
-        {contentReady ? (
-          <div className="previsit-success-banner">
-            <div className="previsit-success-check" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="previsit-success-title">Successfully checked in</h2>
-              <p className="previsit-success-desc">
-                The clinic team is preparing for your visit with {doctorName}. Review the details below, then head in.
-              </p>
-            </div>
+        <div className="previsit-success-banner">
+          <div className="previsit-success-check" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </div>
-        ) : (
-          <div className="previsit-skel-banner shimmer" aria-hidden="true" />
-        )}
+          <div>
+            <h2 className="previsit-success-title">Successfully checked in</h2>
+            <p className="previsit-success-desc">
+              The clinic team is preparing for your visit with {doctorName}. Review the details below, then head in.
+            </p>
+          </div>
+        </div>
 
         <div className={`booking-hero ${hideHero ? 'is-morphing' : ''}`} ref={heroRef}>
           <DoctorCard

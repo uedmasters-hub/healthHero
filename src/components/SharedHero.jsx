@@ -23,7 +23,7 @@ function isUsableRect(rect) {
   return Boolean(rect && rect.width >= 24 && rect.height >= 24)
 }
 
-function MorphCard({ doctor, layout }) {
+function MorphCard({ doctor, layout, appointmentPreview }) {
   const photo = resolveProviderPhoto(doctor) || '/img/doctors/new/doctor.png'
   const name = displayDoctorName(doctor?.name)
   const specialty = doctor?.specialty || 'Specialist'
@@ -32,6 +32,22 @@ function MorphCard({ doctor, layout }) {
   const cardLayout = layout === 'mini' ? 'grid is-mini' : layout
 
   if (layout === 'appointment') {
+    const cells = appointmentPreview?.cells?.length
+      ? appointmentPreview.cells
+      : [
+          appointmentPreview?.date && { label: 'Date', value: appointmentPreview.date },
+          appointmentPreview?.time && { label: 'Time', value: appointmentPreview.time },
+          { label: 'Type', value: `${appointmentPreview?.visitType || 'In-Person'} Visit` },
+          appointmentPreview?.location && { label: 'Location', value: appointmentPreview.location },
+        ].filter(Boolean)
+
+    const grid = (cells.length ? cells : [
+      { label: 'Date', value: '—' },
+      { label: 'Time', value: '—' },
+      { label: 'Type', value: 'In-Person Visit' },
+      { label: 'Location', value: '—' },
+    ]).slice(0, 4)
+
     return (
       <div className="shared-hero-card is-appointment">
         <div className="shared-hero-appointment-identity">
@@ -49,11 +65,13 @@ function MorphCard({ doctor, layout }) {
             {rating}
           </span>
         </div>
-        <div className="shared-hero-appointment-body" aria-hidden="true">
-          <span className="shared-hero-appointment-line" />
-          <span className="shared-hero-appointment-line is-short" />
-          <span className="shared-hero-appointment-line" />
-          <span className="shared-hero-appointment-line is-short" />
+        <div className="shared-hero-appointment-body">
+          {grid.map((cell) => (
+            <div key={`${cell.label}-${cell.value}`} className="shared-hero-appointment-cell">
+              <span className="shared-hero-appointment-label">{cell.label}</span>
+              <span className="shared-hero-appointment-value">{cell.value}</span>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -83,7 +101,7 @@ function MorphCard({ doctor, layout }) {
 }
 
 function SharedHeroLayer({ session }) {
-  const { doctor, sourceRect, destRect, openFromRect, layout, animate, phase } = session
+  const { doctor, sourceRect, destRect, openFromRect, layout, animate, phase, appointmentPreview } = session
   if (!doctor || !sourceRect || phase === 'idle') return null
 
   const fromRect = String(phase).startsWith('closing') ? sourceRect : (openFromRect || sourceRect)
@@ -108,7 +126,7 @@ function SharedHeroLayer({ session }) {
               : 'none',
           }}
         >
-          <MorphCard doctor={doctor} layout={layout} />
+          <MorphCard doctor={doctor} layout={layout} appointmentPreview={appointmentPreview} />
         </div>
       </div>
     </SheetPortal>
@@ -127,6 +145,7 @@ const IDLE = {
   restore: null,
   sourceDoctorId: null,
   closeLayout: 'grid',
+  appointmentPreview: null,
 }
 
 function homeAnchorRect() {
@@ -158,7 +177,17 @@ export function SharedHeroProvider({ children }) {
 
   useEffect(() => () => clearTimers(), [])
 
-  const startOpen = useCallback(({ doctor, sourceEl, runNavigate, restore, swap, hideBook = true, targetLayout = 'hero', sourceLayout }) => {
+  const startOpen = useCallback(({
+    doctor,
+    sourceEl,
+    runNavigate,
+    restore,
+    swap,
+    hideBook = true,
+    targetLayout = 'hero',
+    sourceLayout,
+    appointmentPreview = null,
+  }) => {
     freezeNow('home')
     const sourceRect = relativeRect(sourceEl)
     if (!doctor || !isUsableRect(sourceRect)) {
@@ -183,6 +212,7 @@ export function SharedHeroProvider({ children }) {
         restore: keepClose ? prev.restore : (restore || null),
         sourceDoctorId: keepClose ? prev.sourceDoctorId : doctor.id,
         closeLayout: keepClose ? prev.closeLayout : (hideBook ? 'mini' : 'grid'),
+        appointmentPreview: appointmentPreview || prev.appointmentPreview || null,
       }
     })
     runNavigate?.()
@@ -190,6 +220,7 @@ export function SharedHeroProvider({ children }) {
 
   const finishOpen = useCallback((destRect) => {
     destLocked.current = true
+    const skipSkeletonWait = sessionRef.current?.targetLayout === 'appointment'
     setSession((prev) => {
       if (prev.phase !== 'preparing' && prev.phase !== 'opening') return prev
       return { ...prev, destRect, phase: 'opening', animate: false }
@@ -208,9 +239,10 @@ export function SharedHeroProvider({ children }) {
         })
         later(() => {
           setSession((prev) => (prev.phase === 'opening' ? { ...prev, phase: 'hero-settled', animate: false } : prev))
+          // Appointment payload is already on-screen in the morph card — settle immediately.
           later(() => {
             setSession((prev) => (prev.phase === 'hero-settled' ? { ...prev, phase: 'settled' } : prev))
-          }, SKELETON_MS)
+          }, skipSkeletonWait ? 0 : SKELETON_MS)
         }, HERO_MS)
       })
     })

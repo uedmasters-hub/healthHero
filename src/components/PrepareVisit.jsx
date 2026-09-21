@@ -12,6 +12,7 @@ import {
   markPreparationComplete,
   withPreparationProgress,
 } from '../lib/appointmentJourney'
+import { buildAppointmentPreview } from '../lib/appointmentPreview'
 import './PrepareVisit.css'
 
 const STEP_REVEAL_MS = 900
@@ -115,6 +116,7 @@ export default function PrepareVisit() {
         runNavigate: go,
         targetLayout: 'appointment',
         sourceLayout: 'appointment',
+        appointmentPreview: buildAppointmentPreview(currentBooking),
       })
       return
     }

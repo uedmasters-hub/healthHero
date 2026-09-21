@@ -7,6 +7,15 @@ function sessionScope(pathname) {
   if (pathname === '/' || pathname === '/search') return 'home'
   if (pathname.startsWith('/explore')) return 'explore'
   if (pathname.startsWith('/booking')) return 'booking'
+  // Keep appointment-journey cache across prepare → details → ready.
+  if (
+    pathname.startsWith('/prepare-visit')
+    || pathname.startsWith('/appointment')
+    || pathname.startsWith('/pre-checkin')
+    || pathname.startsWith('/treat')
+  ) {
+    return 'appointment-journey'
+  }
   const doctor = pathname.match(/^\/doctor\/([^/]+)/)
   if (doctor) return `doctor:${doctor[1]}`
   return pathname

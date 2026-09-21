@@ -6,7 +6,7 @@ import DoctorCard from './DoctorCard'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import { useSharedHero } from './SharedHero'
-import { BookingReveal, DoctorHeroSkeleton, useBookingReveal } from './BookingReveal'
+import { BookingReveal, useBookingReveal } from './BookingReveal'
 import { ATTACH_GROUPS, displayHealthDate, healthItemMeta, itemsForAttachGroup, useUser } from '../user'
 import { VISIT_TYPES } from './DatePicker'
 import useNow from '../hooks/useNow'
@@ -114,7 +114,8 @@ export default function AppointmentDetail() {
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const revealReady = useBookingReveal(
     `appointment:${booking?.doctor?.id || bookingId || 'none'}`,
-    Boolean(booking) && (!shared?.active || shared.phase === 'settled'),
+    Boolean(booking),
+    { instant: Boolean(booking) },
   )
 
   useEffect(() => {
@@ -132,8 +133,8 @@ export default function AppointmentDetail() {
     booking && shared?.active && String(shared.doctor?.id) === String(booking.doctor?.id),
   )
   const hideHero = sharedFlow && shared.phase !== 'settled' && shared.phase !== 'hero-settled'
-  const contentReady = (!sharedFlow || shared.phase === 'settled') && revealReady
-  const showSkeletons = !contentReady
+  // Booking is already in memory — never blank the page with skeletons.
+  const contentReady = Boolean(booking) && revealReady
 
   useLayoutEffect(() => {
     if (shared?.phase === 'preparing' && booking && String(shared.doctor?.id) === String(booking.doctor?.id) && heroRef.current) {
@@ -359,7 +360,7 @@ export default function AppointmentDetail() {
   }[sheet?.type] || ''
 
   return (
-    <div className={`appointment-page ${sharedFlow ? 'is-shared-hero' : ''} ${showSkeletons ? 'is-skeleton' : ''} ${contentReady ? 'is-content-ready' : ''}`}>
+    <div className={`appointment-page ${sharedFlow ? 'is-shared-hero' : ''} ${contentReady ? 'is-content-ready' : ''}`}>
       <div className="appointment-header-bar">
         <div className="appointment-header-spacer" aria-hidden="true" />
         <h1 className="appointment-header-title">Appointment Details</h1>
@@ -373,7 +374,7 @@ export default function AppointmentDetail() {
       </div>
 
       <div className="appointment-body">
-        <div className={`appointment-countdown ${isLocked ? 'is-soon' : ''} ${showSkeletons ? 'is-pending' : ''}`}>
+        <div className={`appointment-countdown ${isLocked ? 'is-soon' : ''}`}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
@@ -381,14 +382,14 @@ export default function AppointmentDetail() {
           {formatCountdown(appointmentStart, now)}
         </div>
 
-        {isLocked && !showSkeletons && (
+        {isLocked && (
           <div className="appointment-lock-banner">
             <span className="appointment-mode-chip">Editing locked</span>
             <p>{PREP_LOCK_MESSAGE}</p>
           </div>
         )}
 
-        {wasRescheduled && !showSkeletons && (
+        {wasRescheduled && (
           <div className="appointment-reschedule-banner">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--info)" strokeWidth="2">
               <polyline points="23 4 23 10 17 10" />
@@ -794,7 +795,7 @@ export default function AppointmentDetail() {
           shared?.reset?.()
           navigate('/', { replace: true })
         }}
-        pending={showSkeletons}
+        pending={false}
       />
 
       {isPresented && sheet && (

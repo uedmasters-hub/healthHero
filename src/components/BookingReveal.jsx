@@ -2,16 +2,22 @@ import { useEffect, useState } from 'react'
 import { useFetchSession } from './FetchSession'
 import './BookingFlow.css'
 
-export function useBookingReveal(dataset, enabled = true) {
+/**
+ * Reveal gate for booking screens.
+ * When `instant` is true (data already in memory), skip the artificial delay —
+ * skeletons must not hide sync-available content.
+ */
+export function useBookingReveal(dataset, enabled = true, { instant = false } = {}) {
   const session = useFetchSession()
-  const [ready, setReady] = useState(() => enabled && session.isLoaded(dataset))
+  const [ready, setReady] = useState(() => enabled && (instant || session.isLoaded(dataset)))
 
   useEffect(() => {
     if (!enabled) {
       setReady(false)
       return undefined
     }
-    if (session.isLoaded(dataset)) {
+    if (instant || session.isLoaded(dataset)) {
+      session.markLoaded(dataset)
       setReady(true)
       return undefined
     }
@@ -24,7 +30,7 @@ export function useBookingReveal(dataset, enabled = true) {
     }, reduce ? 0 : 320)
 
     return () => window.clearTimeout(timer)
-  }, [dataset, session, enabled])
+  }, [dataset, session, enabled, instant])
 
   return ready
 }

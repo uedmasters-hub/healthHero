@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import { getAppointmentJourney } from '../lib/appointmentJourney'
+import { buildAppointmentPreview } from '../lib/appointmentPreview'
 import {
   HOME_CAROUSEL_LIMIT,
   getServiceCta,
@@ -115,6 +116,7 @@ function UpcomingBookingCard({
         runNavigate: go,
         targetLayout: journey.targetLayout,
         sourceLayout: journey.sourceLayout,
+        appointmentPreview: buildAppointmentPreview(booking),
         restore: { home: origin === 'home' },
       })
       return

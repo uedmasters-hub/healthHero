@@ -401,14 +401,26 @@
   min-height: 0;
 }
 
-.shared-hero-card.is-appointment .shared-hero-appointment-line {
-  display: block;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: var(--shimmer-mid);
-  opacity: 0.7;
+.shared-hero-card.is-appointment .shared-hero-appointment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
-.shared-hero-card.is-appointment .shared-hero-appointment-line.is-short {
-  width: 78%;
+.shared-hero-card.is-appointment .shared-hero-appointment-label {
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.shared-hero-card.is-appointment .shared-hero-appointment-value {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
