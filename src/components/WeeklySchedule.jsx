@@ -1,9 +1,10 @@
-import { useEffect, useId, useMemo } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { ChipRow, DatePicker, SlotGrid, VISIT_TYPES } from './DatePicker'
 import { groupSlotsByPeriod, visitSlotAvailability } from '../lib/slotAvailability'
+import { fetchProviderAvailability } from '../features/providers'
 import './WeeklySchedule.css'
 
-/** Canonical weekly time slots — Doctor Profile is the source of truth. */
+/** Fallback weekly slots when remote availability is empty. */
 export const WEEKLY_SCHEDULE_SLOTS = [
   '10:00 AM',
   '11:00 AM',
@@ -17,7 +18,7 @@ export const WEEKLY_SCHEDULE_SLOTS = [
 
 /**
  * Shared Weekly Schedule — identical on Doctor Profile, Choose Date & Time, and Reschedule.
- * Segmented appointment type, compact date strip, and time-of-day slot groups.
+ * Prefers live `available_slots` from Supabase when present.
  */
 export default function WeeklySchedule({
   title = null,
@@ -33,15 +34,49 @@ export default function WeeklySchedule({
   className = '',
 }) {
   const periodDomId = useId()
-  const periods = useMemo(() => groupSlotsByPeriod(WEEKLY_SCHEDULE_SLOTS), [])
+  const [liveTimes, setLiveTimes] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    if (doctorId == null) {
+      setLiveTimes(null)
+      return undefined
+    }
+    fetchProviderAvailability(doctorId, { days: 14 }).then((rows) => {
+      if (cancelled) return
+      const byDate = new Map()
+      rows.forEach((row) => {
+        const key = row.date
+        const list = byDate.get(key) || []
+        list.push(row.time)
+        byDate.set(key, list)
+      })
+      setLiveTimes(byDate)
+    })
+    return () => { cancelled = true }
+  }, [doctorId])
+
+  const dateKey = selectedDate?.full instanceof Date
+    ? selectedDate.full.toISOString().slice(0, 10)
+    : (selectedDate?.full ? String(selectedDate.full).slice(0, 10) : '')
+
+  const scheduleSlots = useMemo(() => {
+    if (liveTimes && dateKey && liveTimes.has(dateKey)) {
+      const times = liveTimes.get(dateKey) || []
+      if (times.length) return times
+    }
+    return WEEKLY_SCHEDULE_SLOTS
+  }, [liveTimes, dateKey])
+
+  const periods = useMemo(() => groupSlotsByPeriod(scheduleSlots), [scheduleSlots])
   const openSlots = useMemo(
     () => visitSlotAvailability({
       doctorId,
       date: selectedDate,
       visitType,
-      slots: WEEKLY_SCHEDULE_SLOTS,
+      slots: scheduleSlots,
     }),
-    [doctorId, selectedDate, visitType],
+    [doctorId, selectedDate, visitType, scheduleSlots],
   )
 
   const resolveMeta = (slot) => {

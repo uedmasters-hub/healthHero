@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "import:providers": "node scripts/import-pocketpills-providers.mjs",
+    "bootstrap:catalog": "npx vite-node scripts/bootstrap-generated-catalog.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

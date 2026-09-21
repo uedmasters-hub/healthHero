@@ -8,7 +8,7 @@ import {
 } from './models'
 import { createLocalPersistence } from './persistence'
 import { createRepository, IMMUTABLE_APPOINTMENT_STATUSES } from './repository'
-import { syncAppointmentRecord } from './appointmentSync'
+import { mirrorAppointment } from '../features/sync/mirrors'
 import {
   applyPaymentExpired,
   applyPaymentProcessing,
@@ -131,9 +131,9 @@ function purgeDuplicateBookings(repo) {
   return removed
 }
 
-function mirrorAppointment(record, ownerId) {
+function queueAppointment(record, ownerId) {
   if (!record?.id || !ownerId) return
-  syncAppointmentRecord(record, ownerId).catch(() => {})
+  mirrorAppointment(record, ownerId).catch(() => {})
 }
 
 export function createBookingEngine({
@@ -437,7 +437,7 @@ export function createBookingEngine({
         throw e
       }
 
-      mirrorAppointment(record, ownerId())
+      queueAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -480,7 +480,7 @@ export function createBookingEngine({
       }
       const { record } = repo.upsert(next, { event: BOOKING_EVENT.CHECKED_IN })
       repo.setActive(record.id)
-      mirrorAppointment(record, ownerId())
+      queueAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -491,7 +491,7 @@ export function createBookingEngine({
         event: BOOKING_EVENT.CHECKIN_CANCELLED,
       })
       const { record } = repo.upsert(next, { event: BOOKING_EVENT.CHECKIN_CANCELLED })
-      mirrorAppointment(record, ownerId())
+      queueAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -511,7 +511,7 @@ export function createBookingEngine({
         repo.setActive(home?.id || null)
       }
       clearPaymentSession()
-      mirrorAppointment(record, ownerId())
+      queueAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 
@@ -584,7 +584,7 @@ export function createBookingEngine({
       })
       repo.setActive(record.id)
       clearPaymentSession()
-      mirrorAppointment(record, ownerId())
+      queueAppointment(record, ownerId())
       return toLegacyBooking(record)
     },
 

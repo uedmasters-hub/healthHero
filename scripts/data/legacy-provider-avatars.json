@@ -1,0 +1,245 @@
+[
+  {
+    "id": "00000000-0000-4000-a000-000000000001",
+    "avatar_url": "/img/doctors/new/doctor.png",
+    "consultation_fee": 1200,
+    "rating_avg": 4.8,
+    "about": "Dr. Priya Sharma is a consultant dermatologist specialising in medical and cosmetic skin care. She is known for early detection of skin conditions, laser treatments, and personalised skincare plans.",
+    "city": "Mumbai",
+    "address_line1": "312 Linking Road, Bandra West, Mumbai"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000002",
+    "avatar_url": "/img/doctors/doctor-m1.png",
+    "consultation_fee": 2000,
+    "rating_avg": 4.6,
+    "about": "Dr. Arjun Mehta is a consultant cardiologist focused on heart health and preventive cardiology. He specialises in interventional cardiology and cardiac rehabilitation.",
+    "city": "Delhi",
+    "address_line1": "1580 Connaught Place, Delhi"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000003",
+    "avatar_url": "/img/doctors/doctor-w2.png",
+    "consultation_fee": 900,
+    "rating_avg": 4.9,
+    "about": "Dr. Ananya Reddy is a compassionate paediatrician with a focus on child development, vaccinations, and preventive care. She creates a warm environment for her young patients.",
+    "city": "Bengaluru",
+    "address_line1": "245 Brigade Road, Bengaluru"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000004",
+    "avatar_url": "/img/doctors/doctor-m2.png",
+    "consultation_fee": 1500,
+    "rating_avg": 4.7,
+    "about": "Dr. Rajesh Sharma is a renowned neurologist with expertise in treating complex neurological disorders. He is known for his patient-centred approach and advanced diagnostic techniques.",
+    "city": "Hyderabad",
+    "address_line1": "789 Banjara Hills, Hyderabad"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000005",
+    "avatar_url": "/img/doctors/doctor-w3.png",
+    "consultation_fee": 1600,
+    "rating_avg": 4.5,
+    "about": "Dr. Kavya Iyer is an orthopaedic specialist focused on musculoskeletal health, sports injuries, and joint replacement surgeries. She combines modern techniques with compassionate care.",
+    "city": "Chennai",
+    "address_line1": "456 Anna Salai, Chennai"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000006",
+    "avatar_url": "/img/doctors/doctor-m3.png",
+    "consultation_fee": 1300,
+    "rating_avg": 4.8,
+    "about": "Dr. Deepak Menon is a pulmonologist specialising in respiratory diseases, asthma management, and lung health. He is committed to providing evidence-based treatment plans.",
+    "city": "Kolkata",
+    "address_line1": "321 Park Street, Kolkata"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000007",
+    "avatar_url": "/img/doctors/doctor-w1.png",
+    "consultation_fee": 1400,
+    "rating_avg": 4.9,
+    "about": "Dr. Neha Kapoor is an experienced gynaecologist specialising in women's health, prenatal care, and minimally invasive surgeries. She provides compassionate and comprehensive care.",
+    "city": "Gurugram",
+    "address_line1": "101 Cyber City, Gurugram"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000008",
+    "avatar_url": "/img/doctors/doctor-m1.png",
+    "consultation_fee": 1000,
+    "rating_avg": 4.7,
+    "about": "Dr. Arjun Nair is an ENT specialist with expertise in ear, nose, and throat disorders. He offers advanced treatments for hearing loss, sinus issues, and throat infections.",
+    "city": "Pune",
+    "address_line1": "200 FC Road, Pune"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000009",
+    "avatar_url": "/img/doctors/doctor-w2.png",
+    "consultation_fee": 800,
+    "rating_avg": 4.7,
+    "about": "Dr. Sneha Joshi provides comprehensive dental care with a focus on preventive dentistry and smile design.",
+    "city": "Mumbai",
+    "address_line1": "22 Linking Road, Mumbai"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000010",
+    "avatar_url": "/img/doctors/doctor-m2.png",
+    "consultation_fee": 1600,
+    "rating_avg": 4.8,
+    "about": "Dr. Vivek Menon specialises in diabetes, thyroid disorders, and hormonal health.",
+    "city": "Chennai",
+    "address_line1": "88 Anna Salai, Chennai"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000011",
+    "avatar_url": "/img/doctors/doctor-w3.png",
+    "consultation_fee": 1400,
+    "rating_avg": 4.6,
+    "about": "Dr. Lina D’Souza treats digestive and liver conditions with a calm, evidence-based approach.",
+    "city": "Kolkata",
+    "address_line1": "14 Park Street, Kolkata"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000012",
+    "avatar_url": "/img/doctors/doctor-m3.png",
+    "consultation_fee": 600,
+    "rating_avg": 4.9,
+    "about": "Dr. Arun Iyer is a trusted family physician for everyday care, fever, and preventive checkups.",
+    "city": "Bengaluru",
+    "address_line1": "5 MG Road, Bengaluru"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000013",
+    "avatar_url": "/img/doctors/doctor-w1.png",
+    "consultation_fee": 1800,
+    "rating_avg": 4.7,
+    "about": "Dr. Meera Shah helps patients manage allergies, asthma, and immune-related conditions.",
+    "city": "Ahmedabad",
+    "address_line1": "41 SG Highway, Ahmedabad"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000014",
+    "avatar_url": "/img/doctors/doctor-m1.png",
+    "consultation_fee": 500,
+    "rating_avg": 4.5,
+    "about": "Dr. Kabir Sethi designs practical nutrition plans for weight, energy, and chronic conditions.",
+    "city": "Hyderabad",
+    "address_line1": "19 Banjara Hills, Hyderabad"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000015",
+    "avatar_url": "/img/doctors/doctor-w2.png",
+    "consultation_fee": 1200,
+    "rating_avg": 4.8,
+    "about": "Dr. Anika Bose provides complete eye care, from routine vision checks to surgical consults.",
+    "city": "Kolkata",
+    "address_line1": "7 Park Street, Kolkata"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000016",
+    "avatar_url": "/img/doctors/doctor-m2.png",
+    "consultation_fee": 700,
+    "rating_avg": 4.6,
+    "about": "Dr. Rohan Gill specialises in sports rehab, back pain, and post-surgery physiotherapy.",
+    "city": "Chandigarh",
+    "address_line1": "30 Sector 18, Chandigarh"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000017",
+    "avatar_url": "/img/doctors/doctor-w3.png",
+    "consultation_fee": 1800,
+    "rating_avg": 4.9,
+    "about": "Dr. Sara Qureshi offers confidential care for anxiety, depression, and sleep concerns.",
+    "city": "Delhi",
+    "address_line1": "12 Golf Links, Delhi"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000018",
+    "avatar_url": "/img/doctors/doctor-m3.png",
+    "consultation_fee": 1300,
+    "rating_avg": 4.4,
+    "about": "Dr. Imran Ali provides discreet consultations for sexual health and related concerns.",
+    "city": "Lucknow",
+    "address_line1": "9 Civil Lines, Lucknow"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000019",
+    "avatar_url": "/img/doctors/doctor-w1.png",
+    "consultation_fee": 1500,
+    "rating_avg": 4.7,
+    "about": "Dr. Tara Nair treats kidney, bladder, and prostate conditions with a patient-first approach.",
+    "city": "Kochi",
+    "address_line1": "3 Marine Drive, Kochi"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000020",
+    "avatar_url": "/img/doctors/doctor-w2.png",
+    "consultation_fee": 1100,
+    "rating_avg": 4.7,
+    "about": "Dr. Rhea Malhotra focuses on acne, pigmentation, and everyday skin health.",
+    "city": "Mumbai",
+    "address_line1": "90 Bandra West, Mumbai"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000021",
+    "avatar_url": "/img/doctors/doctor-m3.png",
+    "consultation_fee": 2100,
+    "rating_avg": 4.8,
+    "about": "Dr. Farhan Siddiqui specialises in preventive cardiology and long-term heart-risk management.",
+    "city": "Delhi",
+    "address_line1": "44 Greater Kailash, Delhi"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000022",
+    "avatar_url": "/img/doctors/doctor-w3.png",
+    "consultation_fee": 1000,
+    "rating_avg": 4.8,
+    "about": "Dr. Diya Nair provides warm, practical care for infants and school-age children.",
+    "city": "Bengaluru",
+    "address_line1": "16 Indiranagar, Bengaluru"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000023",
+    "avatar_url": "/img/doctors/doctor-m1.png",
+    "consultation_fee": 2200,
+    "rating_avg": 4.6,
+    "about": "Dr. Vikram Rao treats headaches, seizures, and nerve disorders with a clear, stepwise plan.",
+    "city": "Hyderabad",
+    "address_line1": "8 Banjara Hills, Hyderabad"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000024",
+    "avatar_url": "/img/doctors/doctor-w1.png",
+    "consultation_fee": 1600,
+    "rating_avg": 4.7,
+    "about": "Dr. Ishita Kulkarni helps patients recover from joint pain, fractures, and sports injuries.",
+    "city": "Pune",
+    "address_line1": "27 Koregaon Park, Pune"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000025",
+    "avatar_url": "/img/doctors/doctor-m2.png",
+    "consultation_fee": 1400,
+    "rating_avg": 4.5,
+    "about": "Dr. Sameer Khan manages asthma, sleep apnea, and chronic cough with practical follow-up.",
+    "city": "Chennai",
+    "address_line1": "61 Anna Nagar, Chennai"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000026",
+    "avatar_url": "/img/doctors/doctor-w2.png",
+    "consultation_fee": 1300,
+    "rating_avg": 4.8,
+    "about": "Dr. Anita Desai offers thoughtful women’s health care from annual visits to fertility questions.",
+    "city": "Gurugram",
+    "address_line1": "5 DLF Phase 2, Gurugram"
+  },
+  {
+    "id": "00000000-0000-4000-a000-000000000027",
+    "avatar_url": "/img/doctors/doctor-m3.png",
+    "consultation_fee": 1200,
+    "rating_avg": 4.6,
+    "about": "Dr. Mathew Varghese treats sinus, throat, and hearing concerns with a conservative first approach.",
+    "city": "Chennai",
+    "address_line1": "11 T Nagar, Chennai"
+  }
+]

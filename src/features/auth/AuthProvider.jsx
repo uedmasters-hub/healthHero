@@ -13,7 +13,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
   attachAuthenticatedUser,
-  hydrateProfileFromSupabase,
   logout as detachLocalSession,
   setGoogleBirthday,
 } from '../../user/store'
@@ -39,7 +38,6 @@ import {
   hasAuthCallbackParams,
 } from './services/oauth'
 import { AUTH_CONFIRM_PATH, AUTH_PATHS } from './types'
-import { migrateLocalDataToSupabase } from '../sync/localDataMigrator'
 
 const AuthContext = createContext(null)
 
@@ -164,20 +162,6 @@ export function AuthProvider({ children }) {
       cancelled = true
     }
   }, [session?.user?.id])
-
-  useEffect(() => {
-    if (!session?.user?.id || isRecovery) return
-    migrateLocalDataToSupabase(session.user).catch(() => {
-      /* keep the local chart if remote sync is unavailable */
-    })
-  }, [session?.user?.id, isRecovery])
-
-  useEffect(() => {
-    if (!session?.user?.id || isRecovery) return
-    hydrateProfileFromSupabase().catch(() => {
-      /* fall back to local profile if Supabase is unreachable */
-    })
-  }, [session?.user?.id, isRecovery])
 
   useEffect(() => {
     if (!session?.provider_token || !session?.user?.id) return

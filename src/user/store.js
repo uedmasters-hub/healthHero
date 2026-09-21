@@ -13,7 +13,8 @@ import {
 import { ageFromDob, createAddress, createId, createMember, createSession, createUserRecord, emptyRecords, indianMobile, normalizeEmail, normalizePhone, publicUser, selfMember } from './models'
 import { loadDatabase, loadSession, saveDatabase, saveSession } from './persistence'
 import { buildDemoUser } from './seed'
-import { pushProfileToSupabase, fetchProfileFromSupabase } from '../features/sync/profileSync'
+import { fetchProfileFromSupabase } from '../features/sync/profileSync'
+import { mirrorProfile } from '../features/sync/mirrors'
 
 function applyHealthNormalize(user) {
   if (!user) return user
@@ -303,8 +304,8 @@ export function completeSelfProfile(input = {}) {
     }
   })
 
-  // Sync to Supabase in the background
-  pushProfileToSupabase(user.id, next.profile, next.credentials).catch(() => {})
+  // Sync to Supabase (outbox when offline)
+  mirrorProfile(user.id, next.profile, next.credentials).catch(() => {})
 
   return { ok: true, member: selfMember(next) }
 }
@@ -356,10 +357,8 @@ export async function updatePersonalProfile(input = {}) {
     }
   })
 
-  // Write to Supabase in the background (fire-and-forget, local state already updated)
-  pushProfileToSupabase(user.id, updated.profile, updated.credentials).catch(() => {
-    /* local state is already updated; Supabase will sync on next load if this fails */
-  })
+  // Write to Supabase (outbox when offline; local state already updated)
+  mirrorProfile(user.id, updated.profile, updated.credentials).catch(() => {})
 
   return { ok: true }
 }

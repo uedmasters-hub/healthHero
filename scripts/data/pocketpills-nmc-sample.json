@@ -1,0 +1,1752 @@
+[
+  {
+    "NMC Number": "2",
+    "NMC Name": "Dr. Lakshmishwar Prasad",
+    "NMC Address": "Kharihani , Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "3",
+    "NMC Name": "Dr. Sudhir Chandra Chakrawarti",
+    "NMC Address": "Birgunj,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "5",
+    "NMC Name": "Dr. Premu Shah",
+    "NMC Address": "Tangal , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "6",
+    "NMC Name": "Dr. Sudhakar Anil Thapaliya",
+    "NMC Address": "Biratnagar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "7",
+    "NMC Name": "Dr. Om Krishna Malla",
+    "NMC Address": "Thasikhel , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "9",
+    "NMC Name": "Dr. Bishnu Prasad Rajaurai",
+    "NMC Address": "Syuraj , Kapilvastu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "10",
+    "NMC Name": "Dr. Keshab Raj Bhattarai",
+    "NMC Address": "Baneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "12",
+    "NMC Name": "Dr. Bimsma Raj Prasai",
+    "NMC Address": "Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "16",
+    "NMC Name": "Dr. Yogendra Prasad Deo",
+    "NMC Address": "Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "19",
+    "NMC Name": "Dr. Hira Devi Dangol",
+    "NMC Address": "Kamalachhi , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "20",
+    "NMC Name": "Dr. Kanti Giri (Rai)",
+    "NMC Address": "JYOTI SADAN,3/302 Puhowkl , Lalitpur",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "22",
+    "NMC Name": "Dr. Mahodadhi Shrestha",
+    "NMC Address": "Newbaneswor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "24",
+    "NMC Name": "Dr. Rana Krishna Jung",
+    "NMC Address": "Nepalgunj , Banke,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "27",
+    "NMC Name": "Dr. Rudra Pratap Shah",
+    "NMC Address": "Krishana Nagar , Kapilvastu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "32",
+    "NMC Name": "Dr. Khagendra Bahadur Shrestha",
+    "NMC Address": "Kupondol , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "38",
+    "NMC Name": "Dr. Geeta Joshi",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "39",
+    "NMC Name": "Dr. Purushottam Narayan Shrestha",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "47",
+    "NMC Name": "Dr. Manindra Ranjan Baral",
+    "NMC Address": "Dillibazar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "50",
+    "NMC Name": "Dr. Ishwor Lal Acharya",
+    "NMC Address": "ikhalakhu , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "55",
+    "NMC Name": "Dr. Ram Bhadra Adiga",
+    "NMC Address": "Kathmandu, Nepal",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "56",
+    "NMC Name": "Dr. Brij Narayan Chaudhary",
+    "NMC Address": "Gobardiha , Dang Deukhuri,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "59",
+    "NMC Name": "Dr. Viswa Raj Dali",
+    "NMC Address": "Bhakhundol , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "63",
+    "NMC Name": "Dr. Shankar Bahadur Singh Rajbandari",
+    "NMC Address": "maitidevi , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "64",
+    "NMC Name": "Dr. Dinesh Nath Gongal",
+    "NMC Address": "Tripureshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "72",
+    "NMC Name": "Dr. Shyam Kumar Rauniyar",
+    "NMC Address": "Sukrapath , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "73",
+    "NMC Name": "Dr. Kamal Tara Tuladhar",
+    "NMC Address": "Nardevi , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "74",
+    "NMC Name": "Dr. Jyotsna Kumari Maskey",
+    "NMC Address": "Dhobighat, Patan , Lalitpur",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "76",
+    "NMC Name": "Dr. Ramesh Prasad Sharma",
+    "NMC Address": "Adwatimarg , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "79",
+    "NMC Name": "Dr. Kuldip Narayan Agrahari",
+    "NMC Address": "Duhabi , Sunsari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "84",
+    "NMC Name": "Dr. Mustafarbar Rahaman",
+    "NMC Address": "Dang , Dang Deukhuri,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "87",
+    "NMC Name": "Dr. Bina Subba",
+    "NMC Address": "Baneshwor , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "93",
+    "NMC Name": "Dr. Mrigendra Raj Pandey",
+    "NMC Address": "Thapathali,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "96",
+    "NMC Name": "Dr. Subodh Kumar Pokharel",
+    "NMC Address": "Kharpa , Khotang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "97",
+    "NMC Name": "Dr. Bhuvaneshwor Jha",
+    "NMC Address": "Rangeli , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "99",
+    "NMC Name": "Dr. Gautam Man Shakya",
+    "NMC Address": "Nakabahil , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "100",
+    "NMC Name": "Dr. Damber Bahadur Karki",
+    "NMC Address": "Baneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "102",
+    "NMC Name": "Dr. Mrigendra Prasad Shrestha",
+    "NMC Address": "Teku,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "107",
+    "NMC Name": "Dr. June Thapa",
+    "NMC Address": "Gyaneshwor , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "108",
+    "NMC Name": "Dr. Lok Bikram Thapa",
+    "NMC Address": "Gyaneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "112",
+    "NMC Name": "Dr. Gouri Shanker Lal Das",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "116",
+    "NMC Name": "Dr. Narayan Govinda Amatya",
+    "NMC Address": "Patan , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "117",
+    "NMC Name": "Dr. Achut Bahadur Shrestha",
+    "NMC Address": "Khichapokhari , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "121",
+    "NMC Name": "Dr. Sambhu Prasad Pant",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "122",
+    "NMC Name": "Dr. Hemang Mani Dixit",
+    "NMC Address": "Dilli Bazar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "123",
+    "NMC Name": "Dr. Badri Lal Shrestha",
+    "NMC Address": "Bhadrapur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "132",
+    "NMC Name": "Dr. Tej Singh Malla",
+    "NMC Address": "Bag Bazar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "133",
+    "NMC Name": "Dr. Kalidas Adhikari",
+    "NMC Address": "Okhalepani, Duradanda , Lamjung",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "134",
+    "NMC Name": "Dr. Mahesh Raj Sigdel",
+    "NMC Address": "Khudepani , Tanahu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "135",
+    "NMC Name": "Dr. Chhabindra Lall Pradhananga",
+    "NMC Address": "Patandhoka , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "139",
+    "NMC Name": "Dr.Savitri Nepali",
+    "NMC Address": "Parasi Lebang Bhairahawa,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "142",
+    "NMC Name": "Dr. Dharma Saran Manandhar",
+    "NMC Address": "Kuleshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "143",
+    "NMC Name": "Dr. Dibyashori Shrestha",
+    "NMC Address": "New Baneshwor , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "145",
+    "NMC Name": "Dr. Shiva Dhyan Prasad",
+    "NMC Address": "Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "150",
+    "NMC Name": "Dr. Bishnu Lal Joshi",
+    "NMC Address": "Butwal Bazar,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "153",
+    "NMC Name": "Dr. Ashok Kumar Das",
+    "NMC Address": "Bhadrapur , Jhapa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "154",
+    "NMC Name": "Dr. Basabananda Vaidya",
+    "NMC Address": "Kilagal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "156",
+    "NMC Name": "Dr.Puspa Lal Rajbhandari",
+    "NMC Address": "Chhauni , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "157",
+    "NMC Name": "Dr.Ram Kumar Shrestha",
+    "NMC Address": "Majhkottole, Kalia , Baglung",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "158",
+    "NMC Name": "Dr. Badri Raj Pandey",
+    "NMC Address": "Sallaghari, Bansbari , Kathmandu",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "159",
+    "NMC Name": "Dr. Tirtha Kumari Shah",
+    "NMC Address": "Kupondol , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "163",
+    "NMC Name": "Dr. Angur Devi Shrestha",
+    "NMC Address": "Pukha , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "164",
+    "NMC Name": "Dr. Chitra lal Bhattchan",
+    "NMC Address": "Galkot , Baglung,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "165",
+    "NMC Name": "Dr. Gyan Bahadur Shrestha",
+    "NMC Address": "Dharan , Sunsari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "166",
+    "NMC Name": "Dr. Yogendra Prasad deo",
+    "NMC Address": "Bishariya , Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "167",
+    "NMC Name": "Dr. Kokila Baidya",
+    "NMC Address": "Kilagaltole , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "168",
+    "NMC Name": "Dr. Keshab Prasad Adhikari",
+    "NMC Address": "Paknajol , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "169",
+    "NMC Name": "Dr.Hira Devi Shrestha",
+    "NMC Address": "Rabibhawan , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "170",
+    "NMC Name": "Dr. Madan Prasad Upadhaya",
+    "NMC Address": "Mahankal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "171",
+    "NMC Name": "Dr. Saraswati m Padheya",
+    "NMC Address": "Dillibazar , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "174",
+    "NMC Name": "Dr. Moti Lal Chapagai",
+    "NMC Address": "Geetanagar , Chitwan,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "177",
+    "NMC Name": "Dr. Bharat Prasad Tripathi",
+    "NMC Address": "Pokhara , Kaski,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "178",
+    "NMC Name": "Dr. Kamalesh Kumar Mishra",
+    "NMC Address": "Pipar , Mahottari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "179",
+    "NMC Name": "Dr. Hukmadeo Sah",
+    "NMC Address": "Dhanusha , Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "180",
+    "NMC Name": "Dr. Basanta Kumar Bataju",
+    "NMC Address": "Phokhara, Kaski , Kaski",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "183",
+    "NMC Name": "Dr. Ram Lal Mishra",
+    "NMC Address": "Mahottari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "184",
+    "NMC Name": "Dr. Nayan Bahadur Subedi",
+    "NMC Address": "Battish Putali,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "187",
+    "NMC Name": "Dr. Hari Govind Shrestha",
+    "NMC Address": "Baneshwor,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "189",
+    "NMC Name": "Dr. Ramawatar Prasad Khetan",
+    "NMC Address": "Adarshnagar , Parsa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "190",
+    "NMC Name": "Dr. Pushpa Dass Shrestha",
+    "NMC Address": "Tahachal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "191",
+    "NMC Name": "Dr. Desh Raj Bahadur Kunwar",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "195",
+    "NMC Name": "Dr. Mahabir Krishna Malla",
+    "NMC Address": "Siphal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "196",
+    "NMC Name": "Dr. Raghav Prasad Dhital",
+    "NMC Address": "Gorhka,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "197",
+    "NMC Name": "Dr. Janak Kumari Dhital",
+    "NMC Address": "Gorkha,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "200",
+    "NMC Name": "Dr. Ram Ratna Upadhaya",
+    "NMC Address": "Nainapur , Siraha,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "201",
+    "NMC Name": "Dr. Anand Bahadur Pradhan",
+    "NMC Address": "Khilatole , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "202",
+    "NMC Name": "Dr. Bhubaneshwari Dutt Chataut",
+    "NMC Address": "Bagarkot , Dadeldhura,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "204",
+    "NMC Name": "Dr. Bisharad Man Shrestha",
+    "NMC Address": "Maitidevi , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "205",
+    "NMC Name": "Dr. Kapil Man Shrestha",
+    "NMC Address": "",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "206",
+    "NMC Name": "Dr. Satya Narayan Mahato",
+    "NMC Address": "Thill,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "207",
+    "NMC Name": "Dr. Prakash Prasad Arjyal",
+    "NMC Address": "Chuchepati,Chabhil , Kathmandu",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "213",
+    "NMC Name": "Dr. Gopal Prasad Shrestha",
+    "NMC Address": "Bhagabati Tole , Palpa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "214",
+    "NMC Name": "Dr. Damodar Prasad Parajuli",
+    "NMC Address": "Bansbari , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "215",
+    "NMC Name": "Dr. Kapil Dev Upadhyaya",
+    "NMC Address": "Palpa, Khaseuli , Palpa",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "216",
+    "NMC Name": "Dr. Sudip Kumar Bhattacharya",
+    "NMC Address": "Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "218",
+    "NMC Name": "Dr. Bijoy Kumar Sharma",
+    "NMC Address": "Jaybageshwori , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "221",
+    "NMC Name": "Dr. Govind Bahadur Shrestha",
+    "NMC Address": "Inaruwa Bazar , Sunsari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "222",
+    "NMC Name": "Dr.Mahesh Prasad Khakurel",
+    "NMC Address": "Bafal,kalimati , Kathmandu",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "224",
+    "NMC Name": "Dr. Bimala Devi Lakhey",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "225",
+    "NMC Name": "Dr. Durga Man Joshi",
+    "NMC Address": "Chakupat ,Patan-Dhoka , Lalitpur",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "226",
+    "NMC Name": "Dr. Tika Man Vaidya",
+    "NMC Address": "Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "228",
+    "NMC Name": "Dr. Achyut Mani Acharya",
+    "NMC Address": "Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "229",
+    "NMC Name": "Dr.Binode Babu Dhungana",
+    "NMC Address": "Dillibazar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "231",
+    "NMC Name": "Dr. Deep Bahadur Karki",
+    "NMC Address": "Balithun , Lamjung,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "256",
+    "NMC Name": "Dr. Ram Krishna Rajbhandari",
+    "NMC Address": "Pyuthan,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "257",
+    "NMC Name": "Dr. Jyoti Pyakurel",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "262",
+    "NMC Name": "Dr. Bishwas Pradhan",
+    "NMC Address": "Nawalparasi,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "269",
+    "NMC Name": "Dr. Shella Shrestha",
+    "NMC Address": "Ratopul , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "BDS"
+  },
+  {
+    "NMC Number": "276",
+    "NMC Name": "Dr. Amrita Giri",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "278",
+    "NMC Name": "Dr. Pragya Mishra",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "281",
+    "NMC Name": "Dr. Roshan Mainali",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "286",
+    "NMC Name": "Dr. Sandeep Kumar Jha",
+    "NMC Address": "Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "296",
+    "NMC Name": "Dr. Raj Bhai Shrestha",
+    "NMC Address": "Gyaneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "BDS"
+  },
+  {
+    "NMC Number": "297",
+    "NMC Name": "Dr. Rita Kamal Tuladhar",
+    "NMC Address": "Kamladi , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "301",
+    "NMC Name": "Dr. Gopal Prasad Shah",
+    "NMC Address": "Biratnagar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "303",
+    "NMC Name": "Dr. Shrawan Kumar Choudhary",
+    "NMC Address": "Sakarpura , Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "305",
+    "NMC Name": "Dr.Rajendra Kumar Pandey",
+    "NMC Address": "3/477, Pulchowk , Lalitpur",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "306",
+    "NMC Name": "Dr. Subhasish Kumar Bhattacharya",
+    "NMC Address": "Gaun-ekraati , Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "307",
+    "NMC Name": "Dr. Madhu Dixit",
+    "NMC Address": "Patan Dhoka , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "308",
+    "NMC Name": "Dr. Geeta Tuladhar",
+    "NMC Address": "Asan,Thainatol , Lalitpur",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "309",
+    "NMC Name": "Dr. Uma Sharma",
+    "NMC Address": "",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "310",
+    "NMC Name": "Dr. Raj Shekhar Jha",
+    "NMC Address": "",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "311",
+    "NMC Name": "Dr. Laxman Mandal",
+    "NMC Address": "Bharadah , Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "312",
+    "NMC Name": "Dr. Amina Shrestha",
+    "NMC Address": "Lazimpat , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "314",
+    "NMC Name": "Dr. Tumla Lacoul",
+    "NMC Address": "baluatar , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "315",
+    "NMC Name": "Dr. Keshab Raj Dhungana",
+    "NMC Address": "Chhanchhandi , Syangja,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "316",
+    "NMC Name": "Dr. Shanta Man Prajapati",
+    "NMC Address": "Baneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "317",
+    "NMC Name": "Dr. Basu Prasad Adhikari",
+    "NMC Address": "Gaushala Bazar , Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "318",
+    "NMC Name": "Dr. Purushottam Raj Bhandari",
+    "NMC Address": "Butwal , Rupandehi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "319",
+    "NMC Name": "Dr. Gopal Prasad Khanal",
+    "NMC Address": "Dgauntar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "320",
+    "NMC Name": "Dr. Mahendra Bahadur Malla",
+    "NMC Address": "Chir , Bajhang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "321",
+    "NMC Name": "Dr. Sharat Chandra Verma",
+    "NMC Address": "Adarsha nagar , Parsa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "322",
+    "NMC Name": "Dr. Janak Keshar Prasai",
+    "NMC Address": "Sanepa , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "323",
+    "NMC Name": "Dr. Kalyan Kumar Basnet",
+    "NMC Address": "Mulawari , Dholkha,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "326",
+    "NMC Name": "Dr. Beena Shrestha",
+    "NMC Address": "Kupondole , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "328",
+    "NMC Name": "Dr. Bindeshwar Prasad",
+    "NMC Address": "Hardia , Bara,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "329",
+    "NMC Name": "Dr. Krishna Bahadur Shrestha",
+    "NMC Address": "Pharping , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "330",
+    "NMC Name": "Dr. Krishna Kumar Rai",
+    "NMC Address": "Dihu,Khotang , Khotang",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "331",
+    "NMC Name": "Dr. Saraswati Devi Kshetri",
+    "NMC Address": "Bishnunagar , Rupandehi,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "332",
+    "NMC Name": "Dr. Madhurdev Nandadev Bhattarai",
+    "NMC Address": "Dillibazar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "333",
+    "NMC Name": "Dr. Damodar Pradhan",
+    "NMC Address": "Khairsal , Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "334",
+    "NMC Name": "Dr. Rabindra Kumar Singh",
+    "NMC Address": "Ram Mandir, Pokhara , Kaski",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "336",
+    "NMC Name": "Dr. Mukund Raj Panthee",
+    "NMC Address": "Pandit Tole,Dhurkot , Gulmi",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "337",
+    "NMC Name": "Dr.Prayaschit Shrestha",
+    "NMC Address": "Dolakha Bazar , Dholkha,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "338",
+    "NMC Name": "Dr. Nagendra Prasad Shah",
+    "NMC Address": "Janakpur , Sarlahi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "339",
+    "NMC Name": "Dr.Sailendra Kumar Yadav",
+    "NMC Address": "Rajbiraj, Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "340",
+    "NMC Name": "Dr. Rishi Kesh Karki",
+    "NMC Address": "Kapilvastu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "341",
+    "NMC Name": "Dr. Suresh Chandra Regmi",
+    "NMC Address": "Baneshwor, Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "343",
+    "NMC Name": "Dr. Nirmala Shrestha",
+    "NMC Address": "Surkhet Road,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "344",
+    "NMC Name": "Dr. Kiran Prasad Rijal",
+    "NMC Address": "Biratnagar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "345",
+    "NMC Name": "Dr. Ram Kumar Shrestha",
+    "NMC Address": "Surkhet Road,Nepalgunj , Banke",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "346",
+    "NMC Name": "Dr. Prabhu Prasad Joshi",
+    "NMC Address": "New Baneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "347",
+    "NMC Name": "Dr.Dharma Raj Shrestha",
+    "NMC Address": "Mahendrapool, Pokhara , Kaski",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "348",
+    "NMC Name": "Dr. Chanda Karki",
+    "NMC Address": "Lalitpur, Nepal",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS, DGO, MD"
+  },
+  {
+    "NMC Number": "349",
+    "NMC Name": "Dr. Lalit Dhoj Hamal",
+    "NMC Address": "Baneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "351",
+    "NMC Name": "Dr. Murari Man Shrestha",
+    "NMC Address": "Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "353",
+    "NMC Name": "Dr. Ajaya Bahadur Gurung",
+    "NMC Address": "Syangja,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "354",
+    "NMC Name": "Dr. Gulab Kaji Shrestha",
+    "NMC Address": "Chandesori Road , Kavrepalanchok,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "356",
+    "NMC Name": "Dr. Mahesh Prasad Neupane",
+    "NMC Address": "Bhadrapur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "357",
+    "NMC Name": "Dr. Meera Hawa",
+    "NMC Address": "Tripureshwor , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "358",
+    "NMC Name": "Dr. jamuna Acharya",
+    "NMC Address": "Laxmi sadak,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "359",
+    "NMC Name": "Dr. Sharad Raj Pant",
+    "NMC Address": "Gorhka, Baghuwa , Gorkha",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "360",
+    "NMC Name": "Dr. Ramesh Kumar Shrestha",
+    "NMC Address": "Amarpath , Rupandehi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "361",
+    "NMC Name": "Dr. Arati Shah (Khanal)",
+    "NMC Address": "Kathmandu, Nepal",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "362",
+    "NMC Name": "Dr. Shovendra Kumar Lal",
+    "NMC Address": "Gaun Suga,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS, DCH, MD"
+  },
+  {
+    "NMC Number": "363",
+    "NMC Name": "Dr. Lakshman Prasad Tibrewala",
+    "NMC Address": "Alakhiya Road,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "365",
+    "NMC Name": "Dr. Achala Vaidya",
+    "NMC Address": "Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "366",
+    "NMC Name": "Dr. Gisupnikha Prasiko",
+    "NMC Address": "Dhumbarahi , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "367",
+    "NMC Name": "Dr. Jewan Sharma",
+    "NMC Address": "Maitidevi , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "368",
+    "NMC Name": "Dr. Nirmal Kumar",
+    "NMC Address": "Raksaul,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "369",
+    "NMC Name": "Dr. Prem Chandra Lal Das",
+    "NMC Address": "Parsa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "372",
+    "NMC Name": "Dr. Raghu Bansh Tripathi",
+    "NMC Address": "Murali , Parsa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "373",
+    "NMC Name": "Dr. Kushum Lata Mishra",
+    "NMC Address": "Tilathi , Saptari,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "374",
+    "NMC Name": "Dr. Chandra Shobha Amatya(Dhaubhadel)",
+    "NMC Address": "Polchwok , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "376",
+    "NMC Name": "Dr. Satish Gurung",
+    "NMC Address": "",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "379",
+    "NMC Name": "Dr. Keshari Bajracharya",
+    "NMC Address": "Thamel , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "380",
+    "NMC Name": "Dr. Siftain Alam",
+    "NMC Address": "Biratnagar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "382",
+    "NMC Name": "Dr. Prakash Kumar Sapkota",
+    "NMC Address": "Biratnagar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "385",
+    "NMC Name": "Dr. Sushil Kumar Srivastava",
+    "NMC Address": "Taulihawa , Kapilvastu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "386",
+    "NMC Name": "Dr. Narayan Kumar",
+    "NMC Address": "Adarsh Tole, Biratnagar , Morang",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "387",
+    "NMC Name": "Dr. Gaurang Mishra",
+    "NMC Address": "Pipara , Mahottari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "388",
+    "NMC Name": "Dr. Gita Sayami (Joshi)",
+    "NMC Address": "Tahachal , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "389",
+    "NMC Name": "Dr. Bhairab Kumar Hamal",
+    "NMC Address": "Dolpa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "390",
+    "NMC Name": "Dr. Prakash Sayami",
+    "NMC Address": "Tahachal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "392",
+    "NMC Name": "Dr. Tirtha Raj Burlakoti",
+    "NMC Address": "Salmantar , Dhading,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "393",
+    "NMC Name": "Dr. Chet Raj Pant",
+    "NMC Address": "Baneshwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "394",
+    "NMC Name": "Dr. Kalloo Sharma Subedi",
+    "NMC Address": "Kaski, Nepal",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD, PG DIPLOMA"
+  },
+  {
+    "NMC Number": "398",
+    "NMC Name": "Dr. Mohammed Quamrul Haque Azad",
+    "NMC Address": "Kalaiya , Bara,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "399",
+    "NMC Name": "Dr. Roshana Amatya",
+    "NMC Address": "Kupandole , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "402",
+    "NMC Name": "Dr. Sita Ram Chaudhary",
+    "NMC Address": "Jaleshwor,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "403",
+    "NMC Name": "Dr. Himal Bajra Bajracharya",
+    "NMC Address": "Mahaboudha , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "404",
+    "NMC Name": "Dr. Padam Bahadur Chand",
+    "NMC Address": "Baitadi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "405",
+    "NMC Name": "Dr. Jagan Nath Pandey",
+    "NMC Address": "Simpani , Lamjung,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD, PH D."
+  },
+  {
+    "NMC Number": "406",
+    "NMC Name": "Dr. Chandra Kanta Sharma",
+    "NMC Address": "Shantikunj,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "407",
+    "NMC Name": "Dr. Dibya Shree Malla",
+    "NMC Address": "Chhauni , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "408",
+    "NMC Name": "Dr. Rajendra Prasad Sharma Guragain",
+    "NMC Address": "Kavrepalanchok,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "409",
+    "NMC Name": "Dr. Shashi Kumar Thapa",
+    "NMC Address": "Sworna Tole , Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "410",
+    "NMC Name": "Dr. Prakash Jung Rayamajhi",
+    "NMC Address": "Nawalparasi , Nawalparasi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "411",
+    "NMC Name": "Dr. Arjun Dev Bhatta",
+    "NMC Address": "Dasrathchand N.P , Baitadi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "412",
+    "NMC Name": "Dr. Mahesh Kumar Maskey",
+    "NMC Address": "Bhanu Tole , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "413",
+    "NMC Name": "Dr. Tapeshwar Lal Karn",
+    "NMC Address": "Tilasi , Siraha,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "414",
+    "NMC Name": "Dr. Ram Nandan Sinha",
+    "NMC Address": "Hanumanpur , Mahottari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "415",
+    "NMC Name": "Dr. Bhanu Chandra Shah",
+    "NMC Address": "Baluwatar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "416",
+    "NMC Name": "Dr. Bimala Malla",
+    "NMC Address": "Putalisadak , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "417",
+    "NMC Name": "DR. Gyanendra Man Singh",
+    "NMC Address": "Bhotebahal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "418",
+    "NMC Name": "Dr. Dhana Raj Aryal",
+    "NMC Address": "Narayanchaur,Naxal , Kathmandu",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "419",
+    "NMC Name": "Dr. Uma Shrivastava",
+    "NMC Address": "Mitra Park , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "420",
+    "NMC Name": "Dr. Rajendra Man Pradhan",
+    "NMC Address": "Thamel , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "421",
+    "NMC Name": "Dr. Tara Man Amatya",
+    "NMC Address": "Pulchowk , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "422",
+    "NMC Name": "Dr. Nakul Prasad Parajuli",
+    "NMC Address": "Koteshhwor , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "423",
+    "NMC Name": "Dr. Ghan Shyam Das Tulshan",
+    "NMC Address": "Kathmandu , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "424",
+    "NMC Name": "Dr. Parshuram Mishra",
+    "NMC Address": "Bathnaha , Mahottari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "426",
+    "NMC Name": "Dr. Surendra Lohani",
+    "NMC Address": "Naxal, Bhagwati , Kathmandu",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "427",
+    "NMC Name": "Dr. Gokarna Dhakal",
+    "NMC Address": "Marindadhi, dadi , Sindhuli",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "428",
+    "NMC Name": "Dr. Jagadish Lal Baidya",
+    "NMC Address": "Gusingal, Kupondol , Lalitpur",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "437",
+    "NMC Name": "Dr. Mohan Lal Tiwari",
+    "NMC Address": "Biratnagar , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "439",
+    "NMC Name": "Dr.Indra Prasad Prajapati",
+    "NMC Address": "Lakulachu Tole , Bhaktapur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "443",
+    "NMC Name": "Dr. Saundra Basnyat",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "444",
+    "NMC Name": "Dr. Phaud Raj Thebe",
+    "NMC Address": "Taplejung , Taplejung,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "445",
+    "NMC Name": "Dr.Dhrub Prasad Singh",
+    "NMC Address": "Baneniya , Saptari,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "446",
+    "NMC Name": "Dr.Madhav Prasad Khanal",
+    "NMC Address": "Nepalgunj , Banke,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "447",
+    "NMC Name": "Dr. Shyam Bahadur Karki",
+    "NMC Address": "Kharsal Tole, Rajbiraj , Saptari",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "448",
+    "NMC Name": "Dr. Surendra Shakya",
+    "NMC Address": "Taksar Tole, , Palpa",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "449",
+    "NMC Name": "Dr. Vidhya Pati Kanth",
+    "NMC Address": "Shitalpur, Chhapkiya,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "453",
+    "NMC Name": "Dr. Govinda Prasad Ojha",
+    "NMC Address": "Badaka Diyale , Khotang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "454",
+    "NMC Name": "Dr. Meera Ojha",
+    "NMC Address": "Badaka Diyale , Khotang,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "458",
+    "NMC Name": "Dr. Bishwa Raj Joshi",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MD"
+  },
+  {
+    "NMC Number": "460",
+    "NMC Name": "Dr. Shambhu Prasad Lakhey",
+    "NMC Address": "Tahachal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "461",
+    "NMC Name": "Dr. Indira Shrestha",
+    "NMC Address": "Bansbari , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "462",
+    "NMC Name": "Dr. Sanu Maya Dali",
+    "NMC Address": "Kathmandu , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "465",
+    "NMC Name": "Dr. Pushpa Raj Sharma",
+    "NMC Address": "Palpa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "466",
+    "NMC Name": "Dr. Keshav Raj Joshi",
+    "NMC Address": "Khumaltar , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "469",
+    "NMC Name": "Dr. Madan Kumar Piya",
+    "NMC Address": "Tahachal , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "471",
+    "NMC Name": "Dr. Rubi Jung Bahadur Rana",
+    "NMC Address": "Dillibazar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "472",
+    "NMC Name": "Dr. Arun Kumar Das",
+    "NMC Address": "Siraha,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "473",
+    "NMC Name": "Dr. Rama Devi Gorkhali",
+    "NMC Address": "Jawalakhel , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "474",
+    "NMC Name": "Dr.Hemant Shamsher Rana",
+    "NMC Address": "Murari Bhavan , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "476",
+    "NMC Name": "Dr. Hari Prasad Chaukhani",
+    "NMC Address": "Janakpur , Dhanusa,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "477",
+    "NMC Name": "Dr. Kamala Burathoki",
+    "NMC Address": "Pulchowk , Lalitpur,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "478",
+    "NMC Name": "Dr. Laxmi Nani Shrestha",
+    "NMC Address": "Nayabazar , Kathmandu,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "479",
+    "NMC Name": "Dr. Shashi Bhusan Upadhayaya",
+    "NMC Address": "Baluwatar , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "481",
+    "NMC Name": "Dr. Manik Ratna Bajracharya",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "BDS"
+  },
+  {
+    "NMC Number": "482",
+    "NMC Name": "Dr. Kusum Lata Mishra",
+    "NMC Address": "Tilathi , Saptari,",
+    "NMC Gender": "Female",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "483",
+    "NMC Name": "Dr. Chuda Bahadur Karki",
+    "NMC Address": "Chandanichowk , Morang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "484",
+    "NMC Name": "Dr. RAMJI Choudhary",
+    "NMC Address": "Rupandehi,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "485",
+    "NMC Name": "Dr. Prem Chandra Kumar Chhetri",
+    "NMC Address": "Chabahil , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "486",
+    "NMC Name": "Dr. Puskal Bharati",
+    "NMC Address": "Prasahui-1,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "487",
+    "NMC Name": "Dr. Subarna Kumar Khatry",
+    "NMC Address": "Lagankhel , Lalitpur,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "488",
+    "NMC Name": "Dr. Hem Bahadur Basnet",
+    "NMC Address": "Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "489",
+    "NMC Name": "Dr. Harsha Bahadur Bhandari",
+    "NMC Address": "Jugi , Bajhang,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  },
+  {
+    "NMC Number": "490",
+    "NMC Name": "Dr. Mohan Man Shrestha",
+    "NMC Address": "Chetrapati , Kathmandu,",
+    "NMC Gender": "Male",
+    "NMC Degree": "MBBS"
+  }
+]

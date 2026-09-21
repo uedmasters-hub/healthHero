@@ -4,7 +4,7 @@
  * Treat, Ready for Visit, and Provider Chat render the same card fields in
  * production as they do locally (name, photo, rating, specialty, schedule).
  */
-import { allDoctors, getDoctorById, getDoctorPhoto } from '../data/doctors'
+import { getDoctorById, getDoctorPhoto, getProviderCatalog } from '../features/providers'
 import { resolveProviderPhoto, normalizePublicAssetUrl } from '../lib/providerPhoto'
 import { getServiceMeta, resolveServiceType } from './serviceTypes'
 
@@ -35,7 +35,7 @@ export function resolveCatalogDoctor(doctorOrBooking = {}) {
   const needle = normalizeName(nameHint)
   if (!needle) return null
 
-  return allDoctors.find((d) => {
+  return getProviderCatalog().find((d) => {
     const short = normalizeName(d.shortName || d.name)
     const full = normalizeName(d.name)
     return short === needle || full === needle || short.includes(needle) || needle.includes(short)

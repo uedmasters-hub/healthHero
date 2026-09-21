@@ -4,7 +4,7 @@
  * Always returns a root-absolute `/img/...` path when possible (never a
  * host-relative or localhost absolute URL that breaks after deploy).
  */
-import { getDoctorPhoto } from '../data/doctors'
+import { getDoctorPhoto } from '../features/providers'
 
 const PROVIDER_PHOTO_KEYS = ['photo', 'avatar', 'image', 'photo_url', 'photoUrl', 'avatar_url']
 

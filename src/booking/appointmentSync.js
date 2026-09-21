@@ -7,7 +7,7 @@ import { requireSupabase, isSupabaseConfigured } from '../lib/supabase'
 import { BOOKING_STATUS } from './constants'
 import { createBookingRecord, reviveBookingRecord, toLegacyBooking } from './models'
 import { resolveCatalogDoctor } from './presentBooking'
-import { getDoctorPhoto } from '../data/doctors'
+import { getDoctorPhoto } from '../features/providers'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
 
 function mapVisit(value) {
@@ -62,11 +62,10 @@ function asTime(value) {
   return `${match[1].padStart(2, '0')}:${match[2]}:00`
 }
 
+import { resolveProviderUuid } from '../features/providers'
+
 function doctorUuid(id) {
-  if (id == null || id === '') return null
-  const n = Number(id)
-  if (!Number.isFinite(n) || n < 1) return null
-  return `00000000-0000-4000-a000-${String(n).padStart(12, '0')}`
+  return resolveProviderUuid(id)
 }
 
 function putRecord(engine, record) {
@@ -150,9 +149,9 @@ export async function syncAppointmentRecord(record, userId) {
   }
 }
 
-/** Pull remote appointments into the local AppointmentRepository (missing ids only). */
+/** Pull remote appointments into the local AppointmentRepository (import + status merge). */
 export async function pullRemoteAppointments(engine, userId) {
-  if (!isSupabaseConfigured || !userId || !engine) return { imported: 0 }
+  if (!isSupabaseConfigured || !userId || !engine) return { imported: 0, updated: 0 }
   try {
     const sb = requireSupabase()
     const { data, error } = await sb
@@ -162,9 +161,42 @@ export async function pullRemoteAppointments(engine, userId) {
     if (error) throw error
 
     let imported = 0
+    let updated = 0
     for (const row of data || []) {
       const clientId = row.client_id
-      if (!clientId || engine.getById(clientId)) continue
+      if (!clientId) continue
+
+      const existing = engine.getById(clientId)
+      if (existing) {
+        const remoteStatus = mapAppointmentStatus(row.status)
+        const remoteUpdated = new Date(row.updated_at || 0).getTime()
+        const localUpdated = new Date(existing.meta?.updatedAt || 0).getTime()
+        if (
+          remoteStatus
+          && remoteStatus !== existing.status
+          && remoteUpdated >= localUpdated
+          && typeof engine.updateBooking === 'function'
+        ) {
+          engine.updateBooking(clientId, {
+            status: remoteStatus,
+            meta: {
+              ...(existing.meta || {}),
+              remoteAppointmentId: row.id,
+              syncedFrom: 'appointments',
+              updatedAt: row.updated_at || new Date().toISOString(),
+            },
+          })
+          updated += 1
+        } else if (row.id && !existing.meta?.remoteAppointmentId && typeof engine.updateBooking === 'function') {
+          engine.updateBooking(clientId, {
+            meta: {
+              ...(existing.meta || {}),
+              remoteAppointmentId: row.id,
+            },
+          })
+        }
+        continue
+      }
 
       let record = null
       if (row.client_payload && typeof row.client_payload === 'object') {
@@ -207,9 +239,9 @@ export async function pullRemoteAppointments(engine, userId) {
       putRecord(engine, record)
       imported += 1
     }
-    return { imported }
+    return { imported, updated }
   } catch {
-    return { imported: 0 }
+    return { imported: 0, updated: 0 }
   }
 }
 

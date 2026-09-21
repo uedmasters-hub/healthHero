@@ -1,0 +1,902 @@
+[
+  {
+    "hfCode": "1010600152",
+    "hfName": "TAMOR HOSPITAL P.LTD._ TAPLEJUNG",
+    "district": "Taplejung",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1020600182",
+    "hfName": "GOPAL BHAGAT MEMORIAL HOSPITAL",
+    "district": "Sankhuwasava",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1020600192",
+    "hfName": "HARISIDDHI HOSPITAL",
+    "district": "Sankhuwasava",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1020600222",
+    "hfName": "MANAKAMANA HOSPITAL PVT.LTD",
+    "district": "Sankhuwasava",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1030100052",
+    "hfName": "PASANG LHAMU. NIKOL NIKLI HOSPITAL",
+    "district": "Solukhumbu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1030100072",
+    "hfName": "KHUNDE HOSPITAL_SOLUKHUMBU",
+    "district": "Solukhumbu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1040200012",
+    "hfName": "OKHALDHUNGA COMMUNITY HOSPITAL_OKHALDHUNGA",
+    "district": "Okhaldhunga",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1040200172",
+    "hfName": "RUMJATAR POLY CLINIC",
+    "district": "Okhaldhunga",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1060400192",
+    "hfName": "SIDDHI KALI HOSPITAL_BHOJPUR",
+    "district": "Bhojpur",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1110100132",
+    "hfName": "BUDHABARE MANAKAMANA HOSPITAL PVT LTD_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1110300072",
+    "hfName": "SHANKAR HOSPITAL",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1110700052",
+    "hfName": "AMDA HOSPITAL DAMAK_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "Secondary B Hospital"
+  },
+  {
+    "hfCode": "1110700072",
+    "hfName": "DAMAK HOSPITAL & RESEARCH CENTRE_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1110700082",
+    "hfName": "LIFE LINE HOSPITAL PVT LTD_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1110700092",
+    "hfName": "OM INTERNATIONAL MECHI HOSPITAL PVT LTD_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1110700142",
+    "hfName": "NAMASTE PUBLIC HOSPITAL PVT LTD",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200012",
+    "hfName": "MANMOHAN MEMORIAL COMMUNITY REGIONAL HOSPITAL_ JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200092",
+    "hfName": "ANJALI HOSPITAL_ JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200102",
+    "hfName": "KANCHANJANGHA HOSPITAL_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200112",
+    "hfName": "KANKAI HOSPITAL PVT LTD_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200122",
+    "hfName": "MECHI MODEL HOSPITAL & RESEARCH CENTRE_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200132",
+    "hfName": "MEDICA HOSPITAL_ JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111200142",
+    "hfName": "PURNA TUNGA BIRTA CITY HOSPITAL",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1111400172",
+    "hfName": "OM SHAI PATHIVARA HOSPITAL_JHAPA",
+    "district": "Jhapa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1120400012",
+    "hfName": "SUKUNA COMMUNITY HOSPITAL",
+    "district": "Morang",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1120500012",
+    "hfName": "BELBARI COMMUNITY NOBEL HOSPITAL MORANG",
+    "district": "Morang",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1120700042",
+    "hfName": "MORANG HOSPITAL PVT. LTD.-1, PATHARI",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1120800042",
+    "hfName": "ARNIKO HOSPITAL PVT.LTD.,URLABARI-5",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1120800052",
+    "hfName": "GODABARI  HOSPITAL  PVT.LTD.,URLABARI-5",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1120800062",
+    "hfName": "PANCHABATI HOSPITAL PVT.LTD.,URLABARI-6",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121100062",
+    "hfName": "TIMES HOSPITAL PVT LTD",
+    "district": "Morang",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1121300052",
+    "hfName": "BIRAT MEDICAL COLLEGE AND TEACHING HOSPITAL",
+    "district": "Morang",
+    "facilityLevel": "Academy of Health Science/ Teaching hospital/ Institute of Health Sciences"
+  },
+  {
+    "hfCode": "1121400012",
+    "hfName": "MORANG CO-OPERATIVE HOSPITAL",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400262",
+    "hfName": "BIRATNAGAR EYE HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "Specialized Hospital"
+  },
+  {
+    "hfCode": "1121400272",
+    "hfName": "ABADH NARAYAN MEMORIAL HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "1121400282",
+    "hfName": "BIRATNAGAR CITY HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400292",
+    "hfName": "BIRAT NURSING HOME PVT.LTD.",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400302",
+    "hfName": "GOLDEN HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400312",
+    "hfName": "GREEN CROSS HOSPITAL",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400322",
+    "hfName": "HAMRO HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400332",
+    "hfName": "LIFE GUARD HOSPITAL",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400342",
+    "hfName": "NATIONAL KIDNEY HOSPITAL",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400352",
+    "hfName": "RK CHILDREN HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400362",
+    "hfName": "SHREE HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400372",
+    "hfName": "SURACHHA PRASUTI HOSPITAL_MORANG",
+    "district": "Morang",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1121400382",
+    "hfName": "NEURO CARDIO & MULTISPECIALITY HOSPITAL PVT. LTD.",
+    "district": "Morang",
+    "facilityLevel": "Specialized Hospital"
+  },
+  {
+    "hfCode": "1121400392",
+    "hfName": "RAMLAL GOLCHHA EYE HOSPITAL FOUNDATION BIRATNAGAR",
+    "district": "Morang",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "1121400412",
+    "hfName": "BIRAT EYE HOSPITAL PVT.LTD., MORNAG",
+    "district": "Morang",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "1121400422",
+    "hfName": "NOBEL MEDICAL COLLEGE_MORANG",
+    "district": "Morang",
+    "facilityLevel": "Academy of Health Science/ Teaching hospital/ Institute of Health Sciences"
+  },
+  {
+    "hfCode": "1130100092",
+    "hfName": "BIJAYAPUR HOSPITAL PVT. LTD",
+    "district": "Sunsari",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1130600012",
+    "hfName": "COMMUNITY HOSPITAL",
+    "district": "Sunsari",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1130600142",
+    "hfName": "PASHUPATI MODEL HOSPITAL  AND RESEARCH CENTRE",
+    "district": "Sunsari",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1130700012",
+    "hfName": "SUNSARI COMMUNITY HOSPITAL",
+    "district": "Sunsari",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "1140300202",
+    "hfName": "TRIYUGA HOSPITAL",
+    "district": "Udayapur",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2010200122",
+    "hfName": "DHARMESHWAR HOSPITAL_SAPTARI",
+    "district": "Saptari",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2010400042",
+    "hfName": "UNIQUE HOSPITAL_SAPTARI",
+    "district": "Saptari",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2020100262",
+    "hfName": "DEVINE HEALTH CARE HOSPITAL, SIRAHA",
+    "district": "Siraha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2020100272",
+    "hfName": "LAHAN LIFE CARE HOSPITAL PVT.LTD., SIRAHA",
+    "district": "Siraha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2020100282",
+    "hfName": "SAPTRISHI HOSPITAL_SIRAHA",
+    "district": "Siraha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2020100292",
+    "hfName": "DIVINE HEALTHCARE HOSPITAL, SIRAHA, LAHAN MUNICIPALITY, HANUMAN CHOWK",
+    "district": "Siraha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2020200062",
+    "hfName": "SHARAMJIBI CARE HOSPITAL PVT.LTD. SIRAHA",
+    "district": "Siraha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2020300132",
+    "hfName": "SAGARMATHA MODEL HOSPITAL PVT.LTD.",
+    "district": "Siraha",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2020400122",
+    "hfName": "REKHA NURSING CARE & DIAGNOSTIC CENTER PVT.LTD. SIRAHA",
+    "district": "Siraha",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2030300082",
+    "hfName": "LALGADH HOSPITAL _DHANUSA",
+    "district": "Dhanusha",
+    "facilityLevel": "Children's Hospital"
+  },
+  {
+    "hfCode": "2031500382",
+    "hfName": "SPARS NEPAL_ JANAKPUR",
+    "district": "Dhanusha",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "2031500422",
+    "hfName": "RAM JANKI HOSPITAL, JANAKPUR",
+    "district": "Dhanusha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2031500482",
+    "hfName": "SANJEEVANI NURSING HOME _DHANUSA",
+    "district": "Dhanusha",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "2031500532",
+    "hfName": "JANAKI MEDICAL COLLEGE _DHANUSA",
+    "district": "Dhanusha",
+    "facilityLevel": "Teaching Hospital"
+  },
+  {
+    "hfCode": "2040100172",
+    "hfName": "BARDIBAS JANSEWA HOSPITAL_ MAHOTTARI",
+    "district": "Mahottari",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2040100202",
+    "hfName": "SHUV SWASTIK HOSPITAL & DIAGNOSTIC CENTER_ BARDIBAS_ MAHOTTARI",
+    "district": "Mahottari",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2050200072",
+    "hfName": "NAMUNA HOSPITAL HARIWAN SARLAHI",
+    "district": "Sarlahi",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2052000142",
+    "hfName": "SHREE RAM HOSPITAL_ SARLAHI",
+    "district": "Sarlahi",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2060100082",
+    "hfName": "CHANDRANIGAHAPUR PVT. HOSPTIAL_RAUTAHAT",
+    "district": "Rautahat",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2061700092",
+    "hfName": "CITY HOSPITAL,GAUR_RAUTHAT",
+    "district": "Rautahat",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2061700102",
+    "hfName": "SEIKH IDRISH MEMORIAL HOSPITAL,GAUR_RAUTHAT",
+    "district": "Rautahat",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2070100022",
+    "hfName": "NIJGADH COMMUNITY HOSPITAL, BARA",
+    "district": "Bara",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "2070200112",
+    "hfName": "PARAS LIFE CARE HOSPITAL, BARA",
+    "district": "Bara",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700012",
+    "hfName": "MARIE STOPES BIRGUNJ",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700022",
+    "hfName": "PSI BIRGUNJ",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700312",
+    "hfName": "FPAN",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700322",
+    "hfName": "NEPAL ARADHANA SAMAJ",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700332",
+    "hfName": "STUDENT AWARENESS FORUM",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700342",
+    "hfName": "YOUTH VISION",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700462",
+    "hfName": "ALI ARTHO HOSPITAL_BIRGUNJ-5_PARSA",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700472",
+    "hfName": "AMC HOSPITAL_PARSA",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700482",
+    "hfName": "ASHRAM HOSPITAL_BIRGUNJ-10_PARSA",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700492",
+    "hfName": "BHAWANI HOSPITAL PVT. LTD._PARSA",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700502",
+    "hfName": "GANDAK HOSPITAL PVT. LTD._PARSA",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700512",
+    "hfName": "NATIONAL MEDICAL HOSPITAL",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700522",
+    "hfName": "SARBOTTAM WOMEN AND CHILD HOSPITAL",
+    "district": "Parsa",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "2080700532",
+    "hfName": "SRIRAM HOSPITAL",
+    "district": "Parsa",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "2080700542",
+    "hfName": "AASHARAM HOSPITAL PVT LTD, PARSA, BIRGANJ MUNICIPALITY, PANITANKI",
+    "district": "Parsa",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "2080700622",
+    "hfName": "BIRGUNJ HEALTH CARE RESEARCH CENTER BIRGUNJ_ PARSA",
+    "district": "Parsa",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "2080700642",
+    "hfName": "BIRGANJ MEDICAL COLLEGE",
+    "district": "Parsa",
+    "facilityLevel": "Specialized Hospital"
+  },
+  {
+    "hfCode": "3010900012",
+    "hfName": "DOLAKHA CUMMUNITY HOSPITTAL _DOLAKHA",
+    "district": "Dolakha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3010900212",
+    "hfName": "CHCHHO ROLPA HOSPITAL _DOLAKHA",
+    "district": "Dolakha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3010900222",
+    "hfName": "GAURISANKAR HOSPITAL _DOLAKHA",
+    "district": "Dolakha",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3020500012",
+    "hfName": "BHOTECHOUR SAMUDAIK SWASTHA SEWA SAMITI _SINDHUPALCHOK",
+    "district": "Sidhupalchowk",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3020900092",
+    "hfName": "KISTON HOSPITAL AND RESEARCH CENTER PVT.LTD._ SINDHUPALCHOK",
+    "district": "Sidhupalchowk",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3040600192",
+    "hfName": "SHAHID MEMORIAL HOSPITAL",
+    "district": "Dhading",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3040900012",
+    "hfName": "HIGHWAY COMMUNITY HOSPITAL",
+    "district": "Dhading",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3041000062",
+    "hfName": "GAJURI HOSPITAL",
+    "district": "Dhading",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "3050400222",
+    "hfName": "NUWAKOT CITY HOSPTIAL BIDUR-3, NUWAKOT",
+    "district": "Nuwakot",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3050400232",
+    "hfName": "NUWAKOT HOSPITAL PVT.LTD.L_NUWAKOT",
+    "district": "Nuwakot",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3050400242",
+    "hfName": "NUWAKOT SANJIVANI HOSPITAL NUWAKOT",
+    "district": "Nuwakot",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060100072",
+    "hfName": "PEOPLES LIFE CARE HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060100092",
+    "hfName": "SUSMA KOIRALA MEMORIAL HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060200082",
+    "hfName": "GANDHI TULASI MANOHARA COMMUNITY HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "Basic Hospital (5 to 15 beds)"
+  },
+  {
+    "hfCode": "3060300092",
+    "hfName": "NEPAL APANGA SANGHA ORTHOPEDIC HOSPITAL",
+    "district": "Kathmandu",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "3060300122",
+    "hfName": "SHANKARAPUR HOSPITAL",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060300192",
+    "hfName": "NEPAL MEDICAL COLLEGE TEACHING HOSPITAL",
+    "district": "Kathmandu",
+    "facilityLevel": "Academy of Health Science/ Teaching hospital/ Institute of Health Sciences"
+  },
+  {
+    "hfCode": "3060500092",
+    "hfName": "GRANDE INTERNATIONAL HOSPITAL PVT_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060500102",
+    "hfName": "GREEN CITY HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060500112",
+    "hfName": "SIDDHI BINAYAK HOSPITAL_ KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060700072",
+    "hfName": "SUVEKCHYA INTERNATIONAL HOSPITAL  PVT LTD",
+    "district": "Kathmandu",
+    "facilityLevel": "Specialist Hospital"
+  },
+  {
+    "hfCode": "3060700082",
+    "hfName": "YETI HOSPITAL PVT.LTD_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060800032",
+    "hfName": "HELPING HANDS COMMUNITY HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060800042",
+    "hfName": "MANMOHAN MEMORIAL COMMUNITY HOSPITAL THAMEL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060800052",
+    "hfName": "STUPA COMMUNITY HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060800632",
+    "hfName": "COMMUNITY HOSPITAL GONGABU (NGO)_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060800642",
+    "hfName": "INTERNATIONAL FRIENDSHIP CHILDRENS' HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060800652",
+    "hfName": "KATHMANDU MODEL HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804122",
+    "hfName": "AADHARBHUT PARSUTI HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804132",
+    "hfName": "ALL NEPAL HOSPITAL PVT LTD _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804142",
+    "hfName": "ANNAPURNA NEUROLOGICAL HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804152",
+    "hfName": "BHAROSA HOSPITAL PVT LTD _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060500392",
+    "hfName": "VINAYAK HOSPITAL AND MATERNITY HOME PVT.LTD.",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804172",
+    "hfName": "BINAYAK MEDISCIENCE HOSPITAL & RESEARCH CENTER_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804182",
+    "hfName": "BLUE CROSS HOSPITAL PVT LTD _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804192",
+    "hfName": "CAPITAL HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804202",
+    "hfName": "CARE HOSPITAL PVT LTD_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804212",
+    "hfName": "CHHETRAPATI FREE CLINIC HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804222",
+    "hfName": "DIRGHAU GURU HOSPITAL, KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804232",
+    "hfName": "EVEREST HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804242",
+    "hfName": "GAUTAM BUDDHA INTERNTIONAL CARDIAC HOSPITAL(OMNICARE)_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804252",
+    "hfName": "GRACE HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804262",
+    "hfName": "HAMRO SAHAYATRI HOSPITAL PVT LTD_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804272",
+    "hfName": "HAMS HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804282",
+    "hfName": "HIMAL HOSPITAL PVT LTD_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804292",
+    "hfName": "JANAMAITRI HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804302",
+    "hfName": "JYOTI HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804312",
+    "hfName": "KANTIPUR  GENERAL HOSPITAL _ BASUNDHARA_ KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804322",
+    "hfName": "KANTIPUR HOSPITAL _KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804332",
+    "hfName": "KATHMANDU HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804342",
+    "hfName": "LIFE CARE HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804352",
+    "hfName": "MAHENDRANARAYAN NIDHI MEMORIYAL HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804362",
+    "hfName": "NEPALI FOR NEPAL",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804372",
+    "hfName": "MENLHA NURSING HOME (CIWEC HOSPITAL PVT)_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804382",
+    "hfName": "NEPAL BEIJING FRIENDSHIP HOSPITAL_KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  },
+  {
+    "hfCode": "3060804392",
+    "hfName": "NEPAL BHARAT MAITRI HOSPITAL_ KATHMANDU",
+    "district": "Kathmandu",
+    "facilityLevel": "General Hospital"
+  }
+]

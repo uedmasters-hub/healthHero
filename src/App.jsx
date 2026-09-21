@@ -48,6 +48,7 @@ import BottomNav from './components/BottomNav'
 import { OnboardingProvider } from './components/Onboarding'
 import AuthGate from './components/auth/AuthGate'
 import { AuthProvider } from './features/auth/AuthProvider'
+import { SyncProvider } from './features/sync'
 import { UserProvider, useUser } from './user'
 import { isHomePath } from './lib/careFlow'
 import { isSupabaseConfigured, supabaseConfigError } from './lib/supabase'
@@ -246,9 +247,11 @@ function AppGate() {
   return (
     <AppShell>
       <AuthProvider>
-        <UserProvider>
-          <AppProviders />
-        </UserProvider>
+        <SyncProvider>
+          <UserProvider>
+            <AppProviders />
+          </UserProvider>
+        </SyncProvider>
       </AuthProvider>
     </AppShell>
   )

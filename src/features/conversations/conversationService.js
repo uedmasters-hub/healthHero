@@ -4,7 +4,7 @@
  */
 import { requireSupabase, isSupabaseConfigured } from '../../lib/supabase'
 import { getBookingEngine } from '../../booking/engine'
-import { syncAppointmentRecord } from '../../booking/appointmentSync'
+import { mirrorAppointment } from '../sync/mirrors'
 import {
   CONVERSATION_KIND,
   CONVERSATION_STATUS,
@@ -170,7 +170,7 @@ export async function getOrCreateProviderConversation({
     const engineRecord = getBookingEngine().getById(bookingRef)
     const record = engineRecord || bookingRecord
     if (record) {
-      linkedAppointmentId = await syncAppointmentRecord(record, userId)
+      linkedAppointmentId = await mirrorAppointment(record, userId)
     }
   }
 

@@ -6,6 +6,7 @@ import {
   PAYMENT_STATUS,
 } from './constants'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
+import { resolveProviderUuid } from '../features/providers'
 
 export function createId(prefix = 'bk') {
   const rand = Math.random().toString(36).slice(2, 8)
@@ -41,6 +42,7 @@ export function reviveDate(date) {
 export function snapshotDoctor(doctor = {}) {
   return {
     id: doctor.id ?? null,
+    providerUuid: doctor.providerUuid || resolveProviderUuid(doctor) || null,
     name: doctor.name || '',
     specialty: doctor.specialty || '',
     rating: doctor.rating ?? null,

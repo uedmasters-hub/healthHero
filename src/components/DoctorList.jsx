@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { getDoctorList, specialtyList } from '../data/doctors'
+import { hydrateProviders, subscribeProviders } from '../features/providers'
 import { canonicalSpecialty, loadExploreListState, saveExploreListState } from '../data/specialisations'
 import { withBookingEntry } from '../lib/careFlow'
 import { getViewedDoctorIds } from '../lib/recentDoctors'
@@ -11,8 +12,6 @@ import RevealItem from './RevealItem'
 import DoctorCard from './DoctorCard'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import './SelectProvider.css'
-
-const doctors = getDoctorList()
 
 const locations = ['All', 'Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Pune', 'Chennai', 'Gurugram', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Chandigarh', 'Kochi', 'Bhopal', 'Indore', 'Nagpur', 'Surat', 'Visakhapatnam', 'Coimbatore', 'Patna', 'Thiruvananthapuram']
 const availabilities = ['All', 'Today', 'Tomorrow', 'This Week']
@@ -109,14 +108,20 @@ export default function DoctorList({
   const [sortBy, setSortBy] = useState(saved?.sortBy || 'recommended')
   const [refreshing, setRefreshing] = useState(false)
   const [viewedIds, setViewedIds] = useState(() => getViewedDoctorIds())
+  const [doctors, setDoctors] = useState(() => getDoctorList())
   const skipRefresh = useRef(true)
 
-  const queryKey = `${search}|${selectedLocation}|${selectedSpecialty}|${selectedAvailability}|${sortBy}`
+  const queryKey = `${search}|${selectedLocation}|${selectedSpecialty}|${selectedAvailability}|${sortBy}|${doctors.length}`
   const listReveal = useStaggerReveal({
     dataset: dataset ? `${dataset}:${queryKey}` : `doctors:${queryKey}`,
     delay: 160,
   })
   const filterReveal = useStaggerReveal({ dataset: isPresented && activeFilter ? `filter:${activeFilter}` : null, delay: 140 })
+
+  useEffect(() => {
+    hydrateProviders().then(() => setDoctors(getDoctorList()))
+    return subscribeProviders(() => setDoctors(getDoctorList()))
+  }, [])
 
   useEffect(() => {
     if (specialty) setSelectedSpecialty(specialty)

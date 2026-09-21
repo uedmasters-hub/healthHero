@@ -1,17 +1,44 @@
+/**
+ * Per-user notification cache. Authenticated users never share a bucket.
+ * Remote (Supabase) is SSOT when online; this is only a mirror.
+ */
 import { BRAND_STORAGE } from '../../lib/brand'
 
-const STORAGE_KEY = BRAND_STORAGE.notifications
+const LEGACY_KEY = BRAND_STORAGE.notifications
+
+let ownerId = null // null = anonymous demo bucket
+
+function storageKey() {
+  return ownerId
+    ? `${LEGACY_KEY}:user:${ownerId}`
+    : `${LEGACY_KEY}:anon`
+}
 
 function read() {
+  if (typeof localStorage === 'undefined') return []
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+    const raw = JSON.parse(localStorage.getItem(storageKey()) || '[]')
+    return Array.isArray(raw) ? raw : []
   } catch {
     return []
   }
 }
 
 function write(notifications) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications))
+  if (typeof localStorage === 'undefined') return
+  localStorage.setItem(storageKey(), JSON.stringify(notifications))
+}
+
+export function getOwner() {
+  return ownerId
+}
+
+/**
+ * Switch cache scope. Does not migrate cross-user data — each account
+ * has its own key so badges cannot leak between sessions.
+ */
+export function setOwner(userId) {
+  ownerId = userId || null
 }
 
 export function getAll() {
@@ -23,7 +50,12 @@ export function getById(id) {
 }
 
 export function save(notifications) {
-  write(notifications)
+  write(Array.isArray(notifications) ? notifications : [])
+}
+
+export function replaceAll(notifications) {
+  write(Array.isArray(notifications) ? notifications : [])
+  return read()
 }
 
 export function append(notification) {
@@ -52,4 +84,15 @@ export function clear() {
 
 export function getUnreadCount() {
   return read().filter((n) => n.unread).length
+}
+
+/** Drop legacy device-global key so it cannot re-inflate unread. */
+export function purgeLegacyGlobalKey() {
+  if (typeof localStorage === 'undefined') return
+  try {
+    localStorage.removeItem(LEGACY_KEY)
+    if (BRAND_STORAGE.notificationsLegacy) {
+      localStorage.removeItem(BRAND_STORAGE.notificationsLegacy)
+    }
+  } catch { /* ignore */ }
 }

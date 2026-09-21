@@ -30,6 +30,8 @@ export function createNotification({
   to = '',
   actionLabel = '',
   timestamp,
+  remoteId = null,
+  readAt = null,
 } = {}) {
   const ts = timestamp || new Date().toISOString()
   return {
@@ -43,6 +45,8 @@ export function createNotification({
     actionLabel,
     time: timeAgo(ts),
     timestamp: ts,
+    remoteId: remoteId || null,
+    readAt: readAt || null,
   }
 }
 

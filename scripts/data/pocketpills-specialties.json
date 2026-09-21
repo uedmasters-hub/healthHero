@@ -1,0 +1,154 @@
+[
+  {
+    "id": "general",
+    "label": "General Physician",
+    "blurb": "Check-ups, new concerns, and everyday care.",
+    "feeFrom": 89,
+    "accent": "#E0F2FE",
+    "imageUrl": "/img/General%20Physician.png"
+  },
+  {
+    "id": "dermatologist",
+    "label": "Dermatologist",
+    "blurb": "Acne, rashes, eczema, and other skin concerns.",
+    "feeFrom": 89,
+    "accent": "#FFEDD5",
+    "imageUrl": "/img/Dermatologist.png"
+  },
+  {
+    "id": "gynecologist",
+    "label": "Gynecologist",
+    "blurb": "Pregnancy, menstrual health, and women’s care.",
+    "feeFrom": 89,
+    "accent": "#F3E8FF",
+    "imageUrl": "/img/Gynecologist.png"
+  },
+  {
+    "id": "pediatrician",
+    "label": "Pediatrician",
+    "blurb": "Care for infants, children, and teens.",
+    "feeFrom": 89,
+    "accent": "#FCE7F3",
+    "imageUrl": "/img/Pediatrician.png"
+  },
+  {
+    "id": "cardiologist",
+    "label": "Cardiologist",
+    "blurb": "Heart health, blood pressure, and related care.",
+    "feeFrom": 89,
+    "accent": "#FEE2E2",
+    "imageUrl": "/img/Cardiologist.png"
+  },
+  {
+    "id": "neurologist",
+    "label": "Neurologist",
+    "blurb": "Headache, nerve, and neurological concerns.",
+    "feeFrom": 89,
+    "accent": "#EDE9FE",
+    "imageUrl": "/img/Neurologist.png"
+  },
+  {
+    "id": "orthopedist",
+    "label": "Orthopedist",
+    "blurb": "Bones, joints, and musculoskeletal care.",
+    "feeFrom": 89,
+    "accent": "#EEF2FF",
+    "imageUrl": "/img/Orthopedist.png"
+  },
+  {
+    "id": "ophthalmologist",
+    "label": "Ophthalmologist",
+    "blurb": "Eye exams and vision-related concerns.",
+    "feeFrom": 89,
+    "accent": "#E0F2FE",
+    "imageUrl": "/img/Ophthalmologist.png"
+  },
+  {
+    "id": "ent",
+    "label": "ENT Specialist",
+    "blurb": "Ear, nose, and throat care.",
+    "feeFrom": 89,
+    "accent": "#FEF3C7",
+    "imageUrl": "/img/ENT%20Specialist.png"
+  },
+  {
+    "id": "gastroenterologist",
+    "label": "Gastroenterologist",
+    "blurb": "Acid reflux, IBS, and digestive concerns.",
+    "feeFrom": 89,
+    "accent": "#ECFDF5",
+    "imageUrl": "/img/Gastroenterologist.png"
+  },
+  {
+    "id": "endocrinologist",
+    "label": "Endocrinologist",
+    "blurb": "Diabetes, thyroid, and hormone-related care.",
+    "feeFrom": 89,
+    "accent": "#EEF2FF",
+    "imageUrl": "/img/Endocrinologist.png"
+  },
+  {
+    "id": "pulmonologist",
+    "label": "Pulmonologist",
+    "blurb": "Asthma, breathing, and lung-related care.",
+    "feeFrom": 89,
+    "accent": "#E0F2FE",
+    "imageUrl": "/img/Pulmonologist.png"
+  },
+  {
+    "id": "urologist",
+    "label": "Urologist",
+    "blurb": "Urinary and men’s urological health.",
+    "feeFrom": 89,
+    "accent": "#E0F2FE",
+    "imageUrl": "/img/Urologist.png"
+  },
+  {
+    "id": "psychiatrist",
+    "label": "Psychiatrist",
+    "blurb": "Anxiety, mood, sleep, and related support.",
+    "feeFrom": 89,
+    "accent": "#EDE9FE",
+    "imageUrl": "/img/Psychiatrist.png"
+  },
+  {
+    "id": "dentist",
+    "label": "Dentist",
+    "blurb": "Dental check-ups and oral health.",
+    "feeFrom": 89,
+    "accent": "#F0FDF4",
+    "imageUrl": "/img/Dentist.png"
+  },
+  {
+    "id": "immunologist",
+    "label": "Immunologist",
+    "blurb": "Allergies, immunity, and related concerns.",
+    "feeFrom": 89,
+    "accent": "#F3E8FF",
+    "imageUrl": "/img/Immunologist.png"
+  },
+  {
+    "id": "sexologist",
+    "label": "Sexologist",
+    "blurb": "Sexual health, contraception, and related concerns.",
+    "feeFrom": 89,
+    "accent": "#FCE7F3",
+    "imageUrl": "/img/Sexologist.png"
+  },
+  {
+    "id": "nutritionist",
+    "label": "Nutritionist",
+    "blurb": "Diet plans, weight, and nutrition coaching.",
+    "feeFrom": 89,
+    "accent": "#ECFDF5",
+    "imageUrl": "/img/Nutritionist.png"
+  },
+  {
+    "id": "physiotherapist",
+    "label": "Physiotherapist",
+    "blurb": "Injury recovery and movement therapy.",
+    "feeFrom": 89,
+    "accent": "#EEF2FF",
+    "imageUrl": "/img/Physiotherapist.png"
+  }
+]

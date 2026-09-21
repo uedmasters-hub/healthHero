@@ -219,16 +219,8 @@ export async function migrateLocalDataToSupabase(user) {
     attachments: item.attachments || [],
   })), 'user_id,source_id')
 
-  await upsert('notifications', (localUser?.notifications || []).map((item) => ({
-    user_id: uid,
-    source_id: String(item.id),
-    channel: 'in_app',
-    title: item.title || 'Notification',
-    body: item.body || '',
-    data: { to: item.to || null, type: item.type || null },
-    status: item.unread ? 'sent' : 'read',
-    read_at: item.unread ? null : new Date().toISOString(),
-  })), 'user_id,source_id')
+  // Do NOT migrate chart-store notifications — the in-app notification mirror
+  // is hydrated exclusively from public.notifications (remote SSOT).
 
   const insightIds = localUser?.savedInsightIds || []
   if (insightIds.length) {
