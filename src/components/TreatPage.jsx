@@ -4,7 +4,8 @@ import { useBooking } from './BookingContext'
 import useNow from '../hooks/useNow'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
-import { SearchField } from './SearchBar'
+import SearchBar from './SearchBar'
+import TreatSearchSuggestions from './TreatSearchSuggestions'
 import UpcomingBookingsCarousel from './UpcomingBookingsCarousel'
 import { visitSummary } from '../data/care'
 import { resolveAppointmentPath } from '../lib/appointmentJourney'
@@ -20,6 +21,8 @@ import AppFooter from './AppFooter'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshTreatData } from '../features/sync/pageRefresh'
+import { useUser } from '../user'
+import { ProfileSheets } from './profile/ProfileHealth'
 import './TreatPage.css'
 
 const historyTabs = ['All', 'Active', 'Upcoming', 'Completed', 'Cancelled']
@@ -29,13 +32,7 @@ const sortOptions = [
   { id: 'name', label: 'Doctor A–Z' },
 ]
 const visitFilters = ['All types', 'In-Person', 'Video Consultation']
-
-function matchesBookingQuery(booking, query) {
-  if (!query) return true
-  const service = getServiceMeta(resolveServiceType(booking)).label
-  const hay = `${booking.displayName || ''} ${booking.doctor?.name || ''} ${booking.providerName || ''} ${service} ${booking.status} ${booking.historyTab || ''}`.toLowerCase()
-  return hay.includes(query.toLowerCase())
-}
+const TREAT_SEARCH_PLACEHOLDER = 'Search your care'
 
 function matchesVisitType(booking, visitType) {
   if (visitType === 'All types') return true
@@ -48,21 +45,38 @@ export default function TreatPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const now = useNow()
+  const { health } = useUser()
   const { adoptBooking, getResumePath, focusBooking, hydrated } = useBooking()
   const historySectionRef = useRef(null)
   const scrollRef = useRef(null)
+  const [searchActive, setSearchActive] = useState(false)
+  const [query, setQuery] = useState('')
+  const [recordSheet, setRecordSheet] = useState(null)
   const onRefresh = useCallback(() => refreshTreatData(), [])
-  const ptr = usePullToRefresh(scrollRef, onRefresh)
+  const ptr = usePullToRefresh(scrollRef, onRefresh, {
+    enabled: !searchActive,
+  })
   const [tab, setTab] = useState('All')
   const [sort, setSort] = useState('recent')
   const [visitType, setVisitType] = useState('All types')
-  const [query, setQuery] = useState('')
-  const [searchOpen, setSearchOpen] = useState(false)
   const [sheet, setSheet] = useState(null)
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const { show: showDemoPreview } = useDemoPreview()
 
   const careHistory = useCareHistory(now)
+
+  const openSearch = useCallback(() => {
+    setSearchActive(true)
+  }, [])
+
+  const closeSearch = useCallback(() => {
+    setSearchActive(false)
+    setQuery('')
+  }, [])
+
+  useEffect(() => {
+    if (!searchActive) setQuery('')
+  }, [searchActive])
 
   useEffect(() => {
     if (location.state?.focus !== 'bookings') return undefined
@@ -91,7 +105,6 @@ export default function TreatPage() {
     const rows = careHistory
       .filter((visit) => (tab === 'All' ? true : visit.historyTab === tab))
       .filter((visit) => matchesVisitType(visit, visitType))
-      .filter((visit) => matchesBookingQuery(visit, query))
       .slice()
 
     rows.sort((a, b) => {
@@ -105,7 +118,7 @@ export default function TreatPage() {
       return sort === 'oldest' ? ta - tb : tb - ta
     })
     return rows
-  }, [careHistory, tab, sort, visitType, query])
+  }, [careHistory, tab, sort, visitType])
 
   const openEngineBooking = (recordOrLegacy) => {
     const isRecord = Boolean(recordOrLegacy?.schedule) && !recordOrLegacy?.engineId
@@ -156,6 +169,23 @@ export default function TreatPage() {
     openEngineBooking(visit)
   }
 
+  const openSearchItem = (item) => {
+    closeSearch()
+    if (item.type === 'appointment' || item.type === 'care-history') {
+      if (item.visit) openHistoryItem(item.visit)
+      return
+    }
+    if (item.type === 'doctor') {
+      navigate(`/doctor/${item.id}`, {
+        state: { origin: 'treat', returnTo: '/treat' },
+      })
+      return
+    }
+    if (item.record && item.kind) {
+      setRecordSheet({ mode: 'view', kind: item.kind, item: item.record })
+    }
+  }
+
   const listTitle = tab === 'All' ? 'All bookings' : `${tab} bookings`
   const sheetTitle = {
     sort: 'Sort care history',
@@ -164,8 +194,12 @@ export default function TreatPage() {
   }[sheet?.type] || ''
 
   return (
-    <div className="treat-page">
-      <header className="treat-header">
+    <div className={`treat-page ${searchActive ? 'is-search' : ''}`}>
+      <header
+        className="treat-header"
+        aria-hidden={searchActive}
+        {...(searchActive ? { inert: true } : {})}
+      >
         <div className="treat-header-left">
           <h1 className="treat-title">Treat</h1>
           <p className="treat-subtitle">Manage your ongoing care</p>
@@ -173,9 +207,9 @@ export default function TreatPage() {
         <div className="treat-header-actions">
           <button
             type="button"
-            className={`treat-header-btn ${searchOpen ? 'is-active' : ''}`}
+            className="treat-header-btn"
             aria-label="Search care"
-            onClick={() => setSearchOpen((open) => !open)}
+            onClick={openSearch}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
@@ -198,123 +232,135 @@ export default function TreatPage() {
         </div>
       </header>
 
-      {searchOpen && (
-        <div className="treat-search">
-          <SearchField
-            placeholder="Search doctors, conditions, or status"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            showMic={false}
-            showClear={Boolean(query)}
-            onClear={() => setQuery('')}
-            autoFocus
-          />
-        </div>
-      )}
+      {searchActive ? (
+        <SearchBar
+          active
+          query={query}
+          onQueryChange={setQuery}
+          onCancel={closeSearch}
+          idlePlaceholder={TREAT_SEARCH_PLACEHOLDER}
+          activePlaceholder={TREAT_SEARCH_PLACEHOLDER}
+        />
+      ) : null}
 
-      <div className="treat-scroll" ref={scrollRef}>
-        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-        <section className="treat-carousel-section" aria-label="Upcoming bookings">
-          <UpcomingBookingsCarousel
-            origin="treat"
-            emptyFallback={false}
-            className="treat-upcoming-carousel"
-            hideHeader
-            onSeeMore={() => {
-              historySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            }}
-          />
-        </section>
-
-        <section
-          className="treat-history-panel"
-          ref={historySectionRef}
-          id="treat-bookings"
-          aria-label="Care history"
+      <div className="treat-body">
+        <div
+          className="treat-scroll"
+          ref={scrollRef}
+          aria-hidden={searchActive}
+          {...(searchActive ? { inert: true } : {})}
         >
-          <div className="treat-history-header">
-            <h2 className="treat-history-title">Care History</h2>
-            <button type="button" className="treat-sort-btn" onClick={() => openSheet({ type: 'sort' })}>
-              {sortOptions.find((option) => option.id === sort)?.label}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-          </div>
+          <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
+          <section className="treat-carousel-section" aria-label="Upcoming bookings">
+            <UpcomingBookingsCarousel
+              origin="treat"
+              emptyFallback={false}
+              className="treat-upcoming-carousel"
+              hideHeader
+              onSeeMore={() => {
+                historySectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+            />
+          </section>
 
-          <div className="treat-history-filters" role="tablist" aria-label="Care history filters">
-            {historyTabs.map((item) => (
-              <button
-                key={item}
-                type="button"
-                role="tab"
-                aria-selected={tab === item}
-                className={`treat-history-filter ${tab === item ? 'is-active' : ''}`}
-                onClick={() => setTab(item)}
-              >
-                {item}
+          <section
+            className="treat-history-panel"
+            ref={historySectionRef}
+            id="treat-bookings"
+            aria-label="Care history"
+          >
+            <div className="treat-history-header">
+              <h2 className="treat-history-title">Care History</h2>
+              <button type="button" className="treat-sort-btn" onClick={() => openSheet({ type: 'sort' })}>
+                {sortOptions.find((option) => option.id === sort)?.label}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </button>
-            ))}
-          </div>
+            </div>
 
-          <div className="treat-history-summary">
-            <h3 className="treat-history-summary-title">{listTitle}</h3>
-            <p className="treat-history-summary-hint">Synced from your booking history</p>
-          </div>
-
-          <div className="treat-history-list">
-            {!hydrated ? (
-              <>
-                <div className="treat-skel-row shimmer" />
-                <div className="treat-skel-row shimmer" />
-                <div className="treat-skel-row shimmer" />
-              </>
-            ) : filteredHistory.length === 0 ? (
-              <p className="treat-empty">No matching care records.</p>
-            ) : filteredHistory.map((visit) => {
-              const service = getServiceMeta(resolveServiceType(visit))
-              const photo = visit.doctor?.photo
-              const initial = (visit.displayName || visit.doctor?.name || service.shortLabel || 'A')
-                .replace(/^Dr\.?\s*/i, '')
-                .charAt(0)
-              return (
+            <div className="treat-history-filters" role="tablist" aria-label="Care history filters">
+              {historyTabs.map((item) => (
                 <button
+                  key={item}
                   type="button"
-                  key={visit.engineId || visit.id}
-                  className={`treat-history-card is-${String(visit.historyTab || 'upcoming').toLowerCase()}`}
-                  onClick={() => openHistoryItem(visit)}
+                  role="tab"
+                  aria-selected={tab === item}
+                  className={`treat-history-filter ${tab === item ? 'is-active' : ''}`}
+                  onClick={() => setTab(item)}
                 >
-                  <div className="treat-history-card-top">
-                    {photo ? (
-                      <img className="treat-history-photo" src={photo} alt="" />
-                    ) : (
-                      <div className="treat-history-photo is-icon" aria-hidden="true">
-                        {initial}
-                      </div>
-                    )}
-                    <div className="treat-history-doctor-info">
-                      <div className="treat-history-doctor-name">
-                        {visit.displayName
-                          || (visit.doctor?.name
-                            ? `Dr. ${String(visit.doctor.name).replace(/^Dr\.?\s*/i, '')}`
-                            : service.label)}
-                      </div>
-                    </div>
-                    <span className={`treat-history-badge is-${String(visit.historyTab || '').toLowerCase()}`}>
-                      {visit.historyTab}
-                    </span>
-                  </div>
-                  <div className="treat-history-condition">{visit.condition || service.label}</div>
-                  <div className="treat-history-bottom">
-                    <span className="treat-history-date">{visit.dateLabel}</span>
-                    <span className="treat-history-next">{visit.categoryLabel || service.shortLabel}</span>
-                  </div>
+                  {item}
                 </button>
-              )
-            })}
-          </div>
-        </section>
-        <AppFooter page="treat" />
+              ))}
+            </div>
+
+            <div className="treat-history-summary">
+              <h3 className="treat-history-summary-title">{listTitle}</h3>
+              <p className="treat-history-summary-hint">Synced from your booking history</p>
+            </div>
+
+            <div className="treat-history-list">
+              {!hydrated ? (
+                <>
+                  <div className="treat-skel-row shimmer" />
+                  <div className="treat-skel-row shimmer" />
+                  <div className="treat-skel-row shimmer" />
+                </>
+              ) : filteredHistory.length === 0 ? (
+                <p className="treat-empty">No matching care records.</p>
+              ) : filteredHistory.map((visit) => {
+                const service = getServiceMeta(resolveServiceType(visit))
+                const photo = visit.doctor?.photo
+                const initial = (visit.displayName || visit.doctor?.name || service.shortLabel || 'A')
+                  .replace(/^Dr\.?\s*/i, '')
+                  .charAt(0)
+                return (
+                  <button
+                    type="button"
+                    key={visit.engineId || visit.id}
+                    className={`treat-history-card is-${String(visit.historyTab || 'upcoming').toLowerCase()}`}
+                    onClick={() => openHistoryItem(visit)}
+                  >
+                    <div className="treat-history-card-top">
+                      {photo ? (
+                        <img className="treat-history-photo" src={photo} alt="" />
+                      ) : (
+                        <div className="treat-history-photo is-icon" aria-hidden="true">
+                          {initial}
+                        </div>
+                      )}
+                      <div className="treat-history-doctor-info">
+                        <div className="treat-history-doctor-name">
+                          {visit.displayName
+                            || (visit.doctor?.name
+                              ? `Dr. ${String(visit.doctor.name).replace(/^Dr\.?\s*/i, '')}`
+                              : service.label)}
+                        </div>
+                      </div>
+                      <span className={`treat-history-badge is-${String(visit.historyTab || '').toLowerCase()}`}>
+                        {visit.historyTab}
+                      </span>
+                    </div>
+                    <div className="treat-history-condition">{visit.condition || service.label}</div>
+                    <div className="treat-history-bottom">
+                      <span className="treat-history-date">{visit.dateLabel}</span>
+                      <span className="treat-history-next">{visit.categoryLabel || service.shortLabel}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+          <AppFooter page="treat" />
+        </div>
+
+        <TreatSearchSuggestions
+          query={query}
+          active={searchActive}
+          visits={careHistory}
+          health={health}
+          onSelect={openSearchItem}
+        />
       </div>
 
       {isPresented && sheet && (
@@ -380,6 +426,8 @@ export default function TreatPage() {
           )}
         </AppBottomSheet>
       )}
+
+      <ProfileSheets sheet={recordSheet} setSheet={setRecordSheet} />
     </div>
   )
 }

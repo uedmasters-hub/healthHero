@@ -121,22 +121,11 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  opacity: var(--opacity-hidden);
-  animation: fadeIn 0.2s ease forwards;
-}
-
-@keyframes fadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
+  opacity: var(--opacity-visible);
 }
 
 .services-bottom-sheet-overlay.closing {
-  animation: fadeOut 0.25s ease forwards;
-}
-
-@keyframes fadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
+  pointer-events: none;
 }
 
 .services-bottom-sheet {
@@ -149,24 +138,12 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transform: translateY(100%);
-  animation: slideUp 0.3s ease forwards;
+  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
   box-shadow: var(--shadow-sheet);
-
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
 }
 
 .services-bottom-sheet-overlay.closing .services-bottom-sheet {
-  animation: slideDown 0.25s ease forwards;
-}
-
-@keyframes slideDown {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
+  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
 }
 
 .services-bottom-sheet-handle {

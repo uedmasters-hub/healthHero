@@ -7,54 +7,30 @@ import { BRAND_LOGO_PATH, BRAND_NAME } from '../lib/brand'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import HeaderActions from './home/HeaderActions'
+import { NEPAL_MAJOR_CITIES } from '../data/nepalGeography'
 import './Header.css'
 
-const indianCities = [
-  'Mumbai',
-  'Delhi',
-  'Bengaluru',
-  'Hyderabad',
-  'Chennai',
-  'Pune',
-  'Gurugram',
-  'Kolkata',
-  'Ahmedabad',
-  'Jaipur',
-  'Lucknow',
-  'Chandigarh',
-  'Kochi',
-  'Bhopal',
-  'Indore',
-  'Nagpur',
-  'Surat',
-  'Visakhapatnam',
-  'Coimbatore',
-  'Patna',
-  'Thiruvananthapuram',
-]
+const nepalCities = [...NEPAL_MAJOR_CITIES]
 
 const CITY_ALIASES = {
-  'new delhi': 'Delhi',
-  'delhi': 'Delhi',
-  'ncr': 'Delhi',
-  'gurgaon': 'Gurugram',
-  'gurugram': 'Gurugram',
-  'noida': 'Delhi',
-  'bengaluru': 'Bengaluru',
-  'bangalore': 'Bengaluru',
-  'bombay': 'Mumbai',
-  'mumbai': 'Mumbai',
-  'madras': 'Chennai',
-  'chennai': 'Chennai',
-  'calcutta': 'Kolkata',
-  'kolkata': 'Kolkata',
-  'trivandrum': 'Thiruvananthapuram',
-  'thiruvananthapuram': 'Thiruvananthapuram',
-  'cochin': 'Kochi',
-  'kochi': 'Kochi',
-  'vizag': 'Visakhapatnam',
-  'visakhapatnam': 'Visakhapatnam',
-  'pondicherry': 'Chennai',
+  kathmandu: 'Kathmandu',
+  ktm: 'Kathmandu',
+  'kathmandu valley': 'Kathmandu',
+  patan: 'Lalitpur',
+  lalitpur: 'Lalitpur',
+  bhaktapur: 'Bhaktapur',
+  pokhara: 'Pokhara',
+  biratnagar: 'Biratnagar',
+  birgunj: 'Birgunj',
+  dharan: 'Dharan',
+  butwal: 'Butwal',
+  nepalgunj: 'Nepalgunj',
+  dhangadhi: 'Dhangadhi',
+  hetauda: 'Hetauda',
+  janakpur: 'Janakpur',
+  itahari: 'Itahari',
+  chitwan: 'Chitwan',
+  bharatpur: 'Chitwan',
 }
 
 function matchKnownCity(values) {
@@ -62,9 +38,9 @@ function matchKnownCity(values) {
     if (!raw) continue
     const key = String(raw).toLowerCase().trim()
     if (CITY_ALIASES[key]) return CITY_ALIASES[key]
-    const exact = indianCities.find((city) => city.toLowerCase() === key)
+    const exact = nepalCities.find((city) => city.toLowerCase() === key)
     if (exact) return exact
-    const partial = indianCities.find((city) => (
+    const partial = nepalCities.find((city) => (
       key.includes(city.toLowerCase()) || city.toLowerCase().includes(key)
     ))
     if (partial) return partial
@@ -97,7 +73,7 @@ const GpsIcon = () => (
 /** Home header — location + optional end accessory + HeaderActions. */
 export default function Header({ endAccessory = null }) {
   const { profile } = useUser()
-  const [selectedCity, setSelectedCity] = useState(profile?.city || 'Delhi')
+  const [selectedCity, setSelectedCity] = useState(profile?.city || 'Kathmandu')
   const [fromGps, setFromGps] = useState(false)
   const [locateStatus, setLocateStatus] = useState('idle')
   const [locateHint, setLocateHint] = useState('')
@@ -105,7 +81,7 @@ export default function Header({ endAccessory = null }) {
   const [search, setSearch] = useState('')
   const cityReveal = useStaggerReveal({ dataset: isPresented ? 'cities' : null, delay: 180 })
 
-  const filteredCities = indianCities.filter((city) =>
+  const filteredCities = nepalCities.filter((city) =>
     city.toLowerCase().includes(search.toLowerCase())
   )
 

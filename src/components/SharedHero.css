@@ -42,6 +42,7 @@
 
 .shared-hero-name,
 .shared-hero-meta,
+.shared-hero-degree,
 .shared-hero-exp,
 .shared-hero-actions {
   position: absolute;
@@ -68,6 +69,17 @@
 .shared-hero-specialty {
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
+}
+
+.shared-hero-degree {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .shared-hero-rating {
@@ -153,6 +165,8 @@
 .shared-hero-card.is-hero .shared-hero-name,
 .shared-hero-card.is-grid .shared-hero-meta,
 .shared-hero-card.is-hero .shared-hero-meta,
+.shared-hero-card.is-grid .shared-hero-degree,
+.shared-hero-card.is-hero .shared-hero-degree,
 .shared-hero-card.is-grid .shared-hero-exp,
 .shared-hero-card.is-hero .shared-hero-exp,
 .shared-hero-card.is-grid .shared-hero-fee,
@@ -217,8 +231,16 @@
   font-size: var(--text-label-size);
 }
 
+.shared-hero-card.is-grid .shared-hero-degree {
+  top: 168px;
+  left: 10px;
+  right: 10px;
+  text-align: center;
+  font-size: var(--text-caption-size);
+}
+
 .shared-hero-card.is-grid .shared-hero-exp {
-  top: 172px;
+  top: 188px;
   left: 50%;
   transform: translateX(-50%);
   padding: 5px var(--space-3);
@@ -256,7 +278,7 @@
 }
 
 .shared-hero-card.is-grid .shared-hero-fee {
-  top: 196px;
+  top: 212px;
   left: 12px;
   right: 12px;
   text-align: center;
@@ -298,6 +320,14 @@
   font-size: var(--text-body-size);
 }
 
+.shared-hero-card.is-hero .shared-hero-degree {
+  top: 58px;
+  left: 102px;
+  right: 16px;
+  text-align: left;
+  font-size: var(--text-caption-size);
+}
+
 .shared-hero-card.is-hero .shared-hero-rating {
   width: 0;
   margin: 0;
@@ -306,7 +336,7 @@
 }
 
 .shared-hero-card.is-hero .shared-hero-fee {
-  top: 62px;
+  top: 76px;
   left: 102px;
   right: 16px;
   opacity: var(--opacity-visible);
@@ -381,6 +411,15 @@
   right: auto;
   justify-content: flex-start;
   font-size: var(--text-body-size);
+}
+
+.shared-hero-card.is-appointment .shared-hero-degree {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  margin: var(--space-0-5) 0 0;
+  text-align: left;
 }
 
 .shared-hero-card.is-appointment .shared-hero-rating {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import { getCenters, hydrateCenters } from '../features/providers/centersRepository'
+import { formatPlaceParts } from '../features/geography/formatPlace'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshCentersData } from '../features/sync/pageRefresh'
@@ -51,7 +52,7 @@ export default function CentersPage() {
               <div style={{ minWidth: 0 }}>
                 <strong style={{ display: 'block' }}>{center.name}</strong>
                 <span style={{ fontSize: 13, opacity: 0.7 }}>
-                  {[center.type, center.city || center.address].filter(Boolean).join(' · ')}
+                  {[center.type, formatPlaceParts(center.city, center.district) || formatPlaceParts(center.address)].filter(Boolean).join(' · ')}
                 </span>
                 {center.rating != null ? (
                   <span style={{ display: 'block', fontSize: 13 }}>★ {center.rating}</span>

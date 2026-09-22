@@ -8,7 +8,7 @@ import { enqueueOutbox, listOutbox, removeOutbox, bumpOutboxAttempt } from './ou
 import { runOutboxJob, handleNotificationsPull } from './domains'
 import { migrateLocalDataToSupabase } from './localDataMigrator'
 import { hydrateAppointmentsFromRemote } from '../../booking/appointmentSync'
-import { hydrateProviders } from '../providers'
+import { hydrateProviders, hydratePharmacies } from '../providers'
 import { hydrateCenters } from '../providers/centersRepository'
 import { startRealtimeHub, stopRealtimeHub, restartRealtimeHub } from './realtimeHub'
 import * as notifService from '../notifications/service'
@@ -265,6 +265,7 @@ export function startSyncRuntime() {
 
   hydrateProviders().catch(() => {})
   hydrateCenters().catch(() => {})
+  hydratePharmacies().catch(() => {})
 
   return () => {
     unsub()

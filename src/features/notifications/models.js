@@ -17,7 +17,7 @@ function timeAgo(timestamp) {
   const days = Math.floor(hours / 24)
   if (days === 1) return 'Yesterday'
   if (days < 7) return `${days}d ago`
-  return new Date(timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+  return new Date(timestamp).toLocaleDateString('en-NP', { day: 'numeric', month: 'short' })
 }
 
 export function createNotification({

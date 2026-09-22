@@ -25,7 +25,7 @@ const defaultVisitData = {
   resources: [
     { icon: 'medications', label: 'Medications', detail: '2 prescribed' },
     { icon: 'tests', label: 'Tests & Lab Orders', detail: '3 ordered' },
-    { icon: 'payment', label: 'Payment Detail', detail: '₹500 paid' },
+    { icon: 'payment', label: 'Payment Detail', detail: 'Rs. 500 paid' },
     { icon: 'prescription', label: 'Prescription', detail: '' },
   ],
   reports: [

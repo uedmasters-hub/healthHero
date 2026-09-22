@@ -263,34 +263,57 @@ export default function PushStack() {
 
     // PUSH — keep prior layers mounted as underlays (stable ids).
     const suppressEnter = Boolean(location.state?.restore?.topDoctors)
-    setLayers((prev) => {
-      const existing = findLayerIndex(prev, { routeKey, pathname: location.pathname })
-      if (existing >= 0 && prev[existing].routeKey === routeKey) {
-        return prev.map((layer, index) => (
-          index === existing
-            ? {
-              ...layer,
-              element: outlet,
-              location,
-              exiting: false,
-              isTop: true,
-              suppressEnter,
-            }
-            : { ...layer, isTop: false, exiting: false }
-        ))
-      }
-      return [
-        ...prev.map((layer) => ({ ...layer, isTop: false, exiting: false })),
-        createLayer({ routeKey, location, element: outlet, suppressEnter }),
-      ]
-    })
+    const stackNow = layersRef.current
+    const existingNow = findLayerIndex(stackNow, { routeKey, pathname: location.pathname })
+    const sameRouteKey = existingNow >= 0 && stackNow[existingNow].routeKey === routeKey
+
+    // Same route key + parent re-render (sheet open, overlay, context) —
+    // leave the mounted layer untouched. Never re-fire a page push animation.
+    if (sameRouteKey) {
+      return undefined
+    }
+
+    // Navigating to a screen already under the top — treat as pop to that layer
+    // (e.g. legacy navigate(returnTo) instead of history.back).
+    if (existingNow >= 0 && existingNow < stackNow.length - 1) {
+      setPageLayerPopping(true, false)
+      setLayers((prev) => prev.map((layer, index) => ({
+        ...layer,
+        exiting: index > existingNow,
+        isTop: index === prev.length - 1 || index === existingNow,
+      })))
+      setPhase('pop')
+      runAfterPopAnim(() => {
+        setLayers((prev) => prev
+          .filter((_, index) => index <= existingNow)
+          .map((layer, index, arr) => ({
+            ...layer,
+            routeKey: index === arr.length - 1 ? routeKey : layer.routeKey,
+            location: index === arr.length - 1 ? location : layer.location,
+            exiting: false,
+            isTop: index === arr.length - 1,
+          })))
+        setPhase('idle')
+        setSwipePx(0)
+        setPageLayerPopping(false, false)
+      })
+      return undefined
+    }
+
+    setLayers((prev) => [
+      ...prev.map((layer) => ({ ...layer, isTop: false, exiting: false })),
+      createLayer({ routeKey, location, element: outlet, suppressEnter }),
+    ])
     setPhase(suppressEnter ? 'idle' : 'push')
     clearPopTimer()
     if (!suppressEnter) {
       runAfterPopAnim(() => setPhase('idle'))
     }
     return undefined
-  }, [isPush, location, location.key, navType, outlet, runAfterPopAnim, settleToPreservedStack])
+  }, [isPush, location, location.key, navType, runAfterPopAnim, settleToPreservedStack])
+  // Intentionally omit `outlet` — parent re-renders (sheets/overlays) mint a new
+  // outlet element identity without a route change. Re-running would be wasted work;
+  // sameRouteKey already no-ops. Location changes supply the frozen element for PUSH.
 
   useEffect(() => () => {
     clearPopTimer()
@@ -299,7 +322,8 @@ export default function PushStack() {
   }, [])
 
   // Single push screen over home → keep home visible underneath in `.is-dimmed` state.
-  useEffect(() => {
+  // useLayoutEffect avoids a hidden frame before underlay classes land.
+  useLayoutEffect(() => {
     const coverHome = isPush && layers.length === 1 && phase !== 'pop'
     setHomePushUnderlay(coverHome, { pushing: phase === 'push' })
     return () => {

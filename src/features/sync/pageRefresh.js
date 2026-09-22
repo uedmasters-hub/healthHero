@@ -5,6 +5,7 @@
 import { isSupabaseConfigured } from '../../lib/supabase'
 import { hydrateProviders } from '../providers'
 import { getCenters, hydrateCenters } from '../providers/centersRepository'
+import { hydratePharmacies } from '../providers/pharmaciesRepository'
 import { handleNotificationsPull } from './domains'
 import { getSyncState, requestFlush } from './syncEngine'
 
@@ -14,13 +15,15 @@ let notifInFlight = null
 let profileInFlight = null
 let centersInFlight = null
 let chatInFlight = null
+let pharmacyInFlight = null
 
 export async function refreshHomeData() {
   if (homeInFlight) return homeInFlight
   homeInFlight = (async () => {
     const tasks = [
-      hydrateProviders().catch(() => {}),
-      hydrateCenters().catch(() => {}),
+      hydrateProviders({ force: true }).catch(() => {}),
+      hydrateCenters({ force: true }).catch(() => {}),
+      hydratePharmacies({ force: true }).catch(() => {}),
     ]
     const { userId } = getSyncState()
     if (userId && isSupabaseConfigured) {
@@ -79,7 +82,15 @@ export async function refreshCentersData() {
 }
 
 export async function refreshDoctorsData() {
-  return refreshHomeData()
+  const { clearProviderQueryCache } = await import('../providers/repository')
+  clearProviderQueryCache()
+  return hydrateProviders({ force: true }).catch(() => {})
+}
+
+export async function refreshPharmaciesData() {
+  if (pharmacyInFlight) return pharmacyInFlight
+  pharmacyInFlight = hydratePharmacies({ force: true }).catch(() => []).finally(() => { pharmacyInFlight = null })
+  return pharmacyInFlight
 }
 
 export async function refreshChatData() {
@@ -97,7 +108,6 @@ export async function refreshChatData() {
   return chatInFlight
 }
 
-/** Generic tab/list refresh used by settings, pharmacy, articles (best-effort sync). */
 export async function refreshPageData() {
   return refreshHomeData()
 }

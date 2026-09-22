@@ -1,57 +1,51 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { getDoctorList, specialtyList } from '../data/doctors'
-import { hydrateProviders, subscribeProviders } from '../features/providers'
-import { canonicalSpecialty, loadExploreListState, saveExploreListState } from '../data/specialisations'
+import { queryProviders, subscribeProviders, fetchDoctorFilterFacets, peekDoctorFilterFacets } from '../features/providers'
+import { ALL_SPECIALISATIONS, canonicalSpecialty, loadExploreListState, saveExploreListState } from '../data/specialisations'
 import { withBookingEntry } from '../lib/careFlow'
 import { getViewedDoctorIds } from '../lib/recentDoctors'
-import { SheetPortal, useAppSheet } from './PageTransition'
+import { NEPAL_LOCATION_OPTIONS, NEPAL_DEFAULT_LOCATION, ALL_NEPAL_LOCATION, detectNepalCityFromDevice } from '../data/nepalGeography'
+import { useAppSheet } from './PageTransition'
+import AppBottomSheet from './AppBottomSheet'
 import { SearchField } from './SearchBar'
-import useStaggerReveal from './useStaggerReveal'
-import RevealItem from './RevealItem'
 import DoctorCard from './DoctorCard'
+import { BookingReveal } from './BookingReveal'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import './SelectProvider.css'
 
-const locations = ['All', 'Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Pune', 'Chennai', 'Gurugram', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Lucknow', 'Chandigarh', 'Kochi', 'Bhopal', 'Indore', 'Nagpur', 'Surat', 'Visakhapatnam', 'Coimbatore', 'Patna', 'Thiruvananthapuram']
+const locations = NEPAL_LOCATION_OPTIONS
 const availabilities = ['All', 'Today', 'Tomorrow', 'This Week']
+const PAGE_SIZE = 24
 
 const SORT_OPTIONS = [
-  { id: 'recommended', label: 'Recommended' },
-  { id: 'rating', label: 'Highest Rated' },
-  { id: 'nearest', label: 'Nearest' },
-  { id: 'fee', label: 'Lowest Fee' },
-  { id: 'available', label: 'Earliest Available' },
+  { id: 'recommended', label: 'Recommended', sort: 'name' },
+  { id: 'rating', label: 'Highest Rated', sort: 'rating' },
+  { id: 'fee', label: 'Lowest Fee', sort: 'fee' },
+  { id: 'nearest', label: 'Nearest', sort: 'name' },
+  { id: 'available', label: 'Earliest Available', sort: 'name' },
 ]
 
-function travelMinutes(doc) {
-  const n = parseInt(String(doc.travelTime || ''), 10)
-  return Number.isFinite(n) ? n : 999
-}
-
-function availabilityRank(doc) {
-  const text = String(doc.availability || '')
-  const day = /today/i.test(text) ? 0 : /tomorrow/i.test(text) ? 1 : 2
-  const match = text.match(/(\d{1,2}):(\d{2})\s*(am|pm)/i)
-  let minutes = 24 * 60
-  if (match) {
-    let hours = parseInt(match[1], 10)
-    const mins = parseInt(match[2], 10)
-    const meridian = match[3].toLowerCase()
-    if (meridian === 'pm' && hours !== 12) hours += 12
-    if (meridian === 'am' && hours === 12) hours = 0
-    minutes = hours * 60 + mins
+function formatResultsHeading({ total, specialty, location }) {
+  if (specialty) {
+    const label = Number(total) === 1 || /s$/i.test(specialty) ? specialty : `${specialty}s`
+    if (location && location !== ALL_NEPAL_LOCATION) return `${label} near ${location}`
+    if (location === ALL_NEPAL_LOCATION) return `${label} across Nepal`
+    return label
   }
-  return day * 10000 + minutes
+  if (location && location !== ALL_NEPAL_LOCATION) return `Doctors near ${location}`
+  if (location === ALL_NEPAL_LOCATION) return 'Doctors across Nepal'
+  return 'Doctors'
 }
 
-function sortDoctors(list, sortBy) {
-  const next = [...list]
-  if (sortBy === 'rating') next.sort((a, b) => (b.rating || 0) - (a.rating || 0))
-  else if (sortBy === 'nearest') next.sort((a, b) => travelMinutes(a) - travelMinutes(b))
-  else if (sortBy === 'fee') next.sort((a, b) => (a.fee ?? 9999) - (b.fee ?? 9999))
-  else if (sortBy === 'available') next.sort((a, b) => availabilityRank(a) - availabilityRank(b))
-  return next
+function formatResultsCount({ shown, total }) {
+  const shownLabel = Number(shown || 0).toLocaleString('en-NP')
+  const totalLabel = Number(total || 0).toLocaleString('en-NP')
+  return `Showing ${shownLabel} of ${totalLabel}`
+}
+
+function formatFacetCount(value) {
+  if (value == null || Number.isNaN(Number(value))) return null
+  return Number(value).toLocaleString('en-NP')
 }
 
 function ChipX() {
@@ -74,13 +68,39 @@ function ListSkeleton() {
           <div className="doctor-list-skel-line short" />
         </div>
       </div>
-      <div className="doctor-list-skel-line long" />
+      <div className="doctor-list-skel-details">
+        <div className="doctor-list-skel-line long" />
+        <div className="doctor-list-skel-tags">
+          <div className="doctor-list-skel-tag" />
+          <div className="doctor-list-skel-tag" />
+        </div>
+        <div className="doctor-list-skel-line avail" />
+      </div>
       <div className="doctor-list-skel-footer">
         <div className="doctor-list-skel-line fee" />
         <div className="doctor-list-skel-btn" />
       </div>
     </div>
   )
+}
+
+function ListSkeletonStack({ count = 3 }) {
+  return (
+    <div className="doctors-list doctors-list--skel" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => (
+        <ListSkeleton key={i} />
+      ))}
+    </div>
+  )
+}
+
+function useDebouncedValue(value, delay = 280) {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebounced(value), delay)
+    return () => window.clearTimeout(timer)
+  }, [value, delay])
+  return debounced
 }
 
 export default function DoctorList({
@@ -98,30 +118,35 @@ export default function DoctorList({
   const preferredVisitType = location.state?.preferredVisitType
   const specialty = lockedSpecialty ? canonicalSpecialty(lockedSpecialty) : null
   const saved = persist && specialty ? loadExploreListState(specialty) : null
+  const embedded = origin === 'explore'
 
   const [search, setSearch] = useState(saved?.search ?? '')
+  const debouncedSearch = useDebouncedValue(search, 280)
   const [activeFilter, setActiveFilter] = useState(null)
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const [selectedSpecialty, setSelectedSpecialty] = useState(specialty || saved?.selectedSpecialty || 'All')
-  const [selectedLocation, setSelectedLocation] = useState(saved?.selectedLocation || 'All')
+  const [selectedLocation, setSelectedLocation] = useState(
+    saved?.selectedLocation && saved.selectedLocation !== 'All'
+      ? saved.selectedLocation
+      : NEPAL_DEFAULT_LOCATION,
+  )
   const [selectedAvailability, setSelectedAvailability] = useState(saved?.selectedAvailability || 'All')
   const [sortBy, setSortBy] = useState(saved?.sortBy || 'recommended')
-  const [refreshing, setRefreshing] = useState(false)
   const [viewedIds, setViewedIds] = useState(() => getViewedDoctorIds())
-  const [doctors, setDoctors] = useState(() => getDoctorList())
-  const skipRefresh = useRef(true)
+  const [facetCounts, setFacetCounts] = useState({})
+  const facetRequestRef = useRef(0)
 
-  const queryKey = `${search}|${selectedLocation}|${selectedSpecialty}|${selectedAvailability}|${sortBy}|${doctors.length}`
-  const listReveal = useStaggerReveal({
-    dataset: dataset ? `${dataset}:${queryKey}` : `doctors:${queryKey}`,
-    delay: 160,
-  })
-  const filterReveal = useStaggerReveal({ dataset: isPresented && activeFilter ? `filter:${activeFilter}` : null, delay: 140 })
+  const [doctors, setDoctors] = useState([])
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
+  const [totalCount, setTotalCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const requestIdRef = useRef(0)
+  const gpsTriedRef = useRef(false)
 
-  useEffect(() => {
-    hydrateProviders().then(() => setDoctors(getDoctorList()))
-    return subscribeProviders(() => setDoctors(getDoctorList()))
-  }, [])
+  const sortMeta = SORT_OPTIONS.find((opt) => opt.id === sortBy) || SORT_OPTIONS[0]
+  const activeSpecialty = specialty || (selectedSpecialty !== 'All' ? selectedSpecialty : null)
 
   useEffect(() => {
     if (specialty) setSelectedSpecialty(specialty)
@@ -131,15 +156,20 @@ export default function DoctorList({
     setViewedIds(getViewedDoctorIds())
   }, [location.key])
 
+  // Nearby-first: detect device city once; fall back stays Kathmandu.
   useEffect(() => {
-    if (skipRefresh.current) {
-      skipRefresh.current = false
-      return undefined
-    }
-    setRefreshing(true)
-    const timer = setTimeout(() => setRefreshing(false), 240)
-    return () => clearTimeout(timer)
-  }, [queryKey])
+    if (gpsTriedRef.current) return undefined
+    if (saved?.selectedLocation && saved.selectedLocation !== 'All') return undefined
+    gpsTriedRef.current = true
+    let cancelled = false
+    detectNepalCityFromDevice().then((city) => {
+      if (cancelled || !city) return
+      setSelectedLocation((prev) => (
+        prev === NEPAL_DEFAULT_LOCATION || prev === 'All' ? city : prev
+      ))
+    })
+    return () => { cancelled = true }
+  }, [saved?.selectedLocation])
 
   useEffect(() => {
     if (!persist || !specialty) return undefined
@@ -154,34 +184,136 @@ export default function DoctorList({
     }
   }, [persist, specialty, search, selectedLocation, selectedAvailability, sortBy, scrollRootRef])
 
-  const filteredDoctors = useMemo(() => {
-    const matched = doctors.filter((doc) => {
-      const query = search.trim().toLowerCase()
-      const matchSearch = !query
-        || doc.name.toLowerCase().includes(query)
-        || doc.specialty.toLowerCase().includes(query)
-      const matchSpecialty = specialty
-        ? canonicalSpecialty(doc.specialty) === specialty
-        : selectedSpecialty === 'All' || doc.specialty === selectedSpecialty
-      const matchLocation = selectedLocation === 'All'
-        || ((selectedLocation === 'Delhi' || selectedLocation === 'New Delhi')
-          ? /(?:^|,\s*)(?:New\s+)?Delhi\b/i.test(doc.address)
-          : selectedLocation === 'Bengaluru'
-            ? /bengaluru|bangalore/i.test(doc.address)
-            : selectedLocation === 'Gurugram'
-              ? /gurugram|gurgaon/i.test(doc.address)
-              : doc.address.includes(selectedLocation))
-      const matchAvailability = selectedAvailability === 'All'
-        || (selectedAvailability === 'Today' && doc.availability.includes('Today'))
-        || (selectedAvailability === 'Tomorrow' && doc.availability.includes('Tomorrow'))
-        || (selectedAvailability === 'This Week')
-      return matchSearch && matchSpecialty && matchLocation && matchAvailability
-    })
-    return sortDoctors(matched, sortBy)
-  }, [search, selectedLocation, selectedSpecialty, selectedAvailability, sortBy, specialty])
+  // Live registry query — resets when filters/search change.
+  useEffect(() => {
+    const reqId = ++requestIdRef.current
+    setLoading(true)
+    setPage(0)
+    setHasMore(false)
 
-  const resultCount = filteredDoctors.length
-  const sortLabel = SORT_OPTIONS.find((opt) => opt.id === sortBy)?.label || 'Recommended'
+    queryProviders({
+      specialty: activeSpecialty,
+      q: debouncedSearch,
+      city: selectedLocation,
+      sort: sortMeta.sort,
+      page: 0,
+      pageSize: PAGE_SIZE,
+    }).then((result) => {
+      if (reqId !== requestIdRef.current) return
+      setDoctors(result.doctors)
+      setHasMore(result.hasMore)
+      setTotalCount(result.total || 0)
+      setLoading(false)
+    }).catch(() => {
+      if (reqId !== requestIdRef.current) return
+      setDoctors([])
+      setHasMore(false)
+      setTotalCount(0)
+      setLoading(false)
+    })
+  }, [activeSpecialty, debouncedSearch, selectedLocation, sortMeta.sort, dataset])
+
+  // Keep list cards in sync if featured hydrate merges overlapping rows.
+  useEffect(() => subscribeProviders(() => {
+    /* indexed rows already updated; leave current page as-is */
+  }), [])
+
+  // Live facet counts — skeleton-first, cache-aware, no layout shift.
+  useEffect(() => {
+    if (!isPresented || !activeFilter || activeFilter === 'Sort') {
+      return undefined
+    }
+
+    const context = {
+      specialty: activeSpecialty,
+      city: selectedLocation,
+      q: debouncedSearch,
+      availability: selectedAvailability,
+    }
+    const cached = peekDoctorFilterFacets(activeFilter, context)
+    const reqId = ++facetRequestRef.current
+    let cancelled = false
+
+    if (cached) {
+      setFacetCounts(cached)
+      return undefined
+    }
+
+    setFacetCounts({})
+
+    fetchDoctorFilterFacets(activeFilter, context, {
+      onPartial: (partial) => {
+        if (cancelled || reqId !== facetRequestRef.current) return
+        setFacetCounts(partial || {})
+      },
+    }).then((counts) => {
+      if (cancelled || reqId !== facetRequestRef.current) return
+      setFacetCounts(counts || {})
+    }).catch(() => {
+      if (cancelled || reqId !== facetRequestRef.current) return
+      /* keep whatever partials arrived */
+    })
+
+    return () => { cancelled = true }
+  }, [
+    isPresented,
+    activeFilter,
+    activeSpecialty,
+    selectedLocation,
+    selectedAvailability,
+    debouncedSearch,
+  ])
+
+  const loadMore = () => {
+    if (loadingMore || loading || !hasMore) return
+    const nextPage = page + 1
+    setLoadingMore(true)
+    queryProviders({
+      specialty: activeSpecialty,
+      q: debouncedSearch,
+      city: selectedLocation,
+      sort: sortMeta.sort,
+      page: nextPage,
+      pageSize: PAGE_SIZE,
+    }).then((result) => {
+      setDoctors((prev) => {
+        const seen = new Set(prev.map((d) => String(d.providerUuid || d.id)))
+        const merged = [...prev]
+        for (const doc of result.doctors) {
+          const key = String(doc.providerUuid || doc.id)
+          if (seen.has(key)) continue
+          seen.add(key)
+          merged.push(doc)
+        }
+        return merged
+      })
+      setPage(nextPage)
+      setHasMore(result.hasMore)
+      if (typeof result.total === 'number') setTotalCount(result.total)
+    }).finally(() => setLoadingMore(false))
+  }
+
+  const filteredDoctors = useMemo(() => {
+    if (selectedAvailability === 'All') return doctors
+    return doctors
+  }, [doctors, selectedAvailability])
+
+  const shownCount = filteredDoctors.length
+  const sortLabel = sortMeta.label
+  const listReady = !loading
+  // Find Doctor already has a page title — skip the redundant location heading.
+  const showResultsHeading = Boolean(specialty)
+  const resultsHeading = showResultsHeading
+    ? formatResultsHeading({
+      total: totalCount,
+      specialty: activeSpecialty,
+      location: selectedLocation,
+    })
+    : ''
+  const resultsCount = formatResultsCount({
+    shown: shownCount,
+    total: totalCount,
+  })
 
   const activeChips = useMemo(() => {
     const chips = []
@@ -189,8 +321,11 @@ export default function DoctorList({
     if (query) {
       chips.push({ id: 'search', label: `“${query}”`, clear: () => setSearch('') })
     }
-    if (selectedLocation !== 'All') {
-      chips.push({ id: 'location', label: selectedLocation, clear: () => setSelectedLocation('All') })
+    if (selectedLocation && selectedLocation !== NEPAL_DEFAULT_LOCATION && selectedLocation !== ALL_NEPAL_LOCATION) {
+      chips.push({ id: 'location', label: selectedLocation, clear: () => setSelectedLocation(NEPAL_DEFAULT_LOCATION) })
+    }
+    if (selectedLocation === ALL_NEPAL_LOCATION) {
+      chips.push({ id: 'location', label: ALL_NEPAL_LOCATION, clear: () => setSelectedLocation(NEPAL_DEFAULT_LOCATION) })
     }
     if (!specialty && selectedSpecialty !== 'All') {
       chips.push({ id: 'specialty', label: selectedSpecialty, clear: () => setSelectedSpecialty('All') })
@@ -206,7 +341,7 @@ export default function DoctorList({
 
   const clearAll = () => {
     setSearch('')
-    setSelectedLocation('All')
+    setSelectedLocation(NEPAL_DEFAULT_LOCATION)
     if (!specialty) setSelectedSpecialty('All')
     setSelectedAvailability('All')
     setSortBy('recommended')
@@ -265,7 +400,7 @@ export default function DoctorList({
       selected = selectedLocation
       onSelect = setSelectedLocation
     } else if (activeFilter === 'Specialties') {
-      options = ['All', ...specialtyList]
+      options = ['All', ...ALL_SPECIALISATIONS.map((s) => s.name)]
       selected = selectedSpecialty
       onSelect = setSelectedSpecialty
     } else if (activeFilter === 'Availability') {
@@ -281,88 +416,101 @@ export default function DoctorList({
     }
 
     return (
-      <SheetPortal to="screen">
-        <div className={`filter-overlay ${isClosing ? 'closing' : ''}`} onClick={closeFilter}>
-          <div className="filter-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="filter-modal-header">
-              <h3>{activeFilter}</h3>
-              <button className="filter-modal-close" onClick={closeFilter}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-            <div className="filter-options" ref={filterReveal.containerRef}>
-              {options.map((opt, i) => {
-                const key = optionKey(opt)
-                const isActive = selected === key || selected === opt
-                return (
-                  <RevealItem
-                    as="button"
-                    key={key}
-                    className={`filter-option ${isActive ? 'active' : ''}`}
-                    revealed={filterReveal.isRevealed(i)}
-                    cached={filterReveal.isCached}
-                    ref={filterReveal.setItemRef(i)}
-                    onClick={() => { onSelect(opt); closeFilter() }}
-                  >
-                    <div className="filter-option-circle" />
-                    <span className="filter-option-label">{optionLabel(opt)}</span>
-                  </RevealItem>
-                )
-              })}
-            </div>
-          </div>
+      <AppBottomSheet
+        open
+        closing={isClosing}
+        onClose={closeFilter}
+        labelledBy="filter-sheet-title"
+        sheetClassName="filter-sheet"
+      >
+        <div className="ds-sheet-header">
+          <h3 id="filter-sheet-title">{activeFilter}</h3>
+          <button type="button" className="ds-sheet-close" onClick={closeFilter} aria-label="Close">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
-      </SheetPortal>
+        <div className="filter-options">
+          {options.map((opt) => {
+            const key = optionKey(opt)
+            const isActive = selected === key || selected === opt
+            const showCount = activeFilter !== 'Sort'
+            const countValue = facetCounts[key] ?? facetCounts[opt]
+            const countReady = showCount && countValue != null && !Number.isNaN(Number(countValue))
+            const countLabel = countReady ? formatFacetCount(countValue) : null
+            return (
+              <button
+                type="button"
+                key={key}
+                className={`filter-option ${isActive ? 'active' : ''}`}
+                onClick={() => { onSelect(opt); closeFilter() }}
+              >
+                <div className="filter-option-circle" />
+                <span className="filter-option-label">{optionLabel(opt)}</span>
+                {showCount ? (
+                  <span
+                    className={`filter-option-count-slot${countReady ? ' is-loaded' : ' is-loading'}`}
+                    aria-busy={!countReady}
+                    aria-label={countReady ? `${countLabel} doctors` : undefined}
+                  >
+                    <span className="filter-option-count-skel" aria-hidden="true" />
+                    <span className="filter-option-count">
+                      {countLabel || '\u00a0'}
+                    </span>
+                  </span>
+                ) : null}
+              </button>
+            )
+          })}
+        </div>
+      </AppBottomSheet>
     )
   }
 
   const emptySuggestions = [
     search.trim() ? { id: 'search', label: 'Clear search', run: () => setSearch('') } : null,
-    selectedLocation !== 'All' ? { id: 'cities', label: 'Search all cities', run: () => setSelectedLocation('All') } : null,
+    selectedLocation !== ALL_NEPAL_LOCATION
+      ? { id: 'cities', label: 'Search all of Nepal', run: () => setSelectedLocation(ALL_NEPAL_LOCATION) }
+      : { id: 'ktm', label: 'Near Kathmandu', run: () => setSelectedLocation(NEPAL_DEFAULT_LOCATION) },
     !specialty && selectedSpecialty !== 'All' ? { id: 'specs', label: 'Show all specialties', run: () => setSelectedSpecialty('All') } : null,
     selectedAvailability !== 'All' ? { id: 'avail', label: 'Any availability', run: () => setSelectedAvailability('All') } : null,
     sortBy !== 'recommended' ? { id: 'sort', label: 'Reset sort', run: () => setSortBy('recommended') } : null,
   ].filter(Boolean)
 
   return (
-    <div className="select-provider">
+    <div className={`select-provider${embedded ? ' select-provider--embedded' : ''}`}>
       <div className="provider-search">
         <SearchField
-          placeholder="Search Doctor"
+          placeholder="Search doctor, degree, or city"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="filter-chips">
-        <button className={`filter-chip ${selectedLocation !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Location')}>
-          Location
+      <div className="filter-chips" role="toolbar" aria-label="Doctor filters">
+        <button type="button" className="filter-chip active" onClick={() => openFilter('Location')}>
+          {selectedLocation || NEPAL_DEFAULT_LOCATION}
           <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
-        {specialty ? (
-          <button type="button" className="filter-chip active locked" aria-disabled="true">
-            {specialty}
-          </button>
-        ) : (
-          <button className={`filter-chip ${selectedSpecialty !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Specialties')}>
+        {!specialty ? (
+          <button type="button" className={`filter-chip ${selectedSpecialty !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Specialties')}>
             Specialties
             <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
-        )}
-        <button className={`filter-chip ${selectedAvailability !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Availability')}>
+        ) : null}
+        <button type="button" className={`filter-chip ${selectedAvailability !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Availability')}>
           Availability
           <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
-        <button className={`filter-chip ${sortBy !== 'recommended' ? 'active' : ''}`} onClick={() => openFilter('Sort')}>
+        <button type="button" className={`filter-chip ${sortBy !== 'recommended' ? 'active' : ''}`} onClick={() => openFilter('Sort')}>
           Sort
           <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="6 9 12 15 18 9" />
@@ -370,86 +518,99 @@ export default function DoctorList({
         </button>
       </div>
 
-      <div className="results-meta" aria-live="polite">
-        {resultCount} {resultCount === 1 ? 'Doctor' : 'Doctors'} Found
+      <div className={`results-meta${showResultsHeading ? '' : ' is-count-only'}`} aria-live="polite">
+        {listReady ? (
+          <>
+            {showResultsHeading ? <h2 className="results-meta-title">{resultsHeading}</h2> : null}
+            <p className="results-meta-count">{resultsCount}</p>
+          </>
+        ) : (
+          <div className="results-meta-skel-stack" aria-hidden="true">
+            {showResultsHeading ? <span className="results-meta-skel results-meta-skel--title" /> : null}
+            <span className="results-meta-skel results-meta-skel--count" />
+          </div>
+        )}
       </div>
 
-      {activeChips.length > 0 ? (
-        <div className="active-filters">
-          <div className="active-filters-chips">
-            {activeChips.map((chip) => (
-              <button
-                type="button"
-                key={chip.id}
-                className="active-filter-chip"
-                onClick={chip.clear}
-                aria-label={`Remove ${chip.label}`}
-              >
-                <span>{chip.label}</span>
-                <ChipX />
-              </button>
-            ))}
-          </div>
-          <button type="button" className="clear-all-filters" onClick={clearAll}>
-            Clear All
-          </button>
-        </div>
-      ) : null}
-
-      <div className="doctors-list" ref={refreshing ? undefined : listReveal.containerRef}>
-        {refreshing ? (
+      <div className={`active-filters${activeChips.length ? '' : ' is-empty'}`} aria-hidden={activeChips.length === 0}>
+        {activeChips.length > 0 ? (
           <>
-            <ListSkeleton />
-            <ListSkeleton />
-            <ListSkeleton />
-          </>
-        ) : resultCount === 0 ? (
-          <div className="doctors-empty">
-            <div className="doctors-empty-icon" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="7" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </div>
-            <h3>No doctors match</h3>
-            <p>
-              {search.trim()
-                ? `Try a different name, city, or availability, or search without “${search.trim()}”.`
-                : 'Try a different name, city, or availability.'}
-            </p>
-            <div className="doctors-empty-suggestions">
-              {(emptySuggestions.length ? emptySuggestions : [{ id: 'reset', label: 'Clear all filters', run: clearAll }]).map((item) => (
-                <button type="button" key={item.id} onClick={item.run}>
-                  {item.label}
+            <div className="active-filters-chips">
+              {activeChips.map((chip) => (
+                <button
+                  type="button"
+                  key={chip.id}
+                  className="active-filter-chip"
+                  onClick={chip.clear}
+                  aria-label={`Remove ${chip.label}`}
+                >
+                  <span>{chip.label}</span>
+                  <ChipX />
                 </button>
               ))}
-              {emptySuggestions.length > 0 ? (
-                <button type="button" className="doctors-empty-clear" onClick={clearAll}>
-                  Clear all filters
+            </div>
+            <button type="button" className="clear-all-filters" onClick={clearAll}>
+              Clear All
+            </button>
+          </>
+        ) : null}
+      </div>
+
+      <BookingReveal ready={listReady} skeleton={<ListSkeletonStack count={3} />}>
+        <div className="doctors-list">
+          {shownCount === 0 ? (
+            <div className="doctors-empty">
+              <div className="doctors-empty-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </div>
+              <h3>No doctors match</h3>
+              <p>
+                {search.trim()
+                  ? `Try a different name, degree, or city, or search without “${search.trim()}”.`
+                  : specialty
+                    ? `No ${specialty} providers matched near ${selectedLocation}. Try All Nepal or another city.`
+                    : `No providers matched near ${selectedLocation}. Try All Nepal or another city.`}
+              </p>
+              <div className="doctors-empty-suggestions">
+                {(emptySuggestions.length ? emptySuggestions : [{ id: 'reset', label: 'Clear all filters', run: clearAll }]).map((item) => (
+                  <button type="button" key={item.id} onClick={item.run}>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {filteredDoctors.map((doctor) => (
+                <div className="doctor-list-card" key={doctor.providerUuid || doctor.id}>
+                  <DoctorCard
+                    doctor={doctor}
+                    variant="list"
+                    origin={origin}
+                    returnTo={returnTo || (specialty ? `/explore/${encodeURIComponent(specialty)}` : location.pathname)}
+                    onBeforeNavigate={persistListState}
+                    onBookNow={() => handleBookNow(doctor)}
+                    recentlyViewed={viewedIds.includes(String(doctor.id)) || viewedIds.includes(Number(doctor.id))}
+                  />
+                </div>
+              ))}
+              {hasMore ? (
+                <button
+                  type="button"
+                  className="doctors-load-more"
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? 'Loading…' : 'Load more doctors'}
                 </button>
               ) : null}
-            </div>
-          </div>
-        ) : filteredDoctors.map((doctor, i) => (
-          <RevealItem
-            className="doctor-list-card"
-            key={doctor.id}
-            revealed={listReveal.isRevealed(i)}
-            cached={listReveal.isCached}
-            ref={listReveal.setItemRef(i)}
-          >
-            <DoctorCard
-              doctor={doctor}
-              variant="list"
-              origin={origin}
-              returnTo={returnTo || (specialty ? `/explore/${encodeURIComponent(specialty)}` : location.pathname)}
-              onBeforeNavigate={persistListState}
-              onBookNow={() => handleBookNow(doctor)}
-              recentlyViewed={viewedIds.includes(Number(doctor.id))}
-            />
-          </RevealItem>
-        ))}
-      </div>
+            </>
+          )}
+        </div>
+      </BookingReveal>
 
       {renderFilterModal()}
       {modal}

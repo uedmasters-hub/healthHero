@@ -9,7 +9,9 @@ import { useDemoPreview } from './DemoPreviewModal'
 import { clearLock } from '../lib/scrollLock'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
-import { refreshPageData } from '../features/sync/pageRefresh'
+import { refreshPharmaciesData } from '../features/sync/pageRefresh'
+import { getPharmacies, hydratePharmacies, subscribePharmacies } from '../features/providers'
+import { formatCityDistrict } from '../features/geography/formatPlace'
 import {
   PHARMACY_CATEGORIES,
   PHARMACY_ORDERS,
@@ -47,13 +49,22 @@ export default function PharmacyPage() {
   const [filterId, setFilterId] = useState('all')
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const scrollRef = useRef(null)
-  const onRefresh = useCallback(() => refreshPageData(), [])
+  const [registryPharmacies, setRegistryPharmacies] = useState(() => getPharmacies().slice(0, 12))
+  const onRefresh = useCallback(async () => {
+    await refreshPharmaciesData()
+    setRegistryPharmacies(getPharmacies().slice(0, 12))
+  }, [])
   const ptr = usePullToRefresh(scrollRef, onRefresh)
 
   // Clear any stale pharmacy scroll freeze left by freezeNow() from an earlier
   // search navigation / HMR cycle (Treat keeps its scroller unlocked).
   useEffect(() => {
     clearLock('pharmacy')
+  }, [])
+
+  useEffect(() => {
+    hydratePharmacies().then(() => setRegistryPharmacies(getPharmacies().slice(0, 12)))
+    return subscribePharmacies((list) => setRegistryPharmacies(list.slice(0, 12)))
   }, [])
 
   const openFullSearch = useCallback(() => {
@@ -182,6 +193,33 @@ export default function PharmacyPage() {
             items={PHARMACY_RECENT}
             onSelect={() => runPharmacyAction('recent')}
           />
+
+          {registryPharmacies.length ? (
+            <section className="pharmacy-registry" aria-label="Registered pharmacies">
+              <div className="ds-section-head">
+                <h2 className="ds-section-title">Registered pharmacies</h2>
+                <p className="ds-section-sub">Live DDA registry from Supabase</p>
+              </div>
+              <div className="pharmacy-registry-list">
+                {registryPharmacies.map((p) => (
+                  <button
+                    key={p.pharmacyUuid || p.id}
+                    type="button"
+                    className="pharmacy-registry-row"
+                    onClick={() => runPharmacyAction('recent')}
+                  >
+                    <span className="pharmacy-registry-name">{p.name}</span>
+                    <span className="pharmacy-registry-meta">
+                      {[p.pharmacyCode, formatCityDistrict(p.city, p.district) || p.place, p.systemType].filter(Boolean).join(' · ')}
+                    </span>
+                    {p.nameLocal ? (
+                      <span className="pharmacy-registry-local">{p.nameLocal}</span>
+                    ) : null}
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <PharmacyTipCard
             tip={PHARMACY_TIP}

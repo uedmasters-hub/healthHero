@@ -1,15 +1,23 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { flowState } from '../lib/careFlow'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import { useSharedHero } from './SharedHero'
 import { formatMoney } from '../lib/paymentSession'
 import { presentBookingCard } from '../booking'
+import { pickDoctorCredentials, subscribeProviders } from '../features/providers'
+import { formatPlaceParts } from '../features/geography/formatPlace'
 import ProviderAvatar from './ProviderAvatar'
 import './DoctorCard.css'
 
 function displayName(name) {
   if (!name) return 'Doctor'
   return name.startsWith('Dr.') ? name : `Dr. ${name}`
+}
+
+function CredentialsLine({ text, className = 'dc-degree' }) {
+  if (!text) return null
+  return <p className={className}>{text}</p>
 }
 
 export default function DoctorCard({
@@ -41,13 +49,35 @@ export default function DoctorCard({
 
   const presented = presentBookingCard({ doctor, serviceType: 'doctor_consultation' })
   const merged = presented?.doctor || doctor || {}
+  // Re-render when the live registry indexes/updates nmc_number for this provider.
+  const [, bumpRegistry] = useState(0)
+  useEffect(() => subscribeProviders(() => bumpRegistry((n) => n + 1)), [])
+
   const photo = presented?.photo || '/img/doctors/new/doctor.png'
   const name = displayName(merged?.name || doctor?.name)
   const specialty = merged?.specialty || doctor?.specialty || 'Specialist'
   const experience = merged?.experience || doctor?.experience || ''
-  const rating = merged?.rating ?? doctor?.rating ?? 4.8
-  const phone = merged?.phone || doctor?.phone || `+91987654321${merged?.id || doctor?.id || 0}`
-  const doctorForNav = { ...doctor, ...merged, photo, name, specialty, experience, rating, phone }
+  const rating = merged?.rating ?? doctor?.rating
+  const hasRating = Number(rating) > 0
+  const creds = pickDoctorCredentials({ ...doctor, ...merged })
+  const degree = creds.degree
+  const nmcNumber = creds.nmcNumber
+  const credentials = creds.line
+  const phone = merged?.phone || doctor?.phone || ''
+  const address = formatPlaceParts(merged?.address || doctor?.address || '')
+  const doctorForNav = {
+    ...doctor,
+    ...merged,
+    photo,
+    name,
+    specialty,
+    experience,
+    rating,
+    phone,
+    degree,
+    nmcNumber,
+    address,
+  }
 
   const sharedState = () => flowState(location, { origin, preferredVisitType, returnTo, restore })
 
@@ -150,6 +180,7 @@ export default function DoctorCard({
               {rating}
             </span>
           </p>
+          <CredentialsLine text={credentials} className="dc-degree dc-identity-degree" />
         </div>
       </button>
       {modal}
@@ -178,6 +209,7 @@ export default function DoctorCard({
             </span>
           </div>
           <p className="dc-specialty">{specialty}</p>
+          <CredentialsLine text={credentials} />
           {experience ? <span className="dc-exp">{experience}</span> : null}
           {doctorForNav?.fee != null ? (
             <p className="dc-fee">
@@ -216,15 +248,19 @@ export default function DoctorCard({
           <div className="dc-list-copy">
             <div className="dc-title-row">
               <h3 className="dc-name">{name}</h3>
-              <span className="dc-rating">
-                <span className="dc-star" aria-hidden="true">★</span>
-                {rating}
-              </span>
+              {hasRating ? (
+                <span className="dc-rating">
+                  <span className="dc-star" aria-hidden="true">★</span>
+                  {rating}
+                </span>
+              ) : null}
             </div>
             <p className="dc-specialty">{specialty}</p>
-            {(experience || recentlyViewed) ? (
+            <CredentialsLine text={credentials} />
+            {(experience || recentlyViewed || doctorForNav?.isVerified) ? (
               <div className="dc-list-flags">
                 {experience ? <span className="dc-exp">{experience}</span> : null}
+                {doctorForNav?.isVerified ? <span className="dc-recent">Verified</span> : null}
                 {recentlyViewed ? <span className="dc-recent">Recently viewed</span> : null}
               </div>
             ) : null}
@@ -241,35 +277,37 @@ export default function DoctorCard({
               {doctorForNav.address}
             </p>
           ) : null}
-          <div className="dc-list-tags">
-            {doctorForNav?.travelTime || doctor?.travelTime ? (
-              <span className="dc-list-tag">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                {doctorForNav.travelTime || doctor.travelTime}
-              </span>
-            ) : null}
-            {visitTypes.map((type) => (
-              <span className="dc-list-tag" key={type}>
-                {type === 'In-Person' ? (
+          {visitTypes.length > 0 ? (
+            <div className="dc-list-tags">
+              {doctorForNav?.travelTime || doctor?.travelTime ? (
+                <span className="dc-list-tag">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                    <polyline points="9 22 9 12 15 12 15 22" />
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
                   </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                    <polygon points="23 7 16 12 23 17 23 7" />
-                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-                  </svg>
-                )}
-                {type}
-              </span>
-            ))}
-          </div>
-          {doctorForNav?.availability || doctor?.availability ? (
-            <p className="dc-list-avail">{doctorForNav.availability || doctor.availability}</p>
+                  {doctorForNav.travelTime || doctor.travelTime}
+                </span>
+              ) : null}
+              {visitTypes.map((type) => (
+                <span className="dc-list-tag" key={type}>
+                  {type === 'In-Person' ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                      <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <polygon points="23 7 16 12 23 17 23 7" />
+                      <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                    </svg>
+                  )}
+                  {type}
+                </span>
+              ))}
+            </div>
+          ) : null}
+          {doctorForNav?.availability ? (
+            <p className="dc-list-avail">{doctorForNav.availability}</p>
           ) : null}
         </div>
 
@@ -314,11 +352,14 @@ export default function DoctorCard({
         <h3 className="dc-name">{name}</h3>
         <p className="dc-grid-meta">
           <span className="dc-specialty">{specialty}</span>
-          <span className="dc-rating">
-            <span className="dc-star" aria-hidden="true">★</span>
-            {rating}
-          </span>
+          {hasRating ? (
+            <span className="dc-rating">
+              <span className="dc-star" aria-hidden="true">★</span>
+              {rating}
+            </span>
+          ) : null}
         </p>
+        <CredentialsLine text={credentials} />
         {experience ? <span className="dc-exp">{experience}</span> : null}
       </div>
       {modal}
@@ -342,6 +383,7 @@ export default function DoctorCard({
             </span>
           </div>
           <p className="dc-specialty">{specialty}</p>
+          <CredentialsLine text={credentials} />
           {experience ? <span className="dc-exp">{experience}</span> : null}
         </div>
         {!isBooking && (

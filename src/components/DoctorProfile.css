@@ -17,11 +17,18 @@
 }
 
 .doctor-profile.has-cta .profile-scroll {
-  padding-bottom: var(--space-3);
+  padding-bottom: var(--fab-cta-gap);
+}
+
+/* Sticky Book CTA — permanently owns the bottom safe area */
+.doctor-profile > .app-flow-footer {
+  position: relative;
+  z-index: var(--z-footer, 100);
+  flex-shrink: 0;
 }
 
 .doctor-profile.page-push-in {
-  animation: doctorPushIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: doctorPushIn var(--duration-page) var(--ease-page) both;
 }
 
 .doctor-profile.is-under-overlay {
@@ -51,6 +58,10 @@
 .profile-header-actions {
   display: flex;
   gap: var(--icon-gap);
+  position: relative;
+  z-index: 4;
+  /* Header actions stay in chrome — never ride scroll/FAB motion */
+  transform: none;
 }
 
 .profile-back-btn {

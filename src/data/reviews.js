@@ -101,7 +101,7 @@ function listFor(store, doctorId) {
 }
 
 export function formatReviewDate(date = new Date()) {
-  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+  return date.toLocaleDateString('en-NP', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 export function summarizeReviews(items) {

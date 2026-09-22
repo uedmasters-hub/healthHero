@@ -4,7 +4,8 @@
  * Treat, Ready for Visit, and Provider Chat render the same card fields in
  * production as they do locally (name, photo, rating, specialty, schedule).
  */
-import { getDoctorById, getDoctorPhoto, getProviderCatalog } from '../features/providers'
+import { getDoctorById, getDoctorPhoto, getProviderCatalog, pickDoctorCredentials } from '../features/providers'
+import { formatPlaceParts } from '../features/geography/formatPlace'
 import { resolveProviderPhoto, normalizePublicAssetUrl } from '../lib/providerPhoto'
 import { getServiceMeta, resolveServiceType } from './serviceTypes'
 
@@ -46,7 +47,7 @@ function formatDateLabel(date) {
   if (!date) return ''
   const dateValue = date?.full instanceof Date ? date.full : new Date(date?.full || date)
   if (Number.isNaN(dateValue.getTime())) return ''
-  return dateValue.toLocaleDateString('en-IN', {
+  return dateValue.toLocaleDateString('en-NP', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -97,13 +98,19 @@ export function presentBookingCard(booking) {
     || catalogPhoto
     || null
 
+  // Live registry credentials win over sparse booking snapshots.
+  const creds = pickDoctorCredentials({ ...snapshot, ...catalog })
+
   const doctor = {
     id: snapshot.id ?? catalog?.id ?? null,
+    providerUuid: snapshot.providerUuid || catalog?.providerUuid || null,
     name: snapshot.name || catalog?.name || booking.providerName || '',
     specialty: snapshot.specialty || catalog?.specialty || '',
+    degree: creds.degree,
+    nmcNumber: creds.nmcNumber,
     experience: snapshot.experience || catalog?.experience || '',
     rating: snapshot.rating ?? catalog?.rating ?? null,
-    address: snapshot.address || catalog?.address || '',
+    address: formatPlaceParts(snapshot.address || catalog?.address || ''),
     phone: snapshot.phone || catalog?.phone || '',
     photo: photo || '',
     fee: snapshot.fee ?? catalog?.fee ?? null,

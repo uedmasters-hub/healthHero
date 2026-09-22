@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { getDoctorById, getDoctorList, getDoctorPhoto } from '../data/doctors'
+import { getDoctorById, getDoctorList, getDoctorPhoto, fetchProviderById, queryProviders, subscribeProviders, pickDoctorCredentials } from '../features/providers'
+import { formatPlaceParts } from '../features/geography/formatPlace'
 import { getDoctorReviewSummary } from '../data/reviews'
 import { flowState, goBackToOrigin } from '../lib/careFlow'
 import { getSlotWindow } from '../lib/bookingPolicy'
@@ -43,7 +44,7 @@ const defaultSpecialties = [
 ]
 
 const defaultCenters = [
-  { name: 'City Hospital', address: '123 Main Road, India', distance: '2.0 km' },
+  { name: 'City Hospital', address: 'Kathmandu, Nepal', distance: '2.0 km' },
 ]
 
 function yearsFromExperience(experience = '') {
@@ -101,12 +102,27 @@ export default function DoctorProfile() {
   const origin = location.state?.origin
   const preferredVisitType = location.state?.preferredVisitType
   const restore = location.state?.restore
-  const dbDoctor = getDoctorById(id)
+  const [registryDoctor, setRegistryDoctor] = useState(() => getDoctorById(id))
   const heroRef = useRef(null)
 
   useEffect(() => {
     if (id) markDoctorViewed(id)
   }, [id])
+
+  useEffect(() => {
+    let cancelled = false
+    const cached = getDoctorById(id)
+    if (cached) setRegistryDoctor(cached)
+    // Always revalidate against live public.providers so nmc_number/degree are current.
+    fetchProviderById(id, { force: true }).then((row) => {
+      if (!cancelled && row) setRegistryDoctor(row)
+    })
+    return subscribeProviders(() => {
+      const next = getDoctorById(id)
+      if (next) setRegistryDoctor(next)
+    })
+  }, [id])
+
   const pageRef = useRef(null)
   useRegisteredScroller('profile', pageRef)
   const onRefresh = useCallback(() => refreshDoctorsData(), [])
@@ -114,57 +130,59 @@ export default function DoctorProfile() {
     enabled: !shared?.morphing,
   })
   const now = useNow(15000)
-  const allConsultants = useMemo(() => getDoctorList(), [])
+  const [peerDoctors, setPeerDoctors] = useState(() => getDoctorList())
 
+  useEffect(() => {
+    const specialty = registryDoctor?.specialty
+    if (!specialty) return undefined
+    let cancelled = false
+    queryProviders({ specialty, page: 0, pageSize: 8, sort: 'rating' }).then((res) => {
+      if (!cancelled) setPeerDoctors(res.doctors)
+    })
+    return () => { cancelled = true }
+  }, [registryDoctor?.specialty])
+
+  const dbDoctor = registryDoctor
+  const liveCreds = dbDoctor ? pickDoctorCredentials(dbDoctor) : null
   const doctor = dbDoctor ? {
     id: dbDoctor.id,
+    providerUuid: dbDoctor.providerUuid,
     name: dbDoctor.name,
     shortName: dbDoctor.shortName,
     specialty: dbDoctor.specialty,
     rating: dbDoctor.rating,
     experience: dbDoctor.experience,
-    address: dbDoctor.address,
+    address: formatPlaceParts(dbDoctor.address),
     color: dbDoctor.color,
     initial: dbDoctor.initial,
     visitTypes: dbDoctor.visitTypes,
     fee: dbDoctor.fee,
-    photo: getDoctorPhoto(dbDoctor.id),
-    phone: dbDoctor.phone || `+91 98765 4321${dbDoctor.id}`,
-    about: dbDoctor.about || `${dbDoctor.name} is a highly qualified ${dbDoctor.specialty} with ${dbDoctor.experience}.`,
+    photo: dbDoctor.photo || getDoctorPhoto(dbDoctor.id),
+    phone: dbDoctor.phone || '',
+    about: dbDoctor.about || `${dbDoctor.name} is a registered ${dbDoctor.specialty} on the eMedicalls provider registry.`,
     specialties: dbDoctor.specialties || defaultSpecialties,
-    centers: dbDoctor.centers || defaultCenters,
+    centers: dbDoctor.primaryCenterName
+      ? [{ name: dbDoctor.primaryCenterName, address: formatPlaceParts(dbDoctor.address) || 'Nepal', distance: '' }]
+      : (dbDoctor.centers || defaultCenters),
     reviews: getDoctorReviewSummary(dbDoctor.id),
-  } : {
-    id: 1,
-    name: 'Doctor',
-    shortName: 'Doctor',
-    specialty: 'Specialist',
-    rating: 4.5,
-    experience: '5 years experience',
-    fee: 75,
-    photo: getDoctorPhoto(1),
-    address: 'India',
-    color: '#6366F1',
-    initial: 'D',
-    about: 'A qualified medical professional.',
-    specialties: defaultSpecialties,
-    centers: defaultCenters,
-    reviews: getDoctorReviewSummary(1),
-  }
+    nmcNumber: liveCreds.nmcNumber,
+    degree: liveCreds.degree,
+    isVerified: dbDoctor.isVerified,
+  } : null
 
-  const bookingDoctor = {
-    ...(allConsultants.find((item) => item.id === doctor.id) || {}),
+  const bookingDoctor = doctor ? {
     ...doctor,
     name: doctor.name,
     photo: doctor.photo,
-  }
-  const otherConsultants = allConsultants
-    .filter((item) => item.id !== doctor.id && item.specialty === doctor.specialty)
+  } : null
+
+  const otherConsultants = (peerDoctors || [])
+    .filter((item) => String(item.providerUuid || item.id) !== String(doctor?.providerUuid || doctor?.id))
     .slice(0, 4)
-    .map((item) => {
-      const full = getDoctorById(item.id)
-      return { ...item, name: full?.name || item.name }
-    })
+    .map((item) => ({
+      ...item,
+      name: item.name?.startsWith('Dr') ? item.name : `Dr. ${item.name}`,
+    }))
 
   const [isFavorite, setIsFavorite] = useState(false)
   const [scheduleType, setScheduleType] = useState(() => location.state?.visitType || resolveVisitType(preferredVisitType, dbDoctor?.visitTypes))
@@ -173,13 +191,12 @@ export default function DoctorProfile() {
   const [galleryOpen, setGalleryOpen] = useState(false)
   const profileIdRef = useRef(id)
 
-  const sharedFlow = shared?.active && String(shared.doctor?.id) === String(doctor.id)
+  const sharedFlow = shared?.active && doctor && String(shared.doctor?.id) === String(doctor.id)
   const hideHero = sharedFlow && shared.phase !== 'settled' && shared.phase !== 'hero-settled'
-  // Doctor payload is local — never trap the body behind a long skeleton wait.
   const contentReady = Boolean(doctor?.id) && (!sharedFlow || shared.phase !== 'preparing')
-  const showSkeletons = sharedFlow && shared.phase === 'preparing'
+  const showSkeletons = !doctor || (sharedFlow && shared.phase === 'preparing')
   useScrollLock('profile', showSkeletons)
-  const previewReviews = doctor.reviews.items.slice(0, 2)
+  const previewReviews = doctor?.reviews?.items?.slice(0, 2) || []
 
   useEffect(() => {
     if (profileIdRef.current === id) return
@@ -191,10 +208,11 @@ export default function DoctorProfile() {
   }, [id, preferredVisitType, dbDoctor?.visitTypes])
 
   useLayoutEffect(() => {
+    if (!doctor) return
     if (shared?.phase === 'preparing' && String(shared.doctor?.id) === String(doctor.id) && heroRef.current) {
       shared.registerDest(heroRef.current)
     }
-  }, [shared?.phase, doctor.id, shared])
+  }, [shared?.phase, doctor, shared])
 
   const slotMeta = (slot) => {
     const window = getSlotWindow(selectedDate, slot, now)
@@ -205,9 +223,9 @@ export default function DoctorProfile() {
   }
 
   const selectedWindow = selectedTime ? getSlotWindow(selectedDate, selectedTime, now) : null
-  const years = yearsFromExperience(doctor.experience)
-  const cases = casesLabel(doctor.reviews?.total)
-  const statRating = doctor.reviews?.rating ?? doctor.rating
+  const years = yearsFromExperience(doctor?.experience)
+  const cases = casesLabel(doctor?.reviews?.total)
+  const statRating = doctor?.reviews?.rating ?? doctor?.rating ?? 0
 
   const goBack = usePushBack(() => {
     if (sharedFlow) shared.startClose()
@@ -215,7 +233,7 @@ export default function DoctorProfile() {
   })
 
   const bookAppointment = () => {
-    if (!selectedTime || selectedWindow?.isPast) return
+    if (!doctor || !bookingDoctor || !selectedTime || selectedWindow?.isPast) return
     guard(bookingDoctor, ({ forSomeoneElse }) => {
       navigate('/booking/slot', {
         state: flowState(location, {
@@ -226,7 +244,7 @@ export default function DoctorProfile() {
           duration: '30 min',
           origin,
           restore,
-          returnTo: `/doctor/${doctor.id}`,
+          returnTo: `/doctor/${doctor.providerUuid || doctor.id}`,
           fromProfile: true,
           bookingMode: selectedWindow?.mode || 'standard',
           preferredVisitType: preferredVisitType || scheduleType,
@@ -234,6 +252,47 @@ export default function DoctorProfile() {
         }),
       })
     })
+  }
+
+  const shareProfile = useCallback(async () => {
+    const url = window.location.href
+    const title = doctor?.name ? `${doctor.name} on eMedicalls` : 'Doctor on eMedicalls'
+    const text = doctor?.specialty
+      ? `Check out ${doctor.name}, ${doctor.specialty}, on eMedicalls`
+      : 'Check out this doctor on eMedicalls'
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text, url })
+        return
+      }
+    } catch {
+      /* cancelled */
+    }
+    try {
+      await navigator.clipboard?.writeText(url)
+    } catch {
+      /* ignore */
+    }
+  }, [doctor])
+
+  if (!doctor) {
+    return (
+      <div className="doctor-profile is-skeleton has-cta">
+        <div className="profile-header">
+          <button type="button" className="ds-icon-btn is-xl profile-back-btn" data-push-back onClick={goBack} aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M19 12H5" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+          <h1 className="profile-header-title">Doctor Profile</h1>
+          <div className="profile-header-actions" />
+        </div>
+        <div className="profile-scroll is-loading">
+          <ProfileSkeletons />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -249,7 +308,7 @@ export default function DoctorProfile() {
         </button>
         <h1 className="profile-header-title">Doctor Profile</h1>
         <div className="profile-header-actions">
-          <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share">
+          <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share" onClick={shareProfile}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <circle cx="18" cy="5" r="3" />
               <circle cx="6" cy="12" r="3" />

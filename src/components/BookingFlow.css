@@ -13,7 +13,7 @@
 }
 
 .booking-layout.page-push-in {
-  animation: bookingPushIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: bookingPushIn var(--duration-page) var(--ease-page) both;
 }
 
 .booking-layout.is-under-overlay {
@@ -22,12 +22,10 @@
 
 @keyframes bookingPushIn {
   from {
-    transform: translate3d(18%, 0, 0);
-    opacity: var(--opacity-muted);
+    transform: translate3d(100%, 0, 0);
   }
   to {
     transform: translate3d(0, 0, 0);
-    opacity: var(--opacity-visible);
   }
 }
 

@@ -76,20 +76,26 @@ function ExploreIndexRedirect() {
   return null
 }
 
-/** Bridges TransitionProvider overlay state → global phone-screen scrim. */
+/** Bridges TransitionProvider overlay state → global phone-screen scrim + page recession. */
 function OverlayScrimBridge() {
   const { isAnyOverlayActive } = useTransition()
   useAppScrim(isAnyOverlayActive)
+
+  useEffect(() => {
+    const screen = document.getElementById('phone-screen')
+    if (!screen) return undefined
+    screen.classList.toggle('is-sheet-presented', Boolean(isAnyOverlayActive))
+    return () => screen.classList.remove('is-sheet-presented')
+  }, [isAnyOverlayActive])
+
   return null
 }
 
 function ChildPageLayout() {
   const location = useLocation()
-  const { isAnyOverlayActive } = useTransition()
   const onHome = isHomePath(location.pathname)
-  const dimInner = isAnyOverlayActive && !onHome
   return (
-    <div className={`page-layer-inner ${dimInner ? 'is-dimmed' : ''} ${onHome ? 'is-empty' : ''}`}>
+    <div className={`page-layer-inner ${onHome ? 'is-empty' : ''}`}>
       <PushStack />
     </div>
   )
@@ -144,16 +150,15 @@ function AppRoutes() {
             <Route path="/explore/:specialty" element={<ExploreSpecialtyPage />} />
             <Route path="/doctor/:id" element={<DoctorProfile />} />
             <Route path="/doctor/:id/reviews" element={<DoctorReviews />} />
-            <Route path="/booking" element={<BookingFlow />}>
-              <Route index element={<SelectProvider />} />
-              <Route path="slot" element={<SelectSlot />} />
-              <Route path="patient" element={<SelectPatient />} />
-              <Route path="confirm" element={<ConfirmBooking />} />
-            </Route>
+            {/* Sibling steps (not nested Outlet) so PushStack can keep prior
+                booking screens mounted as underlays for mirrored pop. */}
+            <Route path="/booking" element={<BookingFlow><SelectProvider /></BookingFlow>} />
+            <Route path="/booking/slot" element={<BookingFlow><SelectSlot /></BookingFlow>} />
+            <Route path="/booking/patient" element={<BookingFlow><SelectPatient /></BookingFlow>} />
+            <Route path="/booking/confirm" element={<BookingFlow><ConfirmBooking /></BookingFlow>} />
           </Route>
         </Routes>
       </div>
-      <OverlayScrimBridge />
       {isSpecialisationsOpen && (
         <SheetPortal to="screen">
           <ExploreSpecialisationsPage />
@@ -180,8 +185,8 @@ function AppProviders() {
     <BookingProvider key={user?.id || 'anon'}>
       <NotificationProvider>
         <OnboardingProvider>
-          <AuthGate>
-            <TransitionProvider>
+          <TransitionProvider>
+            <AuthGate>
               <DemoPreviewProvider>
                 <FetchSessionProvider>
                   <SharedHeroProvider>
@@ -190,13 +195,14 @@ function AppProviders() {
                       <BottomNav />
                       <NotificationPresentationSync />
                       <NotificationIsland />
-                      <AppScrimHost />
                     </FabProvider>
                   </SharedHeroProvider>
                 </FetchSessionProvider>
               </DemoPreviewProvider>
-            </TransitionProvider>
-          </AuthGate>
+            </AuthGate>
+            <OverlayScrimBridge />
+            <AppScrimHost />
+          </TransitionProvider>
         </OnboardingProvider>
       </NotificationProvider>
     </BookingProvider>

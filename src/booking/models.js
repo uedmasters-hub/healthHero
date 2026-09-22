@@ -6,7 +6,8 @@ import {
   PAYMENT_STATUS,
 } from './constants'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
-import { resolveProviderUuid } from '../features/providers'
+import { resolveProviderUuid, pickDoctorCredentials } from '../features/providers'
+import { formatPlaceParts } from '../features/geography/formatPlace'
 
 export function createId(prefix = 'bk') {
   const rand = Math.random().toString(36).slice(2, 8)
@@ -40,14 +41,17 @@ export function reviveDate(date) {
 }
 
 export function snapshotDoctor(doctor = {}) {
+  const creds = pickDoctorCredentials(doctor)
   return {
     id: doctor.id ?? null,
     providerUuid: doctor.providerUuid || resolveProviderUuid(doctor) || null,
     name: doctor.name || '',
     specialty: doctor.specialty || '',
+    degree: creds.degree || doctor.degree || '',
+    nmcNumber: creds.nmcNumber || doctor.nmcNumber || null,
     rating: doctor.rating ?? null,
     experience: doctor.experience || '',
-    address: doctor.address || '',
+    address: formatPlaceParts(doctor.address || ''),
     photo: resolveProviderPhoto(doctor) || '',
     fee: doctor.fee ?? null,
     phone: doctor.phone || '',
@@ -69,7 +73,7 @@ export function createPaymentContext(partial = {}) {
   return {
     status: PAYMENT_STATUS.NONE,
     amount: 0,
-    currency: 'INR',
+    currency: 'NPR',
     method: null,
     methodId: null,
     orderId: null,

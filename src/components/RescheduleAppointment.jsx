@@ -31,13 +31,13 @@ export default function RescheduleAppointment() {
     return null
   }
 
-  const oldDateStr = date.full.toLocaleDateString('en-IN', {
+  const oldDateStr = date.full.toLocaleDateString('en-NP', {
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   })
 
   const handleConfirm = () => {
     if (!selectedDate || !selectedTime) return
-    const newDateStr = selectedDate.full.toLocaleDateString('en-IN', {
+    const newDateStr = selectedDate.full.toLocaleDateString('en-NP', {
       weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
     })
     const [timePart, modifier] = selectedTime.split(' ')
@@ -67,7 +67,7 @@ export default function RescheduleAppointment() {
         rescheduleFee: 150,
         consultationFee: doctor.fee || 1200,
         insuranceCoverage: 200,
-        paymentMethod: 'UPI · ananya@okhdfcbank',
+        paymentMethod: 'eSewa · 9845271970',
         bookingMode: slotWindow.mode,
       }
     })
@@ -167,7 +167,7 @@ export default function RescheduleAppointment() {
           </div>
           <div className="rsch-policy-row">
             <span className="rsch-policy-label">Payment Method</span>
-            <span className="rsch-policy-value">UPI · ananya@okhdfcbank</span>
+            <span className="rsch-policy-value">eSewa · 9845271970</span>
           </div>
           <p className="rsch-policy-note">You'll only be charged after confirming the new time.</p>
         </div>

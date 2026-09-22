@@ -136,18 +136,26 @@ export function digitsOnly(value = '') {
   return String(value).replace(/\D/g, '')
 }
 
-export function indianMobile(value = '') {
+/** Normalize to a 10-digit Nepal mobile (strips +977 / legacy +91 / leading 0). */
+export function nepalMobile(value = '') {
   const digits = digitsOnly(value)
+  if (digits.length >= 13 && digits.startsWith('977')) return digits.slice(3, 13)
   if (digits.length === 12 && digits.startsWith('91')) return digits.slice(2)
   if (digits.length === 11 && digits.startsWith('0')) return digits.slice(1)
   return digits.slice(-10)
 }
 
-export function formatIndianPhone(value = '') {
-  const mobile = indianMobile(value)
+/** @deprecated Use nepalMobile — kept for existing imports */
+export const indianMobile = nepalMobile
+
+export function formatNepalPhone(value = '') {
+  const mobile = nepalMobile(value)
   if (mobile.length !== 10) return value || ''
-  return `+91 ${mobile.slice(0, 5)} ${mobile.slice(5)}`
+  return `+977 ${mobile.slice(0, 3)} ${mobile.slice(3, 6)} ${mobile.slice(6)}`
 }
+
+/** @deprecated Use formatNepalPhone */
+export const formatIndianPhone = formatNepalPhone
 
 // ── Flexible phone helpers (international) ──────────────────────────────────
 
@@ -171,31 +179,31 @@ export function phoneInput(value = '') {
 /**
  * Normalize a phone number for storage.
  * If it already starts with a country code (len >= 11), keep the full digits.
- * If exactly 10 digits (no country code), prefix with "91" (India default).
+ * If exactly 10 digits (no country code), prefix with "977" (Nepal default).
  * Returns the full digit string or empty.
- *   normalizePhone('4155552671')  → '14155552671'
- *   normalizePhone('14155552671') → '14155552671'
- *   normalizePhone('919876543210')→ '919876543210'
+ *   normalizePhone('9841234567')   → '9779841234567'
+ *   normalizePhone('9779841234567')→ '9779841234567'
+ *   normalizePhone('919876543210') → '919876543210' (legacy kept)
  */
 export function normalizePhone(value = '') {
   const digits = phoneDigits(value)
   if (!digits) return ''
   if (digits.length >= 11) return digits
-  if (digits.length === 10) return `91${digits}`
+  if (digits.length === 10) return `977${digits}`
   return digits
 }
 
 /**
  * Format a stored phone for display.
- *   formatPhone('919876543210')  → '+91 98765 43210'
- *   formatPhone('14155552671')   → '+1 (415) 555-2671'
- *   formatPhone('9876543210')    → '+91 98765 43210' (legacy 10-digit)
+ *   formatPhone('9779841234567') → '+977 984 123 4567'
+ *   formatPhone('9841234567')    → '+977 984 123 4567' (legacy 10-digit)
  */
 export function formatPhone(value = '') {
   const digits = phoneDigits(value)
   if (!digits) return ''
-  if (digits.length === 10) return formatIndianPhone(digits)
-  if (digits.startsWith('91') && digits.length === 12) return formatIndianPhone(digits)
+  if (digits.length === 10) return formatNepalPhone(digits)
+  if (digits.startsWith('977') && digits.length === 13) return formatNepalPhone(digits)
+  if (digits.startsWith('91') && digits.length === 12) return formatNepalPhone(digits)
   return `+${digits}`
 }
 
@@ -231,7 +239,7 @@ export function createMember(partial = {}) {
     dob,
     age: Number(partial.age) || ageFromDob(dob) || null,
     gender: partial.gender || '',
-    phone: formatIndianPhone(partial.phone || ''),
+    phone: formatNepalPhone(partial.phone || ''),
     address: (partial.address || '').trim(),
     relationship,
     category: relationship === 'Self' ? 'self' : relationship === 'Child' ? 'children' : 'family',
@@ -275,7 +283,7 @@ export function createUserRecord({
     id: id || createId('user'),
     credentials: {
       email: normalizeEmail(email),
-      phone: indianMobile(phone),
+      phone: nepalMobile(phone),
       passwordHash,
       salt,
     },
@@ -337,7 +345,7 @@ export function publicUser(user) {
   return {
     ...rest,
     email: credentials.email,
-    phone: formatIndianPhone(credentials.phone),
+    phone: formatNepalPhone(credentials.phone),
   }
 }
 
@@ -373,7 +381,7 @@ export function isPatientProfileComplete(patient) {
   const nameOk = String(patient.name || '').trim().length >= 2
   const ageOk = Boolean(Number(patient.age)) || Boolean(patient.dob)
   const genderOk = Boolean(patient.gender)
-  const phoneOk = indianMobile(patient.phone).length === 10
+  const phoneOk = nepalMobile(patient.phone).length === 10
   return nameOk && ageOk && genderOk && phoneOk
 }
 

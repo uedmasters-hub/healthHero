@@ -10,7 +10,9 @@ export {
   formatPhone,
   formatWeight,
   formatIndianPhone,
+  formatNepalPhone,
   indianMobile,
+  nepalMobile,
   initialsFromName,
   isPatientProfileComplete,
   isValidPhone,
@@ -27,7 +29,7 @@ export {
   publicUser,
   selfMember,
 } from './models'
-export { validateLogin, validateRegister, validateLoginFields, validateRegisterFields, validatePasswordFields, firstInvalidField, isValidEmail, isValidIndianMobile, isStrongPassword, passwordStrength } from './validation'
+export { validateLogin, validateRegister, validateLoginFields, validateRegisterFields, validatePasswordFields, firstInvalidField, isValidEmail, isValidIndianMobile, isValidNepalMobile, isStrongPassword, passwordStrength } from './validation'
 export {
   addFamilyMember,
   appendPaymentHistory,

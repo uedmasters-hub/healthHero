@@ -17,8 +17,16 @@ const categories = [
 export default function Categories() {
   const navigate = useNavigate()
   const { openSpecialisations } = useTransition()
-  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal()
+  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
+    dataset: 'home:categories',
+  })
   const moreIdx = categories.length
+
+  const openSpecialty = (name) => {
+    navigate(exploreSpecialtyPath(name), {
+      state: { origin: 'home', returnTo: '/' },
+    })
+  }
 
   return (
     <div className="categories">
@@ -30,7 +38,7 @@ export default function Categories() {
             revealed={isRevealed(i)}
             cached={isCached}
             ref={setItemRef(i)}
-            onClick={() => navigate(exploreSpecialtyPath(cat.name))}
+            onClick={() => openSpecialty(cat.name)}
           >
             <div className="category-icon">
               <img src={cat.image} alt={cat.name} />

@@ -1,4 +1,4 @@
-/* Horizontal push / mirrored-pop — reuses `.is-dimmed` motion language in reverse */
+/* Horizontal push / mirrored-pop — calm iOS-style, synced with PUSH_MOTION */
 
 .push-stack {
   position: absolute;
@@ -14,7 +14,6 @@
   inset: 0;
   z-index: 1;
   background: var(--white);
-  /* Same origin as `.app` / `.page-layer-inner` dim transitions */
   transform-origin: center 36%;
   will-change: transform, filter;
   backface-visibility: hidden;
@@ -23,9 +22,8 @@
 .push-stack__layer.is-under {
   z-index: 1;
   pointer-events: none;
-  /* Resting covered state = `.is-dimmed` */
-  transform: scale(0.96);
-  filter: brightness(0.75);
+  transform: scale(0.98);
+  filter: brightness(0.86);
   border-radius: var(--radius-device);
   overflow: hidden;
 }
@@ -38,45 +36,41 @@
   z-index: 3;
   pointer-events: auto;
   background: var(--white);
-  /* Explicit identity — avoids a post-pop snap from underlay dim styles */
   transform: none;
   filter: none;
   border-radius: 0;
-  box-shadow: -8px 0 28px rgba(15, 18, 28, 0.14);
+  box-shadow: -6px 0 24px rgba(15, 18, 28, 0.12);
   overflow: hidden;
 }
 
 .push-stack__layer.is-top.is-exiting {
-  /* Exiting top keeps its slide transform from the pop animation */
-  box-shadow: -8px 0 28px rgba(15, 18, 28, 0.14);
+  box-shadow: -6px 0 24px rgba(15, 18, 28, 0.12);
   overflow: hidden;
   pointer-events: none;
 }
 
-/* Push enter — right → left (existing page-push-in language) */
+/* Push enter — full-width slide from the right */
 .push-stack.is-pushing > .push-stack__layer.is-enter {
-  animation: pushStackEnter 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pushStackEnter var(--duration-page) var(--ease-page) both;
 }
 
-/* Underlay dims exactly like overlay presentation (`.is-dimmed`) */
 .push-stack.is-pushing > .push-stack__layer.is-under-active {
-  animation: pushStackUnderPush 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pushStackUnderPush var(--duration-page) var(--ease-page) both;
 }
 
-/* Mirrored pop — reverse of enter; underlay undims in lockstep */
 .push-stack.is-popping > .push-stack__layer.is-exiting {
-  animation: pushStackExit 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pushStackExit var(--duration-page) var(--ease-page) both;
   pointer-events: none;
   z-index: 4;
 }
 
 .push-stack.is-popping > .push-stack__layer.is-under-active:not(.is-exiting) {
-  animation: pushStackUnderPop 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pushStackUnderPop var(--duration-page) var(--ease-page) both;
   pointer-events: none;
 }
 
 .push-stack.is-swiping > .push-stack__layer.is-top {
-  box-shadow: -12px 0 32px rgba(15, 18, 28, 0.18);
+  box-shadow: -10px 0 28px rgba(15, 18, 28, 0.16);
 }
 
 /* Suppress per-page push keyframes — stack owns enter/exit */
@@ -86,16 +80,13 @@
 
 @keyframes pushStackEnter {
   from {
-    transform: translate3d(18%, 0, 0);
-    opacity: var(--opacity-muted, 0.92);
+    transform: translate3d(100%, 0, 0);
   }
   to {
     transform: translate3d(0, 0, 0);
-    opacity: 1;
   }
 }
 
-/* Forward underlay: identity → `.is-dimmed` */
 @keyframes pushStackUnderPush {
   from {
     transform: scale(1);
@@ -103,29 +94,25 @@
     border-radius: 0;
   }
   to {
-    transform: scale(0.96);
-    filter: brightness(0.75);
+    transform: scale(0.98);
+    filter: brightness(0.86);
     border-radius: var(--radius-device);
   }
 }
 
-/* Reverse of enter — slide back to the right and fully clear */
 @keyframes pushStackExit {
   from {
     transform: translate3d(0, 0, 0);
-    opacity: 1;
   }
   to {
     transform: translate3d(100%, 0, 0);
-    opacity: 1;
   }
 }
 
-/* Reverse of underlay dim — `.is-dimmed` → identity */
 @keyframes pushStackUnderPop {
   from {
-    transform: scale(0.96);
-    filter: brightness(0.75);
+    transform: scale(0.98);
+    filter: brightness(0.86);
     border-radius: var(--radius-device);
   }
   to {
@@ -135,28 +122,27 @@
   }
 }
 
-/* Home under the last push screen — same `.is-dimmed` resting + push/pop restore */
+/* Home under the last push screen */
 .page-layer.is-push-covering-home .home-layer.is-behind.is-push-underlay {
   visibility: visible;
   opacity: 1;
   z-index: 1;
   pointer-events: none;
-  transform: scale(0.96);
-  filter: brightness(0.75);
+  transform: scale(0.98);
+  filter: brightness(0.86);
   transform-origin: center 36%;
   border-radius: var(--radius-device);
   overflow: hidden;
 }
 
 .page-layer.is-push-pushing-home .home-layer.is-behind.is-push-underlay {
-  animation: pushStackHomeUnderPush 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pushStackHomeUnderPush var(--duration-page) var(--ease-page) both;
 }
 
-/* Interactive swipe-back over home — live dim restore */
 .page-layer.is-push-swiping-home .home-layer.is-behind.is-push-underlay {
   animation: none;
-  transform: scale(var(--push-swipe-scale, 0.96));
-  filter: brightness(var(--push-swipe-brightness, 0.75));
+  transform: scale(var(--push-swipe-scale, 0.98));
+  filter: brightness(var(--push-swipe-brightness, 0.86));
 }
 
 .page-layer.is-push-popping-home .home-layer.is-behind,
@@ -168,7 +154,7 @@
   transform-origin: center 36%;
   border-radius: var(--radius-device);
   overflow: hidden;
-  animation: pushStackHomeUnderPop 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pushStackHomeUnderPop var(--duration-page) var(--ease-page) both;
 }
 
 @keyframes pushStackHomeUnderPush {
@@ -177,15 +163,15 @@
     filter: brightness(1);
   }
   to {
-    transform: scale(0.96);
-    filter: brightness(0.75);
+    transform: scale(0.98);
+    filter: brightness(0.86);
   }
 }
 
 @keyframes pushStackHomeUnderPop {
   from {
-    transform: scale(0.96);
-    filter: brightness(0.75);
+    transform: scale(0.98);
+    filter: brightness(0.86);
   }
   to {
     transform: scale(1);
@@ -198,13 +184,11 @@
   background: transparent;
 }
 
-/* Empty layout must not block home taps */
 .page-layer-inner.is-empty {
   pointer-events: none;
   background: transparent;
 }
 
-/* Fixed back chevron — press only, no travel */
 .push-stack .user-profile-back-btn,
 .push-stack .profile-back-btn,
 .push-stack .back-btn,
@@ -216,7 +200,7 @@
 .push-stack .notif-page-back,
 .push-stack [data-push-back] {
   transform: translateZ(0);
-  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.14s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .push-stack .user-profile-back-btn:active,

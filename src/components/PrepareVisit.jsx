@@ -130,7 +130,7 @@ export default function PrepareVisit() {
     : new Date(currentBooking.date?.full || currentBooking.date)
   const dateStr = Number.isNaN(dateValue.getTime())
     ? ''
-    : dateValue.toLocaleDateString('en-IN', {
+    : dateValue.toLocaleDateString('en-NP', {
         weekday: 'short',
         day: 'numeric',
         month: 'short',

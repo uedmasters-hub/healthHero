@@ -70,10 +70,10 @@ export function makeDateValue(input = new Date()) {
   const d = input instanceof Date ? new Date(input) : new Date(input)
   d.setHours(0, 0, 0, 0)
   return {
-    day: d.toLocaleDateString('en-IN', { weekday: 'short' }),
+    day: d.toLocaleDateString('en-NP', { weekday: 'short' }),
     num: d.getDate(),
-    month: d.toLocaleDateString('en-IN', { month: 'short' }),
-    monthLong: d.toLocaleDateString('en-IN', { month: 'long' }),
+    month: d.toLocaleDateString('en-NP', { month: 'short' }),
+    monthLong: d.toLocaleDateString('en-NP', { month: 'long' }),
     year: d.getFullYear(),
     full: d,
   }

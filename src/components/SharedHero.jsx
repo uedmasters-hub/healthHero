@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { useLocation } from 'react-router-dom'
 import { displayDoctorName, relativeRect } from '../lib/geometry'
 import { freezeNow } from '../lib/scrollLock'
+import { pickDoctorCredentials } from '../features/providers'
 import { SheetPortal } from './PageTransition'
 import { formatMoney } from '../lib/paymentSession'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
@@ -28,6 +29,7 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
   const photo = resolveProviderPhoto(doctor) || '/img/doctors/new/doctor.png'
   const name = displayDoctorName(doctor?.name)
   const specialty = doctor?.specialty || 'Specialist'
+  const credentials = pickDoctorCredentials(doctor).line
   const experience = doctor?.experience || ''
   const rating = doctor?.rating ?? 4.8
   const cardLayout = layout === 'mini' ? 'grid is-mini' : layout
@@ -60,6 +62,7 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
             <p className="shared-hero-meta">
               <span className="shared-hero-specialty">{specialty}</span>
             </p>
+            {credentials ? <p className="shared-hero-degree">{credentials}</p> : null}
           </div>
           <span className="shared-hero-rating">
             <span aria-hidden="true">★</span>
@@ -91,6 +94,7 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
           {rating}
         </span>
       </p>
+      {credentials ? <p className="shared-hero-degree">{credentials}</p> : null}
       {experience ? <span className="shared-hero-exp">{experience}</span> : null}
       {layout === 'hero' && doctor?.fee != null ? (
         <p className="shared-hero-fee">

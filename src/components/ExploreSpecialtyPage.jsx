@@ -1,13 +1,14 @@
-import { useCallback, useLayoutEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { canonicalSpecialty, loadExploreListState } from '../data/specialisations'
 import { goBackToOrigin } from '../lib/careFlow'
+import { PUSH_MOTION } from '../features/pushNav/config'
+import { hydrateProviders } from '../features/providers'
 import { useTransition } from './PageTransition'
 import { usePushBack } from '../features/pushNav'
 import DoctorList from './DoctorList'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
-import { refreshHomeData } from '../features/sync/pageRefresh'
 import './BookingFlow.css'
 
 export default function ExploreSpecialtyPage() {
@@ -21,18 +22,26 @@ export default function ExploreSpecialtyPage() {
   const goBack = usePushBack(() => {
     goBackToOrigin(navigate, location, { openSpecialisations, openTopDoctors })
   })
-  const onRefresh = useCallback(() => refreshHomeData(), [])
+  // Only refresh the doctor registry — never trigger a full home data refresh
+  // while Home is sitting under the push underlay.
+  const onRefresh = useCallback(() => hydrateProviders({ force: true }), [])
   const ptr = usePullToRefresh(scrollRootRef, onRefresh)
 
-  useLayoutEffect(() => {
+  // Defer scroll restore until after the push settles — avoids fighting the slide.
+  useEffect(() => {
     const el = scrollRootRef.current
-    if (el && typeof saved?.scrollY === 'number') {
-      el.scrollTop = saved.scrollY
-    }
+    const y = saved?.scrollY
+    if (!el || typeof y !== 'number' || y <= 0) return undefined
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const delay = reduce ? 0 : PUSH_MOTION.DURATION_MS
+    const timer = window.setTimeout(() => {
+      if (scrollRootRef.current) scrollRootRef.current.scrollTop = y
+    }, delay)
+    return () => window.clearTimeout(timer)
   }, [specialty, saved?.scrollY])
 
   return (
-    <div className="booking-layout explore-layout page-push-in" ref={scrollRootRef}>
+    <div className="booking-layout explore-layout" ref={scrollRootRef}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="booking-header">
         <button className="back-btn" data-push-back onClick={goBack} aria-label="Back">

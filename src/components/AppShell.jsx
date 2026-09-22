@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import useNow from '../hooks/useNow'
 import { useDeviceShell, SHELL_MODE } from '../hooks/useDeviceShell'
+import { hasStickyCta } from '../features/fab/config'
 import './PhoneFrame.css'
 
 const IDLE_MS = 900
@@ -102,8 +104,12 @@ function StatusBatteryIcon() {
 export default function AppShell({ children }) {
   const shellMode = useDeviceShell()
   const isNative = shellMode === SHELL_MODE.NATIVE
+  const location = useLocation()
+  const stickyCta = hasStickyCta(location.pathname)
   const appRef = useRef(null)
-  const [navHidden, setNavHidden] = useState(false)
+  const [navHiddenState, setNavHidden] = useState(false)
+  // Sticky-footer screens: bottom CTA owns the safe area — never run Home-style nav hide.
+  const navHidden = stickyCta ? false : navHiddenState
   const now = useNow(1000)
   const liveTime = formatStatusTime(now)
 
@@ -127,7 +133,7 @@ export default function AppShell({ children }) {
 
   useEffect(() => {
     const app = appRef.current
-    if (!app) return undefined
+    if (!app || stickyCta) return undefined
     let idleTimer = 0
     const lastY = new WeakMap()
 
@@ -159,7 +165,7 @@ export default function AppShell({ children }) {
       app.removeEventListener('scroll', onScroll, { capture: true })
       window.clearTimeout(idleTimer)
     }
-  }, [])
+  }, [stickyCta])
 
   return (
     <div
@@ -172,7 +178,11 @@ export default function AppShell({ children }) {
           <span className="phone-btn phone-btn-vol-up" aria-hidden="true" />
           <span className="phone-btn phone-btn-vol-down" aria-hidden="true" />
           <span className="phone-btn phone-btn-power" aria-hidden="true" />
-          <div className="phone-screen" id="phone-screen" data-shell={shellMode}>
+          <div
+            className={`phone-screen${stickyCta ? ' is-sticky-cta' : ''}`}
+            id="phone-screen"
+            data-shell={shellMode}
+          >
             <header className="phone-status-bar" aria-hidden="true">
               <time className="phone-time" dateTime={now.toISOString()}>
                 {liveTime}

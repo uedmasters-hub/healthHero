@@ -4,18 +4,6 @@
   flex-direction: column;
   overflow: hidden;
   background: var(--white);
-  transform-origin: center 36%;
-  transition:
-    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    border-radius 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.app.is-dimmed {
-  transform: scale(0.96);
-  filter: brightness(0.75);
-  border-radius: var(--radius-device);
-  overflow: hidden;
 }
 
 .home-header {
@@ -104,23 +92,20 @@
   opacity: 0;
 }
 
+/* Keep Home painted under push/pop — never flash hidden mid-transition */
+.page-layer.is-push-covering-home .home-layer.is-behind,
+.page-layer.is-push-pushing-home .home-layer.is-behind,
+.page-layer.is-push-popping-home .home-layer.is-behind,
+.page-layer.is-push-swiping-home .home-layer.is-behind {
+  visibility: visible;
+  opacity: 1;
+}
+
 .page-layer-inner {
   position: absolute;
   inset: 0;
   z-index: 2;
   height: 100%;
-  transform-origin: center 36%;
-  transition:
-    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    border-radius 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.page-layer-inner.is-dimmed {
-  transform: scale(0.96);
-  filter: brightness(0.75);
-  border-radius: var(--radius-device);
-  overflow: hidden;
 }
 
 .dark-overlay {

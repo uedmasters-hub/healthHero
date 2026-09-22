@@ -111,6 +111,7 @@ export function FabProvider({ children }) {
 
   const value = useMemo(() => ({
     mode: config.mode,
+    motion: config.motion,
     actions: config.actions,
     action: config.action,
     setOverride,

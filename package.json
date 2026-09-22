@@ -9,7 +9,9 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "import:providers": "node scripts/import-pocketpills-providers.mjs",
-    "bootstrap:catalog": "npx vite-node scripts/bootstrap-generated-catalog.mjs"
+    "migrate:registry": "node scripts/migrate/run-registry-migration.mjs",
+    "migrate:registry:promote": "node scripts/migrate/run-registry-migration.mjs --promote-only",
+    "migrate:validate": "node scripts/migrate/validate-registry.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

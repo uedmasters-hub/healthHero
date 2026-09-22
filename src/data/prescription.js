@@ -2,8 +2,8 @@ export const defaultPrescription = {
   id: 'rx-menon-2026-0204',
   clinic: {
     name: 'HealthFirst Medical Centre',
-    address: '22 Linking Road, Bandra West, Mumbai 400050',
-    phone: '+91 22 2640 1122',
+    address: 'Thapathali, Kathmandu',
+    phone: '+977 22 2640 1122',
     email: 'info@healthfirst.in',
   },
   patient: {
@@ -27,7 +27,7 @@ export const defaultPrescription = {
 
 export function prescriptionFromVisit(visit, extras = {}) {
   const date = visit.start instanceof Date
-    ? visit.start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    ? visit.start.toLocaleDateString('en-NP', { day: 'numeric', month: 'short', year: 'numeric' })
     : defaultPrescription.patient.date
 
   return {

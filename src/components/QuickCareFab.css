@@ -1,6 +1,9 @@
 /*
-  Quick Care — speed-dial above bottom nav.
-  Travels with .phone-app.nav-hidden / .bottom-nav.is-search-away (same 0.28s ease).
+  Quick Care FAB — two motion patterns:
+
+  Home-style (.is-scroll-motion): may ride bottom-nav hide/show while scrolling.
+  Sticky-footer / fixed (.is-fixed-motion): never translates with scroll; CTA owns
+  the bottom safe area. On sticky-CTA screens the FAB is usually hidden entirely.
 */
 
 .quick-care {
@@ -19,14 +22,34 @@
   gap: 10px;
   pointer-events: none;
   transform: translate3d(0, 0, 0);
-  transition: transform 0.28s ease;
   will-change: transform;
 }
 
-/* Match BottomNav hide — parent is #phone-screen via portal */
-.phone-screen:has(.phone-app.nav-hidden) .quick-care,
-.phone-screen:has(.bottom-nav.is-search-away) .quick-care {
+/* Home-style only — sticky-footer screens never get this class. */
+.quick-care.is-scroll-motion {
+  transition: transform 0.28s ease;
+}
+
+.phone-screen:has(.phone-app.nav-hidden) .quick-care.is-scroll-motion,
+.phone-screen:has(.bottom-nav.is-search-away) .quick-care.is-scroll-motion {
   transform: translate3d(0, var(--qc-nav-stack), 0);
+}
+
+/* Fixed motion — never ride nav hide; stay clear of sticky CTAs if present. */
+.quick-care.is-fixed-motion {
+  transition: none;
+  transform: none;
+}
+
+.phone-screen.is-sticky-cta .quick-care.is-fixed-motion {
+  bottom: calc(var(--sticky-footer-clearance, 120px) + var(--fab-cta-gap, 22px));
+}
+
+/* Defensive: sticky-CTA shell never lets any FAB scroll into the CTA zone. */
+.phone-screen.is-sticky-cta .quick-care.is-scroll-motion {
+  transform: none !important;
+  transition: none;
+  bottom: calc(var(--sticky-footer-clearance, 120px) + var(--fab-cta-gap, 22px));
 }
 
 .quick-care__actions {
@@ -193,6 +216,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .quick-care,
+  .quick-care.is-scroll-motion,
   .quick-care__pill,
   .quick-care__fab,
   .quick-care__fab-icon {

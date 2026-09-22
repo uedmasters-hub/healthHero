@@ -1,5 +1,6 @@
 import { formatAppDate } from '../lib/locale'
-import { createAddress, createId, formatIndianPhone } from './models'
+import { formatPlaceParts } from '../features/geography/formatPlace'
+import { createAddress, createId, formatNepalPhone } from './models'
 
 export const HEALTH_KINDS = Object.freeze([
   'reports',
@@ -68,7 +69,7 @@ export function createEmergencyContact(partial = {}) {
     id: partial.id || createId(PREFIX.emergency),
     name: String(partial.name || '').trim(),
     relation: String(partial.relation || partial.relationship || '').trim(),
-    phone: formatIndianPhone(partial.phone || ''),
+    phone: formatNepalPhone(partial.phone || ''),
   }
 }
 
@@ -337,7 +338,7 @@ export function listItemMeta(kind, item) {
     const till = item.validTill ? `Valid till ${displayHealthDate(item.validTill)}` : ''
     return [item.policyNo, item.type, till].filter(Boolean).join(' · ')
   }
-  if (kind === 'addresses') return [item.line, item.city].filter(Boolean).join(', ')
+  if (kind === 'addresses') return formatPlaceParts(item.line, item.city)
   return healthItemMeta(item)
 }
 

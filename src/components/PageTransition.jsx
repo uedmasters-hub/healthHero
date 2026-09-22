@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { MOTION } from '../lib/motion'
 
 const TransitionContext = createContext()
-const SHEET_CLOSE_MS = 250
+const SHEET_CLOSE_MS = MOTION.SHEET_MS
 
 export function useTransition() {
   return useContext(TransitionContext)
@@ -21,7 +22,9 @@ export function SheetPortal({ children, to = 'app' }) {
 }
 
 export function useAppSheet() {
-  const { openSheet, closeSheet } = useTransition()
+  const ctx = useTransition()
+  const openSheet = ctx?.openSheet
+  const closeSheet = ctx?.closeSheet
   const [visible, setVisible] = useState(false)
   const [closing, setClosing] = useState(false)
   const closingRef = useRef(false)
@@ -36,7 +39,7 @@ export function useAppSheet() {
     closingRef.current = false
     setClosing(false)
     setVisible(true)
-    if (!registeredRef.current) {
+    if (!registeredRef.current && openSheet) {
       registeredRef.current = true
       openSheet()
     }
@@ -46,7 +49,7 @@ export function useAppSheet() {
     if (closingRef.current) return
     closingRef.current = true
     setClosing(true)
-    if (registeredRef.current) {
+    if (registeredRef.current && closeSheet) {
       registeredRef.current = false
       closeSheet(SHEET_CLOSE_MS)
     }
@@ -61,7 +64,7 @@ export function useAppSheet() {
 
   useEffect(() => () => {
     if (timerRef.current) window.clearTimeout(timerRef.current)
-    if (registeredRef.current) {
+    if (registeredRef.current && closeSheet) {
       registeredRef.current = false
       closeSheet(0)
     }
@@ -107,17 +110,22 @@ export function TransitionProvider({ children }) {
     setTimeout(() => {
       setIsSpecialisationsOpen(false)
       setIsSpecialisationsSlidingOut(false)
-    }, 350)
+    }, SHEET_CLOSE_MS)
   }, [])
 
-  const parkSpecialisations = useCallback(() => {
+  const parkSpecialisations = useCallback((opts = {}) => {
+    const ghost = opts?.ghost === true
     if (specialisationsParkTimer.current) clearTimeout(specialisationsParkTimer.current)
     setIsSpecialisationsParked(true)
+    if (ghost) {
+      setIsSpecialisationsSlidingOut(false)
+      return
+    }
     setIsSpecialisationsSlidingOut(true)
     specialisationsParkTimer.current = setTimeout(() => {
       setIsSpecialisationsSlidingOut(false)
       specialisationsParkTimer.current = null
-    }, 350)
+    }, SHEET_CLOSE_MS)
   }, [])
 
   const dismissSpecialisations = parkSpecialisations
@@ -132,7 +140,7 @@ export function TransitionProvider({ children }) {
     setTimeout(() => {
       setIsServicesOpen(false)
       setIsServicesSlidingOut(false)
-    }, 250)
+    }, SHEET_CLOSE_MS)
   }, [])
 
   const openInsights = useCallback(() => {
@@ -145,7 +153,7 @@ export function TransitionProvider({ children }) {
     setTimeout(() => {
       setIsInsightsOpen(false)
       setIsInsightsSlidingOut(false)
-    }, 250)
+    }, SHEET_CLOSE_MS)
   }, [])
 
   const openTopDoctors = useCallback(() => {
@@ -170,7 +178,7 @@ export function TransitionProvider({ children }) {
     setTimeout(() => {
       setIsTopDoctorsOpen(false)
       setIsTopDoctorsSlidingOut(false)
-    }, 360)
+    }, SHEET_CLOSE_MS)
   }, [])
 
   const parkTopDoctors = useCallback((opts = {}) => {
@@ -189,7 +197,7 @@ export function TransitionProvider({ children }) {
     topDoctorsParkTimer.current = setTimeout(() => {
       setIsTopDoctorsSlidingOut(false)
       topDoctorsParkTimer.current = null
-    }, 350)
+    }, SHEET_CLOSE_MS)
   }, [])
 
   const revealParkedTopDoctors = useCallback(() => {

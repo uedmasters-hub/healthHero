@@ -41,28 +41,50 @@ export function goBackToOrigin(navigate, location, overlays) {
   const returnTo = state.returnTo
   const canReturn = returnTo && returnTo !== location.pathname
 
+  // Prefer history.back so PushStack POP reconciles cleanly and Home stays
+  // mounted without a fresh navigate('/') PUSH (which forced a re-settle).
+  const popHome = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      navigate(-1)
+      return
+    }
+    navigate('/')
+  }
+
   if (state.restore?.topDoctors) {
-    navigate(canReturn && !String(returnTo).startsWith('/doctor/') ? returnTo : '/')
+    if (canReturn && !isHomePath(returnTo) && !String(returnTo).startsWith('/doctor/')) {
+      navigate(returnTo)
+      return
+    }
+    popHome()
     return
   }
 
   if (state.restore?.specialisations) {
     overlays?.openSpecialisations?.()
-    navigate(canReturn && !String(returnTo).startsWith('/doctor/') ? returnTo : '/')
+    if (canReturn && !isHomePath(returnTo) && !String(returnTo).startsWith('/doctor/')) {
+      navigate(returnTo)
+      return
+    }
+    popHome()
     return
   }
 
   if (state.restore?.insights && (!canReturn || isHomePath(returnTo))) {
     overlays?.openInsights?.()
-    navigate('/')
+    popHome()
     return
   }
 
   if (canReturn) {
-    if (isHomePath(returnTo)) restoreOriginOverlays(state, overlays)
+    if (isHomePath(returnTo)) {
+      restoreOriginOverlays(state, overlays)
+      popHome()
+      return
+    }
     navigate(returnTo, { state: flowState(state) })
     return
   }
 
-  navigate('/')
+  popHome()
 }

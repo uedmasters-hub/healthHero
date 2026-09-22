@@ -28,6 +28,24 @@
   background: var(--white);
   flex-shrink: 0;
   z-index: 2;
+  max-height: calc(var(--text-hero-size) + var(--text-body-size) + var(--space-8));
+  overflow: hidden;
+  opacity: var(--opacity-visible);
+  transform: translate3d(0, 0, 0);
+  transition:
+    max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.24s ease,
+    padding 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.treat-page.is-search .treat-header {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: var(--opacity-hidden);
+  pointer-events: none;
+  transform: translate3d(0, -12px, 0);
 }
 
 .treat-header-left {
@@ -85,20 +103,30 @@
   color: var(--icon-color-brand);
 }
 
-.treat-search {
-  padding: 0 var(--content-padding) var(--space-2);
-  flex-shrink: 0;
+.treat-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
 .treat-scroll {
-  flex: 1;
-  min-height: 0;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding-bottom: 0;
   background: var(--white);
+  opacity: var(--opacity-visible);
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.28s ease, transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.treat-page.is-search .treat-scroll {
+  overflow: hidden;
+  opacity: var(--opacity-hidden);
+  transform: translate3d(0, 8px, 0);
+  pointer-events: none;
 }
 
 .treat-page .app-footer {

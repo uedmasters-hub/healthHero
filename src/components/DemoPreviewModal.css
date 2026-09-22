@@ -7,11 +7,10 @@
   justify-content: center;
   padding: var(--space-6);
   background: transparent;
-  animation: demoPreviewFadeIn 0.2s ease;
 }
 
 .demo-preview-overlay.is-closing {
-  animation: demoPreviewFadeOut 0.2s ease forwards;
+  pointer-events: none;
 }
 
 .demo-preview-modal {
@@ -22,11 +21,11 @@
   padding: var(--space-6) var(--space-5) var(--space-5);
   text-align: center;
   box-shadow: var(--shadow-modal);
-  animation: demoPreviewRise 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: demoPreviewRise var(--duration-dialog) var(--ease-sheet);
 }
 
 .demo-preview-overlay.is-closing .demo-preview-modal {
-  animation: demoPreviewSettle 0.2s ease forwards;
+  animation: demoPreviewSettle var(--duration-dialog) var(--ease-sheet) forwards;
 }
 
 .demo-preview-mark {
@@ -81,21 +80,21 @@
 @keyframes demoPreviewRise {
   from {
     opacity: var(--opacity-hidden);
-    transform: translateY(8px) scale(0.98);
+    transform: scale(0.96);
   }
   to {
     opacity: var(--opacity-visible);
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
 @keyframes demoPreviewSettle {
   from {
     opacity: var(--opacity-visible);
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
   to {
     opacity: var(--opacity-hidden);
-    transform: translateY(6px) scale(0.98);
+    transform: scale(0.96);
   }
 }

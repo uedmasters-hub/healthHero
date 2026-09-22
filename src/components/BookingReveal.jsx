@@ -3,7 +3,7 @@ import { useFetchSession } from './FetchSession'
 import './BookingFlow.css'
 
 const STAGED_MS = 90
-const SKELETON_MS = 320
+const SKELETON_MS = 360
 
 /**
  * Reveal gate for booking / detail screens.

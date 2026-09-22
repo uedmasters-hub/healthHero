@@ -2,6 +2,8 @@
  * Compact appointment fields for SharedHero morph + instant first paint.
  * Built from the in-memory booking — never waits on a network fetch.
  */
+import { formatPlaceParts } from '../features/geography/formatPlace'
+
 export function buildAppointmentPreview(booking) {
   if (!booking) return null
 
@@ -12,7 +14,7 @@ export function buildAppointmentPreview(booking) {
       ? new Date(rawDate)
       : null
   const dateStr = dateValue && !Number.isNaN(dateValue.getTime())
-    ? dateValue.toLocaleDateString('en-IN', {
+    ? dateValue.toLocaleDateString('en-NP', {
         weekday: 'short',
         day: 'numeric',
         month: 'short',
@@ -22,6 +24,7 @@ export function buildAppointmentPreview(booking) {
   const time = booking.time || booking.schedule?.time || ''
   const visitType = booking.visitType || booking.schedule?.visitType || 'In-Person'
   const doctor = booking.doctor || {}
+  const locationLabel = formatPlaceParts(doctor.address || '')
 
   const cells = []
   if (booking.patient?.name) {
@@ -33,13 +36,13 @@ export function buildAppointmentPreview(booking) {
   if (dateStr) cells.push({ label: 'Date', value: dateStr })
   if (time) cells.push({ label: 'Time', value: time })
   cells.push({ label: 'Type', value: `${visitType} Visit` })
-  if (doctor.address) cells.push({ label: 'Location', value: doctor.address })
+  if (locationLabel) cells.push({ label: 'Location', value: locationLabel })
 
   return {
     date: dateStr,
     time,
     visitType,
-    location: doctor.address || '',
+    location: locationLabel,
     patient: booking.patient?.name || '',
     cells: cells.slice(0, 4),
   }

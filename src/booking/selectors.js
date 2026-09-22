@@ -269,7 +269,7 @@ export function selectCareHistory(state, now = new Date()) {
         : new Date(legacy.date?.full || legacy.date)
       const dateLabel = Number.isNaN(dateValue.getTime())
         ? ''
-        : dateValue.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : dateValue.toLocaleDateString('en-NP', { day: 'numeric', month: 'short', year: 'numeric' })
       const displayName = legacy.providerName
         || (legacy.doctor?.name
           ? `Dr. ${String(legacy.doctor.name).replace(/^Dr\.?\s*/i, '')}`

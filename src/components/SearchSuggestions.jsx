@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { freezeNow } from '../lib/scrollLock'
 import { getSearchSuggestions, highlightMatch } from '../data/searchCatalog'
+import { searchProviders } from '../features/providers'
 import { exploreSpecialtyPath } from '../data/specialisations'
 import { runServiceAction } from '../lib/serviceActions'
 import { articlePath } from '../data/articles'
@@ -29,16 +31,40 @@ function HighlightedLabel({ text, query }) {
 export default function SearchSuggestions({ query, active = false }) {
   const navigate = useNavigate()
   const { show: showDemoPreview } = useDemoPreview()
-  const items = getSearchSuggestions(query)
+  const [liveDoctors, setLiveDoctors] = useState(null)
+  const trimmed = String(query || '').trim()
+
+  useEffect(() => {
+    if (!trimmed) {
+      setLiveDoctors(null)
+      return undefined
+    }
+    let cancelled = false
+    const timer = window.setTimeout(() => {
+      searchProviders(trimmed, { limit: 8 }).then((rows) => {
+        if (!cancelled) setLiveDoctors(rows)
+      }).catch(() => {
+        if (!cancelled) setLiveDoctors([])
+      })
+    }, 220)
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [trimmed])
+
+  const items = getSearchSuggestions(query, liveDoctors)
 
   const openItem = (item) => {
     if (item.type === 'doctor') {
       freezeNow('home')
-      navigate(`/doctor/${item.id}`, { state: { origin: 'home' } })
+      navigate(`/doctor/${item.id}`, { state: { origin: 'home', returnTo: '/' } })
       return
     }
     if (item.type === 'specialisation') {
-      navigate(exploreSpecialtyPath(item.label))
+      navigate(exploreSpecialtyPath(item.label), {
+        state: { origin: 'search', returnTo: '/' },
+      })
       return
     }
     if (item.type === 'article') {
@@ -69,7 +95,12 @@ export default function SearchSuggestions({ query, active = false }) {
           >
             <SuggestIcon />
             <span className="search-suggest-text">
-              <HighlightedLabel text={item.label} query={query} />
+              <span className="search-suggest-label">
+                <HighlightedLabel text={item.label} query={query} />
+              </span>
+              {item.meta ? (
+                <span className="search-suggest-meta">{item.meta}</span>
+              ) : null}
             </span>
           </button>
         ))

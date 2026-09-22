@@ -1,6 +1,10 @@
 /**
- * Shared sticky footer CTA used by Appointment Details and Ready for Visit.
+ * Shared sticky footer CTA used by Appointment Details, Ready for Visit, Payment, etc.
  * Layout tokens live in index.css (.sticky-footer-cta*) — do not override spacing per page.
+ *
+ * Interaction rule: this footer owns the bottom safe area. Screens that render it are
+ * sticky-CTA surfaces — Home-style scroll FAB motion is disabled, and secondary actions
+ * must stay above (--fab-cta-gap), never overlapping the primary CTA.
  */
 export default function StickyFooterCta({
   primaryLabel,

@@ -176,8 +176,28 @@
   width: 100%;
   overflow: hidden;
   background: var(--white);
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
+  transform-origin: 50% 42%;
   isolation: isolate;
+  transition:
+    transform var(--duration-sheet) var(--ease-sheet),
+    border-radius var(--duration-sheet) var(--ease-sheet);
+}
+
+#phone-screen.is-sheet-presented .phone-app {
+  transform: translate3d(0, var(--sheet-recess-shift), 0) scale(var(--sheet-recess-scale));
+  border-radius: var(--radius-device);
+  overflow: hidden;
+}
+
+#phone-screen.is-sheet-presented .phone-status-bar {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-app {
+    transition: none;
+  }
 }
 
 .phone-screen.rx-open {

@@ -33,10 +33,8 @@ export default function HomePage() {
   const [query, setQuery] = useState('')
   // Only freeze while the hero is actually morphing — settled leftovers must not block Home.
   const freezeHome = !isFront || searchActive || isAnyOverlayActive || Boolean(shared?.morphing)
-  const searchOrigin = location.state?.searchOrigin
   const searchPlaceholder = location.state?.searchPlaceholder
   const searchReturnTo = location.state?.returnTo
-  const isPharmacySearch = searchOrigin === 'pharmacy'
 
   const onRefresh = useCallback(() => refreshHomeData(), [])
   const ptr = usePullToRefresh(stageRef, onRefresh, {
@@ -73,11 +71,11 @@ export default function HomePage() {
   }
 
   const closeSearch = () => {
-    navigate(isPharmacySearch ? (searchReturnTo || '/pharmacy') : '/')
+    navigate(searchReturnTo || '/')
   }
 
   return (
-    <div className={`app ${searchActive ? 'is-search' : ''} ${isAnyOverlayActive ? 'is-dimmed' : ''}`}>
+    <div className={`app ${searchActive ? 'is-search' : ''}`}>
       <div
         className="home-header"
         aria-hidden={searchActive}
@@ -101,8 +99,8 @@ export default function HomePage() {
           query={query}
           onQueryChange={setQuery}
           onCancel={closeSearch}
-          idlePlaceholder={isPharmacySearch ? searchPlaceholder : undefined}
-          activePlaceholder={isPharmacySearch ? searchPlaceholder : undefined}
+          idlePlaceholder={searchPlaceholder}
+          activePlaceholder={searchPlaceholder}
         />
       ) : null}
 

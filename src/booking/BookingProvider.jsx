@@ -139,8 +139,8 @@ export function BookingProvider({ children }) {
         appendPaymentHistory({
           id: record.payment?.orderId || record.id,
           amount: record.payment?.amount,
-          currency: record.payment?.currency || 'INR',
-          method: record.payment?.method || 'UPI',
+          currency: record.payment?.currency || 'NPR',
+          method: record.payment?.method || 'eSewa',
           label: `Consultation · ${record.doctor?.name || record.providerName || 'Doctor'}`,
           paidAt: record.payment?.paidAt || new Date().toISOString(),
         })

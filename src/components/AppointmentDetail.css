@@ -858,17 +858,15 @@
   display: flex;
   align-items: flex-end;
   background: transparent;
-  animation: appointmentFadeIn 0.2s ease;
 }
 
 .appointment-sheet-overlay.is-closing {
-  animation: appointmentFadeOut 0.25s ease forwards;
+  pointer-events: none;
 }
 
 .appointment-sheet-overlay.is-closing .appointment-sheet {
-  animation: appointmentSlideDown 0.25s ease forwards;
+  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
   box-shadow: var(--shadow-sheet);
-
 }
 
 .appointment-sheet {
@@ -878,7 +876,7 @@
   padding: var(--space-2) var(--space-5) var(--bottom-bar-pad);
   max-height: 72vh;
   overflow-y: auto;
-  animation: appointmentSlideUp 0.3s ease;
+  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
 }
 
 .appointment-sheet-header {
@@ -985,22 +983,3 @@
   cursor: pointer;
 }
 
-@keyframes appointmentFadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
-
-@keyframes appointmentFadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
-}
-
-@keyframes appointmentSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-@keyframes appointmentSlideDown {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
-}

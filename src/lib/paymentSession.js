@@ -21,14 +21,14 @@ export const PAYMENT_METHODS = [
     id: 'card',
     label: 'Credit / Debit Card',
     kind: 'card',
-    subtitle: 'HDFC Bank •••• 4242 · Expires 08/27',
+    subtitle: 'Nabil Bank •••• 4242 · Expires 08/27',
     logos: ['/img/payment/visa.png', '/img/payment/mastercard.png'],
   },
   {
     id: 'upi',
-    label: 'UPI / Instant Pay',
+    label: 'Digital Wallet',
     kind: 'upi',
-    subtitle: 'Pay with Google Pay, PhonePe, or Paytm.',
+    subtitle: 'Pay with eSewa, Khalti, or Fonepay.',
     logos: ['/img/payment/gpay.png', '/img/payment/phonepe.png'],
     default: true,
   },
@@ -43,22 +43,22 @@ export const PAYMENT_METHODS = [
     id: 'netbanking',
     label: 'Net Banking',
     kind: 'netbanking',
-    subtitle: 'All major national and regional banks.',
+    subtitle: 'All major Nepal banks.',
   },
 ]
 
 export const UPI_APPS = [
-  { id: 'gpay', label: 'Google Pay', logo: '/img/payment/gpay.png' },
-  { id: 'phonepe', label: 'PhonePe', logo: '/img/payment/phonepe.png' },
-  { id: 'paytm', label: 'Paytm', logo: '/img/payment/paytm.png' },
+  { id: 'esewa', label: 'eSewa', logo: '/img/payment/gpay.png' },
+  { id: 'khalti', label: 'Khalti', logo: '/img/payment/phonepe.png' },
+  { id: 'fonepay', label: 'Fonepay', logo: '/img/payment/paytm.png' },
 ]
 
 export const NET_BANKS = [
-  { id: 'hdfc', label: 'HDFC Bank' },
-  { id: 'icici', label: 'ICICI Bank' },
-  { id: 'sbi', label: 'State Bank of India' },
-  { id: 'axis', label: 'Axis Bank' },
-  { id: 'kotak', label: 'Kotak Mahindra Bank' },
+  { id: 'nabil', label: 'Nabil Bank' },
+  { id: 'nicasia', label: 'NIC Asia Bank' },
+  { id: 'nbl', label: 'Nepal Bank Limited' },
+  { id: 'globalime', label: 'Global IME Bank' },
+  { id: 'kumari', label: 'Kumari Bank' },
 ]
 
 export function createOrderId() {
@@ -66,10 +66,12 @@ export function createOrderId() {
   return `MED-${n}`
 }
 
-export function formatMoney(amount, currency = 'INR') {
+export function formatMoney(amount, currency = 'NPR') {
   const value = Number(amount) || 0
   const digits = Number.isInteger(value) ? 0 : 2
-  return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: digits, maximumFractionDigits: 2 })}`
+  const formatted = value.toLocaleString('en-NP', { minimumFractionDigits: digits, maximumFractionDigits: 2 })
+  if (String(currency).toUpperCase() === 'NPR') return `Rs. ${formatted}`
+  return `${currency} ${formatted}`
 }
 
 export function amountFromDoctor(doctor, fallback = 800) {
@@ -150,7 +152,7 @@ export function createPaymentSession({
   draftBooking,
   appointmentData = null,
   amount,
-  currency = 'INR',
+  currency = 'NPR',
 } = {}) {
   const fee = amount != null ? Number(amount) : amountFromDoctor(draftBooking?.doctor)
   return {
@@ -273,7 +275,7 @@ export function paymentLabelFromSession(session) {
   if (method.id === 'upi') {
     if (session.upiMode === 'id' && session.upiId) return session.upiId
     const app = UPI_APPS.find((item) => item.id === session.upiAppId)
-    return app?.label || 'UPI'
+    return app?.label || 'Digital wallet'
   }
   if (method.id === 'netbanking') {
     const bank = NET_BANKS.find((item) => item.id === session.bankId)
@@ -305,7 +307,7 @@ export function resolveMethodView(session, method) {
     if (session.upiMode === 'app' && session.upiAppId) {
       const app = UPI_APPS.find((item) => item.id === session.upiAppId)
       return {
-        label: app?.label || 'UPI',
+        label: app?.label || 'Digital wallet',
         subtitle: null,
         status: 'Ready to continue',
         logos: app?.logo ? [app.logo] : null,
@@ -329,7 +331,7 @@ export function resolveMethodView(session, method) {
     }
     return {
       label: method.label,
-      subtitle: 'Choose a UPI app or enter UPI ID',
+      subtitle: 'Choose eSewa, Khalti, Fonepay, or enter a wallet ID',
       status: null,
       logos: method.logos,
       balance: null,
@@ -465,7 +467,7 @@ export function buildPaidBooking(session) {
     payment: {
       status: 'paid',
       amount: session.amount,
-      currency: session.currency || 'INR',
+      currency: session.currency || 'NPR',
       method: paymentLabelFromSession(session),
       methodId: session.selectedMethodId,
       upiAppId: session.upiAppId || null,

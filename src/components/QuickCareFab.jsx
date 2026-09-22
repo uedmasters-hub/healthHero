@@ -5,7 +5,7 @@ import { Types, Priority } from '../features/notifications/models'
 import { useAppScrim } from './AppScrim'
 import { subscribeScrimClick } from '../lib/appScrim'
 import { useFab } from '../features/fab/FabProvider'
-import { FAB_MODE } from '../features/fab/config'
+import { FAB_MODE, FAB_MOTION } from '../features/fab/config'
 import { FabIcon } from '../features/fab/icons'
 import './QuickCareFab.css'
 
@@ -16,7 +16,7 @@ const CLOSE_MS = 220
  * Presentation only; mode + actions come from FabProvider + config.js.
  */
 export default function QuickCareFab() {
-  const { mode, actions, action, runAction, isHidden } = useFab()
+  const { mode, motion, actions, action, runAction, isHidden } = useFab()
   const menuId = useId()
   const [open, setOpen] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -154,6 +154,7 @@ export default function QuickCareFab() {
   if (isHidden || !portalEl) return null
 
   const isUtility = mode === FAB_MODE.UTILITY
+  const isScrollMotion = motion === FAB_MOTION.SCROLL
   const fabIcon = isUtility ? (action?.icon || 'plus') : 'plus'
   const fabLabel = isUtility
     ? (action?.label || 'Action')
@@ -166,6 +167,7 @@ export default function QuickCareFab() {
         expanded ? 'is-open' : '',
         closing ? 'is-closing' : '',
         isUtility ? 'is-utility' : 'is-hub',
+        isScrollMotion ? 'is-scroll-motion' : 'is-fixed-motion',
       ].filter(Boolean).join(' ')}
     >
       {mode === FAB_MODE.HUB ? (

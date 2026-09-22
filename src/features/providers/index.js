@@ -1,5 +1,7 @@
 export {
   hydrateProviders,
+  queryProviders,
+  searchProviders,
   subscribeProviders,
   getProviderCatalog,
   getDoctorById,
@@ -9,6 +11,23 @@ export {
   getCityList,
   resolveProviderUuid,
   fetchProviderAvailability,
+  fetchProviderById,
   isProvidersHydrated,
+  clearProviderQueryCache,
+  normalizeProviderRow,
 } from './repository'
-export { getCenters, hydrateCenters } from './centersRepository'
+export { formatDoctorCredentials, normalizeNmcNumber, pickDoctorCredentials, resolveLiveProvider } from './credentials'
+export {
+  formatPlaceParts,
+  formatCityDistrict,
+  formatProviderAddress,
+} from '../geography/formatPlace'
+export { countProviders } from './countProviders'
+export { fetchDoctorFilterFacets, peekDoctorFilterFacets, clearDoctorFilterFacetCache } from './facetCounts'
+export { getCenters, hydrateCenters, searchCenters } from './centersRepository'
+export {
+  getPharmacies,
+  getPharmacyById,
+  hydratePharmacies,
+  subscribePharmacies,
+} from './pharmaciesRepository'

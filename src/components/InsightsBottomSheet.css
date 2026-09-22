@@ -6,22 +6,10 @@
   align-items: flex-end;
   justify-content: center;
   background: transparent;
-  opacity: var(--opacity-hidden);
-  animation: insightsFadeIn 0.2s ease forwards;
 }
 
 .insights-sheet-overlay.closing {
-  animation: insightsFadeOut 0.25s ease forwards;
-}
-
-@keyframes insightsFadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
-
-@keyframes insightsFadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
+  pointer-events: none;
 }
 
 .insights-sheet {
@@ -34,23 +22,12 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transform: translateY(100%);
-  animation: insightsSlideUp 0.3s ease forwards;
+  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
   box-shadow: var(--shadow-sheet);
 }
 
 .insights-sheet-overlay.closing .insights-sheet {
-  animation: insightsSlideDown 0.25s ease forwards;
-}
-
-@keyframes insightsSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-@keyframes insightsSlideDown {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
+  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
 }
 
 .insights-sheet-handle {

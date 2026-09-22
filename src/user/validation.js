@@ -1,12 +1,19 @@
 import { AUTH_ERROR } from './constants'
-import { indianMobile, normalizeEmail } from './models'
+import { nepalMobile, normalizeEmail } from './models'
 
 export function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(value))
 }
 
+/** Nepal mobile: 10 digits, typically starting with 97/98. */
+export function isValidNepalMobile(value) {
+  const mobile = nepalMobile(value)
+  return mobile.length === 10 && /^9[78]\d{8}$/.test(mobile)
+}
+
+/** @deprecated Use isValidNepalMobile */
 export function isValidIndianMobile(value) {
-  return indianMobile(value).length === 10
+  return nepalMobile(value).length === 10
 }
 
 export function isStrongPassword(value) {
@@ -57,7 +64,7 @@ export function validateRegisterFields({ name, email, phone, password, confirm }
   const errors = {}
   if (!String(name || '').trim() || name.trim().length < 2) errors.name = AUTH_ERROR.NAME
   if (!isValidEmail(email)) errors.email = AUTH_ERROR.EMAIL
-  if (!isValidIndianMobile(phone)) errors.phone = AUTH_ERROR.PHONE
+  if (!isValidNepalMobile(phone) && nepalMobile(phone).length !== 10) errors.phone = AUTH_ERROR.PHONE
   Object.assign(errors, validatePasswordFields({ password, confirm }))
   return errors
 }

@@ -1,4 +1,5 @@
 const countries = [
+  { code: '+977', iso: 'NP', name: 'Nepal', flag: '\uD83C\uDDF3\uD83C\uDDF5' },
   { code: '+91', iso: 'IN', name: 'India', flag: '\uD83C\uDDEE\uD83C\uDDF3' },
   { code: '+1', iso: 'US', name: 'United States', flag: '\uD83C\uDDFA\uD83C\uDDF8' },
   { code: '+44', iso: 'GB', name: 'United Kingdom', flag: '\uD83C\uDDEC\uD83C\uDDE7' },
@@ -38,7 +39,6 @@ const countries = [
   { code: '+420', iso: 'CZ', name: 'Czech Republic', flag: '\uD83C\uDDE8\uD83C\uDDFF' },
   { code: '+43', iso: 'AT', name: 'Austria', flag: '\uD83C\uDDE6\uD83C\uDDF9' },
   { code: '+353', iso: 'IE', name: 'Ireland', flag: '\uD83C\uDDEE\uD83C\uDDEA' },
-  { code: '+61', iso: 'AU', name: 'Australia', flag: '\uD83C\uDDE6\uD83C\uDDFA' },
   { code: '+234', iso: 'NG', name: 'Nigeria', flag: '\uD83C\uDDF3\uD83C\uDDEC' },
   { code: '+254', iso: 'KE', name: 'Kenya', flag: '\uD83C\uDDF0\uD83C\uDDEA' },
   { code: '+20', iso: 'EG', name: 'Egypt', flag: '\uD83C\uDDEA\uD83C\uDDEC' },
@@ -48,8 +48,7 @@ const countries = [
   { code: '+380', iso: 'UA', name: 'Ukraine', flag: '\uD83C\uDDFA\uD83C\uDDE6' },
   { code: '+880', iso: 'BD', name: 'Bangladesh', flag: '\uD83C\uDDE7\uD83C\uDDE9' },
   { code: '+94', iso: 'LK', name: 'Sri Lanka', flag: '\uD83C\uDDF1\uD83C\uDDF0' },
-  { code: '+977', iso: 'NP', name: 'Nepal', flag: '\uD83C\uDDF3\uD83C\uDDF5' },
-  { code: '+88', iso: 'PK', name: 'Pakistan', flag: '\uD83C\uDDF5\uD83C\uDDF0' },
+  { code: '+92', iso: 'PK', name: 'Pakistan', flag: '\uD83C\uDDF5\uD83C\uDDF0' },
 ]
 
 export default countries
@@ -60,7 +59,8 @@ export function findCountryByCode(dialCode) {
 
 export function parseCountryFromDigits(digits) {
   if (!digits) return countries[0]
-  for (const c of countries) {
+  const sorted = [...countries].sort((a, b) => b.code.length - a.code.length)
+  for (const c of sorted) {
     const codeDigits = c.code.replace('+', '')
     if (digits.startsWith(codeDigits)) return c
   }

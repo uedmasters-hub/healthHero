@@ -1,5 +1,6 @@
 import { formatMoney } from './paymentSession'
 import { displayDoctorName } from './geometry'
+import { formatPlaceParts } from '../features/geography/formatPlace'
 
 function asDate(value) {
   if (!value) return null
@@ -27,11 +28,11 @@ export function buildInvoiceFromBooking(booking) {
     status: payment.status === 'paid' || payment.status === 'Paid' ? 'Paid' : (payment.status || 'Paid'),
     paidAt,
     method: payment.method || 'Card',
-    currency: payment.currency || 'INR',
+    currency: payment.currency || 'NPR',
     doctor: {
       name: displayDoctorName(doctor.name),
       specialty: doctor.specialty || 'Specialist',
-      address: doctor.address || '',
+      address: formatPlaceParts(doctor.address || ''),
     },
     patient: {
       name: patient.name || 'Patient',
@@ -43,7 +44,7 @@ export function buildInvoiceFromBooking(booking) {
       dateLabel: (() => {
         const full = booking.date?.full ? asDate(booking.date.full) : null
         if (full) {
-          return full.toLocaleDateString('en-IN', {
+          return full.toLocaleDateString('en-NP', {
             weekday: 'long',
             day: 'numeric',
             month: 'short',
@@ -68,7 +69,7 @@ export function buildInvoiceFromBooking(booking) {
 export function formatInvoiceDateTime(date) {
   const d = asDate(date)
   if (!d) return '—'
-  return d.toLocaleString('en-IN', {
+  return d.toLocaleString('en-NP', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

@@ -16,10 +16,10 @@ function daysFromNow(days, hour = 10, minute = 0) {
 
 function dateSnapshot(date) {
   return {
-    day: date.toLocaleDateString('en-IN', { weekday: 'short' }),
+    day: date.toLocaleDateString('en-NP', { weekday: 'short' }),
     num: date.getDate(),
-    month: date.toLocaleDateString('en-IN', { month: 'short' }),
-    monthLong: date.toLocaleDateString('en-IN', { month: 'long' }),
+    month: date.toLocaleDateString('en-NP', { month: 'short' }),
+    monthLong: date.toLocaleDateString('en-NP', { month: 'long' }),
     year: date.getFullYear(),
     full: date.toISOString(),
   }

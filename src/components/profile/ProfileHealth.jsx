@@ -418,8 +418,8 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
     emergencyRelation: primaryEmergency.relation || profile?.emergencyContact?.relation || '',
     emergencyPhone: phoneInput(primaryEmergency.phone || profile?.emergencyContact?.phone || ''),
   }))
-  const [phoneCountry, setPhoneCountry] = useState('+91')
-  const [ecPhoneCountry, setEcPhoneCountry] = useState('+91')
+  const [phoneCountry, setPhoneCountry] = useState('+977')
+  const [ecPhoneCountry, setEcPhoneCountry] = useState('+977')
   const [error, setError] = useState('')
   const [otpView, setOtpView] = useState(false)
 

@@ -3,7 +3,9 @@ import { SheetPortal } from './PageTransition'
 import { useAppScrim } from './AppScrim'
 import './DemoPreviewModal.css'
 
-const CLOSE_MS = 200
+import { MOTION } from '../lib/motion'
+
+const CLOSE_MS = MOTION.DIALOG_MS
 
 export const DEMO_PREVIEW_COPY = {
   title: 'Preview Feature',

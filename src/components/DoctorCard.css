@@ -110,6 +110,18 @@
   margin: var(--space-0-5) 0 0;
 }
 
+.dc-degree {
+  margin: var(--space-0-5) 0 0;
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .dc-exp {
   display: inline-flex;
   align-items: center;
@@ -433,6 +445,33 @@
   margin: var(--space-1) 0 0;
   font-size: var(--text-label-size);
   color: var(--text-secondary);
+}
+
+.dc-card-list .dc-degree {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-caption-size);
+  color: var(--text-muted);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dc-card-grid .dc-degree {
+  margin: var(--space-1) 0 0;
+  width: 100%;
+  text-align: center;
+  font-size: var(--text-caption-size);
+  color: var(--text-muted);
+}
+
+.dc-card-profile .dc-degree {
+  margin: var(--space-1) 0 0;
+}
+
+.dc-identity-degree {
+  margin: var(--space-0-5) 0 0;
+  text-align: left;
 }
 
 .dc-card-list .dc-rating {

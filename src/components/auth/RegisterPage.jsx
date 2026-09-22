@@ -26,7 +26,7 @@ function draftFromState(state) {
     name: String(draft.name || ''),
     email: String(draft.email || ''),
     phone: String(draft.phone || ''),
-    phoneCountry: String(draft.phoneCountry || '+91'),
+    phoneCountry: String(draft.phoneCountry || '+977'),
     password: String(draft.password || ''),
     confirm: String(draft.confirm || ''),
   }
@@ -41,7 +41,7 @@ export default function RegisterPage() {
   const [name, setName] = useState(() => restored?.name || '')
   const [email, setEmail] = useState(() => restored?.email || '')
   const [phone, setPhone] = useState(() => restored?.phone || '')
-  const [phoneCountry, setPhoneCountry] = useState(() => restored?.phoneCountry || '+91')
+  const [phoneCountry, setPhoneCountry] = useState(() => restored?.phoneCountry || '+977')
   const [password, setPassword] = useState(() => restored?.password || '')
   const [confirm, setConfirm] = useState(() => restored?.confirm || '')
   const [busy, setBusy] = useState(false)

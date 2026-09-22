@@ -101,7 +101,7 @@ export default function BookingFlowPage() {
   </div>
   <AppFlowFooter>
     <button className="app-flow-cta" onClick={confirm}>
-      Confirm Booking — ₹{fee}
+      Confirm Booking — Rs. {fee}
     </button>
   </AppFlowFooter>
 </div>`} />

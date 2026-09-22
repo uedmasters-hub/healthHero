@@ -8,8 +8,8 @@ import { refreshProfileData } from '../../features/sync/pageRefresh'
 import '../PatientProfile.css'
 
 export const CARE_SUPPORT = {
-  phone: '+919845271970',
-  phoneLabel: '+91 9845 271 970',
+  phone: '+9779845271970',
+  phoneLabel: '+977 9845 271 970',
   email: BRAND_SUPPORT_EMAIL,
 }
 

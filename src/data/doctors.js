@@ -1,6 +1,5 @@
 /**
- * Doctor catalog façade — backed by the shared provider repository
- * (Supabase + PocketPills import snapshot). Kept for stable import paths.
+ * Doctor catalog façade — backed by the live Supabase provider registry.
  */
 export {
   getDoctorById,
@@ -9,6 +8,11 @@ export {
   getSpecialtyList,
   getCityList,
   getProviderCatalog,
+  queryProviders,
+  searchProviders,
+  fetchProviderById,
+  hydrateProviders,
+  subscribeProviders,
 } from '../features/providers'
 
 import {

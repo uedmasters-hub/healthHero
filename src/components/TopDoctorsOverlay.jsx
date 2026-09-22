@@ -180,7 +180,7 @@ export default function TopDoctorsOverlay() {
   useEffect(() => {
     if (isTopDoctorsOpen && !isTopDoctorsSlidingOut) {
       if (isResting) return undefined
-      const t = setTimeout(() => setIsResting(true), 400)
+      const t = setTimeout(() => setIsResting(true), 260)
       return () => clearTimeout(t)
     }
     if (!isTopDoctorsOpen) setIsResting(false)

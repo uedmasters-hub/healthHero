@@ -7,9 +7,9 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  /* Dim is owned by the global AppScrim on #phone-screen */
+  /* Dim is owned by the global AppScrim — overlay never fades the page. */
   background: transparent;
-  animation: dsSheetFadeIn var(--duration-normal) var(--ease-standard) forwards;
+  animation: none;
 }
 
 .ds-sheet-overlay.is-blurred {
@@ -19,11 +19,12 @@
 }
 
 .ds-sheet-overlay.is-closing {
-  animation: dsSheetFadeOut var(--duration-moderate) var(--ease-standard) forwards;
+  animation: none;
+  pointer-events: none;
 }
 
 .ds-sheet-overlay.is-closing .ds-sheet {
-  animation: dsSheetSlideDown var(--duration-moderate) var(--ease-standard) forwards;
+  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
 }
 
 .ds-sheet {
@@ -45,11 +46,11 @@
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  animation: dsSheetSlideUp var(--duration-moderate) var(--ease-emphasized);
+  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
   transition:
-    transform 0.42s var(--ease-emphasized),
-    max-height 0.42s var(--ease-emphasized),
-    padding-bottom 0.28s var(--ease-standard);
+    transform var(--duration-sheet) var(--ease-sheet),
+    max-height var(--duration-sheet) var(--ease-sheet),
+    padding-bottom var(--duration-sheet) var(--ease-sheet);
   touch-action: pan-y;
   will-change: transform;
   /* Keep geometry rectangular — never use radius-pill / radius-full on sheets */
@@ -164,22 +165,19 @@
   color: var(--danger);
 }
 
-@keyframes dsSheetFadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
-
-@keyframes dsSheetFadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
-}
-
 @keyframes dsSheetSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from { transform: translate3d(0, 100%, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @keyframes dsSheetSlideDown {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, 100%, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-sheet,
+  .ds-sheet-overlay.is-closing .ds-sheet {
+    animation-duration: 0.01ms !important;
+  }
 }

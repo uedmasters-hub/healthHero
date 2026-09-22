@@ -1,6 +1,9 @@
+import { MOTION } from '../../lib/motion'
+
 /**
  * Routes that use horizontal push / mirrored-pop navigation.
- * Tabs, booking/payment flows, sheets, and overlays are intentionally excluded.
+ * Tabs, sheets, and overlays are excluded. Booking steps are sibling push
+ * screens so each stays mounted as an underlay for native pop.
  */
 
 const TAB_ROOTS = new Set([
@@ -20,6 +23,7 @@ const PUSH_DETAIL_RULES = Object.freeze([
   (p) => p.startsWith('/insights/'),
   (p) => p === '/notifications',
   (p) => p.startsWith('/explore/'),
+  (p) => p === '/booking' || p.startsWith('/booking/'),
   (p) => p === '/appointment',
   (p) => p === '/pre-checkin',
   (p) => p === '/prepare-visit',
@@ -28,11 +32,11 @@ const PUSH_DETAIL_RULES = Object.freeze([
 ])
 
 export const PUSH_MOTION = Object.freeze({
-  /** Matches `.app.is-dimmed` / `.page-layer-inner.is-dimmed`. */
-  DURATION_MS: 360,
-  EASING: 'cubic-bezier(0.22, 1, 0.36, 1)',
-  UNDERLAY_SCALE: 0.96,
-  UNDERLAY_BRIGHTNESS: 0.75,
+  /** Calm iOS-style ease — no overshoot (y2 ≤ 1). */
+  DURATION_MS: MOTION.PAGE_MS,
+  EASING: MOTION.EASE,
+  UNDERLAY_SCALE: MOTION.PAGE_UNDERLAY_SCALE,
+  UNDERLAY_BRIGHTNESS: MOTION.PAGE_UNDERLAY_BRIGHTNESS,
   /** Edge width that can start an interactive swipe-back. */
   EDGE_PX: 22,
   /** Progress (0–1) that commits the pop on release. */
@@ -57,3 +61,4 @@ export function isPushDetailPath(pathname) {
   if (isTabRootPath(path)) return false
   return PUSH_DETAIL_RULES.some((test) => test(path))
 }
+

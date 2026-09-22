@@ -274,10 +274,18 @@
   /* —— Motion —— */
   --ease-standard: ease;
   --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Calm ease-out (Apple Maps / Wallet) — no overshoot */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-page: cubic-bezier(0.32, 0.72, 0, 1);
   --duration-fast: 0.15s;
   --duration-normal: 0.2s;
+  --duration-dialog: 0.22s;
+  --duration-sheet: 0.26s;
   --duration-moderate: 0.28s;
+  --duration-page: 0.28s;
   --duration-slow: 0.4s;
+  --sheet-recess-scale: 0.98;
+  --sheet-recess-shift: -6px;
   --transition: var(--duration-normal) var(--ease-standard);
   --transition-reveal: opacity var(--duration-moderate) var(--ease-standard),
     transform 0.32s var(--ease-emphasized);
@@ -290,6 +298,14 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --bottom-bar-pad: calc(var(--space-2-5) + max(var(--frame-footer), var(--safe-bottom)));
   --app-flow-footer-pad-top: var(--space-3-5);
+  /* Single-CTA flow footer clearance (Doctor Profile, booking steps) */
+  --app-flow-footer-clearance: calc(
+    var(--app-flow-footer-pad-top)
+    + var(--app-flow-cta-height)
+    + var(--bottom-bar-pad)
+  );
+  /* Gap between any secondary floater and a sticky bottom CTA */
+  --fab-cta-gap: 22px;
   /* Sticky footer CTA — compact vertical rhythm (button/radius/horizontal unchanged) */
   --sticky-footer-pad-top: var(--space-2-5);
   --sticky-footer-cta-gap: var(--space-1);
@@ -665,7 +681,9 @@ select:is(:focus, :focus-visible, :active) {
   cursor: not-allowed;
 }
 
-/* Sticky footer CTA — Appointment Details, Ready for Visit (SSOT) */
+/* Sticky footer CTA — Appointment Details, Ready for Visit (SSOT).
+   Bottom CTA owns the safe area; secondary floaters must stay above
+   (var(--fab-cta-gap)) and never use Home-style scroll FAB motion. */
 .sticky-footer-cta {
   position: fixed;
   bottom: 0;

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useLocation, useOutletContext } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { VISIT_TYPES, makeDateValue } from './DatePicker'
 import WeeklySchedule from './WeeklySchedule'
 import DoctorCard from './DoctorCard'
@@ -13,19 +13,20 @@ import './SelectSlot.css'
 export default function SelectSlot() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { setCurrentStep } = useOutletContext()
-  const doctor = location.state?.doctor
-  const origin = location.state?.origin
-  const returnTo = location.state?.returnTo
+  // Freeze entry state so this layer stays correct while mounted as a push underlay.
+  const [entry] = useState(() => location.state || {})
+  const doctor = entry.doctor
+  const origin = entry.origin
+  const returnTo = entry.returnTo
   const now = useNow(15000)
 
-  const [selectedDate, setSelectedDate] = useState(() => location.state?.date || makeDateValue())
+  const [selectedDate, setSelectedDate] = useState(() => entry.date || makeDateValue())
   const [visitType, setVisitType] = useState(() => resolveVisitType(
-    location.state?.visitType || location.state?.preferredVisitType,
-    location.state?.doctor?.visitTypes,
+    entry.visitType || entry.preferredVisitType,
+    entry.doctor?.visitTypes,
   ))
-  const [duration] = useState(location.state?.duration || '30 min')
-  const [selectedTime, setSelectedTime] = useState(location.state?.time || null)
+  const [duration] = useState(entry.duration || '30 min')
+  const [selectedTime, setSelectedTime] = useState(entry.time || null)
 
   const slotMeta = (slot) => {
     const window = getSlotWindow(selectedDate, slot, now)
@@ -44,9 +45,8 @@ export default function SelectSlot() {
 
   const handleContinue = () => {
     if (!selectedTime || selectedWindow?.isPast) return
-    setCurrentStep(2)
     navigate('/booking/patient', {
-      state: flowState(location, {
+      state: flowState(entry, {
         doctor,
         date: selectedDate,
         time: selectedTime,
@@ -55,8 +55,8 @@ export default function SelectSlot() {
         origin,
         returnTo,
         bookingMode: selectedWindow?.mode || 'standard',
-        preferredVisitType: location.state?.preferredVisitType || visitType,
-        forSomeoneElse: location.state?.forSomeoneElse,
+        preferredVisitType: entry.preferredVisitType || visitType,
+        forSomeoneElse: entry.forSomeoneElse,
       }),
     })
   }

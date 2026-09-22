@@ -1,20 +1,49 @@
 .specialisations-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--white);
+  inset: 0;
   z-index: var(--z-scrim-elevated, 8100);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+.specialisations-overlay.closing {
+  pointer-events: none;
+}
+
+.specialisations-overlay.closing .specialisations-sheet {
+  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
+}
+
+.specialisations-overlay.is-ghost {
+  opacity: var(--opacity-hidden);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.specialisations-sheet {
+  width: 100%;
+  max-width: var(--phone-width);
+  height: var(--app-sheet-max-height);
+  max-height: var(--app-sheet-max-height);
+  background: var(--sheet-surface);
+  border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  will-change: transform;
-  overscroll-behavior: contain;
+  box-shadow: var(--shadow-sheet);
+  animation: none;
+}
+
+.specialisations-overlay.opening .specialisations-sheet {
+  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
 }
 
 .specialisations-page {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -22,34 +51,13 @@
   overscroll-behavior: contain;
 }
 
-.specialisations-overlay.slide-in {
-  animation: slideInFromLeft 0.35s ease forwards;
-}
-
-.specialisations-overlay.slide-out {
-  animation: slideOutToLeft 0.36s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  pointer-events: none;
-}
-
-@keyframes slideInFromLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes slideOutToLeft {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
-
 .specialisations-header {
   display: flex;
   align-items: center;
-  padding: var(--space-4) var(--content-padding) var(--space-3);
+  padding: var(--space-2) var(--content-padding) var(--space-3);
   background: var(--white);
   border-bottom: var(--border-width) solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  flex-shrink: 0;
 }
 
 .specialisations-back-btn {

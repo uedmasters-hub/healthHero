@@ -31,14 +31,14 @@ import { refreshAppointmentData } from '../features/sync/pageRefresh'
 import './AppointmentDetail.css'
 
 const checklistItems = [
-  'Bring Aadhaar or photo ID and your health insurance card',
+  'Bring citizenship ID or photo ID and your health insurance card',
   'Complete medical history form',
   'List current medications',
   'Wear comfortable clothing',
 ]
 
 const faqItems = [
-  { q: 'What should I bring?', a: 'Bring Aadhaar or a photo ID, your health insurance / mediclaim card, a list of current medications, and any recent lab reports.' },
+  { q: 'What should I bring?', a: 'Bring citizenship ID or a photo ID, your health insurance / insurance card, a list of current medications, and any recent lab reports.' },
   { q: 'Can I reschedule?', a: 'You can reschedule or cancel until 45 minutes before your appointment. After that, changes are locked so your doctor can prepare.' },
   { q: 'What if I\'m late?', a: 'Call the clinic if you are running late. A 15-minute grace window is typically available.' },
   { q: 'How to access lab reports?', a: 'Open Medical Records → Lab Reports on this page to view or download your files.' },
@@ -56,7 +56,7 @@ const defaultPayment = {
   insuranceCoverage: 200,
   copay: 1000,
   totalPaid: 1000,
-  method: 'UPI · ananya@okhdfcbank',
+  method: 'eSewa · 9845271970',
   invoiceId: 'INV-2026-0916',
 }
 
@@ -186,7 +186,7 @@ export default function AppointmentDetail() {
       : {}),
   }
 
-  const dateStr = date.full.toLocaleDateString('en-IN', {
+  const dateStr = date.full.toLocaleDateString('en-NP', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

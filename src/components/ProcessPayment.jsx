@@ -33,7 +33,7 @@ import './ProcessPayment.css'
 function PaymentDoctorSummary({ doctor, date, time, amount, currency, orderId, ready, locked }) {
   const start = date && time ? getAppointmentStart(date, time) : null
   const when = start
-    ? start.toLocaleString('en-IN', {
+    ? start.toLocaleString('en-NP', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -77,7 +77,7 @@ function PaymentDoctorSummary({ doctor, date, time, amount, currency, orderId, r
 
 function methodSheetTitle(id) {
   if (id === 'card') return 'Card details'
-  if (id === 'upi') return 'Pay with UPI'
+  if (id === 'upi') return 'Pay with digital wallet'
   if (id === 'wallet') return 'Health Wallet'
   if (id === 'netbanking') return 'Net Banking'
   return 'Payment details'
@@ -696,14 +696,14 @@ export default function ProcessPayment() {
                   className={`pay-tab ${session.upiMode === 'app' ? 'active' : ''}`}
                   onClick={() => patchSession({ upiMode: 'app' })}
                 >
-                  UPI Apps
+                  Wallet apps
                 </button>
                 <button
                   type="button"
                   className={`pay-tab ${session.upiMode === 'id' ? 'active' : ''}`}
                   onClick={() => patchSession({ upiMode: 'id' })}
                 >
-                  UPI ID
+                  Wallet ID
                 </button>
               </div>
               {session.upiMode === 'app' ? (
@@ -731,7 +731,7 @@ export default function ProcessPayment() {
                 </div>
               ) : (
                 <label className="pay-field">
-                  <span>Enter UPI ID</span>
+                  <span>Enter Wallet ID</span>
                   <input
                     className={`pay-input ${session.upiId && !isValidUpiId(session.upiId) ? 'is-error' : ''}`}
                     placeholder="yourname@upi"
@@ -740,7 +740,7 @@ export default function ProcessPayment() {
                     autoComplete="off"
                   />
                   {session.upiId && !isValidUpiId(session.upiId) ? (
-                    <em className="pay-field-error">Enter a valid UPI ID (name@bank)</em>
+                    <em className="pay-field-error">Enter a valid Wallet ID (name@bank)</em>
                   ) : null}
                 </label>
               )}

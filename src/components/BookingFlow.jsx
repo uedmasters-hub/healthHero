@@ -1,8 +1,15 @@
-import { useState, useEffect } from 'react'
-import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { flowState, goBackToOrigin, getBookingEntryPath, isHomePath, restoreOriginOverlays } from '../lib/careFlow'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { getBookingEntryPath, isHomePath, restoreOriginOverlays } from '../lib/careFlow'
+import { usePushBack } from '../features/pushNav'
 import { useTransition } from './PageTransition'
 import './BookingFlow.css'
+
+const BookingFlowContext = createContext(null)
+
+export function useBookingFlow() {
+  return useContext(BookingFlowContext)
+}
 
 const steps = [
   { key: 'select-provider', label: 'Select Provider' },
@@ -18,100 +25,88 @@ const stepTitles = [
   'Review Booking',
 ]
 
-export default function BookingFlow() {
+function stepFromPath(pathname = '') {
+  if (pathname.includes('/confirm')) return 3
+  if (pathname.includes('/patient')) return 2
+  if (pathname.includes('/slot')) return 1
+  return 0
+}
+
+/**
+ * Booking chrome for one stack layer. Step is captured at mount so underlays
+ * keep their screen while the live route advances (native push/pop).
+ */
+export default function BookingFlow({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { openSpecialisations } = useTransition()
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(() => stepFromPath(location.pathname))
   const [showSuccess, setShowSuccess] = useState(false)
   const [addingPatient, setAddingPatient] = useState(false)
 
   const titles = stepTitles
-  const onConfirm = location.pathname.includes('/confirm')
-  const onPatient = location.pathname.includes('/patient')
-  const onSlot = location.pathname.includes('/slot')
 
   useEffect(() => {
-    if (onConfirm) setCurrentStep(3)
-    else if (onPatient) setCurrentStep(2)
-    else if (onSlot) setCurrentStep(1)
-    else setCurrentStep(0)
-  }, [onSlot, onPatient, onConfirm])
+    if (currentStep !== 2) setAddingPatient(false)
+  }, [currentStep])
 
-  useEffect(() => {
-    if (!onPatient) setAddingPatient(false)
-  }, [onPatient])
-
-  const leaveFindDoctor = () => {
-    const state = location.state || {}
-    const target = getBookingEntryPath(state)
-    if (isHomePath(target)) restoreOriginOverlays(state, { openSpecialisations })
-    if (target && target !== location.pathname) {
-      navigate(target, { state: isHomePath(target) ? undefined : flowState(state) })
-      return
+  const popStack = usePushBack(() => {
+    if (currentStep === 0) {
+      const state = location.state || {}
+      const target = getBookingEntryPath(state)
+      if (isHomePath(target)) restoreOriginOverlays(state, { openSpecialisations })
     }
-    navigate('/')
-  }
+    navigate(-1)
+  })
 
   const goBack = () => {
     // Confirmation has no back — never return to Review Booking from success.
     if (showSuccess) return
-
-    const state = location.state || {}
-
-    if (onConfirm) {
-      navigate('/booking/patient', { state: flowState(state, { fromConfirm: undefined }) })
+    if (currentStep === 2 && addingPatient) {
+      setAddingPatient(false)
       return
     }
+    popStack()
+  }
 
-    if (onPatient) {
-      if (addingPatient) {
-        setAddingPatient(false)
-        return
-      }
-      navigate('/booking/slot', { state: flowState(state, { fromConfirm: undefined }) })
-      return
-    }
-
-    if (onSlot) {
-      if (state.fromProfile) {
-        navigate(state.returnTo || `/doctor/${state.doctor?.id}`, { state: flowState(state) })
-        return
-      }
-      navigate('/booking', { state: flowState(state, { returnTo: '/booking' }) })
-      return
-    }
-
-    leaveFindDoctor()
+  const ctx = {
+    currentStep,
+    setCurrentStep,
+    showSuccess,
+    setShowSuccess,
+    addingPatient,
+    setAddingPatient,
   }
 
   return (
-    <div className={`booking-layout ${showSuccess ? 'is-success' : ''} page-push-in`}>
-      {!showSuccess && (
-        <>
-          <div className="booking-header">
-            <button className="back-btn" onClick={goBack} aria-label="Back">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M19 12H5" />
-                <polyline points="12 19 5 12 12 5" />
-              </svg>
-            </button>
-            <h1 className="booking-header-title">{titles[currentStep]}</h1>
-            <div className="booking-header-spacer" />
-          </div>
-          <div className="stepper">
-            {steps.map((step, idx) => (
-              <div
-                key={step.key}
-                className={`stepper-step ${idx === currentStep ? 'active' : ''} ${idx < currentStep ? 'completed' : ''}`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-      <div className="booking-content">
-        <Outlet context={{ currentStep, setCurrentStep, showSuccess, setShowSuccess, addingPatient, setAddingPatient }} />
+    <BookingFlowContext.Provider value={ctx}>
+      <div className={`booking-layout ${showSuccess ? 'is-success' : ''} page-push-in`}>
+        {!showSuccess && (
+          <>
+            <div className="booking-header">
+              <button className="back-btn" type="button" data-push-back onClick={goBack} aria-label="Back">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+              </button>
+              <h1 className="booking-header-title">{titles[currentStep]}</h1>
+              <div className="booking-header-spacer" />
+            </div>
+            <div className="stepper">
+              {steps.map((step, idx) => (
+                <div
+                  key={step.key}
+                  className={`stepper-step ${idx === currentStep ? 'active' : ''} ${idx < currentStep ? 'completed' : ''}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+        <div className="booking-content">
+          {children}
+        </div>
       </div>
-    </div>
+    </BookingFlowContext.Provider>
   )
 }

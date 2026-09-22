@@ -527,10 +527,10 @@ export function createBookingEngine({
           const d = new Date(newDateRaw)
           if (!Number.isNaN(d.getTime())) {
             nextDate = {
-              day: d.toLocaleDateString('en-IN', { weekday: 'short' }),
+              day: d.toLocaleDateString('en-NP', { weekday: 'short' }),
               num: d.getDate(),
-              month: d.toLocaleDateString('en-IN', { month: 'short' }),
-              monthLong: d.toLocaleDateString('en-IN', { month: 'long' }),
+              month: d.toLocaleDateString('en-NP', { month: 'short' }),
+              monthLong: d.toLocaleDateString('en-NP', { month: 'long' }),
               year: d.getFullYear(),
               full: d.toISOString(),
             }

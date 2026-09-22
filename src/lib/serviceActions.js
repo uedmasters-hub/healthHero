@@ -69,6 +69,6 @@ export function runServiceAction(name, { navigate, onCloseOverlays, onComingSoon
   }
 
   navigate(exploreSpecialtyPath(action.specialty), {
-    state: { origin: 'services' },
+    state: { origin: 'services', returnTo: '/' },
   })
 }

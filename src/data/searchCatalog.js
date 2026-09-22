@@ -1,4 +1,4 @@
-import { getDoctorList } from './doctors'
+import { getDoctorList, pickDoctorCredentials } from '../features/providers'
 import { articles } from './articles'
 
 export const SEARCH_SPECIALISATIONS = [
@@ -35,39 +35,63 @@ export const SEARCH_SERVICES = [
   { name: 'Dental', to: '/booking' },
 ]
 
-const POPULAR = [
-  { type: 'specialisation', label: 'Dermatologist' },
-  { type: 'service', label: 'Pharmacy', to: '/pharmacy' },
-  { type: 'doctor', label: 'Dr. Priya Sharma', id: 1 },
-  { type: 'specialisation', label: 'Cardiologist' },
-  { type: 'service', label: 'Book Appointment', to: '/booking' },
-  { type: 'specialisation', label: 'Pediatrician' },
-  { type: 'service', label: 'Pathology Labs', to: '/booking' },
-  { type: 'doctor', label: 'Dr. Arjun Mehta', id: 2 },
-]
+function popularSuggestions() {
+  const doctors = getDoctorList().slice(0, 2).map((doc) => {
+    const creds = pickDoctorCredentials(doc)
+    return {
+      type: 'doctor',
+      label: `Dr. ${doc.name}`,
+      meta: [doc.specialty, creds.line].filter(Boolean).join(' · '),
+      id: doc.providerUuid || doc.id,
+    }
+  })
+  return [
+    { type: 'specialisation', label: 'Dermatologist' },
+    { type: 'service', label: 'Pharmacy', to: '/pharmacy' },
+    ...doctors,
+    { type: 'specialisation', label: 'Cardiologist' },
+    { type: 'service', label: 'Book Appointment', to: '/booking' },
+    { type: 'specialisation', label: 'Pediatrician' },
+    { type: 'service', label: 'Pathology Labs', to: '/booking' },
+  ].slice(0, 8)
+}
 
 const score = (label, query) => {
-  const hay = label.toLowerCase()
+  const hay = String(label || '').toLowerCase()
   const q = query.toLowerCase()
+  if (!hay) return -1
   if (hay.startsWith(q)) return 0
   if (hay.includes(` ${q}`)) return 1
   if (hay.includes(q)) return 2
   return -1
 }
 
-export function getSearchSuggestions(rawQuery) {
+/** Sync suggestions from local featured cache + taxonomy (instant). */
+export function getSearchSuggestions(rawQuery, doctorHits = null) {
   const query = rawQuery.trim()
-  if (!query) return POPULAR
+  if (!query) return popularSuggestions()
 
   const hits = []
+  const doctors = Array.isArray(doctorHits) ? doctorHits : getDoctorList()
 
-  getDoctorList().forEach((doc) => {
+  doctors.forEach((doc) => {
     const label = `Dr. ${doc.name}`
+    const creds = pickDoctorCredentials(doc)
     const s = score(label, query)
     const s2 = score(doc.specialty, query)
-    const best = s < 0 ? s2 : s2 < 0 ? s : Math.min(s, s2)
-    if (best >= 0) {
-      hits.push({ type: 'doctor', label, id: doc.id, rank: best, kind: 0 })
+    const s3 = score(doc.degree, query)
+    const s4 = score(doc.city || doc.district, query)
+    const s5 = score(creds.nmcNumber, query)
+    const best = [s, s2, s3, s4, s5].filter((n) => n >= 0).sort((a, b) => a - b)[0]
+    if (best != null) {
+      hits.push({
+        type: 'doctor',
+        label,
+        meta: [doc.specialty, creds.line].filter(Boolean).join(' · '),
+        id: doc.providerUuid || doc.id,
+        rank: best,
+        kind: 0,
+      })
     }
   })
 

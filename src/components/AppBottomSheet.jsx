@@ -53,6 +53,18 @@ export default function AppBottomSheet({
   }, [open, snapPoints])
 
   useEffect(() => {
+    if (!open) return undefined
+    const onKey = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose?.()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  useEffect(() => {
     if (!open || !keyboardAware || typeof window === 'undefined') return undefined
     const vv = window.visualViewport
     if (!vv) return undefined

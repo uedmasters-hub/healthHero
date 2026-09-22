@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useLocation, useOutletContext } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import { useBookingById } from '../booking'
 import DoctorCard from './DoctorCard'
 import { BookingReveal, DoctorHeroSkeleton, useBookingReveal } from './BookingReveal'
+import { useBookingFlow } from './BookingFlow'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import { useSharedHero } from './SharedHero'
-import { flowState } from '../lib/careFlow'
 import { getAppointmentStart, formatCountdown } from '../lib/bookingPolicy'
 import { getAppointmentActions, MENU_ACTION, resolveAppointmentPath } from '../lib/appointmentJourney'
 import {
@@ -18,12 +18,14 @@ import useNow from '../hooks/useNow'
 import AppointmentMenuOptions from './AppointmentMenuOptions'
 import BookingInvoiceSheet from './BookingInvoiceSheet'
 import MedicalRecordsPicker, { AttachedRecordsSummary } from './MedicalRecordsPicker'
+import { usePushBack } from '../features/pushNav'
 import './ConfirmBooking.css'
 
 export default function ConfirmBooking() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { setCurrentStep, showSuccess, setShowSuccess } = useOutletContext()
+  const { showSuccess, setShowSuccess } = useBookingFlow()
+  const editPatient = usePushBack(-1)
   const {
     currentBooking,
     setPaymentSession,
@@ -151,7 +153,7 @@ export default function ConfirmBooking() {
     return null
   }
 
-  const dateStr = date.full.toLocaleDateString('en-IN', {
+  const dateStr = date.full.toLocaleDateString('en-NP', {
     weekday: 'long',
     day: 'numeric',
     month: 'short',
@@ -206,7 +208,6 @@ export default function ConfirmBooking() {
   }
 
   const handleDone = () => {
-    setCurrentStep(0)
     shared?.reset?.()
     navigate('/', { replace: true })
   }
@@ -346,7 +347,7 @@ export default function ConfirmBooking() {
         <button
           type="button"
           className="confirm-change-patient"
-          onClick={() => navigate('/booking/patient', { state: flowState(location) })}
+          onClick={editPatient}
         >
           Change Patient
         </button>
@@ -639,7 +640,7 @@ export default function ConfirmBooking() {
               </div>
               <div className="confirm-next-text">
                 <div className="confirm-next-title">Arrive 15 Minutes Early</div>
-                <div className="confirm-next-desc">Bring Aadhaar or photo ID and your health insurance card for check-in</div>
+                <div className="confirm-next-desc">Bring citizenship ID or photo ID and your health insurance card for check-in</div>
               </div>
             </div>
           </div>

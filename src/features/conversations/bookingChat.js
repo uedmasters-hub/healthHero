@@ -83,6 +83,8 @@ export function providerMetadataFromBooking(booking = {}) {
   return {
     provider_name: doctor.name || '',
     specialty: doctor.specialty || '',
+    degree: doctor.degree || '',
+    nmc_number: doctor.nmcNumber || null,
     visit_type: booking.visitType || booking.visit_type || '',
     visit_label: visitLabel || booking.slot || booking.time || '',
     booking_status: booking.status || '',

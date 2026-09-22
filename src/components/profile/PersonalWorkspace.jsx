@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { formatHeight, formatPhone, formatWeight, useUser } from '../../user'
+import { formatPlaceParts } from '../../features/geography/formatPlace'
 import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, InfoCard, InfoRow, MapThumb, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
@@ -78,7 +79,7 @@ export default function PersonalWorkspace() {
                   >
                     <span>
                       <strong>{item.label || 'Address'}</strong>
-                      <span>{[item.line, item.city].filter(Boolean).join(', ')}</span>
+                      <span>{formatPlaceParts(item.line, item.city)}</span>
                     </span>
                     <MapThumb seed={`${item.label}-${item.line}-${item.city}`} />
                   </button>

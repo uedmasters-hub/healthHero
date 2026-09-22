@@ -8,7 +8,7 @@ const typeScale = [
   { name: 'Label', size: '13px', line: '1.35', weight: '500', sample: 'Specialisation', token: '--text-label-size' },
   { name: 'Caption', size: '12px', line: '1.35', weight: '500', sample: '2 hours ago', token: '--text-caption-size' },
   { name: 'Overline', size: '11px', line: '1.3', weight: '600', sample: 'UPCOMING', token: '--text-overline-size' },
-  { name: 'Micro', size: '10px', line: '1.3', weight: '400', sample: '₹ 500', token: '--text-micro-size' },
+  { name: 'Micro', size: '10px', line: '1.3', weight: '400', sample: 'Rs. 500', token: '--text-micro-size' },
 ]
 
 export default function TypographyPage() {
@@ -25,7 +25,7 @@ export default function TypographyPage() {
       <h2>Typeface</h2>
       <p>
         eMedicalls uses <strong>Inter</strong> as the primary typeface. It is a highly legible
-        sans-serif designed for screen readability, with excellent support for Indian languages.
+        sans-serif designed for screen readability across Nepal and South Asia.
       </p>
       <pre><code>{`font-family: var(--font-sans);
 /* 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif */`}</code></pre>

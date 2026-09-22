@@ -149,28 +149,42 @@ export default function ExploreSpecialisationsPage() {
     navigate(exploreSpecialtyPath(name), {
       state: { origin: 'explore', fromSpecialisations: true, restore: { specialisations: true }, returnTo: '/' },
     })
-    parkSpecialisations()
+    parkSpecialisations({ ghost: true })
   }
 
   if (!isSpecialisationsOpen && !isSpecialisationsSlidingOut) return null
 
   return (
     <div
-      className={`specialisations-overlay ${isSpecialisationsSlidingOut || isSpecialisationsParked ? 'slide-out' : 'slide-in'}`}
+      className={[
+        'specialisations-overlay',
+        isSpecialisationsParked ? 'is-ghost' : '',
+        isSpecialisationsSlidingOut ? 'closing' : '',
+        !isSpecialisationsParked && !isSpecialisationsSlidingOut ? 'opening' : '',
+      ].filter(Boolean).join(' ')}
       aria-hidden={isSpecialisationsParked ? 'true' : undefined}
+      onClick={handleClose}
     >
-      <div className="specialisations-page" ref={contentRef}>
-      <div className="specialisations-header">
-        <button className="specialisations-back-btn" onClick={handleClose} aria-label="Back">
+      <div
+        className="specialisations-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="specialisations-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="ds-sheet-handle" aria-hidden="true" />
+        <div className="specialisations-header">
+        <button className="specialisations-back-btn" onClick={handleClose} aria-label="Close">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
         </button>
-        <h1 className="specialisations-title">All Specialisations</h1>
+        <h1 id="specialisations-title" className="specialisations-title">All Specialisations</h1>
         <div className="specialisations-header-placeholder" />
       </div>
 
+      <div className="specialisations-page" ref={contentRef}>
       <div className="specialisations-grid">
         {ALL_SPECIALISATIONS.map((spec, i) => {
           const isRevealed = skipFetch || revealedRef.current.has(i)
@@ -198,6 +212,7 @@ export default function ExploreSpecialisationsPage() {
         })}
       </div>
       <div className="specialisations-footer">- You've reached the end -</div>
+      </div>
       </div>
     </div>
   )

@@ -3,9 +3,20 @@ import { useLocation } from 'react-router-dom'
 
 const FetchSessionContext = createContext(null)
 
+/**
+ * Scope for reveal/skeleton caches.
+ * Home and specialty explore share a scope so returning from /explore/*
+ * does not wipe Categories / TopDoctors / Footer reveal marks (which caused
+ * Home to softly re-animate after Back).
+ */
 function sessionScope(pathname) {
-  if (pathname === '/' || pathname === '/search') return 'home'
-  if (pathname.startsWith('/explore')) return 'explore'
+  if (
+    pathname === '/'
+    || pathname === '/search'
+    || pathname.startsWith('/explore')
+  ) {
+    return 'home'
+  }
   if (pathname.startsWith('/booking')) return 'booking'
   // Keep appointment-journey cache across prepare → details → ready.
   if (

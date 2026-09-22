@@ -58,7 +58,7 @@ export function findDuplicateSelfBooking(doctorId, bookings = []) {
 
 export function formatBookingWhen(date, time) {
   const day = date?.full
-    ? date.full.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+    ? date.full.toLocaleDateString('en-NP', { day: 'numeric', month: 'short' })
     : ''
   const clock = String(time || '').replace(/\b(am|pm)\b/gi, (part) => part.toUpperCase())
   if (day && clock) return `${day} at ${clock}`

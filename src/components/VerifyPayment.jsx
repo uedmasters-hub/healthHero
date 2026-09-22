@@ -57,7 +57,7 @@ export default function VerifyPayment() {
   const time = session?.draftBooking?.time
   const start = date && time ? getAppointmentStart(date, time) : null
   const when = start
-    ? start.toLocaleString('en-IN', {
+    ? start.toLocaleString('en-NP', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',

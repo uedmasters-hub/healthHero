@@ -43,7 +43,7 @@ export default function CancelCheckIn() {
 
   const { doctor, date, time, visitType, duration } = currentBooking
 
-  const dateStr = date.full.toLocaleDateString('en-IN', {
+  const dateStr = date.full.toLocaleDateString('en-NP', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -207,7 +207,7 @@ export default function CancelCheckIn() {
                 </div>
                 <div className="ccancel-next-info">
                   <div className="ccancel-next-label">Front desk check-in</div>
-                  <div className="ccancel-next-detail">Present Aadhaar or photo ID and your health insurance card upon arrival.</div>
+                  <div className="ccancel-next-detail">Present citizenship ID or photo ID and your health insurance card upon arrival.</div>
                 </div>
               </div>
             </div>

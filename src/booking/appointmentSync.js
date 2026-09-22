@@ -291,6 +291,8 @@ export async function recoverMissingBookingsFromConversations(engine, userId) {
         id: meta.doctor_id ?? catalog?.id ?? null,
         name: catalog?.name || nameHint,
         specialty: meta.specialty || catalog?.specialty || '',
+        degree: meta.degree || catalog?.degree || '',
+        nmcNumber: meta.nmc_number || catalog?.nmcNumber || null,
         rating: catalog?.rating ?? null,
         experience: catalog?.experience || '',
         address: catalog?.address || '',

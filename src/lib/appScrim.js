@@ -51,5 +51,5 @@ export function emitScrimClick() {
   clickListeners.forEach((fn) => fn())
 }
 
-/** Soft 12% black — calm healthcare dim (10–15% range). */
-export const APP_SCRIM_COLOR = 'rgba(0, 0, 0, 0.12)'
+/** Soft 15% black — sheet dim (12–18% range). */
+export const APP_SCRIM_COLOR = 'rgba(0, 0, 0, 0.15)'

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import countries from './countries'
+import AppBottomSheet from '../AppBottomSheet'
+import { useAppSheet } from '../PageTransition'
 import './PhoneInput.css'
 
 export function toE164(countryCode, localNumber) {
@@ -8,7 +10,7 @@ export function toE164(countryCode, localNumber) {
   return cc && num ? `+${cc}${num}` : num ? `+${num}` : ''
 }
 
-function CountrySheet({ selected, onChange, onClose }) {
+function CountrySheet({ selected, onChange, onClose, closing = false }) {
   const [search, setSearch] = useState('')
   const initialIdx = useMemo(() => {
     const idx = countries.findIndex((c) => c.code === selected)
@@ -61,11 +63,16 @@ function CountrySheet({ selected, onChange, onClose }) {
   )
 
   return (
-    <div className="phone-sheet-overlay" onClick={onClose}>
-      <div className="phone-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="phone-sheet-handle" />
+    <AppBottomSheet
+      open
+      closing={closing}
+      onClose={onClose}
+      labelledBy="phone-sheet-title"
+      sheetClassName="phone-sheet"
+      keyboardAware
+    >
         <div className="phone-sheet-header">
-          <h3 className="phone-sheet-title">Select country</h3>
+          <h3 id="phone-sheet-title" className="phone-sheet-title">Select country</h3>
           <button type="button" className="phone-sheet-close" onClick={onClose} aria-label="Close">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -116,8 +123,7 @@ function CountrySheet({ selected, onChange, onClose }) {
             </button>
           ))}
         </div>
-      </div>
-    </div>
+    </AppBottomSheet>
   )
 }
 
@@ -125,7 +131,7 @@ const LOCAL_MAX = 10
 
 export default function PhoneInput({
   value = '',
-  country = '+91',
+  country = '+977',
   onChange,
   onCountryChange,
   placeholder = '98765 43210',
@@ -136,7 +142,7 @@ export default function PhoneInput({
   label,
   className = '',
 }) {
-  const [open, setOpen] = useState(false)
+  const { isPresented, isClosing, show, hide } = useAppSheet()
   const containerRef = useRef(null)
 
   const localDigits = value.replace(/\D/g, '').slice(0, LOCAL_MAX)
@@ -177,9 +183,9 @@ export default function PhoneInput({
           <button
             type="button"
             className="phone-input-code"
-            onClick={() => setOpen(!open)}
+            onClick={() => (isPresented ? hide() : show())}
             disabled={disabled}
-            aria-expanded={open}
+            aria-expanded={isPresented}
             aria-haspopup="dialog"
           >
             <span className="phone-input-flag">{resolvedCountry.flag}</span>
@@ -206,11 +212,12 @@ export default function PhoneInput({
         {verified && <span className="phone-input-verified">Verified</span>}
       </div>
       {error && <span className="phone-input-error" role="alert">{error}</span>}
-      {open && (
+      {isPresented && (
         <CountrySheet
           selected={resolvedCountry.code}
           onChange={handleCountryChange}
-          onClose={() => setOpen(false)}
+          onClose={() => hide()}
+          closing={isClosing}
         />
       )}
     </div>

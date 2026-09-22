@@ -27,7 +27,7 @@
 }
 
 .top-doctors-overlay.slide-in .top-doctors-sheet {
-  animation: tdSheetUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
 }
 
 .top-doctors-overlay.slide-out {
@@ -35,7 +35,7 @@
 }
 
 .top-doctors-overlay.slide-out .top-doctors-sheet {
-  animation: tdSheetDown 0.34s cubic-bezier(0.32, 0.72, 0.18, 1) both;
+  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) both;
 }
 
 .top-doctors-overlay.is-resting .top-doctors-sheet {
@@ -57,16 +57,6 @@
 
 .top-doctor-card.is-shared-placeholder {
   visibility: hidden;
-}
-
-@keyframes tdSheetUp {
-  from { transform: translate3d(0, 100%, 0); }
-  to { transform: translate3d(0, 0, 0); }
-}
-
-@keyframes tdSheetDown {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(0, 100%, 0); }
 }
 
 .top-doctors-sheet-handle {

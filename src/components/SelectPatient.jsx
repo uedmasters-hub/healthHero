@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { flowState } from '../lib/careFlow'
 import { findDuplicateSelfBooking } from '../lib/duplicateBooking'
 import { ageFromDob, ageToDob, groupedPatients, isPatientProfileComplete } from '../lib/patients'
 import { indianMobile, useUser } from '../user'
 import { useBooking } from './BookingContext'
 import { BookingReveal, useBookingReveal } from './BookingReveal'
+import { useBookingFlow } from './BookingFlow'
 import DuplicateBookingModal from './DuplicateBookingModal'
 import { BirthDateField } from './DatePicker'
 import { PhoneInput, toE164 } from './PhoneInput'
@@ -117,10 +118,12 @@ function PatientDetailsForm({ form, updateForm, showRelationship, formError, pho
 export default function SelectPatient() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { setCurrentStep, addingPatient, setAddingPatient } = useOutletContext()
+  const { addingPatient, setAddingPatient } = useBookingFlow()
   const { bookings } = useBooking()
   const { members: patients, addMember, completeSelf, googleBirthday } = useUser()
-  const doctor = location.state?.doctor
+  // Freeze entry so this layer stays correct while mounted as a push underlay.
+  const [entry] = useState(() => location.state || {})
+  const doctor = entry.doctor
   const selfPatient = patients.find((item) => item.relationship === 'Self' || item.id === 'self')
   const selfIncomplete = Boolean(selfPatient && !isPatientProfileComplete(selfPatient))
 
@@ -130,19 +133,19 @@ export default function SelectPatient() {
     : selfPatient
 
   const [selectedId, setSelectedId] = useState(() => {
-    if (location.state?.patient?.id) return location.state.patient.id
-    if (location.state?.forSomeoneElse) {
+    if (entry.patient?.id) return entry.patient.id
+    if (entry.forSomeoneElse) {
       const other = patients.find((item) => item.relationship !== 'Self')
       return other?.id || ''
     }
     return 'self'
   })
   const [form, setForm] = useState(() => (selfIncomplete ? formFromPatient(effectiveSelf) : emptyForm))
-  const [editingSelf, setEditingSelf] = useState(() => selfIncomplete && !location.state?.forSomeoneElse)
+  const [editingSelf, setEditingSelf] = useState(() => selfIncomplete && !entry.forSomeoneElse)
   const [formError, setFormError] = useState('')
   const [dupBooking, setDupBooking] = useState(null)
-  const [phoneCountry, setPhoneCountry] = useState('+91')
-  const ready = useBookingReveal(`patient:${doctor?.id || 'none'}`, Boolean(doctor && location.state?.date && location.state?.time))
+  const [phoneCountry, setPhoneCountry] = useState('+977')
+  const ready = useBookingReveal(`patient:${doctor?.id || 'none'}`, Boolean(doctor && entry.date && entry.time))
 
   const groups = useMemo(() => groupedPatients(patients), [patients])
   const selected = patients.find((item) => item.id === selectedId)
@@ -156,11 +159,10 @@ export default function SelectPatient() {
   const continueReady = selected && (showSelfEditor ? canSaveSelf : !selectedIncomplete)
 
   const goToReview = (patient, extra = {}) => {
-    setCurrentStep(3)
     navigate('/booking/confirm', {
-      state: flowState(location, {
+      state: flowState(entry, {
         patient,
-        forSomeoneElse: patient?.relationship !== 'Self' ? true : location.state?.forSomeoneElse,
+        forSomeoneElse: patient?.relationship !== 'Self' ? true : entry.forSomeoneElse,
         fromConfirm: undefined,
         ...extra,
       }),
@@ -280,12 +282,12 @@ export default function SelectPatient() {
   }
 
   useEffect(() => {
-    if (!doctor || !location.state?.date || !location.state?.time) {
-      navigate('/booking/slot', { replace: true, state: location.state })
+    if (!doctor || !entry.date || !entry.time) {
+      navigate('/booking/slot', { replace: true, state: entry })
     }
-  }, [doctor, location.state, navigate])
+  }, [doctor, entry, navigate])
 
-  if (!doctor || !location.state?.date || !location.state?.time) {
+  if (!doctor || !entry.date || !entry.time) {
     return null
   }
 
