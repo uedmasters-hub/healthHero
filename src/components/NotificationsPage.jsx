@@ -1,3 +1,4 @@
+import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useNotifications } from './NotificationContext'
 import { useBooking } from './BookingContext'
@@ -7,6 +8,9 @@ import { useDemoPreview } from './DemoPreviewModal'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import { usePushBack } from '../features/pushNav'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshNotificationsData } from '../features/sync/pageRefresh'
 import './NotificationsPage.css'
 
 const typeIcon = {
@@ -81,6 +85,9 @@ export default function NotificationsPage() {
   const { notifications, unreadCount, markRead, markAllRead, clearNotification } = useNotifications()
   const { show: showDemoPreview } = useDemoPreview()
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 220 })
+  const pageRef = useRef(null)
+  const onRefresh = useCallback(() => refreshNotificationsData(), [])
+  const ptr = usePullToRefresh(pageRef, onRefresh)
 
   const openItem = (item) => {
     markRead(item.id)
@@ -101,7 +108,8 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="notifications-page page-push-in">
+    <div className="notifications-page page-push-in" ref={pageRef}>
+      <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="notifications-header">
         <button className="notifications-back" data-push-back type="button" onClick={goHome} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

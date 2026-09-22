@@ -21,8 +21,8 @@ export function getCenters() {
   return cache.slice()
 }
 
-export async function hydrateCenters() {
-  if (hydrated || !isSupabaseConfigured) return cache
+export async function hydrateCenters({ force = false } = {}) {
+  if ((hydrated && !force) || !isSupabaseConfigured) return cache
   try {
     const sb = requireSupabase()
     const { data, error } = await sb

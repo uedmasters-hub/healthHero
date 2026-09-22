@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SearchField } from './SearchBar'
 import TabPageHeader from './TabPageHeader'
@@ -7,6 +7,9 @@ import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import { useDemoPreview } from './DemoPreviewModal'
 import { clearLock } from '../lib/scrollLock'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshPageData } from '../features/sync/pageRefresh'
 import {
   PHARMACY_CATEGORIES,
   PHARMACY_ORDERS,
@@ -43,6 +46,9 @@ export default function PharmacyPage() {
   const { show: showDemoPreview } = useDemoPreview()
   const [filterId, setFilterId] = useState('all')
   const { isPresented, isClosing, show, hide } = useAppSheet()
+  const scrollRef = useRef(null)
+  const onRefresh = useCallback(() => refreshPageData(), [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh)
 
   // Clear any stale pharmacy scroll freeze left by freezeNow() from an earlier
   // search navigation / HMR cycle (Treat keeps its scroller unlocked).
@@ -148,7 +154,8 @@ export default function PharmacyPage() {
         />
       </div>
 
-      <div className="pharmacy-scroll">
+      <div className="pharmacy-scroll" ref={scrollRef}>
+        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <div className="pharmacy-page__feed">
           <PromoCarousel
             slides={PHARMACY_PROMO_SLIDES}

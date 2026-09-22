@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import useNow from '../hooks/useNow'
@@ -17,6 +17,9 @@ import {
 import { useDemoPreview } from './DemoPreviewModal'
 import { isPreviewServiceType } from '../lib/previewModules'
 import AppFooter from './AppFooter'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshTreatData } from '../features/sync/pageRefresh'
 import './TreatPage.css'
 
 const historyTabs = ['All', 'Active', 'Upcoming', 'Completed', 'Cancelled']
@@ -47,6 +50,9 @@ export default function TreatPage() {
   const now = useNow()
   const { adoptBooking, getResumePath, focusBooking, hydrated } = useBooking()
   const historySectionRef = useRef(null)
+  const scrollRef = useRef(null)
+  const onRefresh = useCallback(() => refreshTreatData(), [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh)
   const [tab, setTab] = useState('All')
   const [sort, setSort] = useState('recent')
   const [visitType, setVisitType] = useState('All types')
@@ -206,7 +212,8 @@ export default function TreatPage() {
         </div>
       )}
 
-      <div className="treat-scroll">
+      <div className="treat-scroll" ref={scrollRef}>
+        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <section className="treat-carousel-section" aria-label="Upcoming bookings">
           <UpcomingBookingsCarousel
             origin="treat"

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from './Header'
 import SearchBar from './SearchBar'
@@ -14,6 +14,9 @@ import { useTransition } from './PageTransition'
 import { useSharedHero } from './SharedHero'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
 import useSearchScrollCompact from '../hooks/useSearchScrollCompact'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshHomeData } from '../features/sync/pageRefresh'
 import { clearLock, freezeNow } from '../lib/scrollLock'
 import { isHomePath } from '../lib/careFlow'
 
@@ -28,11 +31,17 @@ export default function HomePage() {
   const searchActive = location.pathname === '/search'
   const isFront = isHomePath(location.pathname)
   const [query, setQuery] = useState('')
-  const freezeHome = !isFront || searchActive || isAnyOverlayActive || Boolean(shared?.active)
+  // Only freeze while the hero is actually morphing — settled leftovers must not block Home.
+  const freezeHome = !isFront || searchActive || isAnyOverlayActive || Boolean(shared?.morphing)
   const searchOrigin = location.state?.searchOrigin
   const searchPlaceholder = location.state?.searchPlaceholder
   const searchReturnTo = location.state?.returnTo
   const isPharmacySearch = searchOrigin === 'pharmacy'
+
+  const onRefresh = useCallback(() => refreshHomeData(), [])
+  const ptr = usePullToRefresh(stageRef, onRefresh, {
+    enabled: isFront && !searchActive && !freezeHome,
+  })
 
   const headerSearchVisible = useSearchScrollCompact({
     stageRef,
@@ -43,10 +52,16 @@ export default function HomePage() {
   useRegisteredScroller('home', stageRef)
   useScrollLock('home', freezeHome)
 
-  // Drop stale freezeNow / touch locks once Home is front again (e.g. after chat).
   useEffect(() => {
     if (!freezeHome) clearLock('home')
   }, [freezeHome])
+
+  useEffect(() => {
+    if (!isFront) return
+    if (!shared?.active) return
+    if (String(shared.phase || '').startsWith('closing')) return
+    shared.reset?.()
+  }, [isFront, shared?.active, shared?.phase, shared])
 
   useEffect(() => {
     if (!searchActive) setQuery('')
@@ -93,6 +108,7 @@ export default function HomePage() {
 
       <div className="home-body">
         <div className="home-stage" ref={stageRef}>
+          <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
           {!searchActive ? (
             <SearchBar
               scrollMode

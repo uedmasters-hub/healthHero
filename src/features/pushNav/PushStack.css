@@ -43,11 +43,14 @@
   filter: none;
   border-radius: 0;
   box-shadow: -8px 0 28px rgba(15, 18, 28, 0.14);
+  overflow: hidden;
 }
 
 .push-stack__layer.is-top.is-exiting {
   /* Exiting top keeps its slide transform from the pop animation */
   box-shadow: -8px 0 28px rgba(15, 18, 28, 0.14);
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /* Push enter — right → left (existing page-push-in language) */

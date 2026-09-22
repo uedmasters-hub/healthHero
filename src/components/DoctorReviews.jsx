@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getDoctorById } from '../data/doctors'
 import {
@@ -11,6 +11,9 @@ import {
 } from '../data/reviews'
 import { flowState } from '../lib/careFlow'
 import { usePushBack } from '../features/pushNav'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshDoctorsData } from '../features/sync/pageRefresh'
 import './DoctorReviews.css'
 
 function StarPick({ value, onChange }) {
@@ -67,6 +70,12 @@ export default function DoctorReviews() {
   const doctor = getDoctorById(id)
   const goBack = usePushBack(() => navigate(`/doctor/${id}`, { state: flowState(location) }))
   const [tick, setTick] = useState(0)
+  const scrollRef = useRef(null)
+  const onRefresh = useCallback(async () => {
+    await refreshDoctorsData()
+    setTick((n) => n + 1)
+  }, [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh)
   const items = useMemo(() => getDoctorReviews(id), [id, tick])
   const summary = useMemo(() => getDoctorReviewSummary(id), [id, tick])
   const mine = items.find(isOwnReview)
@@ -126,7 +135,8 @@ export default function DoctorReviews() {
         <div className="reviews-header-spacer" />
       </div>
 
-      <div className="reviews-scroll">
+      <div className="reviews-scroll" ref={scrollRef}>
+        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <div className="reviews-summary">
           <div className="reviews-summary-score">{summary.rating || '—'}</div>
           <div>

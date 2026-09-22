@@ -42,6 +42,10 @@ function setPageLayerPopping(active, toHome) {
   if (!layer) return
   layer.classList.toggle('is-push-popping', Boolean(active))
   layer.classList.toggle('is-push-popping-home', Boolean(active && toHome))
+  // SharedHero portals outside the stack — force-clear before Home paints underneath.
+  if (active && toHome && typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('emedicalls:push-pop-home'))
+  }
 }
 
 function setHomePushUnderlay(active, { pushing = false } = {}) {

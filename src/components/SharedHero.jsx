@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { displayDoctorName, relativeRect } from '../lib/geometry'
 import { freezeNow } from '../lib/scrollLock'
 import { SheetPortal } from './PageTransition'
@@ -100,20 +101,23 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
   )
 }
 
-function SharedHeroLayer({ session }) {
+function SharedHeroLayer({ session, pathname }) {
   const { doctor, sourceRect, destRect, openFromRect, layout, animate, phase, appointmentPreview } = session
+  // Portal lives outside PushStack — never paint on non-hero routes (browser back / deep links).
+  if (!isSharedHeroSurface(pathname)) return null
   if (!doctor || !sourceRect || phase === 'idle') return null
+  // Destination page owns the card once settled; keep the portal empty to avoid ghosts on pop.
+  if (phase === 'settled' || phase === 'hero-settled' || phase === 'closing-settle') return null
 
   const fromRect = String(phase).startsWith('closing') ? sourceRect : (openFromRect || sourceRect)
   const box = (layout === 'hero' || layout === 'appointment') && destRect ? destRect : fromRect
-  const visible = phase !== 'settled' && phase !== 'hero-settled' && phase !== 'idle'
   const closing = String(phase).startsWith('closing')
   const duration = closing ? CLOSE_HERO_MS : HERO_MS
   const ease = closing ? CLOSE_EASE : EASE
 
   return (
     <SheetPortal>
-      <div className={`shared-hero-layer ${visible ? 'is-on' : 'is-off'}`} aria-hidden="true">
+      <div className="shared-hero-layer is-on" aria-hidden="true">
         <div
           className={`shared-hero-shell ${animate ? 'is-animating' : ''}`}
           style={{
@@ -148,6 +152,16 @@ const IDLE = {
   appointmentPreview: null,
 }
 
+function isSharedHeroSurface(pathname) {
+  return (
+    pathname.startsWith('/doctor/')
+    || pathname === '/appointment'
+    || pathname === '/prepare-visit'
+    || pathname === '/pre-checkin'
+    || pathname.startsWith('/booking')
+  )
+}
+
 function homeAnchorRect() {
   const host = document.querySelector('[data-top-doctor-anchor]')
   const card = host?.querySelector('.dc-card') || host
@@ -156,6 +170,7 @@ function homeAnchorRect() {
 }
 
 export function SharedHeroProvider({ children }) {
+  const location = useLocation()
   const destElRef = useRef(null)
   const destLocked = useRef(false)
   const [session, setSession] = useState(IDLE)
@@ -169,6 +184,14 @@ export function SharedHeroProvider({ children }) {
     timersRef.current = []
   }
 
+  const hardReset = useCallback(() => {
+    clearTimers()
+    destLocked.current = false
+    destElRef.current = null
+    closeDoneRef.current = null
+    setSession(IDLE)
+  }, [])
+
   const later = (fn, ms) => {
     const id = setTimeout(fn, ms)
     timersRef.current.push(id)
@@ -176,6 +199,23 @@ export function SharedHeroProvider({ children }) {
   }
 
   useEffect(() => () => clearTimers(), [])
+
+  // Browser back / deep-link / tab switch must never leave a portaled morph card over Home.
+  // Clear even mid-close — PushStack owns the exit animation; the portal must die immediately.
+  useEffect(() => {
+    if (isSharedHeroSurface(location.pathname)) return
+    if (sessionRef.current.phase === 'idle') return
+    hardReset()
+  }, [location.pathname, hardReset])
+
+  useEffect(() => {
+    const onPushPopHome = () => {
+      if (sessionRef.current.phase === 'idle') return
+      hardReset()
+    }
+    window.addEventListener('emedicalls:push-pop-home', onPushPopHome)
+    return () => window.removeEventListener('emedicalls:push-pop-home', onPushPopHome)
+  }, [hardReset])
 
   const startOpen = useCallback(({
     doctor,
@@ -323,18 +363,13 @@ export function SharedHeroProvider({ children }) {
     startOpen,
     registerDest,
     startClose,
-    reset: () => {
-      clearTimers()
-      destLocked.current = false
-      destElRef.current = null
-      setSession(IDLE)
-    },
+    reset: hardReset,
   }
 
   return (
     <SharedHeroContext.Provider value={value}>
       {children}
-      <SharedHeroLayer session={session} />
+      <SharedHeroLayer session={session} pathname={location.pathname} />
     </SharedHeroContext.Provider>
   )
 }

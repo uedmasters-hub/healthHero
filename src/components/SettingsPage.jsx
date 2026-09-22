@@ -1,7 +1,11 @@
+import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../user'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshProfileData } from '../features/sync/pageRefresh'
 import './PlaceholderPage.css'
 import './SettingsPage.css'
 
@@ -9,6 +13,9 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const { profile, isDemo, logout } = useUser()
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 200 })
+  const scrollRef = useRef(null)
+  const onRefresh = useCallback(() => refreshProfileData(), [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh)
 
   const signOut = () => {
     logout()
@@ -21,7 +28,8 @@ export default function SettingsPage() {
         <h1 className="placeholder-title">Settings</h1>
         <p className="placeholder-subtitle">Your account and preferences</p>
       </div>
-      <div className="settings-body">
+      <div className="settings-body" ref={scrollRef}>
+        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <RevealItem className="settings-account" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
           <button type="button" className="settings-profile" onClick={() => navigate('/profile')}>
             <span className="settings-avatar" aria-hidden="true">{profile?.initials || 'U'}</span>

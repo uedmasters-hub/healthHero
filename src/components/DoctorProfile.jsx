@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getDoctorById, getDoctorList, getDoctorPhoto } from '../data/doctors'
 import { getDoctorReviewSummary } from '../data/reviews'
@@ -16,6 +16,9 @@ import { markDoctorViewed } from '../lib/recentDoctors'
 import useNow from '../hooks/useNow'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import { usePushBack } from '../features/pushNav'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshDoctorsData } from '../features/sync/pageRefresh'
 import './DoctorProfile.css'
 
 const LOGO_BADGES = [
@@ -106,6 +109,10 @@ export default function DoctorProfile() {
   }, [id])
   const pageRef = useRef(null)
   useRegisteredScroller('profile', pageRef)
+  const onRefresh = useCallback(() => refreshDoctorsData(), [])
+  const ptr = usePullToRefresh(pageRef, onRefresh, {
+    enabled: !shared?.morphing,
+  })
   const now = useNow(15000)
   const allConsultants = useMemo(() => getDoctorList(), [])
 
@@ -168,8 +175,9 @@ export default function DoctorProfile() {
 
   const sharedFlow = shared?.active && String(shared.doctor?.id) === String(doctor.id)
   const hideHero = sharedFlow && shared.phase !== 'settled' && shared.phase !== 'hero-settled'
-  const contentReady = !sharedFlow || shared.phase === 'settled'
-  const showSkeletons = sharedFlow && !contentReady
+  // Doctor payload is local — never trap the body behind a long skeleton wait.
+  const contentReady = Boolean(doctor?.id) && (!sharedFlow || shared.phase !== 'preparing')
+  const showSkeletons = sharedFlow && shared.phase === 'preparing'
   useScrollLock('profile', showSkeletons)
   const previewReviews = doctor.reviews.items.slice(0, 2)
 
@@ -271,6 +279,7 @@ export default function DoctorProfile() {
       </div>
 
       <div ref={pageRef} className={`profile-scroll ${contentReady ? '' : 'is-loading'}`.trim()}>
+      <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className={`profile-hero-card ${hideHero ? 'is-morphing' : ''}`}>
         <div className="profile-hero-morph-target" ref={heroRef}>
           <DoctorCard doctor={doctor} variant="profile" disableNavigate />

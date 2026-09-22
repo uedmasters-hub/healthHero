@@ -1,10 +1,13 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useCallback, useLayoutEffect, useRef } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { canonicalSpecialty, loadExploreListState } from '../data/specialisations'
 import { goBackToOrigin } from '../lib/careFlow'
 import { useTransition } from './PageTransition'
 import { usePushBack } from '../features/pushNav'
 import DoctorList from './DoctorList'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshHomeData } from '../features/sync/pageRefresh'
 import './BookingFlow.css'
 
 export default function ExploreSpecialtyPage() {
@@ -18,6 +21,8 @@ export default function ExploreSpecialtyPage() {
   const goBack = usePushBack(() => {
     goBackToOrigin(navigate, location, { openSpecialisations, openTopDoctors })
   })
+  const onRefresh = useCallback(() => refreshHomeData(), [])
+  const ptr = usePullToRefresh(scrollRootRef, onRefresh)
 
   useLayoutEffect(() => {
     const el = scrollRootRef.current
@@ -28,6 +33,7 @@ export default function ExploreSpecialtyPage() {
 
   return (
     <div className="booking-layout explore-layout page-push-in" ref={scrollRootRef}>
+      <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="booking-header">
         <button className="back-btn" data-push-back onClick={goBack} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

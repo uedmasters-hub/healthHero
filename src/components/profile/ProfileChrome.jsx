@@ -1,6 +1,10 @@
+import { useCallback } from 'react'
 import useStaggerReveal from '../useStaggerReveal'
 import { usePushBack } from '../../features/pushNav'
 import { BRAND_SUPPORT_EMAIL } from '../../lib/brand'
+import { usePullToRefresh } from '../../hooks/usePullToRefresh'
+import PullToRefreshIndicator from '../PullToRefreshIndicator'
+import { refreshProfileData } from '../../features/sync/pageRefresh'
 import '../PatientProfile.css'
 
 export const CARE_SUPPORT = {
@@ -18,9 +22,14 @@ export function ProfilePage({ title, onBack, action, children, dataset }) {
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 160, dataset })
   const defaultBack = usePushBack('/profile')
   const goBack = onBack || defaultBack
+  const pageRef = containerRef
+  // Profile page itself scrolls (.user-profile-page)
+  const onRefresh = useCallback(() => refreshProfileData(), [])
+  const ptr = usePullToRefresh(pageRef, onRefresh)
 
   return (
-    <div className="user-profile-page page-push-in">
+    <div className="user-profile-page page-push-in" ref={pageRef}>
+      <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="user-profile-header-bar">
         <button type="button" className="user-profile-back-btn" data-push-back onClick={goBack} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -31,7 +40,7 @@ export function ProfilePage({ title, onBack, action, children, dataset }) {
         <h1 className="user-profile-header-title">{title}</h1>
         {action ? action : <div className="user-profile-header-spacer" />}
       </div>
-      <div className="user-profile-content" ref={containerRef}>
+      <div className="user-profile-content">
         {typeof children === 'function' ? children({ setItemRef, isRevealed, isCached }) : children}
         <div className="user-profile-footer">- You've reached the end -</div>
       </div>

@@ -7,7 +7,9 @@
 }
 
 .shared-hero-layer.is-off {
+  display: none;
   visibility: hidden;
+  pointer-events: none;
 }
 
 .shared-hero-shell {

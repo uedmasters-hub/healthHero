@@ -29,8 +29,11 @@
 .placeholder-content {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: var(--space-4) var(--space-5) calc(88px + var(--frame-footer));
 }

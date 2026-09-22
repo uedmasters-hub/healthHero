@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import { useBookingById, useRouteBookingId } from '../booking'
@@ -25,6 +25,9 @@ import {
 import StickyFooterCta from './StickyFooterCta'
 import AppointmentMenuOptions from './AppointmentMenuOptions'
 import { formatMoney } from '../lib/paymentSession'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshAppointmentData } from '../features/sync/pageRefresh'
 import './AppointmentDetail.css'
 
 const checklistItems = [
@@ -105,6 +108,11 @@ export default function AppointmentDetail() {
   const now = useNow(15000)
   const shared = useSharedHero()
   const heroRef = useRef(null)
+  const scrollRef = useRef(null)
+  const onRefresh = useCallback(() => refreshAppointmentData(), [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh, {
+    enabled: Boolean(booking) && !shared?.morphing,
+  })
   const [checkedItems, setCheckedItems] = useState([])
   const [expandedFaq, setExpandedFaq] = useState(null)
   const [notes, setNotes] = useState(booking?.note || '')
@@ -112,10 +120,11 @@ export default function AppointmentDetail() {
   const [showUrgentCare, setShowUrgentCare] = useState(false)
   const [sheet, setSheet] = useState(null)
   const { isPresented, isClosing, show, hide } = useAppSheet()
+  // Booking is already in memory — never blank the page with skeletons.
   const revealReady = useBookingReveal(
     `appointment:${booking?.doctor?.id || bookingId || 'none'}`,
     Boolean(booking),
-    { instant: Boolean(booking) },
+    { instant: Boolean(booking), hasCache: Boolean(booking) },
   )
 
   useEffect(() => {
@@ -133,7 +142,6 @@ export default function AppointmentDetail() {
     booking && shared?.active && String(shared.doctor?.id) === String(booking.doctor?.id),
   )
   const hideHero = sharedFlow && shared.phase !== 'settled' && shared.phase !== 'hero-settled'
-  // Booking is already in memory — never blank the page with skeletons.
   const contentReady = Boolean(booking) && revealReady
 
   useLayoutEffect(() => {
@@ -360,7 +368,11 @@ export default function AppointmentDetail() {
   }[sheet?.type] || ''
 
   return (
-    <div className={`appointment-page ${sharedFlow ? 'is-shared-hero' : ''} ${contentReady ? 'is-content-ready' : ''}`}>
+    <div
+      className={`appointment-page ${sharedFlow ? 'is-shared-hero' : ''} ${contentReady ? 'is-content-ready' : ''}`}
+      ref={scrollRef}
+    >
+      <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="appointment-header-bar">
         <div className="appointment-header-spacer" aria-hidden="true" />
         <h1 className="appointment-header-title">Appointment Details</h1>

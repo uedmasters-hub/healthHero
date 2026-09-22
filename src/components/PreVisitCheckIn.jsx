@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import DoctorCard from './DoctorCard'
@@ -26,6 +26,9 @@ import {
   providerThreadPath,
   chatLaunchState,
 } from '../features/conversations'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshAppointmentData } from '../features/sync/pageRefresh'
 import './PreVisitCheckIn.css'
 
 const faqItems = [
@@ -54,16 +57,21 @@ export default function PreVisitCheckIn() {
   const now = useNow(15000)
   const shared = useSharedHero()
   const heroRef = useRef(null)
+  const scrollRef = useRef(null)
   const [expandedFaq, setExpandedFaq] = useState(null)
   const [sheet, setSheet] = useState(null)
   const [chatBusy, setChatBusy] = useState(false)
   const [chatError, setChatError] = useState('')
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const { user } = useAuth()
+  const onRefresh = useCallback(() => refreshAppointmentData(), [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh, {
+    enabled: Boolean(currentBooking) && !shared?.morphing,
+  })
   const ready = useBookingReveal(
     `previsit:${currentBooking?.doctor?.id || 'none'}`,
     Boolean(currentBooking),
-    { instant: Boolean(currentBooking) },
+    { instant: Boolean(currentBooking), hasCache: Boolean(currentBooking) },
   )
 
   useEffect(() => {
@@ -278,7 +286,8 @@ export default function PreVisitCheckIn() {
         </button>
       </div>
 
-      <div className="previsit-body">
+      <div className="previsit-body" ref={scrollRef}>
+        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <div className="previsit-success-banner">
           <div className="previsit-success-check" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

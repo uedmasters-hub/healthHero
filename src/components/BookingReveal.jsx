@@ -2,21 +2,28 @@ import { useEffect, useState } from 'react'
 import { useFetchSession } from './FetchSession'
 import './BookingFlow.css'
 
+const STAGED_MS = 90
+const SKELETON_MS = 320
+
 /**
- * Reveal gate for booking screens.
- * When `instant` is true (data already in memory), skip the artificial delay —
- * skeletons must not hide sync-available content.
+ * Reveal gate for booking / detail screens.
+ *
+ * Staged strategy:
+ * - `instant` or already-loaded dataset → paint immediately (cached / nav data).
+ * - Otherwise show skeleton only briefly; after STAGED_MS reveal if `hasCache`
+ *   so the user is never trapped waiting for data that already exists locally.
+ * - Full skeleton delay (SKELETON_MS) only when there is no local cache yet.
  */
-export function useBookingReveal(dataset, enabled = true, { instant = false } = {}) {
+export function useBookingReveal(dataset, enabled = true, { instant = false, hasCache = false } = {}) {
   const session = useFetchSession()
-  const [ready, setReady] = useState(() => enabled && (instant || session.isLoaded(dataset)))
+  const [ready, setReady] = useState(() => enabled && (instant || hasCache || session.isLoaded(dataset)))
 
   useEffect(() => {
     if (!enabled) {
       setReady(false)
       return undefined
     }
-    if (instant || session.isLoaded(dataset)) {
+    if (instant || hasCache || session.isLoaded(dataset)) {
       session.markLoaded(dataset)
       setReady(true)
       return undefined
@@ -24,13 +31,14 @@ export function useBookingReveal(dataset, enabled = true, { instant = false } = 
 
     setReady(false)
     const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const delay = reduce ? 0 : (hasCache ? STAGED_MS : SKELETON_MS)
     const timer = window.setTimeout(() => {
       session.markLoaded(dataset)
       setReady(true)
-    }, reduce ? 0 : 320)
+    }, delay)
 
     return () => window.clearTimeout(timer)
-  }, [dataset, session, enabled, instant])
+  }, [dataset, session, enabled, instant, hasCache])
 
   return ready
 }

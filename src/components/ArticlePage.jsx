@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   articlePath,
@@ -13,6 +13,9 @@ import { useTransition } from './PageTransition'
 import { BookingReveal, useBookingReveal } from './BookingReveal'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
 import { usePushBack } from '../features/pushNav'
+import { usePullToRefresh } from '../hooks/usePullToRefresh'
+import PullToRefreshIndicator from './PullToRefreshIndicator'
+import { refreshPageData } from '../features/sync/pageRefresh'
 import InsightCard from './InsightCard'
 import './HealthInsights.css'
 import './ArticlePage.css'
@@ -65,8 +68,13 @@ export default function ArticlePage() {
   const related = getRelatedArticles(article)
   const scrollRef = useRef(null)
   const [saved, setSaved] = useState(() => isInsightSaved(id))
-  const contentReady = useBookingReveal(`article:${id}`, Boolean(article))
+  const contentReady = useBookingReveal(`article:${id}`, Boolean(article), {
+    instant: Boolean(article),
+    hasCache: Boolean(article),
+  })
   const goBack = usePushBack(() => goBackToOrigin(navigate, location, { openInsights }))
+  const onRefresh = useCallback(() => refreshPageData(), [])
+  const ptr = usePullToRefresh(scrollRef, onRefresh)
 
   useRegisteredScroller(`article:${id}`, scrollRef)
   useScrollLock(`article:${id}`, Boolean(article) && !contentReady)
@@ -160,6 +168,7 @@ export default function ArticlePage() {
       </header>
 
       <div className={`article-scroll ${contentReady ? '' : 'is-loading'}`} ref={scrollRef}>
+        <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <BookingReveal ready={contentReady} skeleton={<ArticleSkeleton />}>
           <div className="article-hero">
             <img src={article.hero} alt="" />
