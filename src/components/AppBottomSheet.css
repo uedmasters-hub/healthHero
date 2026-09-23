@@ -112,21 +112,22 @@
   flex-shrink: 0;
   font: inherit;
   padding: 0;
-  transition: background var(--transition), color var(--transition), opacity var(--transition);
+  transition: var(--interact-transition);
 }
 
 .ds-sheet-close:hover:not(:disabled) {
-  background: var(--border);
+  background: var(--interact-hover-bg);
 }
 
 .ds-sheet-close:active:not(:disabled) {
-  opacity: var(--opacity-pressed);
+  background: var(--interact-pressed-bg);
+  opacity: 1;
 }
 
 .ds-sheet-close:focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 3px solid var(--primary-500);
   outline-offset: 2px;
-  box-shadow: var(--shadow-focus);
+  box-shadow: none;
 }
 
 .ds-sheet-close svg {
@@ -150,14 +151,24 @@
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   cursor: pointer;
+  transition: var(--interact-transition);
 }
 
 .ds-sheet-option:last-child {
   border-bottom: none;
 }
 
+.ds-sheet-option:hover:not(.is-active):not(.is-danger) {
+  background: var(--interact-hover-bg);
+}
+
+.ds-sheet-option:active:not(.is-active) {
+  background: var(--interact-pressed-bg);
+}
+
 .ds-sheet-option.is-active {
-  color: var(--primary);
+  background: var(--interact-selected-bg);
+  color: var(--text-primary);
   font-weight: var(--font-weight-semibold);
 }
 

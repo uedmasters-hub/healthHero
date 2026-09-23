@@ -11,6 +11,7 @@ import {
   selectById,
   selectCareHistory,
   selectHomeCarouselLegacy,
+  selectHomeSurface,
   selectLiveAppointment,
   selectTreatGroups,
 } from './selectors'
@@ -50,13 +51,27 @@ export function useActiveBooking() {
   }, [bookings, activeBookingId])
 }
 
-/** Homepage carousel — four newest upcoming (legacy view models). */
+/** Homepage carousel — future upcoming only (legacy view models). */
 export function useHomeCarousel(limit = HOME_CAROUSEL_LIMIT) {
   const { bookings, activeBookingId } = useBooking()
   return useMemo(
     () => selectHomeCarouselLegacy({ bookings, activeBookingId }, limit),
     [bookings, activeBookingId, limit],
   )
+}
+
+/** Singular Home hero surface (phase + booking). */
+export function useHomeSurface(now = Date.now()) {
+  const { bookings, activeBookingId } = useBooking()
+  return useMemo(() => {
+    const surface = selectHomeSurface({ bookings, activeBookingId }, new Date(now))
+    if (!surface) return null
+    return {
+      phase: surface.phase,
+      booking: toLegacyBooking(surface.record),
+      bounds: surface.bounds,
+    }
+  }, [bookings, activeBookingId, now])
 }
 
 /** Treat grouped history from the same store. */

@@ -27,11 +27,11 @@ export default function EmptyStatePage() {
   message="Book your first appointment to get started."
 />`}>
           <div style={{ padding: 20, textAlign: 'center', width: '100%' }}>
-            <div style={{ width: 160, height: 120, margin: '0 auto 18px', background: '#f3f4f8', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <div style={{ width: 160, height: 120, margin: '0 auto 18px', background: 'var(--neutral-100)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#6b7280' }}>No upcoming appointments</div>
-            <div style={{ fontSize: 14, color: '#6b7280', marginTop: 6, maxWidth: 240, margin: '6px auto 0' }}>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)' }}>No upcoming appointments</div>
+            <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 6, maxWidth: 240, margin: '6px auto 0' }}>
               Book your first appointment to get started.
             </div>
           </div>

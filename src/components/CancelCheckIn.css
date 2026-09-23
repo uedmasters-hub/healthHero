@@ -293,7 +293,7 @@
 
 .ccancel-radio.selected {
   border-color: var(--primary);
-  background: var(--primary);
+  background: var(--cta);
 }
 
 .ccancel-radio-inner {
@@ -511,7 +511,7 @@
   padding: var(--space-4);
   border-radius: var(--radius);
   border: none;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-semibold);

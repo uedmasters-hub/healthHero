@@ -93,11 +93,11 @@
 }
 
 .stepper-step.active {
-  background: var(--primary);
+  background: var(--cta);
 }
 
 .stepper-step.completed {
-  background: var(--primary);
+  background: var(--cta);
 }
 
 /* Page content */

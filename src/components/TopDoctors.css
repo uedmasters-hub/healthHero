@@ -68,7 +68,9 @@
 
 .doctors-scroll .dc-card:focus-visible,
 .doctors-scroll .dc-card.dc-card-grid:focus-visible {
-  box-shadow: var(--shadow-focus);
+  outline: 3px solid var(--primary-500);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .doctors-scroll .dc-card-grid .dc-name {

@@ -14,16 +14,20 @@ export default function InputsPage() {
 
       <Section title="Overview">
         <p>
-          eMedicalls uses two input patterns: the standard form input (<code>AuthField</code>)
-          for authentication and forms, and the search field (<code>SearchField</code>) for
-          discovery. Both share the same visual language but serve different interaction contexts.
+          Structured forms use <code>.ds-field</code> (48×16 radius) for labeled inputs.
+          Discovery search keeps the pill <code>SearchField</code>. Both share ink, border, and
+          focus tokens — never invent one-off field chrome.
         </p>
       </Section>
 
       <Section title="Live preview">
-        <h3>Text input</h3>
-        <Preview code={`<input className="ds-input" placeholder="Enter your name" />`}>
-          <input className="ds-showcase-input" placeholder="Enter your name" />
+        <h3>Structured field</h3>
+        <Preview code={`<label className="ds-field-label">Full name</label>
+<input className="ds-field" placeholder="Enter your name" />`}>
+          <div style={{ width: 300 }}>
+            <label className="ds-field-label">Full name</label>
+            <input className="ds-field" placeholder="Enter your name" />
+          </div>
         </Preview>
 
         <h3>Search field</h3>
@@ -31,9 +35,9 @@ export default function InputsPage() {
   <SearchIcon />
   <input className="search-field-input" placeholder="Search Doctor" />
 </label>`}>
-          <div className="search-field" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 48, background: '#f3f4f8', borderRadius: 999, padding: '0 16px', width: 300 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input style={{ flex: 1, border: 'none', background: 'none', fontSize: 16, color: '#1a1a2e', outline: 'none' }} placeholder="Search Doctor" />
+          <div className="search-field" style={{ display: 'flex', alignItems: 'center', gap: 8, height: 48, background: 'var(--surface-muted)', borderRadius: 9999, padding: '0 16px', width: 300 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input style={{ flex: 1, border: 'none', background: 'none', fontSize: 16, color: 'var(--text-primary)', outline: 'none' }} placeholder="Search Doctor" />
           </div>
         </Preview>
 
@@ -63,19 +67,18 @@ export default function InputsPage() {
 
       <Section title="Tokens">
         <TokenTable tokens={[
-          { token: '--border', value: '#EEEFF3', usage: 'Input border color' },
-          { token: '--border-focus', value: 'var(--primary)', usage: 'Focus border color' },
-          { token: '--radius-sm', value: '8px', usage: 'Input border radius' },
-          { token: '--radius-full', value: '999px', usage: 'Search field border radius (pill)' },
-          { token: '--text-body-size', value: '14px', usage: 'Input font size' },
-          { token: '--text-title-size', value: '16px', usage: 'Search input font size' },
-          { token: '--text-primary', value: '#1A1A2E', usage: 'Input text color' },
-          { token: '--text-secondary', value: '#6B7280', usage: 'Placeholder text color' },
-          { token: '--text-faint', value: '#9CA3AF', usage: 'Placeholder color (decorative)' },
-          { token: '--surface-muted', value: '#F3F4F8', usage: 'Search field background' },
-          { token: '--shadow-focus', value: '0 0 0 3px rgba(91,95,198,0.28)', usage: 'Focus ring glow' },
-          { token: '--app-flow-cta-height', value: '52px', usage: 'Search field height' },
-          { token: '--icon-xl', value: '22px', usage: 'Search icon size' },
+          { token: '--field-height', value: '3rem', usage: 'Default structured field height (PP h-12)' },
+          { token: '--field-height-sm', value: '2.75rem', usage: 'Compact field height (PP h-11)' },
+          { token: '--field-radius', value: '1rem', usage: 'Structured field corner (PP radius-m)' },
+          { token: '--field-pad-x', value: '1rem', usage: 'Horizontal field padding' },
+          { token: '--border', value: 'primary-800 @ 12%', usage: 'Hairline lavender border' },
+          { token: '--border-focus', value: '#8c60ff', usage: 'Focus accent (primary-500)' },
+          { token: '--radius-full', value: '9999px', usage: 'Search field pill radius' },
+          { token: '--text-body-size', value: '1rem', usage: 'Field / search input font size' },
+          { token: '--text-primary', value: '#180730', usage: 'Input text (neutral-900)' },
+          { token: '--text-secondary', value: '#534b74', usage: 'Label / placeholder (neutral-700)' },
+          { token: '--surface-muted', value: '#f5f4fa', usage: 'Search field background (neutral-100)' },
+          { token: '--touch-min', value: '2.75rem', usage: 'Minimum interactive target' },
         ]} />
       </Section>
 

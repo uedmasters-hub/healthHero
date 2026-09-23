@@ -9,6 +9,7 @@ import {
 import { createLocalPersistence } from './persistence'
 import { createRepository, IMMUTABLE_APPOINTMENT_STATUSES } from './repository'
 import { mirrorAppointment } from '../features/sync/mirrors'
+import { notificationService } from '../features/notifications'
 import {
   applyPaymentExpired,
   applyPaymentProcessing,
@@ -34,6 +35,15 @@ import {
   clearPaymentSession,
 } from '../lib/paymentSession'
 import { amountFromDoctor } from '../lib/paymentSession'
+import {
+  desiredStatusForTime,
+  snoozeUntil,
+} from './visitLifecycle'
+import {
+  rpcAdvanceAppointment,
+  rpcConfirmVisitCompleted,
+  rpcSnoozeVisitConfirmation,
+} from './lifecycleRpc'
 
 function migrateFromPaymentSession(repo, userId = null) {
   const session = readPaymentSession()
@@ -85,6 +95,8 @@ function migrateFromPaymentSession(repo, userId = null) {
 }
 
 const STATUS_KEEP_RANK = {
+  [BOOKING_STATUS.AWAITING_COMPLETION]: 8,
+  [BOOKING_STATUS.IN_PROGRESS]: 7,
   [BOOKING_STATUS.CHECKED_IN]: 6,
   [BOOKING_STATUS.PAYMENT_PROCESSING]: 5,
   [BOOKING_STATUS.PENDING_PAYMENT]: 4,
@@ -93,6 +105,7 @@ const STATUS_KEEP_RANK = {
   [BOOKING_STATUS.RESCHEDULED]: 2,
   [BOOKING_STATUS.COMPLETED]: 1,
   [BOOKING_STATUS.CANCELLED]: 0,
+  [BOOKING_STATUS.NO_SHOW]: 0,
   [BOOKING_STATUS.EXPIRED]: 0,
   [BOOKING_STATUS.DRAFT]: -1,
 }
@@ -512,6 +525,145 @@ export function createBookingEngine({
       }
       clearPaymentSession()
       queueAppointment(record, ownerId())
+      return toLegacyBooking(record)
+    },
+
+    /**
+     * Time-based lifecycle tick — advances local status then mirrors / RPCs.
+     * Idempotent: no-op when desired status matches current.
+     */
+    tickLifecycle(now = new Date()) {
+      const t = now instanceof Date ? now : new Date(now)
+      const changed = []
+      repo.getAll().forEach((record) => {
+        const desired = desiredStatusForTime(record, t)
+        if (!desired || desired === record.status) return
+        try {
+          const event =
+            desired === BOOKING_STATUS.IN_PROGRESS
+              ? BOOKING_EVENT.VISIT_STARTED
+              : desired === BOOKING_STATUS.AWAITING_COMPLETION
+                ? BOOKING_EVENT.VISIT_AWAITING_CONFIRMATION
+                : desired === BOOKING_STATUS.NO_SHOW
+                  ? BOOKING_EVENT.NO_SHOW
+                  : BOOKING_EVENT.UPDATED
+          const next = transitionBooking(record, desired, { event })
+          if (desired === BOOKING_STATUS.IN_PROGRESS) {
+            next.meta = {
+              ...(next.meta || {}),
+              startedAt: next.meta?.startedAt || t.toISOString(),
+            }
+          }
+          if (desired === BOOKING_STATUS.NO_SHOW) {
+            next.meta = {
+              ...(next.meta || {}),
+              completedAt: next.meta?.completedAt || t.toISOString(),
+            }
+          }
+          const { record: saved } = repo.upsert(next, { event })
+          changed.push(saved)
+          queueAppointment(saved, ownerId())
+          if (ownerId()) {
+            rpcAdvanceAppointment(saved.id).catch(() => {})
+          }
+        } catch {
+          /* invalid transition — skip */
+        }
+      })
+      return changed.map((r) => toLegacyBooking(r))
+    },
+
+    confirmVisitCompleted(id) {
+      const current = repo.getById(id) || repo.getActive()
+      if (!current) return null
+      if (current.status === BOOKING_STATUS.COMPLETED) {
+        return toLegacyBooking(current)
+      }
+      const now = new Date()
+      const completedAt = now.toISOString()
+      const postVisitUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString()
+      const next = transitionBooking(current, BOOKING_STATUS.COMPLETED, {
+        event: BOOKING_EVENT.VISIT_COMPLETED,
+      })
+      next.meta = {
+        ...(next.meta || {}),
+        completedAt,
+        postVisitUntil,
+        confirmationSnoozeUntil: null,
+      }
+      const { record } = repo.upsert(next, { event: BOOKING_EVENT.VISIT_COMPLETED })
+      queueAppointment(record, ownerId())
+      if (ownerId()) {
+        rpcConfirmVisitCompleted(record.id).catch(() => {})
+      }
+      notificationService.pushNotification({
+        title: 'Visit completed',
+        body: 'Your post-visit care hub is ready for 24 hours.',
+        type: 'booking',
+        to: '/post-visit-summary',
+        data: { bookingId: record.id },
+      })
+      return toLegacyBooking(record)
+    },
+
+    snoozeVisitConfirmation(id, untilIso) {
+      const current = repo.getById(id) || repo.getActive()
+      if (!current) return null
+      const until = untilIso || snoozeUntil()
+      let base = current
+      if (
+        current.status !== BOOKING_STATUS.AWAITING_COMPLETION
+        && current.status !== BOOKING_STATUS.IN_PROGRESS
+      ) {
+        try {
+          base = transitionBooking(current, BOOKING_STATUS.AWAITING_COMPLETION, {
+            event: BOOKING_EVENT.VISIT_AWAITING_CONFIRMATION,
+          })
+        } catch {
+          return toLegacyBooking(current)
+        }
+      } else if (current.status === BOOKING_STATUS.IN_PROGRESS) {
+        try {
+          base = transitionBooking(current, BOOKING_STATUS.AWAITING_COMPLETION, {
+            event: BOOKING_EVENT.VISIT_AWAITING_CONFIRMATION,
+          })
+        } catch {
+          base = current
+        }
+      }
+      const next = {
+        ...base,
+        status: BOOKING_STATUS.AWAITING_COMPLETION,
+        meta: {
+          ...(base.meta || {}),
+          updatedAt: new Date().toISOString(),
+          confirmationSnoozeUntil: until,
+        },
+      }
+      const { record } = repo.upsert(next, { event: BOOKING_EVENT.VISIT_SNOOZED })
+      queueAppointment(record, ownerId())
+      if (ownerId()) {
+        rpcSnoozeVisitConfirmation(record.id, until).catch(() => {})
+      }
+      return toLegacyBooking(record)
+    },
+
+    markNoShow(id) {
+      const current = repo.getById(id) || repo.getActive()
+      if (!current) return null
+      if (current.status === BOOKING_STATUS.NO_SHOW) return toLegacyBooking(current)
+      const next = transitionBooking(current, BOOKING_STATUS.NO_SHOW, {
+        event: BOOKING_EVENT.NO_SHOW,
+      })
+      next.meta = {
+        ...(next.meta || {}),
+        completedAt: next.meta?.completedAt || new Date().toISOString(),
+      }
+      const { record } = repo.upsert(next, { event: BOOKING_EVENT.NO_SHOW })
+      queueAppointment(record, ownerId())
+      if (ownerId()) {
+        rpcAdvanceAppointment(record.id).catch(() => {})
+      }
       return toLegacyBooking(record)
     },
 

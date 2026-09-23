@@ -31,14 +31,15 @@
   flex: 0 0 calc(100% / 1.55);
   min-width: 0;
   background: var(--white);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-card);
   padding: var(--card-padding);
   display: flex;
   align-items: stretch;
   scroll-snap-align: start;
   cursor: pointer;
-  transition: background var(--transition);
+  box-shadow: none;
+  transition: var(--interact-transition);
   font: inherit;
   text-align: left;
   color: inherit;
@@ -59,7 +60,13 @@
 }
 
 .insight-card:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.insight-card:active {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .insight-content {
@@ -104,5 +111,5 @@
   align-items: center;
   justify-content: center;
   font-size: var(--text-hero-size);
-  background: var(--primary-soft);
+  background: var(--surface-muted);
 }

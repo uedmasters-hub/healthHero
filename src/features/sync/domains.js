@@ -5,6 +5,11 @@ import { isSupabaseConfigured } from '../../lib/supabase'
 import { pushProfileToSupabase } from './profileSync'
 import { syncAppointmentRecord } from '../../booking/appointmentSync'
 import {
+  rpcAdvanceAppointment,
+  rpcConfirmVisitCompleted,
+  rpcSnoozeVisitConfirmation,
+} from '../../booking/lifecycleRpc'
+import {
   fetchRemoteNotifications,
   mapRemoteRow,
   upsertRemoteNotification,
@@ -27,6 +32,40 @@ export async function handleAppointmentUpsert({ userId, recordId }) {
   if (!record) return { ok: true, skipped: true }
   const id = await syncAppointmentRecord(record, userId)
   return { ok: Boolean(id), appointmentId: id }
+}
+
+export async function handleAppointmentLifecycleAdvance({ clientId }) {
+  if (!clientId) return { ok: false, deferred: true }
+  return rpcAdvanceAppointment(clientId)
+}
+
+export async function handleAppointmentComplete({ clientId }) {
+  if (!clientId) return { ok: false, deferred: true }
+  const result = await rpcConfirmVisitCompleted(clientId)
+  if (result?.ok && result.status === 'completed') {
+    const { getBookingEngine } = await import('../../booking/engine')
+    const engine = getBookingEngine()
+    const existing = engine.getById(clientId)
+    if (existing && existing.status !== 'completed' && typeof engine.confirmVisitCompleted === 'function') {
+      // Remote already completed — align local without second RPC (confirm is idempotent).
+      engine.restoreRecord?.({
+        ...existing,
+        status: 'completed',
+        meta: {
+          ...(existing.meta || {}),
+          completedAt: result.completed_at || existing.meta?.completedAt,
+          postVisitUntil: result.post_visit_until || existing.meta?.postVisitUntil,
+          updatedAt: new Date().toISOString(),
+        },
+      })
+    }
+  }
+  return result
+}
+
+export async function handleAppointmentLifecycleSnooze({ clientId, until }) {
+  if (!clientId) return { ok: false, deferred: true }
+  return rpcSnoozeVisitConfirmation(clientId, until)
 }
 
 /**
@@ -93,6 +132,12 @@ export async function runOutboxJob(job) {
       return handleProfilePush(job.payload || {})
     case 'appointment.upsert':
       return handleAppointmentUpsert(job.payload || {})
+    case 'appointment.lifecycle_advance':
+      return handleAppointmentLifecycleAdvance(job.payload || {})
+    case 'appointment.complete':
+      return handleAppointmentComplete(job.payload || {})
+    case 'appointment.lifecycle_snooze':
+      return handleAppointmentLifecycleSnooze(job.payload || {})
     case 'notifications.pull':
       return handleNotificationsPull(job.payload || {})
     case 'notifications.upsert':

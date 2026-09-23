@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SearchField } from './SearchBar'
+import SearchBar from './SearchBar'
 import TabPageHeader from './TabPageHeader'
 import AppFooter from './AppFooter'
 import AppBottomSheet from './AppBottomSheet'
@@ -9,9 +9,18 @@ import { useDemoPreview } from './DemoPreviewModal'
 import { clearLock } from '../lib/scrollLock'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
-import { refreshPharmaciesData } from '../features/sync/pageRefresh'
-import { getPharmacies, hydratePharmacies, subscribePharmacies } from '../features/providers'
-import { formatCityDistrict } from '../features/geography/formatPlace'
+import {
+  queryPharmacies,
+  clearPharmaciesQueryCache,
+  mapsPharmacyDirectionsUrl,
+} from '../features/providers/pharmaciesRepository'
+import { formatPlaceParts } from '../features/geography/formatPlace'
+import { flowState } from '../lib/careFlow'
+import {
+  NEPAL_DEFAULT_LOCATION,
+  NEPAL_DEFAULT_COORDS,
+  detectNepalCityFromDevice,
+} from '../data/nepalGeography'
 import {
   PHARMACY_CATEGORIES,
   PHARMACY_ORDERS,
@@ -35,6 +44,7 @@ import './pharmacy/PharmacyPage.css'
 import './Services.css'
 
 const PREVIEW_ACTIONS = new Set(['refill', 'upload-rx', 'essentials', 'order-medicine', 'category', 'recent', 'orders', 'tip'])
+const NEARBY_PAGE_SIZE = 24
 
 const FILTER_OPTIONS = [
   { id: 'all', label: 'All medicines' },
@@ -43,29 +53,140 @@ const FILTER_OPTIONS = [
   { id: 'refill', label: 'Refillable' },
 ]
 
+function formatResultsCount({ shown, total }) {
+  const shownLabel = Number(shown || 0).toLocaleString('en-NP')
+  const totalLabel = Number(total || 0).toLocaleString('en-NP')
+  return `Showing ${shownLabel} of ${totalLabel}`
+}
+
+function NearbySkeleton({ count = 3 }) {
+  return (
+    <div className="pharmacy-nearby-skel" aria-hidden="true">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="pharmacy-nearby-skel-card">
+          <div className="pharmacy-nearby-skel-line wide shimmer" />
+          <div className="pharmacy-nearby-skel-line mid shimmer" />
+          <div className="pharmacy-nearby-skel-line short shimmer" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function readDeviceOrigin() {
+  return new Promise((resolve) => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      resolve(null)
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => resolve({ latitude: coords.latitude, longitude: coords.longitude }),
+      () => resolve(null),
+      { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 },
+    )
+  })
+}
+
 export default function PharmacyPage() {
   const navigate = useNavigate()
   const { show: showDemoPreview } = useDemoPreview()
   const [filterId, setFilterId] = useState('all')
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const scrollRef = useRef(null)
-  const [registryPharmacies, setRegistryPharmacies] = useState(() => getPharmacies().slice(0, 12))
-  const onRefresh = useCallback(async () => {
-    await refreshPharmaciesData()
-    setRegistryPharmacies(getPharmacies().slice(0, 12))
-  }, [])
-  const ptr = usePullToRefresh(scrollRef, onRefresh)
+  const requestIdRef = useRef(0)
+  const gpsTriedRef = useRef(false)
 
-  // Clear any stale pharmacy scroll freeze left by freezeNow() from an earlier
-  // search navigation / HMR cycle (Treat keeps its scroller unlocked).
+  const [nearbySearch, setNearbySearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [selectedLocation, setSelectedLocation] = useState(NEPAL_DEFAULT_LOCATION)
+  const [origin, setOrigin] = useState(NEPAL_DEFAULT_COORDS)
+  const [pharmacies, setPharmacies] = useState([])
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
+  const [totalCount, setTotalCount] = useState(0)
+  const [loadingNearby, setLoadingNearby] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [nearbyError, setNearbyError] = useState(null)
+
   useEffect(() => {
     clearLock('pharmacy')
   }, [])
 
   useEffect(() => {
-    hydratePharmacies().then(() => setRegistryPharmacies(getPharmacies().slice(0, 12)))
-    return subscribePharmacies((list) => setRegistryPharmacies(list.slice(0, 12)))
+    const t = setTimeout(() => setDebouncedSearch(nearbySearch.trim()), 280)
+    return () => clearTimeout(t)
+  }, [nearbySearch])
+
+  useEffect(() => {
+    if (gpsTriedRef.current) return undefined
+    gpsTriedRef.current = true
+    let cancelled = false
+    Promise.all([detectNepalCityFromDevice(), readDeviceOrigin()]).then(([city, coords]) => {
+      if (cancelled) return
+      if (coords) setOrigin(coords)
+      if (city) {
+        setSelectedLocation((prev) => (prev === NEPAL_DEFAULT_LOCATION ? city : prev))
+      }
+    })
+    return () => { cancelled = true }
   }, [])
+
+  const loadNearby = useCallback(async ({ page: nextPage = 0, append = false } = {}) => {
+    const reqId = ++requestIdRef.current
+    if (append) setLoadingMore(true)
+    else {
+      setLoadingNearby(true)
+      setNearbyError(null)
+    }
+
+    const result = await queryPharmacies({
+      q: debouncedSearch,
+      city: selectedLocation,
+      page: nextPage,
+      pageSize: NEARBY_PAGE_SIZE,
+      force: !append,
+      origin,
+    })
+
+    if (reqId !== requestIdRef.current) return
+
+    if (result.error && !result.pharmacies?.length) {
+      setNearbyError(result.error)
+      if (!append) {
+        setPharmacies([])
+        setTotalCount(0)
+        setHasMore(false)
+      }
+    } else {
+      setNearbyError(null)
+      setPharmacies((prev) => (append ? [...prev, ...result.pharmacies] : result.pharmacies))
+      setTotalCount(result.total || 0)
+      setHasMore(Boolean(result.hasMore))
+      setPage(result.page)
+    }
+
+    setLoadingNearby(false)
+    setLoadingMore(false)
+  }, [debouncedSearch, selectedLocation, origin])
+
+  useEffect(() => {
+    loadNearby({ page: 0, append: false })
+  }, [loadNearby])
+
+  const onRefresh = useCallback(async () => {
+    clearPharmaciesQueryCache()
+    await loadNearby({ page: 0, append: false })
+  }, [loadNearby])
+
+  const ptr = usePullToRefresh(scrollRef, onRefresh)
+
+  const openPharmacy = useCallback((pharmacy) => {
+    const id = pharmacy.pharmacyUuid || pharmacy.pharmacyCode || pharmacy.id
+    if (!id) return
+    navigate(`/pharmacy/${id}`, {
+      state: flowState(null, { origin: 'pharmacy', returnTo: '/pharmacy' }),
+    })
+  }, [navigate])
 
   const openFullSearch = useCallback(() => {
     navigate('/search', {
@@ -77,19 +198,23 @@ export default function PharmacyPage() {
     })
   }, [navigate])
 
-  const openFilter = useCallback(() => {
-    show()
-  }, [show])
-
-  const closeFilter = useCallback(() => {
-    hide()
-  }, [hide])
+  const openFilter = useCallback(() => show(), [show])
+  const closeFilter = useCallback(() => hide(), [hide])
 
   const openLiveChat = useCallback(() => {
-    navigate('/chat', {
-      state: { origin: 'pharmacy', returnTo: '/pharmacy' },
-    })
+    navigate('/chat', { state: { origin: 'pharmacy', returnTo: '/pharmacy' } })
   }, [navigate])
+
+  const openBrowse = useCallback(() => {
+    navigate('/pharmacy/browse', {
+      state: flowState(null, {
+        origin: 'pharmacy',
+        returnTo: '/pharmacy',
+        location: selectedLocation,
+        q: debouncedSearch,
+      }),
+    })
+  }, [navigate, selectedLocation, debouncedSearch])
 
   const runPharmacyAction = useCallback((action) => {
     if (action === 'consult') {
@@ -106,12 +231,19 @@ export default function PharmacyPage() {
   }, [openLiveChat, showDemoPreview])
 
   useEffect(() => {
-    const onOrderMedicine = () => {
-      runPharmacyAction('order-medicine')
-    }
+    const onOrderMedicine = () => runPharmacyAction('order-medicine')
     window.addEventListener('fab:order-medicine', onOrderMedicine)
     return () => window.removeEventListener('fab:order-medicine', onOrderMedicine)
   }, [runPharmacyAction])
+
+  const countLabel = useMemo(
+    () => formatResultsCount({ shown: pharmacies.length, total: totalCount }),
+    [pharmacies.length, totalCount],
+  )
+
+  const nearbyHeading = selectedLocation
+    ? `Nearby Pharmacies · ${selectedLocation}`
+    : 'Nearby Pharmacies'
 
   return (
     <div className="pharmacy-page">
@@ -154,14 +286,12 @@ export default function PharmacyPage() {
       />
 
       <div className="pharmacy-search">
-        <SearchField
-          placeholder={PHARMACY_SEARCH_PLACEHOLDER}
-          value=""
-          showMic={false}
-          showClear={false}
-          readOnly
-          onFocus={openFullSearch}
-          onClick={openFullSearch}
+        <SearchBar
+          mode="inline"
+          scope="pharmacy"
+          placeholder="Search pharmacies or medicines…"
+          query={nearbySearch}
+          onQueryChange={setNearbySearch}
         />
       </div>
 
@@ -194,32 +324,116 @@ export default function PharmacyPage() {
             onSelect={() => runPharmacyAction('recent')}
           />
 
-          {registryPharmacies.length ? (
-            <section className="pharmacy-registry" aria-label="Registered pharmacies">
-              <div className="ds-section-head">
-                <h2 className="ds-section-title">Registered pharmacies</h2>
-                <p className="ds-section-sub">Live DDA registry from Supabase</p>
+          <section className="pharmacy-nearby" aria-label="Nearby pharmacies">
+            <div className="pharmacy-nearby-head">
+              <div>
+                <h2 className="ds-section-title">{nearbyHeading}</h2>
+                {!loadingNearby && !nearbyError ? (
+                  <p className="pharmacy-nearby-count">{countLabel}</p>
+                ) : null}
               </div>
-              <div className="pharmacy-registry-list">
-                {registryPharmacies.map((p) => (
-                  <button
-                    key={p.pharmacyUuid || p.id}
-                    type="button"
-                    className="pharmacy-registry-row"
-                    onClick={() => runPharmacyAction('recent')}
-                  >
-                    <span className="pharmacy-registry-name">{p.name}</span>
-                    <span className="pharmacy-registry-meta">
-                      {[p.pharmacyCode, formatCityDistrict(p.city, p.district) || p.place, p.systemType].filter(Boolean).join(' · ')}
-                    </span>
-                    {p.nameLocal ? (
-                      <span className="pharmacy-registry-local">{p.nameLocal}</span>
-                    ) : null}
-                  </button>
-                ))}
+              <button type="button" className="pharmacy-nearby-viewall" onClick={openBrowse}>
+                View all
+              </button>
+            </div>
+
+            {loadingNearby ? <NearbySkeleton /> : null}
+
+            {!loadingNearby && nearbyError ? (
+              <div className="pharmacy-nearby-empty">
+                <p>{nearbyError}</p>
+                <button type="button" className="pharmacy-nearby-retry" onClick={() => loadNearby({ page: 0 })}>
+                  Try again
+                </button>
               </div>
-            </section>
-          ) : null}
+            ) : null}
+
+            {!loadingNearby && !nearbyError && !pharmacies.length ? (
+              <div className="pharmacy-nearby-empty">
+                <p>No pharmacies found near {selectedLocation}.</p>
+                <button type="button" className="pharmacy-nearby-retry" onClick={openBrowse}>
+                  Browse all pharmacies
+                </button>
+              </div>
+            ) : null}
+
+            {!loadingNearby && !nearbyError && pharmacies.length ? (
+              <ul className="pharmacy-nearby-list">
+                {pharmacies.map((pharmacy) => {
+                  const locationLabel = formatPlaceParts(
+                    pharmacy.place,
+                    pharmacy.city,
+                    pharmacy.district,
+                  ) || pharmacy.address
+                  const directionsUrl = mapsPharmacyDirectionsUrl(pharmacy)
+                  const meta = [
+                    pharmacy.pharmacyType,
+                    pharmacy.licenseNumber ? `Lic. ${pharmacy.licenseNumber}` : null,
+                  ].filter(Boolean).join(' · ')
+
+                  return (
+                    <li key={pharmacy.pharmacyUuid || pharmacy.id}>
+                      <article className="pharmacy-nearby-card">
+                        <button
+                          type="button"
+                          className="pharmacy-nearby-main"
+                          onClick={() => openPharmacy(pharmacy)}
+                        >
+                          <div className="pharmacy-nearby-body">
+                            <strong className="pharmacy-nearby-name">{pharmacy.name}</strong>
+                            {meta ? <span className="pharmacy-nearby-meta">{meta}</span> : null}
+                            {locationLabel ? (
+                              <span className="pharmacy-nearby-location">{locationLabel}</span>
+                            ) : null}
+                            <span className="pharmacy-nearby-extras">
+                              {[
+                                pharmacy.delivers ? 'Delivery available' : null,
+                                pharmacy.distance,
+                                pharmacy.openLabel,
+                              ].filter(Boolean).join(' · ') || 'Registered pharmacy'}
+                            </span>
+                          </div>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </button>
+                        <div className="pharmacy-nearby-actions">
+                          {directionsUrl ? (
+                            <a
+                              className="pharmacy-nearby-action"
+                              href={directionsUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Directions
+                            </a>
+                          ) : null}
+                          <button
+                            type="button"
+                            className="pharmacy-nearby-action is-primary"
+                            onClick={() => openPharmacy(pharmacy)}
+                          >
+                            Order
+                          </button>
+                        </div>
+                      </article>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : null}
+
+            {!loadingNearby && !nearbyError && hasMore ? (
+              <button
+                type="button"
+                className="pharmacy-nearby-more"
+                onClick={() => loadNearby({ page: page + 1, append: true })}
+                disabled={loadingMore}
+              >
+                {loadingMore ? 'Loading…' : 'Load more pharmacies'}
+              </button>
+            ) : null}
+          </section>
 
           <PharmacyTipCard
             tip={PHARMACY_TIP}

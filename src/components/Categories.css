@@ -32,11 +32,12 @@
   min-width: 0;
   padding: var(--card-padding) var(--space-3);
   background: var(--card-bg);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: none;
   cursor: pointer;
   scroll-snap-align: start;
-  transition: background var(--transition);
+  transition: var(--interact-transition);
   font: inherit;
   color: inherit;
 }
@@ -58,7 +59,13 @@
 }
 
 .category-card:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.category-card:active {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .category-icon {
@@ -86,11 +93,12 @@
 
 .view-all-card {
   border-style: dashed;
-  border-color: var(--border);
+  border-color: var(--border-subtle);
 }
 
 .view-all-card:hover {
-  background: var(--bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .view-all-icon {

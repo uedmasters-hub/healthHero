@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { freezeNow } from '../lib/scrollLock'
-import { getSearchSuggestions, highlightMatch } from '../data/searchCatalog'
-import { searchProviders } from '../features/providers'
+import { useI18n } from '../i18n'
+import {
+  highlightMatch,
+  pushRecentSearch,
+  runContextualSearch,
+} from '../features/search'
 import { exploreSpecialtyPath } from '../data/specialisations'
 import { runServiceAction } from '../lib/serviceActions'
 import { articlePath } from '../data/articles'
@@ -28,34 +32,46 @@ function HighlightedLabel({ text, query }) {
   )
 }
 
-export default function SearchSuggestions({ query, active = false }) {
+export default function SearchSuggestions({
+  query = '',
+  active = false,
+  scope = 'home',
+  treatContext = null,
+}) {
   const navigate = useNavigate()
+  const { tx } = useI18n()
   const { show: showDemoPreview } = useDemoPreview()
-  const [liveDoctors, setLiveDoctors] = useState(null)
-  const trimmed = String(query || '').trim()
+  const [items, setItems] = useState([])
 
   useEffect(() => {
-    if (!trimmed) {
-      setLiveDoctors(null)
-      return undefined
-    }
+    if (!active) return undefined
     let cancelled = false
     const timer = window.setTimeout(() => {
-      searchProviders(trimmed, { limit: 8 }).then((rows) => {
-        if (!cancelled) setLiveDoctors(rows)
+      runContextualSearch({
+        scope,
+        query,
+        treatContext,
+      }).then((hits) => {
+        if (!cancelled) setItems(hits)
       }).catch(() => {
-        if (!cancelled) setLiveDoctors([])
+        if (!cancelled) setItems([])
       })
     }, 220)
     return () => {
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [trimmed])
-
-  const items = getSearchSuggestions(query, liveDoctors)
+  }, [active, scope, query, treatContext])
 
   const openItem = (item) => {
+    pushRecentSearch({
+      label: item.label,
+      type: item.type,
+      id: item.id,
+      scope,
+      meta: item.meta,
+    })
+
     if (item.type === 'doctor') {
       freezeNow('home')
       navigate(`/doctor/${item.id}`, { state: { origin: 'home', returnTo: '/' } })
@@ -67,15 +83,33 @@ export default function SearchSuggestions({ query, active = false }) {
       })
       return
     }
+    if (item.type === 'pharmacy') {
+      navigate(`/pharmacy/${item.id}`, { state: { origin: 'search', returnTo: '/search' } })
+      return
+    }
+    if (item.type === 'center') {
+      navigate(`/centers/${item.id}`, { state: { origin: 'search', returnTo: '/search' } })
+      return
+    }
+    if (item.type === 'medicine') {
+      navigate('/pharmacy/browse', {
+        state: { origin: 'search', returnTo: '/search', q: item.label },
+      })
+      return
+    }
     if (item.type === 'article') {
       navigate(articlePath(item.id), { state: { origin: 'search', returnTo: '/search' } })
       return
     }
-    runServiceAction(item.label, {
-      navigate,
-      onPreview: showDemoPreview,
-    })
+    if (item.type === 'service' || item.to) {
+      runServiceAction(item.label, {
+        navigate,
+        onPreview: showDemoPreview,
+      })
+    }
   }
+
+  const trimmed = String(query || '').trim()
 
   return (
     <div
@@ -83,13 +117,20 @@ export default function SearchSuggestions({ query, active = false }) {
       aria-hidden={!active}
       {...(active ? {} : { inert: true })}
     >
+      {!trimmed && items.some((item) => item.isRecent) ? (
+        <p className="search-suggest-section">{tx('Recent searches')}</p>
+      ) : null}
       {items.length === 0 ? (
-        <p className="search-suggest-empty">No matches for “{query.trim()}”</p>
+        trimmed ? (
+          <p className="search-suggest-empty">
+            {tx('No matches for')} “{trimmed}”
+          </p>
+        ) : null
       ) : (
         items.map((item) => (
           <button
             type="button"
-            key={`${item.type}-${item.id ?? item.label}`}
+            key={`${item.isRecent ? 'recent' : item.type}-${item.id ?? item.label}`}
             className="search-suggest-row"
             onClick={() => openItem(item)}
           >
@@ -99,7 +140,7 @@ export default function SearchSuggestions({ query, active = false }) {
                 <HighlightedLabel text={item.label} query={query} />
               </span>
               {item.meta ? (
-                <span className="search-suggest-meta">{item.meta}</span>
+                <span className="search-suggest-meta">{tx(item.meta) === item.meta ? item.meta : tx(item.meta)}</span>
               ) : null}
             </span>
           </button>

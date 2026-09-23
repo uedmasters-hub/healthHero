@@ -151,7 +151,7 @@
   right: -2px;
   width: 18px;
   height: 18px;
-  background: var(--primary);
+  background: var(--cta);
   border-radius: var(--radius-full);
   border: var(--border-width-strong) solid var(--white);
   display: flex;
@@ -318,7 +318,7 @@
   padding: var(--space-3-5);
   border-radius: var(--radius);
   border: none;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-body-lg-size);
   font-weight: var(--font-weight-semibold);

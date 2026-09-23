@@ -63,6 +63,16 @@
   white-space: nowrap;
 }
 
+.search-suggest-section {
+  margin: 0 0 var(--space-2);
+  padding: 0 var(--space-4);
+  font-size: var(--text-caption-size, 12px);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
 .search-suggest-meta {
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-medium);

@@ -318,8 +318,26 @@
   background: var(--border);
 }
 
+.cal-date.is-unavailable,
+.cal-date:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: default;
+  pointer-events: none;
+}
+
+.cal-date.is-unavailable .cal-date-disc,
+.cal-date:disabled .cal-date-disc {
+  background: var(--surface-muted, var(--chip-bg));
+  color: var(--text-muted);
+}
+
+.cal-date.is-unavailable:hover .cal-date-disc,
+.cal-date:disabled:hover .cal-date-disc {
+  background: var(--surface-muted, var(--chip-bg));
+}
+
 .cal-date.is-active:hover .cal-date-disc {
-  background: var(--primary);
+  background: var(--cta);
 }
 
 .cal-chip:hover:not(:disabled):not(.is-disabled),
@@ -337,7 +355,7 @@
 }
 
 .cal-date.is-active .cal-date-disc {
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-weight: var(--font-weight-semibold);
 }
@@ -557,7 +575,7 @@
 }
 
 .cal-month-day.is-active {
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   border-color: var(--primary);
 }
@@ -580,6 +598,11 @@
   cursor: default;
 }
 
+.cal-month-day.is-unavailable {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
 .cal-picker-cell .reveal-body {
   display: flex;
   align-items: center;
@@ -593,7 +616,7 @@
   padding: var(--space-3-5);
   border-radius: var(--radius-cta);
   border: none;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-semibold);

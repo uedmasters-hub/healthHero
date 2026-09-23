@@ -34,7 +34,7 @@ export default function NavigationPage() {
     </div>
   </div>
 </nav>`}>
-          <div style={{ background: 'white', borderRadius: 12, border: '1px solid #eef0f3', padding: '8px 0', width: '100%', maxWidth: 440 }}>
+          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: '8px 0', width: '100%', maxWidth: 440 }}>
             <div style={{ display: 'flex', gap: 0, justifyContent: 'space-around', position: 'relative' }}>
               {[
                 { label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4' },
@@ -46,15 +46,15 @@ export default function NavigationPage() {
                   {i === 0 && (
                     <div style={{
                       position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
-                      width: 56, height: 48, background: '#5b5fc6', borderRadius: 14,
+                      width: 56, height: 48, background: 'var(--cta)', borderRadius: 14,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={tab.icon}/></svg>
                     </div>
                   )}
                   <div style={{ position: 'relative', zIndex: 2 }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={i === 0 ? 'transparent' : '#9ca3af'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}><path d={tab.icon}/></svg>
-                    <div style={{ fontSize: 10, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? '#5b5fc6' : '#9ca3af', marginTop: 2 }}>{tab.label}</div>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={i === 0 ? 'transparent' : 'var(--text-faint)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}><path d={tab.icon}/></svg>
+                    <div style={{ fontSize: 10, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? 'var(--primary-950)' : 'var(--text-faint)', marginTop: 2 }}>{tab.label}</div>
                   </div>
                 </div>
               ))}
@@ -82,15 +82,15 @@ pill.animate([
 
       <Section title="Tokens">
         <TokenTable tokens={[
-          { token: '--nav-height', value: '64px', usage: 'Bottom nav bar height' },
+          { token: '--nav-height', value: '4rem', usage: 'Bottom nav bar height' },
           { token: '--z-header', value: '50', usage: 'Header z-index' },
           { token: '--z-footer', value: '100', usage: 'Footer/nav z-index' },
-          { token: '--icon-btn-size', value: '44px', usage: 'Nav icon touch target' },
-          { token: '--icon-2xl', value: '24px', usage: 'Nav icon size' },
-          { token: '--radius-card', value: '22px', usage: 'Active pill border-radius' },
-          { token: '--primary', value: '#5B5FC6', usage: 'Active pill background' },
-          { token: '--text-body-lg-size', value: '15px', usage: 'Pill label font size' },
-          { token: '--ease-emphasized', value: 'cubic-bezier(0.22, 1, 0.36, 1)', usage: 'Pill animation easing' },
+          { token: '--icon-btn-size', value: '2.75rem', usage: 'Nav icon touch target' },
+          { token: '--icon-2xl', value: '1.5rem', usage: 'Nav icon size' },
+          { token: '--radius-card', value: '1.5rem', usage: 'Active pill border-radius' },
+          { token: '--cta', value: '#362952', usage: 'Active pill background (neutral-800)' },
+          { token: '--text-body-lg-size', value: '1.125rem', usage: 'Pill label font size' },
+          { token: '--ease-emphasized', value: 'cubic-bezier(0.22, 1, 0.36, 1)', usage: 'Pill animation easing (preserved)' },
         ]} />
       </Section>
 

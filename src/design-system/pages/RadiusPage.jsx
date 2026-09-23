@@ -1,13 +1,12 @@
 const radii = [
-  { token: '--radius-2xs', value: '4px', label: '2XS' },
-  { token: '--radius-xs', value: '6px', label: 'XS' },
-  { token: '--radius-sm', value: '8px', label: 'SM' },
-  { token: '--radius', value: '12px', label: 'Default' },
-  { token: '--radius-md', value: '14px', label: 'MD' },
-  { token: '--radius-lg', value: '16px', label: 'LG' },
-  { token: '--radius-card', value: '22px', label: 'Card' },
-  { token: '--radius-cta', value: '26px', label: 'CTA' },
-  { token: '--radius-full', value: '999px', label: 'Full' },
+  { token: '--radius-2xs', value: '0.125rem', label: '2XS (PP xs)' },
+  { token: '--radius-xs', value: '0.375rem', label: 'XS' },
+  { token: '--radius-sm / --radius', value: '0.5rem', label: 'SM (PP s)' },
+  { token: '--radius-md', value: '0.75rem', label: 'MD' },
+  { token: '--radius-lg / --field-radius', value: '1rem', label: 'LG / Field (PP m)' },
+  { token: '--radius-card / --radius-xl', value: '24px', label: 'Card' },
+  { token: '--radius-device', value: '2.25rem', label: 'Device (PP x)' },
+  { token: '--radius-cta / --radius-full', value: '9999px', label: 'Pill' },
 ]
 
 export default function RadiusPage() {
@@ -17,13 +16,8 @@ export default function RadiusPage() {
         <div className="ds-page-breadcrumb">Foundations / Radius</div>
         <h1 className="ds-page-title">Radius</h1>
         <p className="ds-page-description">
-          Border radius tokens that create consistent, rounded corners across all components.
+          PocketPills radius ladder — compact chrome, 1rem fields, 1.5rem cards, and pill CTAs.
         </p>
-      </div>
-
-      <div className="ds-callout ds-callout-info">
-        <span className="ds-callout-icon">ℹ</span>
-        <div>This foundation is in <strong>Beta</strong>. API may change in future releases.</div>
       </div>
 
       <h2>Radius scale</h2>
@@ -43,42 +37,41 @@ export default function RadiusPage() {
           <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
         </thead>
         <tbody>
-          <tr><td className="ds-token-name">--radius-2xs</td><td>4px</td><td>Badges, small indicators</td></tr>
-          <tr><td className="ds-token-name">--radius-xs</td><td>6px</td><td>Tags, tiny elements</td></tr>
-          <tr><td className="ds-token-name">--radius-sm</td><td>8px</td><td>Input fields, small buttons</td></tr>
-          <tr><td className="ds-token-name">--radius</td><td>12px</td><td>Standard components</td></tr>
-          <tr><td className="ds-token-name">--radius-md</td><td>14px</td><td>Medium panels</td></tr>
-          <tr><td className="ds-token-name">--radius-lg</td><td>16px</td><td>Large panels, bottom sheets</td></tr>
-          <tr><td className="ds-token-name">--radius-card</td><td>22px</td><td>Card surfaces, doctor cards</td></tr>
-          <tr><td className="ds-token-name">--radius-cta</td><td>26px</td><td>Primary CTA buttons</td></tr>
-          <tr><td className="ds-token-name">--radius-full</td><td>999px</td><td>Avatars, pills, circular controls</td></tr>
+          <tr><td className="ds-token-name">--radius-pp-xs / --radius-2xs</td><td>0.125rem</td><td>Badges, small indicators</td></tr>
+          <tr><td className="ds-token-name">--radius-pp-s / --radius-sm</td><td>0.5rem</td><td>Compact chips, small controls</td></tr>
+          <tr><td className="ds-token-name">--radius-pp-m / --field-radius</td><td>1rem</td><td>Text fields, structured inputs</td></tr>
+          <tr><td className="ds-token-name">--radius-pp-l / --radius-card</td><td>24px</td><td>Cards, content islands, sheets</td></tr>
+          <tr><td className="ds-token-name">--radius-pp-x / --radius-device</td><td>2.25rem</td><td>Large device frames</td></tr>
+          <tr><td className="ds-token-name">--radius-cta</td><td>pill</td><td>Primary CTA buttons</td></tr>
+          <tr><td className="ds-token-name">--app-sheet-radius</td><td>24px</td><td>Sheet top corners only</td></tr>
+          <tr><td className="ds-token-name">--radius-full</td><td>9999px</td><td>Avatars, icon buttons, pills</td></tr>
         </tbody>
       </table>
 
       <h2>Radius semantics</h2>
-      <p>Each radius level has a specific role in the visual hierarchy:</p>
       <ul>
-        <li><strong>Smaller elements</strong> (badges, tags) use smaller radii — 4-8px.</li>
-        <li><strong>Content containers</strong> (cards, panels) use medium-large radii — 16-22px.</li>
-        <li><strong>Primary actions</strong> (CTA buttons) use generous radii — 26px.</li>
-        <li><strong>Circular elements</strong> (avatars, toggles) use full radius — 999px.</li>
+        <li><strong>Smaller elements</strong> (badges, tags) use 0.125–0.5rem.</li>
+        <li><strong>Fields</strong> use 1rem (<code>--field-radius</code> / PP <code>radius-m</code>).</li>
+        <li><strong>Cards / sheets</strong> use 1.5rem for a soft island feel.</li>
+        <li><strong>Primary actions</strong> use full pill radius.</li>
+        <li><strong>Never</strong> apply pill radius to sheet top corners — use <code>--app-sheet-radius</code>.</li>
       </ul>
 
       <div className="ds-do-dont-grid">
         <div className="ds-do-card">
           <h4>Do</h4>
-          <p>Use the radius token that matches the element's visual hierarchy. Cards get card-radius, buttons get CTA-radius.</p>
+          <p>Match radius to role: field → 1rem, card → 24px, CTA → pill.</p>
         </div>
         <div className="ds-dont-card">
           <h4>Don't</h4>
-          <p>Use the same radius for everything. Mixing scales creates visual confusion and breaks hierarchy.</p>
+          <p>Use the same radius for fields, cards, and sheets. Mixing roles flattens hierarchy.</p>
         </div>
       </div>
 
       <h2>Related</h2>
       <ul>
         <li><a href="/design/foundations/border">Border</a></li>
-        <li><a href="/design/foundations/elevation">Elevation</a></li>
+        <li><a href="/design/components/buttons">Buttons</a></li>
         <li><a href="/design/components/cards">Cards</a></li>
       </ul>
     </>

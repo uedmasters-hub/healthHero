@@ -44,6 +44,15 @@ export function enqueueOutbox(job) {
     if (next.type === 'appointment.upsert') {
       return item.payload?.recordId !== next.payload?.recordId
     }
+    if (
+      next.type === 'appointment.lifecycle_advance'
+      || next.type === 'appointment.complete'
+      || next.type === 'appointment.lifecycle_snooze'
+    ) {
+      return item.payload?.clientId !== next.payload?.clientId
+        || item.payload?.toStatus !== next.payload?.toStatus
+        || item.payload?.action !== next.payload?.action
+    }
     if (next.type === 'profile.push') {
       return item.payload?.userId !== next.payload?.userId
     }

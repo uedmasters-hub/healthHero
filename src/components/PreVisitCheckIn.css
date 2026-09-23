@@ -245,7 +245,7 @@
 }
 
 .previsit-step.current .previsit-step-icon {
-  background: var(--primary);
+  background: var(--cta);
   border-color: var(--primary);
   color: var(--white);
 }
@@ -394,7 +394,7 @@
   width: 6px;
   height: 6px;
   border-radius: var(--radius-full);
-  background: var(--primary);
+  background: var(--cta);
   flex-shrink: 0;
   margin-top: 7px;
 }

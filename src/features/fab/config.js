@@ -41,6 +41,8 @@ export const HUB_ACTIONS = Object.freeze([
  */
 export const STICKY_CTA_RULES = Object.freeze([
   (p) => /^\/doctor\/[^/]+\/?$/.test(p),
+  (p) => /^\/centers\/[^/]+/.test(p),
+  (p) => /^\/pharmacy\/(?!browse(?:\/|$))[^/]+/.test(p),
   (p) => p.startsWith('/appointment'),
   (p) => p.startsWith('/prepare-visit'),
   (p) => p.startsWith('/pre-checkin'),
@@ -98,6 +100,11 @@ export const FAB_ROUTE_RULES = Object.freeze([
   // Doctor Profile — sticky Book CTA owns the bottom; Share lives in the header.
   { test: (p) => /^\/doctor\/[^/]+\/?$/.test(p), mode: FAB_MODE.HIDDEN },
   { test: (p) => p.startsWith('/doctor/'), mode: FAB_MODE.HIDDEN },
+  // Pharmacy browse / detail — push screens (tab root stays /pharmacy).
+  { test: (p) => p === '/pharmacy/browse' || /^\/pharmacy\/[^/]+/.test(p), mode: FAB_MODE.HIDDEN },
+  // Facility detail — sticky Book CTA owns the bottom.
+  { test: (p) => /^\/centers\/[^/]+/.test(p), mode: FAB_MODE.HIDDEN },
+  // Pharmacy detail CTA handled above; keep list FAB for tab root only.
 
   // ── Action Hub (discovery) — scroll motion with bottom nav ───────────
   {
@@ -117,18 +124,6 @@ export const FAB_ROUTE_RULES = Object.freeze([
       label: 'Find treatment',
       icon: 'stethoscope',
       to: '/explore',
-    },
-  },
-  {
-    test: (p) => p.startsWith('/pharmacy/') && p !== '/pharmacy/',
-    mode: FAB_MODE.UTILITY,
-    motion: FAB_MOTION.SCROLL,
-    action: {
-      id: 'add-to-cart',
-      label: 'Add to Cart',
-      icon: 'cart',
-      kind: 'event',
-      event: 'fab:add-to-cart',
     },
   },
   {

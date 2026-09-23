@@ -8,6 +8,11 @@ import {
 } from './bookingPolicy'
 import { readPaymentSession } from './paymentSession'
 import { getBookingEngine } from '../booking/engine'
+import { BOOKING_STATUS, PAYMENT_STATUS } from '../booking/constants'
+import {
+  VISIT_PHASE,
+  resolveVisitPhase,
+} from '../booking/visitLifecycle'
 
 function sessionPathForPayment(booking) {
   try {
@@ -21,14 +26,14 @@ function sessionPathForPayment(booking) {
   return '/process-payment'
 }
 
-import { BOOKING_STATUS, PAYMENT_STATUS } from '../booking/constants'
-
 export const APPOINTMENT_STATUS = {
   BOOKED: 'booked',
   CHECKED_IN: 'checked_in',
   PAYMENT_PENDING: 'payment_pending',
   // Engine-aligned aliases for gradual migration
   CONFIRMED: BOOKING_STATUS.CONFIRMED,
+  IN_PROGRESS: BOOKING_STATUS.IN_PROGRESS,
+  AWAITING_COMPLETION: BOOKING_STATUS.AWAITING_COMPLETION,
   EXPIRED: BOOKING_STATUS.EXPIRED,
   CANCELLED: BOOKING_STATUS.CANCELLED,
   COMPLETED: BOOKING_STATUS.COMPLETED,
@@ -37,13 +42,16 @@ export const APPOINTMENT_STATUS = {
   RESCHEDULED: BOOKING_STATUS.RESCHEDULED,
 }
 
-export { BOOKING_STATUS, PAYMENT_STATUS }
+export { BOOKING_STATUS, PAYMENT_STATUS, VISIT_PHASE }
 
 export const APPOINTMENT_STAGE = {
   PAYMENT_PENDING: 'payment_pending',
   NEEDS_PREP: 'needs_prep',
   PREPARED: 'prepared',
   READY: 'ready',
+  ACTIVE_VISIT: 'active_visit',
+  VISIT_CHECKIN: 'visit_checkin',
+  POST_VISIT: 'post_visit',
 }
 
 export const MENU_ACTION = {
@@ -98,13 +106,73 @@ export function getAppointmentStage(booking) {
 
 /**
  * Active context for the current booking.
- *
- * Booking Confirmed → One-Time Prepare for My Visit
- * Prepared → Appointment Details
- * Ready for Visit (check-in complete) → Ready for Visit page
+ * Time phase wins after visit start; prep/check-in apply only while Upcoming.
  */
-export function getAppointmentJourney(booking) {
+export function getAppointmentJourney(booking, now = new Date()) {
   const status = getAppointmentStatus(booking)
+  const phase = resolveVisitPhase(booking, now)
+
+  if (phase === VISIT_PHASE.VISIT_CHECKIN) {
+    return {
+      status: APPOINTMENT_STATUS.AWAITING_COMPLETION,
+      stage: APPOINTMENT_STAGE.VISIT_CHECKIN,
+      phase,
+      path: '/appointment',
+      badge: 'Visit check-in',
+      badgeTone: 'checked_in',
+      cta: 'Confirm visit',
+      sectionLabel: 'Visit Check-in',
+      targetLayout: 'hero',
+      sourceLayout: 'appointment',
+      prompt: 'Have you completed your visit?',
+    }
+  }
+
+  if (phase === VISIT_PHASE.ACTIVE_VISIT) {
+    return {
+      status: APPOINTMENT_STATUS.IN_PROGRESS,
+      stage: APPOINTMENT_STAGE.ACTIVE_VISIT,
+      phase,
+      path: '/appointment',
+      badge: 'Active visit',
+      badgeTone: 'checked_in',
+      cta: 'View visit',
+      sectionLabel: 'Active Visit',
+      targetLayout: 'hero',
+      sourceLayout: 'appointment',
+    }
+  }
+
+  if (phase === VISIT_PHASE.POST_VISIT) {
+    return {
+      status: APPOINTMENT_STATUS.COMPLETED,
+      stage: APPOINTMENT_STAGE.POST_VISIT,
+      phase,
+      path: '/post-visit-summary',
+      badge: 'Post visit',
+      badgeTone: 'prepared',
+      cta: 'Open care hub',
+      sectionLabel: 'Post Visit',
+      targetLayout: 'hero',
+      sourceLayout: 'appointment',
+    }
+  }
+
+  if (phase === VISIT_PHASE.CARE_HISTORY) {
+    return {
+      status: status || APPOINTMENT_STATUS.COMPLETED,
+      stage: APPOINTMENT_STAGE.POST_VISIT,
+      phase,
+      path: '/post-visit-summary',
+      badge: 'Completed',
+      badgeTone: 'prepared',
+      cta: 'View summary',
+      sectionLabel: 'Care History',
+      targetLayout: 'appointment',
+      sourceLayout: 'appointment',
+    }
+  }
+
   const stage = getAppointmentStage(booking)
 
   switch (stage) {
@@ -112,6 +180,7 @@ export function getAppointmentJourney(booking) {
       return {
         status: APPOINTMENT_STATUS.PAYMENT_PENDING,
         stage,
+        phase,
         path: sessionPathForPayment(booking),
         badge: 'Payment pending',
         badgeTone: 'booked',
@@ -124,6 +193,7 @@ export function getAppointmentJourney(booking) {
       return {
         status: APPOINTMENT_STATUS.CHECKED_IN,
         stage,
+        phase,
         path: '/pre-checkin',
         badge: 'Ready for Visit',
         badgeTone: 'checked_in',
@@ -136,6 +206,7 @@ export function getAppointmentJourney(booking) {
       return {
         status: APPOINTMENT_STATUS.BOOKED,
         stage,
+        phase,
         path: '/prepare-visit',
         badge: 'Booked',
         badgeTone: 'booked',
@@ -149,6 +220,7 @@ export function getAppointmentJourney(booking) {
       return {
         status: status || APPOINTMENT_STATUS.BOOKED,
         stage: APPOINTMENT_STAGE.PREPARED,
+        phase,
         path: '/appointment',
         badge: 'Prepared',
         badgeTone: 'prepared',
@@ -160,9 +232,9 @@ export function getAppointmentJourney(booking) {
   }
 }
 
-export function resolveAppointmentPath(booking) {
+export function resolveAppointmentPath(booking, now = new Date()) {
   if (!booking) return '/'
-  return getAppointmentJourney(booking).path
+  return getAppointmentJourney(booking, now).path
 }
 
 function buildMenuItems({

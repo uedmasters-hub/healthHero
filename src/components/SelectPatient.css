@@ -44,9 +44,21 @@
   padding: var(--space-3-5) var(--space-4);
   margin-bottom: var(--space-2);
   border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   background: var(--white);
   font-family: inherit;
+  box-shadow: none;
+  transition: var(--interact-transition);
+}
+
+.patient-card:hover:not(.is-selected) {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.patient-card:active:not(.is-selected) {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .patient-card-main {
@@ -65,8 +77,8 @@
 }
 
 .patient-card.is-selected {
-  border-color: var(--primary);
-  background: var(--service-icon-bg);
+  border-color: var(--interact-selected-border);
+  background: var(--interact-selected-bg);
 }
 
 .patient-card.is-incomplete {
@@ -161,7 +173,7 @@
   width: 22px;
   height: 22px;
   border-radius: var(--radius-full);
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   display: inline-flex;
   align-items: center;

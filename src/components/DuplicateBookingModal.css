@@ -47,7 +47,7 @@
 
 .dup-primary {
   border: none;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   margin-bottom: var(--space-2);
 }

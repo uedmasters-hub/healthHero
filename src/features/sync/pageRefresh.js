@@ -77,7 +77,17 @@ export async function refreshAppointmentData() {
 
 export async function refreshCentersData() {
   if (centersInFlight) return centersInFlight
-  centersInFlight = hydrateCenters({ force: true }).catch(() => getCenters()).finally(() => { centersInFlight = null })
+  centersInFlight = (async () => {
+    const { clearCentersQueryCache, queryCenters } = await import('../providers/centersRepository')
+    const { NEPAL_DEFAULT_LOCATION } = await import('../../data/nepalGeography')
+    clearCentersQueryCache()
+    return queryCenters({
+      city: NEPAL_DEFAULT_LOCATION,
+      page: 0,
+      pageSize: 24,
+      force: true,
+    })
+  })().catch(() => getCenters()).finally(() => { centersInFlight = null })
   return centersInFlight
 }
 
@@ -89,7 +99,17 @@ export async function refreshDoctorsData() {
 
 export async function refreshPharmaciesData() {
   if (pharmacyInFlight) return pharmacyInFlight
-  pharmacyInFlight = hydratePharmacies({ force: true }).catch(() => []).finally(() => { pharmacyInFlight = null })
+  pharmacyInFlight = (async () => {
+    const { clearPharmaciesQueryCache, queryPharmacies } = await import('../providers/pharmaciesRepository')
+    const { NEPAL_DEFAULT_LOCATION } = await import('../../data/nepalGeography')
+    clearPharmaciesQueryCache()
+    return queryPharmacies({
+      city: NEPAL_DEFAULT_LOCATION,
+      page: 0,
+      pageSize: 24,
+      force: true,
+    })
+  })().catch(() => []).finally(() => { pharmacyInFlight = null })
   return pharmacyInFlight
 }
 

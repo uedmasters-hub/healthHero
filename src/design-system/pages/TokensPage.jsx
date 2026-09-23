@@ -5,14 +5,15 @@ export default function TokensPage() {
         <div className="ds-page-breadcrumb">Foundations / Tokens</div>
         <h1 className="ds-page-title">Design tokens</h1>
         <p className="ds-page-description">
-          The primitive values that define eMedicalls' visual language — colors, spacing, typography, and more.
+          PocketPills production primitives adopted as eMedicalls&apos; visual system — colors, spacing,
+          typography, radius, elevation, and form foundations. Motion tokens are intentionally preserved.
         </p>
       </div>
 
       <h2>What are design tokens?</h2>
       <p>
         Design tokens are the smallest pieces of a design system — named entities that store
-        visual design attributes. Instead of using raw values like <code>#5B5FC6</code> or <code>16px</code>,
+        visual design attributes. Instead of using raw values like <code>#4e2a84</code> or <code>16px</code>,
         we reference semantic tokens like <code>var(--primary)</code> or <code>var(--space-4)</code>.
       </p>
 
@@ -20,6 +21,7 @@ export default function TokensPage() {
         <span className="ds-callout-icon">ℹ</span>
         <div>
           All tokens are defined as CSS custom properties in <code>src/index.css</code> under the <code>:root</code> selector.
+          Motion tokens are intentionally unchanged in visual-system passes.
         </div>
       </div>
 

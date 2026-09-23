@@ -29,10 +29,10 @@ export default function AuthFlowPage() {
             { label: 'Forgot Password', route: '/auth/forgot-password', desc: 'Email input with success message' },
             { label: 'Auth Gate', route: 'modal', desc: 'Modal prompt for unauthenticated actions' },
           ].map((s) => (
-            <div key={s.label} style={{ flex: '1 1 200px', padding: 16, background: 'white', border: '1px solid #eef0f3', borderRadius: 12 }}>
+            <div key={s.label} style={{ flex: '1 1 200px', padding: 16, background: 'white', border: '1px solid var(--border)', borderRadius: 12 }}>
               <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>{s.label}</div>
-              <div style={{ fontSize: 12, color: '#6b7280' }}>{s.desc}</div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4, fontFamily: 'monospace' }}>{s.route}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{s.desc}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4, fontFamily: 'monospace' }}>{s.route}</div>
             </div>
           ))}
         </div>

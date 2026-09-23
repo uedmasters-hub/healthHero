@@ -7,14 +7,12 @@
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
   background: var(--card-bg);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   text-align: left;
   font: inherit;
   color: inherit;
   cursor: pointer;
-  transition:
-    transform 0.2s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    background 0.2s ease;
+  transition: var(--interact-transition);
 }
 
 .pharmacy-tip .reveal-body,
@@ -29,12 +27,14 @@
 
 .pharmacy-tip:hover,
 .pharmacy-support:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .pharmacy-tip:active,
 .pharmacy-support:active {
-  transform: scale(0.985);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .pharmacy-tip__icon,
@@ -92,6 +92,6 @@
 
 .pharmacy-support__chevron {
   align-self: center;
-  color: var(--text-muted, #9ca3af);
+  color: var(--text-muted);
   display: inline-flex;
 }

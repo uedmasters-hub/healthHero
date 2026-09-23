@@ -64,6 +64,6 @@
 .rsch-link-row.danger { color: var(--danger); }
 
 .rsch-bottom-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: var(--phone-width); background: var(--white); padding: var(--space-3) var(--content-padding); padding-bottom: var(--bottom-bar-pad); border-top: var(--border-width) solid var(--border); z-index: 100; }
-.rsch-confirm-btn { width: 100%; padding: var(--space-4); border-radius: var(--radius); border: none; background: var(--primary); color: var(--white); font-size: var(--text-title-size); font-weight: var(--font-weight-semibold); font-family: inherit; cursor: pointer; transition: opacity var(--transition); }
+.rsch-confirm-btn { width: 100%; padding: var(--space-4); border-radius: var(--radius); border: none; background: var(--cta); color: var(--white); font-size: var(--text-title-size); font-weight: var(--font-weight-semibold); font-family: inherit; cursor: pointer; transition: opacity var(--transition); }
 .rsch-confirm-btn:hover { opacity: var(--opacity-pressed); }
 .rsch-confirm-btn:disabled { opacity: var(--opacity-soft); cursor: not-allowed; }

@@ -43,10 +43,6 @@ const defaultSpecialties = [
   { name: 'Consultation', icon: '💬', bg: '#D1FAE5' },
 ]
 
-const defaultCenters = [
-  { name: 'City Hospital', address: 'Kathmandu, Nepal', distance: '2.0 km' },
-]
-
 function yearsFromExperience(experience = '') {
   const n = parseInt(experience, 10)
   return Number.isFinite(n) ? n : 10
@@ -161,9 +157,14 @@ export default function DoctorProfile() {
     phone: dbDoctor.phone || '',
     about: dbDoctor.about || `${dbDoctor.name} is a registered ${dbDoctor.specialty} on the eMedicalls provider registry.`,
     specialties: dbDoctor.specialties || defaultSpecialties,
-    centers: dbDoctor.primaryCenterName
-      ? [{ name: dbDoctor.primaryCenterName, address: formatPlaceParts(dbDoctor.address) || 'Nepal', distance: '' }]
-      : (dbDoctor.centers || defaultCenters),
+    centers: dbDoctor.primaryCenterId || dbDoctor.primaryCenterName
+      ? [{
+          id: dbDoctor.primaryCenterId || null,
+          name: dbDoctor.primaryCenterName || 'Healthcare center',
+          address: formatPlaceParts(dbDoctor.address) || '',
+          distance: '',
+        }]
+      : (Array.isArray(dbDoctor.centers) ? dbDoctor.centers : []),
     reviews: getDoctorReviewSummary(dbDoctor.id),
     nmcNumber: liveCreds.nmcNumber,
     degree: liveCreds.degree,
@@ -410,8 +411,23 @@ export default function DoctorProfile() {
 
           <div className="profile-section">
             <div className="profile-section-label">Practicing Centers</div>
-            {doctor.centers.map((c) => (
-              <div className="center-card" key={c.name}>
+            {doctor.centers?.length ? doctor.centers.map((c) => (
+              <button
+                type="button"
+                className="center-card"
+                key={c.id || c.name}
+                onClick={() => {
+                  if (!c.id) return
+                  navigate(`/centers/${c.id}`, {
+                    state: flowState(location, {
+                      origin: 'doctor',
+                      returnTo: `/doctor/${doctor.providerUuid || doctor.id}`,
+                    }),
+                  })
+                }}
+                disabled={!c.id}
+                style={c.id ? undefined : { cursor: 'default' }}
+              >
                 <div className="center-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -422,9 +438,11 @@ export default function DoctorProfile() {
                   <div className="center-name">{c.name}</div>
                   <div className="center-address">{c.address}</div>
                 </div>
-                <div className="center-distance">{c.distance}</div>
-              </div>
-            ))}
+                {c.distance ? <div className="center-distance">{c.distance}</div> : null}
+              </button>
+            )) : (
+              <p className="profile-about-text">No practicing center linked yet.</p>
+            )}
           </div>
 
           <div className="profile-section">

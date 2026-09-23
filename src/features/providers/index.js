@@ -24,10 +24,15 @@ export {
 } from '../geography/formatPlace'
 export { countProviders } from './countProviders'
 export { fetchDoctorFilterFacets, peekDoctorFilterFacets, clearDoctorFilterFacetCache } from './facetCounts'
-export { getCenters, hydrateCenters, searchCenters } from './centersRepository'
+export { getCenters, getCenterById, hydrateCenters, searchCenters, queryCenters, fetchCenterById, fetchFacilityPage, mapsDirectionsUrl, clearCentersQueryCache } from './centersRepository'
 export {
   getPharmacies,
   getPharmacyById,
   hydratePharmacies,
   subscribePharmacies,
+  queryPharmacies,
+  fetchPharmacyById,
+  fetchPharmacyPage,
+  mapsPharmacyDirectionsUrl,
+  clearPharmaciesQueryCache,
 } from './pharmaciesRepository'

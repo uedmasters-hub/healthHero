@@ -72,6 +72,7 @@ export function UserProvider({ children }) {
       insurancePolicies: user?.insurancePolicies || [],
       prescriptions: user?.prescriptions || [],
       addresses: user?.addresses || [],
+      paymentMethods: user?.paymentMethods || [],
       paymentHistory: user?.paymentHistory || [],
       pharmacyOrders: user?.pharmacyOrders || [],
       savedInsightIds: user?.savedInsightIds || [],

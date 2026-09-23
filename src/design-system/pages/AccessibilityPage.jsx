@@ -27,43 +27,44 @@ export default function AccessibilityPage() {
           <tr><th>Token pair</th><th>Ratio</th><th>Status</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>--text-primary</code> on <code>--white</code></td><td>15.4:1</td><td style={{ color: '#059669' }}>Pass AAA</td></tr>
-          <tr><td><code>--text-secondary</code> on <code>--white</code></td><td>5.0:1</td><td style={{ color: '#059669' }}>Pass AA</td></tr>
-          <tr><td><code>--text-on-primary</code> on <code>--primary</code></td><td>4.6:1</td><td style={{ color: '#059669' }}>Pass AA</td></tr>
-          <tr><td><code>--text-faint</code> on <code>--white</code></td><td>2.9:1</td><td style={{ color: '#d97706' }}>Decorative only</td></tr>
+          <tr><td><code>--text-primary</code> on <code>--white</code></td><td>~16:1</td><td style={{ color: 'var(--success)' }}>Pass AAA</td></tr>
+          <tr><td><code>--text-secondary</code> on <code>--white</code></td><td>~7:1</td><td style={{ color: 'var(--success)' }}>Pass AAA</td></tr>
+          <tr><td><code>--text-on-cta</code> on <code>--cta</code></td><td>~12:1</td><td style={{ color: 'var(--success)' }}>Pass AAA</td></tr>
+          <tr><td><code>--text-on-primary</code> on <code>--primary-950</code></td><td>~8:1</td><td style={{ color: 'var(--success)' }}>Pass AAA</td></tr>
+          <tr><td><code>--text-faint</code> on <code>--white</code></td><td>~3:1</td><td style={{ color: 'var(--warning)' }}>Decorative only</td></tr>
         </tbody>
       </table>
 
       <h2>Touch targets</h2>
       <p>
-        All interactive elements must have a minimum touch target of <code>44×44px</code>.
-        Use the <code>.touch-target</code> class or <code>--touch-min</code> token.
+        All interactive elements must have a minimum touch target of <code>2.75rem</code>
+        (<code>--touch-min</code>, PP h-11). Structured fields use <code>--field-height</code> (3rem) or
+        <code>--field-height-sm</code> (2.75rem).
       </p>
 
       <div className="ds-preview">
         <div className="ds-preview-stage">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button className="ds-showcase-btn ds-showcase-btn-primary" style={{ minWidth: 44, minHeight: 44 }}>
-              44px min
+              2.75rem min
             </button>
-            <span style={{ fontSize: 13, color: '#6b7280' }}>← minimum touch target</span>
+            <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>← minimum touch target</span>
           </div>
         </div>
       </div>
 
       <h2>Focus management</h2>
       <p>
-        Keyboard users must be able to navigate every interactive element. Focus indicators
-        are never removed — they are styled with the <code>--border-focus</code> token and
-        <code>--shadow-focus</code> for visibility.
+        Keyboard focus uses PocketPills&apos; <strong>3px primary-500</strong> ring with 2px offset.
+        Never remove focus indicators.
       </p>
 
       <h3>Focus ring styles</h3>
       <pre><code>{`button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 3px solid var(--primary-500);
   outline-offset: 2px;
-  box-shadow: var(--shadow-focus);
+  box-shadow: none;
 }`}</code></pre>
 
       <h2>Screen reader support</h2>

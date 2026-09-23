@@ -21,35 +21,35 @@
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
   background: var(--card-bg);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   text-align: left;
   font: inherit;
   color: inherit;
   cursor: pointer;
-  transition:
-    transform 0.2s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    background 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: var(--interact-transition);
 }
 
 .order-card .reveal-body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--space-3-5, 14px);
+  gap: var(--space-3-5);
   width: 100%;
   box-sizing: border-box;
-  padding: var(--space-3-5, 14px) var(--space-4);
+  padding: var(--space-3-5) var(--space-4);
   min-height: 0;
 }
 
 .order-card:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .order-card:active {
-  transform: scale(0.985);
-  box-shadow: var(--shadow-sm);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
+  transform: none;
+  box-shadow: none;
 }
 
 .order-card__thumb {
@@ -105,5 +105,5 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  color: var(--text-muted, #9ca3af);
+  color: var(--text-muted);
 }

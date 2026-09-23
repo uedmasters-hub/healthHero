@@ -36,14 +36,14 @@ export default function RovoUIPage() {
           ].map((p) => (
             <a key={p.path} href={p.path} style={{
               display: 'block', padding: 24, background: 'white',
-              border: '1px solid #eef0f3', borderRadius: 16, textDecoration: 'none',
+              border: '1px solid var(--border)', borderRadius: 16, textDecoration: 'none',
               transition: 'box-shadow 0.15s ease, transform 0.15s ease',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(91,95,198,0.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
             onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}
             >
-              <div style={{ fontSize: 16, fontWeight: 600, color: '#1a1a2e', marginBottom: 4 }}>{p.title}</div>
-              <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>{p.desc}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{p.title}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{p.desc}</div>
             </a>
           ))}
         </div>
@@ -61,9 +61,9 @@ export default function RovoUIPage() {
         </ul>
         <CodeBlock title="Layer hierarchy" code={`/* Tokens — src/index.css */
 :root {
-  --primary: #5B5FC6;
-  --card-bg: #FFFFFF;
-  --radius-card: 22px;
+  --cta: var(--neutral-800);
+  --primary-950: #4e2a84;
+  --radius-card: 1.5rem;
   /* ... */
 }
 

@@ -289,17 +289,21 @@
   color: var(--text-primary);
   cursor: pointer;
   text-align: left;
-  transition: background 0.1s;
+  transition: var(--interact-transition);
 }
 
 .phone-sheet-item:hover,
 .phone-sheet-item.is-focused {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+}
+
+.phone-sheet-item:active {
+  background: var(--interact-pressed-bg);
 }
 
 .phone-sheet-item.is-active {
-  background: var(--primary-soft);
-  color: var(--primary);
+  background: var(--interact-selected-bg);
+  color: var(--text-primary);
 }
 
 .phone-sheet-flag {

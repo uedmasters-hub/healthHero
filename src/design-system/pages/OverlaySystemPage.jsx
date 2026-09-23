@@ -23,11 +23,11 @@ export default function OverlaySystemPage() {
       <Section title="Overlay hierarchy">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0, maxWidth: 400, margin: '0 0 24px' }}>
           {[
-            { z: '1200', label: 'Lightbox', desc: 'Full-screen image viewer with backdrop', bg: '#1a1a2e', color: 'white' },
+            { z: '1200', label: 'Lightbox', desc: 'Full-screen image viewer with backdrop', bg: 'var(--text-primary)', color: 'white' },
             { z: '1100', label: 'Full Screen Overlay', desc: 'City picker, doctor list overlay', bg: '#2d2d4e', color: 'white' },
-            { z: '1000', label: 'Modal', desc: 'Auth gate, payment, confirmation', bg: '#5b5fc6', color: 'white' },
-            { z: '900', label: 'Bottom Sheet', desc: 'City picker, sort/filter, actions', bg: '#eef0ff', color: '#1a1a2e' },
-            { z: '100', label: 'Sticky Footer', desc: 'Persistent CTAs above nav', bg: '#f3f4f8', color: '#1a1a2e' },
+            { z: '1000', label: 'Modal', desc: 'Auth gate, payment, confirmation', bg: '#4e2a84', color: 'white' },
+            { z: '900', label: 'Bottom Sheet', desc: 'City picker, sort/filter, actions', bg: 'var(--primary-300)', color: 'var(--text-primary)' },
+            { z: '100', label: 'Sticky Footer', desc: 'Persistent CTAs above nav', bg: 'var(--neutral-100)', color: 'var(--text-primary)' },
           ].map((layer, i) => (
             <div key={layer.label} style={{ padding: '12px 16px', background: layer.bg, color: layer.color, borderRadius: i === 0 ? '12px 12px 0 0' : i === 4 ? '0 0 12px 12px' : 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>

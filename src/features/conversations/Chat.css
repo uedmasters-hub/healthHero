@@ -274,7 +274,7 @@
   padding: var(--space-4);
   margin-bottom: var(--space-3);
   border: var(--border-width) solid var(--primary-soft-strong, var(--primary-soft));
-  border-radius: var(--radius-cta);
+  border-radius: var(--radius-card);
   background: var(--white);
   text-align: left;
   cursor: pointer;
@@ -342,7 +342,7 @@
 }
 
 .chat-textarea {
-  border-radius: var(--radius-cta);
+  border-radius: var(--field-radius);
   min-height: 96px;
   padding: var(--space-4);
   resize: vertical;
@@ -400,7 +400,7 @@
 .chat-context {
   margin-bottom: var(--space-3);
   border: 1px solid var(--border-subtle, var(--primary-soft));
-  border-radius: var(--radius-cta);
+  border-radius: var(--radius-card);
   background: var(--surface-muted);
   overflow: hidden;
   flex-shrink: 0;
@@ -638,20 +638,33 @@
 }
 
 .chat-agent-chip {
-  border: none;
-  border-radius: var(--radius-pill);
-  background: var(--surface-muted);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--card-bg);
   color: var(--text-secondary);
   font-family: inherit;
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-medium);
   padding: var(--space-2) var(--space-3);
   cursor: pointer;
+  box-shadow: none;
+  transition: var(--interact-transition);
+}
+
+.chat-agent-chip:hover:not(.is-active) {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.chat-agent-chip:active:not(.is-active) {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .chat-agent-chip.is-active {
-  background: var(--primary-soft);
-  color: var(--primary);
+  background: var(--interact-selected-bg);
+  border-color: var(--interact-selected-border);
+  color: var(--text-primary);
 }
 
 .chat-loading {

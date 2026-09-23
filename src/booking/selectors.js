@@ -8,6 +8,12 @@ import {
 import { toLegacyBooking } from './models'
 import { HOME_CAROUSEL_LIMIT, getServiceMeta, resolveServiceType } from './serviceTypes'
 import { EDIT_LOCK_MINUTES, getAppointmentStart, getBookingWindow } from '../lib/bookingPolicy'
+import {
+  VISIT_PHASE,
+  getVisitBounds,
+  isHomeHeroPhase,
+  resolveVisitPhase,
+} from './visitLifecycle'
 
 export function selectAll(state) {
   return state?.bookings || []
@@ -38,29 +44,81 @@ function scheduleTs(record) {
   return Number.isFinite(t) ? t : 0
 }
 
-export function selectHomeBooking(state) {
-  const carousel = selectHomeCarousel(state, 1)
-  return carousel[0] || null
+export function selectHomeBooking(state, now = new Date()) {
+  const surface = selectHomeSurface(state, now)
+  return surface?.record || null
 }
 
-/** Newest-first rolling window for homepage (max 4). */
-export function selectHomeCarousel(state, limit = HOME_CAROUSEL_LIMIT) {
+/**
+ * Single Home hero by phase priority:
+ * visit_checkin > active_visit > post_visit > next future upcoming
+ */
+export function selectHomeSurface(state, now = new Date()) {
+  const t = now instanceof Date ? now : new Date(now)
+  const ranked = selectAll(state)
+    .map((record) => {
+      const phase = resolveVisitPhase(record, t)
+      return { record, phase, bounds: getVisitBounds(record) }
+    })
+    .filter(({ phase }) => phase !== VISIT_PHASE.NONE && phase !== VISIT_PHASE.CARE_HISTORY)
+
+  const pick = (phase) => {
+    const matches = ranked
+      .filter((row) => row.phase === phase)
+      .sort((a, b) => {
+        const as = a.bounds.start?.getTime() || 0
+        const bs = b.bounds.start?.getTime() || 0
+        return as - bs
+      })
+    return matches[0] || null
+  }
+
+  return (
+    pick(VISIT_PHASE.VISIT_CHECKIN)
+    || pick(VISIT_PHASE.ACTIVE_VISIT)
+    || pick(VISIT_PHASE.POST_VISIT)
+    || pick(VISIT_PHASE.UPCOMING)
+    || null
+  )
+}
+
+/** Future Upcoming only — never past-time or hero phases. */
+export function selectHomeCarousel(state, limit = HOME_CAROUSEL_LIMIT, now = new Date()) {
+  const t = now instanceof Date ? now : new Date(now)
+  const surface = selectHomeSurface(state, t)
+  const heroId = surface && isHomeHeroPhase(surface.phase) ? surface.record.id : null
+
   const list = selectAll(state)
     .filter((b) => HOME_VISIBLE_STATUSES.includes(b.status))
+    .filter((b) => resolveVisitPhase(b, t) === VISIT_PHASE.UPCOMING)
+    .filter((b) => b.id !== heroId)
     .slice()
     .sort((a, b) => {
-      const byRecency = recencyTs(b) - recencyTs(a)
-      if (byRecency !== 0) return byRecency
-      return scheduleTs(a) - scheduleTs(b)
+      const as = getVisitBounds(a).start?.getTime() || Number.POSITIVE_INFINITY
+      const bs = getVisitBounds(b).start?.getTime() || Number.POSITIVE_INFINITY
+      if (as !== bs) return as - bs
+      return recencyTs(b) - recencyTs(a)
     })
+
+  // When Home hero is an upcoming visit, include it first in the carousel.
+  if (surface?.phase === VISIT_PHASE.UPCOMING && surface.record) {
+    const rest = list.filter((b) => b.id !== surface.record.id)
+    return [surface.record, ...rest].slice(0, limit)
+  }
+
   return list.slice(0, limit)
 }
 
-export function selectUpcoming(state) {
+export function selectUpcoming(state, now = new Date()) {
+  const t = now instanceof Date ? now : new Date(now)
   return selectAll(state)
-    .filter((b) => HOME_VISIBLE_STATUSES.includes(b.status))
+    .filter((b) => resolveVisitPhase(b, t) === VISIT_PHASE.UPCOMING)
     .slice()
-    .sort((a, b) => recencyTs(b) - recencyTs(a))
+    .sort((a, b) => {
+      const as = getVisitBounds(a).start?.getTime() || 0
+      const bs = getVisitBounds(b).start?.getTime() || 0
+      return as - bs
+    })
 }
 
 export function selectPendingPayment(state) {
@@ -143,12 +201,18 @@ export function selectTreatGroups(state, now = new Date()) {
   return groups
 }
 
-export function selectResumePath(record) {
+export function selectResumePath(record, now = new Date()) {
   if (!record) return '/'
   const serviceType = resolveServiceType(record)
   if (serviceType === 'pharmacy_delivery') return '/pharmacy'
   if (serviceType === 'lab_test') return '/treat'
   if (serviceType === 'home_care_nursing') return '/treat'
+
+  const phase = resolveVisitPhase(record, now)
+  if (phase === VISIT_PHASE.POST_VISIT) return '/post-visit-summary'
+  if (phase === VISIT_PHASE.VISIT_CHECKIN) return '/appointment'
+  if (phase === VISIT_PHASE.ACTIVE_VISIT) return '/appointment'
+  if (phase === VISIT_PHASE.CARE_HISTORY) return '/post-visit-summary'
 
   switch (record.status) {
     case BOOKING_STATUS.DRAFT:
@@ -159,6 +223,11 @@ export function selectResumePath(record) {
       return '/verify-payment'
     case BOOKING_STATUS.CHECKED_IN:
       return '/pre-checkin'
+    case BOOKING_STATUS.IN_PROGRESS:
+    case BOOKING_STATUS.AWAITING_COMPLETION:
+      return '/appointment'
+    case BOOKING_STATUS.COMPLETED:
+      return '/post-visit-summary'
     case BOOKING_STATUS.CONFIRMED:
     case BOOKING_STATUS.UPCOMING:
       return record.preparationCompleted ? '/appointment' : '/prepare-visit'
@@ -182,9 +251,23 @@ export function selectTreatFeatured(state, now = new Date()) {
  */
 export function selectLiveAppointment(state, now = new Date()) {
   const nowDate = now instanceof Date ? now : new Date(now)
+  const surface = selectHomeSurface(state, nowDate)
+  if (
+    surface
+    && [VISIT_PHASE.ACTIVE_VISIT, VISIT_PHASE.VISIT_CHECKIN].includes(surface.phase)
+  ) {
+    return toLegacyBooking(surface.record)
+  }
+
   const ranked = selectAll(state)
     .filter((b) =>
-      [BOOKING_STATUS.CONFIRMED, BOOKING_STATUS.UPCOMING, BOOKING_STATUS.CHECKED_IN].includes(b.status),
+      [
+        BOOKING_STATUS.CONFIRMED,
+        BOOKING_STATUS.UPCOMING,
+        BOOKING_STATUS.CHECKED_IN,
+        BOOKING_STATUS.IN_PROGRESS,
+        BOOKING_STATUS.AWAITING_COMPLETION,
+      ].includes(b.status),
     )
     .map((record) => {
       const start = record.schedule?.date && record.schedule?.time
@@ -193,6 +276,8 @@ export function selectLiveAppointment(state, now = new Date()) {
       return { record, window: getBookingWindow(start, nowDate), start }
     })
     .filter(({ record, window }) => {
+      const phase = resolveVisitPhase(record, nowDate)
+      if (phase === VISIT_PHASE.ACTIVE_VISIT || phase === VISIT_PHASE.VISIT_CHECKIN) return true
       if (record.status === BOOKING_STATUS.CHECKED_IN) return true
       if (!Number.isFinite(window.minutesUntil)) return false
       return window.minutesUntil >= -30 && window.minutesUntil <= EDIT_LOCK_MINUTES
@@ -212,11 +297,19 @@ export function careHistoryTabForRecord(record, now = new Date()) {
     return 'Completed'
   }
   if ([BOOKING_STATUS.DRAFT].includes(record.status)) return null
-  // Active = in-progress care / payment / checked-in — not merely “soon”.
+
+  const phase = resolveVisitPhase(record, now)
+  if (phase === VISIT_PHASE.ACTIVE_VISIT || phase === VISIT_PHASE.VISIT_CHECKIN) {
+    return 'Active'
+  }
   if (
-    [BOOKING_STATUS.CHECKED_IN, BOOKING_STATUS.PENDING_PAYMENT, BOOKING_STATUS.PAYMENT_PROCESSING, 'in_progress', 'consultation_active'].includes(
-      record.status,
-    )
+    [
+      BOOKING_STATUS.CHECKED_IN,
+      BOOKING_STATUS.PENDING_PAYMENT,
+      BOOKING_STATUS.PAYMENT_PROCESSING,
+      BOOKING_STATUS.IN_PROGRESS,
+      BOOKING_STATUS.AWAITING_COMPLETION,
+    ].includes(record.status)
   ) {
     return 'Active'
   }

@@ -55,13 +55,15 @@
   overflow: hidden;
   border: var(--border-width) solid var(--border);
   background: linear-gradient(145deg, #f7f8fb 0%, #f0f3fa 38%, #e8ecf8 72%, #e4e9f6 100%);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   transform: scale(0.96);
   transform-origin: center center;
   opacity: 0.9;
   transition:
-    transform 0.35s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    opacity 0.35s var(--ease-standard, ease);
+    transform 0.35s var(--ease-emphasized),
+    opacity 0.35s var(--ease-standard),
+    border-color var(--transition),
+    background var(--transition);
 }
 
 .promo-card.is-active {
@@ -124,18 +126,23 @@
   gap: var(--space-1-5);
   padding: var(--space-2-5) var(--space-4);
   border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--primary);
+  border-radius: var(--radius-full);
+  background: var(--cta);
   color: var(--white);
   font: inherit;
-  font-size: var(--text-label-size, 13px);
+  font-size: var(--text-label-size);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: transform 0.18s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: background var(--transition), opacity var(--transition);
+}
+
+.promo-card__cta:hover {
+  background: var(--cta-hover);
 }
 
 .promo-card__cta:active {
-  transform: scale(0.97);
+  background: var(--cta-pressed);
+  transform: none;
 }
 
 .promo-card__visual {
@@ -207,5 +214,5 @@
 .promo-carousel__dot.is-active {
   width: 18px;
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--cta);
 }

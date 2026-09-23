@@ -26,6 +26,7 @@ import {
   startOfDay,
   stripDatesForSelection,
 } from './dates'
+import { findNextBookableMonth } from '../../lib/slotAvailability'
 import './Calendar.css'
 
 export {
@@ -99,8 +100,17 @@ function ChipInner({ item }) {
   )
 }
 
-export function DateCard({ date, active, onClick, stagger, revealed, cached, setRef }) {
-  const className = `cal-date ${active ? 'is-active' : ''}`
+export function DateCard({
+  date,
+  active,
+  onClick,
+  stagger,
+  revealed,
+  cached,
+  setRef,
+  disabled = false,
+}) {
+  const className = `cal-date ${active ? 'is-active' : ''} ${disabled ? 'is-unavailable' : ''}`.trim()
   const body = (
     <>
       <span className="cal-date-disc">{date.num}</span>
@@ -118,6 +128,8 @@ export function DateCard({ date, active, onClick, stagger, revealed, cached, set
         cached={cached}
         ref={setRef}
         onClick={onClick}
+        disabled={disabled}
+        aria-disabled={disabled || undefined}
       >
         {body}
       </RevealItem>
@@ -125,29 +137,42 @@ export function DateCard({ date, active, onClick, stagger, revealed, cached, set
   }
 
   return (
-    <button type="button" className={className} onClick={onClick}>
+    <button type="button" className={className} onClick={onClick} disabled={disabled} aria-disabled={disabled || undefined}>
       {body}
     </button>
   )
 }
 
-export function DateStrip({ dates, selected, onSelect, stagger = false }) {
-  const reveal = useStaggerReveal({ delay: stagger ? 180 : 0, dataset: stagger ? 'cal:strip' : false })
+export function DateStrip({
+  dates,
+  selected,
+  onSelect,
+  stagger = false,
+  isDateUnavailable,
+}) {
+  const reveal = useStaggerReveal({ delay: stagger ? 180 : 0, namespace: stagger ? 'cal:strip' : false })
 
   return (
     <div className="cal-strip" ref={stagger ? reveal.containerRef : undefined}>
-      {dates.map((date, i) => (
-        <DateCard
-          key={dateKey(date)}
-          date={date}
-          active={isSameDate(selected, date)}
-          onClick={() => onSelect(date)}
-          stagger={stagger}
-          revealed={reveal.isRevealed(i)}
-          cached={reveal.isCached}
-          setRef={reveal.setItemRef(i)}
-        />
-      ))}
+      {dates.map((date, i) => {
+        const unavailable = Boolean(isDateUnavailable?.(date))
+        return (
+          <DateCard
+            key={dateKey(date)}
+            date={date}
+            active={isSameDate(selected, date)}
+            disabled={unavailable}
+            onClick={() => {
+              if (unavailable) return
+              onSelect(date)
+            }}
+            stagger={stagger}
+            revealed={reveal.isRevealed(i)}
+            cached={reveal.isCached}
+            setRef={reveal.setItemRef(i)}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -248,6 +273,8 @@ function CalendarBottomSheet({
   maxYear,
   variant = 'booking',
   initialView = 'days',
+  isDateUnavailable,
+  availabilityContext = null,
 }) {
   const today = new Date()
   const rangeMin = minDate ? startOfDay(minDate) : null
@@ -275,6 +302,31 @@ function CalendarBottomSheet({
   const visibleMonths = monthsInRange(calYear, rangeMin, rangeMax)
   const birthYears = Array.from({ length: 12 }, (_, i) => yearStart + i).filter((year) => year >= floorYear && year <= capYear)
   const years = variant === 'booking' ? yearChoices : birthYears
+
+  useEffect(() => {
+    if (!open || variant !== 'booking' || !availabilityContext) return
+    const fromYear = selectedDate?.full?.getFullYear?.() ?? calYear
+    const fromMonth = selectedDate?.full?.getMonth?.() ?? calMonth
+    const next = findNextBookableMonth({
+      fromYear,
+      fromMonth,
+      doctorId: availabilityContext.doctorId,
+      visitType: availabilityContext.visitType,
+      liveTimes: availabilityContext.liveTimes,
+      hasRemoteSchedule: availabilityContext.hasRemoteSchedule,
+      now: availabilityContext.now || new Date(),
+      minDate: rangeMin,
+      maxDate: rangeMax,
+    })
+    if (!next) return
+    if (next.year !== calYear || next.month !== calMonth) {
+      setCalYear(next.year)
+      setCalMonth(next.month)
+      setView('days')
+    }
+  // Re-run when sheet opens or live availability changes — not on manual month navigation.
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional
+  }, [open, variant, availabilityContext, selectedDate])
 
   const canStepMonth = (step) => {
     const next = adjacentMonth(calYear, calMonth, step)
@@ -328,7 +380,9 @@ function CalendarBottomSheet({
 
   const handleDay = (day) => {
     if (dayDisabled(calYear, calMonth, day, rangeMin, rangeMax)) return
-    onSelect(makeDateValue(new Date(calYear, calMonth, day)))
+    const value = makeDateValue(new Date(calYear, calMonth, day))
+    if (isDateUnavailable?.(value)) return
+    onSelect(value)
   }
 
   const handleYear = (year) => {
@@ -435,7 +489,10 @@ function CalendarBottomSheet({
             </div>
             <div className="cal-month">
               {calDays.map((day, idx) => {
-                const disabled = dayDisabled(calYear, calMonth, day, rangeMin, rangeMax)
+                const outOfRange = dayDisabled(calYear, calMonth, day, rangeMin, rangeMax)
+                const value = day ? makeDateValue(new Date(calYear, calMonth, day)) : null
+                const unavailable = Boolean(day && !outOfRange && isDateUnavailable?.(value))
+                const disabled = outOfRange || unavailable
                 const active = Boolean(
                   day &&
                   selectedDate?.full &&
@@ -447,7 +504,7 @@ function CalendarBottomSheet({
                   <button
                     type="button"
                     key={idx}
-                    className={`cal-month-day ${!day ? 'is-empty' : ''} ${active ? 'is-active' : ''}`}
+                    className={`cal-month-day ${!day ? 'is-empty' : ''} ${active ? 'is-active' : ''} ${unavailable ? 'is-unavailable' : ''}`}
                     onClick={() => handleDay(day)}
                     disabled={!day || disabled}
                   >
@@ -477,6 +534,8 @@ export function DatePicker({
   offset = 0,
   stagger = true,
   density = 'default',
+  isDateUnavailable,
+  availabilityContext = null,
 }) {
   const [dates, setDates] = useState(() => (
     selectedDate
@@ -521,7 +580,13 @@ export function DatePicker({
           </button>
         )}
       </div>
-      <DateStrip dates={dates} selected={selectedDate} onSelect={pickDate} stagger={stagger} />
+      <DateStrip
+        dates={dates}
+        selected={selectedDate}
+        onSelect={pickDate}
+        stagger={stagger}
+        isDateUnavailable={isDateUnavailable}
+      />
 
       {isPresented ? (
         <CalendarBottomSheet
@@ -531,6 +596,8 @@ export function DatePicker({
           variant="booking"
           minDate={range.minDate}
           maxDate={range.maxDate}
+          isDateUnavailable={isDateUnavailable}
+          availabilityContext={availabilityContext}
           onSelect={(next) => {
             pickDate(next)
             hide()

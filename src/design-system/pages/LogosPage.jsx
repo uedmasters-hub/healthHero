@@ -21,17 +21,17 @@ export default function LogosPage() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '16px 24px', background: 'white', borderRadius: 12,
-            border: '1px solid #eef0f3',
+            border: '1px solid var(--border)',
           }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: 'linear-gradient(135deg, #5b5fc6, #9b9fe8)',
+              background: 'linear-gradient(135deg, var(--primary-950), var(--primary-400))',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'white', fontWeight: 700, fontSize: 16,
             }}>H</div>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', letterSpacing: '-0.3px' }}>eMedicalls</div>
-              <div style={{ fontSize: 11, color: '#6b7280', letterSpacing: '0.04em' }}>DESIGN SYSTEM</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>eMedicalls</div>
+              <div style={{ fontSize: 11, color: 'var(--text-secondary)', letterSpacing: '0.04em' }}>DESIGN SYSTEM</div>
             </div>
           </div>
         </div>

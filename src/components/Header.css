@@ -48,7 +48,7 @@
 .location-pin {
   width: var(--icon-md);
   height: var(--icon-md);
-  color: var(--primary);
+  color: var(--icon-color-muted);
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -62,7 +62,7 @@
 
 .location-name {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
   letter-spacing: var(--letter-snug);
   line-height: var(--text-heading-line);
@@ -74,7 +74,7 @@
 .location-arrow {
   width: var(--icon-xs);
   height: var(--icon-xs);
-  color: var(--text-secondary);
+  color: var(--icon-color-muted);
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -120,10 +120,15 @@
   padding-bottom: 0;
 }
 
-.ds-sheet.location-modal .ds-sheet-header,
-.ds-sheet.location-modal .location-search {
+.ds-sheet.location-modal .ds-sheet-header {
   padding-left: var(--sheet-pad-x);
   padding-right: var(--sheet-pad-x);
+}
+
+.ds-sheet.location-modal .location-search {
+  /* SearchBar owns horizontal inset — avoid double padding */
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .location-modal-header {
@@ -154,15 +159,13 @@
 }
 
 .location-search {
-  padding: 0 var(--content-padding) var(--space-3-5);
-}
-
-.location-search .search-field {
-  height: 54px;
-}
-
-.location-search .search-field-input {
-  font-size: var(--text-heading-size);
+  padding: 0 0 var(--space-3-5);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .location-list {
@@ -205,7 +208,7 @@
   height: var(--avatar-sm);
   border-radius: var(--radius);
   background: var(--white);
-  color: var(--primary);
+  color: var(--accent-muted);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -259,7 +262,7 @@
   border-radius: var(--radius);
   cursor: pointer;
   font-family: inherit;
-  transition: background var(--transition);
+  transition: var(--interact-transition);
   text-align: left;
 }
 
@@ -270,11 +273,15 @@
 }
 
 .location-item:hover {
-  background: var(--bg);
+  background: var(--interact-hover-bg);
+}
+
+.location-item:active {
+  background: var(--interact-pressed-bg);
 }
 
 .location-item.active {
-  background: var(--service-icon-bg);
+  background: var(--interact-selected-bg);
 }
 
 .location-item-pin {
@@ -290,7 +297,7 @@
 }
 
 .location-item.active .location-item-name {
-  color: var(--primary);
+  color: var(--accent);
   font-weight: var(--font-weight-semibold);
 }
 

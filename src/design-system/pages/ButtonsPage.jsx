@@ -55,25 +55,25 @@ export default function ButtonsPage() {
         <p>Full-width button for the primary action in booking and care flows. Always at the bottom of the screen.</p>
         <CodeBlock title="CSS" code={`.app-flow-cta {
   width: 100%;
-  min-height: var(--app-flow-cta-height);   /* 52px */
+  min-height: var(--app-flow-cta-height);   /* 3.5rem */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);                       /* 8px */
-  padding: var(--space-3-5) var(--space-4);  /* 14px 16px */
+  gap: var(--space-2);                       /* 0.5rem */
+  padding: var(--space-3-5) var(--space-4);  /* 0.875rem 1rem */
   border: none;
-  border-radius: var(--radius-cta);         /* 26px */
-  background: var(--primary);               /* #5B5FC6 */
-  color: var(--text-on-primary);            /* #FFFFFF */
-  font-size: var(--text-title-size);        /* 16px */
-  font-weight: var(--font-weight-semibold); /* 600 */
+  border-radius: var(--radius-cta);         /* pill */
+  background: var(--cta);                   /* #362952 */
+  color: var(--text-on-cta);
+  font-size: var(--btn-font-size-default);  /* 1.125rem */
+  font-weight: var(--font-weight-medium);   /* 500 */
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition), opacity var(--transition);
 }
 
 .app-flow-cta:hover:not(:disabled) {
-  background: var(--primary-dark);          /* #4A4EB0 */
+  background: var(--cta-hover);             /* #67648b */
 }
 
 .app-flow-cta:active:not(:disabled) {
@@ -81,7 +81,8 @@ export default function ButtonsPage() {
 }
 
 .app-flow-cta:disabled {
-  opacity: var(--opacity-disabled);         /* 0.45 */
+  background: var(--cta-disabled-bg);
+  color: var(--cta-disabled-fg);
   cursor: not-allowed;
 }`} />
 
@@ -97,17 +98,17 @@ export default function ButtonsPage() {
   padding: var(--space-3-5) var(--space-4);
   border: none;
   border-radius: var(--radius-cta);
-  background: var(--primary);
-  color: var(--text-on-primary);
-  font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  background: var(--cta);
+  color: var(--text-on-cta);
+  font-size: var(--btn-font-size-default);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition), opacity var(--transition);
 }`} />
 
         <h3>Icon buttons</h3>
-        <p>Circular 44×44px touch targets for header actions, card actions, and navigation controls.</p>
+        <p>Circular 2.75rem touch targets for header actions, card actions, and navigation controls.</p>
         <CodeBlock title="CSS" code={`.ds-icon-btn {
   width: var(--icon-btn-size);    /* 44px */
   height: var(--icon-btn-size);
@@ -135,29 +136,27 @@ export default function ButtonsPage() {
 
       <Section title="Tokens">
         <TokenTable tokens={[
-          { token: '--app-flow-cta-height', value: '52px', usage: 'Primary CTA min-height' },
-          { token: '--radius-cta', value: '26px', usage: 'CTA button border radius' },
-          { token: '--primary', value: '#5B5FC6', usage: 'CTA background (normal)' },
-          { token: '--primary-dark', value: '#4A4EB0', usage: 'CTA background (hover)' },
-          { token: '--text-on-primary', value: '#FFFFFF', usage: 'CTA text color' },
-          { token: '--text-title-size', value: '16px', usage: 'CTA font size' },
-          { token: '--font-weight-semibold', value: '600', usage: 'CTA font weight' },
-          { token: '--opacity-disabled', value: '0.45', usage: 'Disabled state opacity' },
-          { token: '--opacity-pressed', value: '0.9', usage: 'Active/pressed state opacity' },
-          { token: '--icon-btn-size', value: '44px', usage: 'Icon button touch target' },
-          { token: '--icon-btn-visual', value: '40px', usage: 'Icon button visual chrome' },
-          { token: '--icon-btn-radius', value: '999px', usage: 'Icon button border-radius (circle)' },
-          { token: '--touch-min', value: '44px', usage: 'Minimum touch target size (accessibility)' },
+          { token: '--app-flow-cta-height', value: '3.5rem', usage: 'Primary CTA min-height' },
+          { token: '--radius-cta', value: 'pill', usage: 'CTA button border radius' },
+          { token: '--cta', value: '#362952', usage: 'CTA background (neutral-800)' },
+          { token: '--cta-hover', value: '#67648b', usage: 'CTA hover' },
+          { token: '--text-on-cta', value: '#FFFFFF', usage: 'CTA text color' },
+          { token: '--btn-font-size-default', value: '1.125rem', usage: 'CTA font size' },
+          { token: '--font-weight-medium', value: '500', usage: 'CTA font weight' },
+          { token: '--primary-950', value: '#4e2a84', usage: 'Brand identity' },
+          { token: '--primary-600', value: '#7b47ff', usage: 'Links / accents' },
+          { token: '--icon-btn-size', value: '2.75rem', usage: 'Icon button touch target' },
+          { token: '--touch-min', value: '2.75rem', usage: 'Minimum touch target' },
         ]} />
       </Section>
 
       <Section title="States">
         <StatesTable states={[
-          { state: 'Default', visual: 'Primary background, white text', trigger: 'Resting state' },
-          { state: 'Hover', visual: 'Darker background (--primary-dark)', trigger: 'Mouse hover' },
-          { state: 'Active', visual: 'Opacity 0.9 (--opacity-pressed)', trigger: 'Mouse down / tap' },
-          { state: 'Disabled', visual: 'Opacity 0.45, cursor: not-allowed', trigger: 'disabled attribute' },
-          { state: 'Focus-visible', visual: '2px outline + --shadow-focus ring', trigger: 'Keyboard tab focus' },
+          { state: 'Default', visual: 'CTA neutral-800, white text', trigger: 'Resting state' },
+          { state: 'Hover', visual: '--cta-hover (neutral-600)', trigger: 'Mouse hover' },
+          { state: 'Active', visual: '--cta-pressed + opacity', trigger: 'Mouse down / tap' },
+          { state: 'Disabled', visual: '--cta-disabled-bg / fg', trigger: 'disabled attribute' },
+          { state: 'Focus-visible', visual: '3px --primary-500 ring', trigger: 'Keyboard tab focus' },
         ]} />
       </Section>
 
@@ -184,7 +183,7 @@ export default function ButtonsPage() {
         dos={[
           'Use one primary CTA per view. It should represent the most important action.',
           'Use action verbs: "Book appointment", "Send message", "View details".',
-          'Maintain 44×44px minimum touch target for all interactive buttons.',
+          'Maintain 2.75rem (--touch-min) minimum touch target for all interactive buttons.',
           'Use the disabled state (not hidden) when the action is temporarily unavailable.',
         ]}
         donts={[

@@ -87,15 +87,15 @@
   justify-content: center;
   font-size: var(--text-display-size);
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
-  color: var(--white);
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
 }
 
 .user-profile-pro-badge-sm {
   position: absolute;
   bottom: -2px;
   right: -4px;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-badge-size);
   font-weight: var(--font-weight-bold);
@@ -145,7 +145,11 @@
 }
 
 .user-profile-edit-btn:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+}
+
+.user-profile-edit-btn:active {
+  background: var(--interact-pressed-bg);
 }
 
 .user-profile-info-card {
@@ -239,17 +243,28 @@
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
-  transition: background 0.15s;
+  transition: var(--interact-transition);
 }
 
 .health-add-btn:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
 }
 
 .health-add-btn:active,
-.health-empty-cta:active,
+.health-empty-cta:active {
+  background: var(--interact-pressed-bg);
+  opacity: 1;
+}
+
+.health-item-card:hover {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
 .health-item-card:active {
-  opacity: var(--opacity-pressed);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
+  opacity: 1;
 }
 
 .health-empty {
@@ -292,11 +307,13 @@
   text-align: left;
   padding: var(--space-3-5) var(--space-4);
   border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   background: var(--white);
   font-family: inherit;
   color: var(--text-primary);
   cursor: pointer;
+  box-shadow: none;
+  transition: var(--interact-transition);
 }
 
 .health-item-copy {
@@ -443,7 +460,7 @@
 .health-sheet-save {
   margin-top: var(--space-2);
   border: none;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
 }
 
@@ -520,7 +537,7 @@
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-badge-size);
   font-weight: var(--font-weight-bold);
@@ -538,9 +555,21 @@
   justify-content: center;
   font-size: var(--text-display-size);
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
-  color: var(--white);
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
+  margin-bottom: 0;
+}
+
+.profile-hub-avatar-ring {
   margin-bottom: var(--space-3);
+  border-radius: var(--radius-full);
+}
+
+.profile-hub-avatar--photo {
+  object-fit: cover;
+  object-position: center 12%;
+  padding: 0;
+  font-size: 0;
 }
 
 .profile-hub-name {
@@ -553,6 +582,57 @@
   margin: 4px 0 0;
   font-size: var(--text-label-size);
   color: var(--text-secondary);
+}
+
+.profile-hub-completion {
+  align-self: stretch;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3) var(--space-4) 0;
+  text-align: left;
+}
+
+.profile-hub-completion-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.profile-hub-completion-head span {
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.profile-hub-completion-head strong {
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.profile-hub-completion-track {
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--border-strong, var(--border)) 70%, transparent);
+  overflow: hidden;
+}
+
+.profile-hub-completion-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-600, var(--primary));
+  transition: width 0.45s var(--ease-standard, ease);
+}
+
+.profile-hub-completion-summary {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-caption-size, 12px);
+  color: var(--text-tertiary, var(--text-secondary));
+  font-variant-numeric: tabular-nums;
 }
 
 .profile-hub-metrics {
@@ -605,14 +685,20 @@
   text-align: left;
   text-decoration: none;
   cursor: pointer;
+  transition: var(--interact-transition);
 }
 
 .profile-nav-row:last-child {
   border-bottom: none;
 }
 
+.profile-nav-row:hover {
+  background: var(--interact-hover-bg);
+}
+
 .profile-nav-row:active {
-  opacity: var(--opacity-pressed);
+  background: var(--interact-pressed-bg);
+  opacity: 1;
 }
 
 .profile-nav-icon {
@@ -629,11 +715,64 @@
 
 .profile-nav-label {
   flex: 1;
+  min-width: 0;
   font-size: var(--text-body-lg-size);
   font-weight: var(--font-weight-medium);
 }
 
+.profile-nav-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  min-width: 72px;
+  max-width: 88px;
+}
+
+.profile-nav-progress-meta {
+  font-size: var(--text-caption-size, 12px);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.profile-nav-progress--complete .profile-nav-progress-meta {
+  color: var(--primary-700, var(--primary));
+}
+
+.profile-nav-progress--empty .profile-nav-progress-meta {
+  color: var(--text-tertiary, var(--text-secondary));
+}
+
+.profile-nav-progress-track {
+  width: 100%;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--border-strong, var(--border)) 70%, transparent);
+  overflow: hidden;
+}
+
+.profile-nav-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-600, var(--primary));
+  transition: width 0.35s var(--ease-standard, ease);
+}
+
+.profile-nav-progress--complete .profile-nav-progress-fill {
+  background: var(--primary-700, var(--primary));
+}
+
+.profile-nav-row.has-progress .profile-nav-label {
+  flex: 1 1 auto;
+}
+
 .profile-nav-row svg:last-child {
+  flex-shrink: 0;
   color: var(--text-muted);
 }
 
@@ -803,7 +942,7 @@
   width: 10px;
   height: 10px;
   border-radius: var(--radius-full);
-  background: var(--primary);
+  background: var(--cta);
   flex-shrink: 0;
 }
 
@@ -1062,7 +1201,7 @@
 }
 
 .phone-verify-btn:hover {
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
 }
 

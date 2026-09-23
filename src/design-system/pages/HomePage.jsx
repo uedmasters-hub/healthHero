@@ -28,7 +28,7 @@ export default function HomePage() {
             to={card.link}
             style={{
               display: 'block', padding: 24, background: 'white',
-              border: '1px solid #eef0f3', borderRadius: 16,
+              border: '1px solid var(--border)', borderRadius: 16,
               textDecoration: 'none', color: 'inherit',
               transition: 'box-shadow 0.15s ease, transform 0.15s ease',
             }}
@@ -42,8 +42,8 @@ export default function HomePage() {
             }}
           >
             <div style={{ fontSize: 28, marginBottom: 12 }}>{card.icon}</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#1a1a2e', marginBottom: 4 }}>{card.title}</div>
-            <div style={{ fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>{card.desc}</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>{card.title}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{card.desc}</div>
           </Link>
         ))}
       </div>

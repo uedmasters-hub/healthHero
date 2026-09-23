@@ -25,37 +25,37 @@ export default function CardsPage() {
         <h3>Standard card (.ds-card)</h3>
         <Preview code={`<div className="ds-card" style={{ padding: 16, borderRadius: 22 }}>
   <h3 style={{ fontSize: 16, fontWeight: 600 }}>Card Title</h3>
-  <p style={{ fontSize: 14, color: '#6B7280' }}>Card description text.</p>
+  <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Card description text.</p>
 </div>`}>
           <div className="ds-card" style={{ padding: 20, maxWidth: 320 }}>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Card Title</div>
-            <div style={{ fontSize: 14, color: '#6b7280' }}>Card description text with supporting content.</div>
+            <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Card description text with supporting content.</div>
           </div>
         </Preview>
 
         <h3>Flat card (.ds-card-flat)</h3>
         <Preview code={`<div className="ds-card-flat" style={{ padding: 16, borderRadius: 16 }}>
   <h3 style={{ fontSize: 16, fontWeight: 600 }}>Flat Card</h3>
-  <p style={{ fontSize: 14, color: '#6B7280' }}>No shadow, subtle border.</p>
+  <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>No shadow, subtle border.</p>
 </div>`}>
           <div className="ds-card-flat" style={{ padding: 20, maxWidth: 320 }}>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Flat Card</div>
-            <div style={{ fontSize: 14, color: '#6b7280' }}>No shadow, subtle border.</div>
+            <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>No shadow, subtle border.</div>
           </div>
         </Preview>
       </Section>
 
       <Section title="Card tokens">
         <TokenTable tokens={[
-          { token: '--card-bg', value: '#FFFFFF', usage: 'Card background' },
-          { token: '--border', value: '#EEEFF3', usage: 'Card border color' },
+          { token: '--card-bg', value: '#ffffff', usage: 'Card background (neutral-0)' },
+          { token: '--border', value: 'primary-800 @ 12%', usage: 'Hairline lavender card edge' },
           { token: '--border-width', value: '1px', usage: 'Card border width' },
-          { token: '--radius-card', value: '22px', usage: 'Card border radius' },
-          { token: '--shadow-card', value: '0 4px 16px rgba(17,24,39,0.05)', usage: 'Card elevation shadow' },
-          { token: '--shadow-hover', value: '0 4px 16px rgba(91,95,198,0.12)', usage: 'Card hover shadow (brand-tinted)' },
-          { token: '--card-padding', value: '16px', usage: 'Internal card padding' },
-          { token: '--card-gap', value: '16px', usage: 'Gap between adjacent cards' },
-          { token: '--radius-lg', value: '16px', usage: 'Flat card border radius' },
+          { token: '--radius-card', value: '24px', usage: 'Card border radius' },
+          { token: '--shadow-card', value: '0 1px 3px / 0 1px 2px', usage: 'Optional elevated card' },
+          { token: '--shadow-hover', value: '0 10px 15px / 0 4px 6px', usage: 'Hover float' },
+          { token: '--card-padding', value: '1rem', usage: 'Internal card padding' },
+          { token: '--card-gap', value: '1rem', usage: 'Gap between adjacent cards' },
+          { token: '--radius-lg', value: '1rem', usage: 'Flat card border radius' },
         ]} />
       </Section>
 
@@ -80,7 +80,7 @@ export default function CardsPage() {
 .ds-card {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);      /* 22px */
+  border-radius: var(--radius-card);      /* 24px */
   box-shadow: var(--shadow-card);         /* 0 4px 16px rgba(17,24,39,0.05) */
 }
 

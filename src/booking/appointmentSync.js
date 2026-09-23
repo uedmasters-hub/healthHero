@@ -34,8 +34,8 @@ export function mapAppointmentStatus(value) {
   const key = String(value || 'draft')
   const allowed = [
     'draft', 'pending_payment', 'payment_processing', 'confirmed', 'upcoming',
-    'checked_in', 'in_progress', 'completed', 'cancelled', 'rescheduled',
-    'no_show', 'expired', 'refunded',
+    'checked_in', 'in_progress', 'awaiting_completion', 'completed', 'cancelled',
+    'rescheduled', 'no_show', 'expired', 'refunded',
   ]
   if (allowed.includes(key)) return key
   if (key === 'booked') return 'confirmed'
@@ -82,7 +82,8 @@ export function toAppointmentRow(record, userId) {
   if (!record?.id || !userId) return null
   const checkedIn = [
     BOOKING_STATUS.CHECKED_IN,
-    'in_progress',
+    BOOKING_STATUS.IN_PROGRESS,
+    BOOKING_STATUS.AWAITING_COMPLETION,
     'consultation_active',
   ].includes(record.status)
   const row = {
@@ -95,7 +96,12 @@ export function toAppointmentRow(record, userId) {
     visit_type: mapVisit(record.schedule?.visitType || record.visitType),
     scheduled_date: asDate(record.schedule?.date || record.date),
     scheduled_time: asTime(record.schedule || { time: record.time }),
-    duration_minutes: Number(record.schedule?.duration || record.duration) || 30,
+    duration_minutes: (() => {
+      const raw = record.schedule?.duration || record.duration || 30
+      if (typeof raw === 'number' && Number.isFinite(raw)) return Math.max(5, raw)
+      const match = String(raw).match(/(\d+)/)
+      return Math.max(5, match ? Number(match[1]) : 30)
+    })(),
     notes: record.note || null,
     reason_for_visit: record.reason || record.note || null,
     version: Number(record.version) || 1,
@@ -103,6 +109,22 @@ export function toAppointmentRow(record, userId) {
   }
   if (checkedIn) {
     row.checked_in_at = record.meta?.checkedInAt || new Date().toISOString()
+  }
+  if (record.meta?.startedAt || record.status === BOOKING_STATUS.IN_PROGRESS) {
+    row.started_at = record.meta?.startedAt || new Date().toISOString()
+  }
+  if (record.status === BOOKING_STATUS.COMPLETED || record.status === BOOKING_STATUS.NO_SHOW) {
+    row.completed_at = record.meta?.completedAt || new Date().toISOString()
+  }
+  if (record.meta?.postVisitUntil) {
+    row.post_visit_until = record.meta.postVisitUntil
+  } else if (record.status === BOOKING_STATUS.COMPLETED && row.completed_at) {
+    row.post_visit_until = new Date(
+      new Date(row.completed_at).getTime() + 24 * 60 * 60 * 1000,
+    ).toISOString()
+  }
+  if (record.meta?.confirmationSnoozeUntil) {
+    row.confirmation_snooze_until = record.meta.confirmationSnoozeUntil
   }
   return row
 }
@@ -156,7 +178,7 @@ export async function pullRemoteAppointments(engine, userId) {
     const sb = requireSupabase()
     const { data, error } = await sb
       .from('appointments')
-      .select('id, client_id, status, client_payload, scheduled_date, scheduled_time, visit_type, updated_at')
+      .select('id, client_id, status, client_payload, scheduled_date, scheduled_time, visit_type, updated_at, started_at, completed_at, post_visit_until, confirmation_snooze_until, checked_in_at, duration_minutes')
       .or(`user_id.eq.${userId},patient_id.eq.${userId}`)
     if (error) throw error
 
@@ -175,15 +197,21 @@ export async function pullRemoteAppointments(engine, userId) {
           remoteStatus
           && remoteStatus !== existing.status
           && remoteUpdated >= localUpdated
-          && typeof engine.updateBooking === 'function'
+          && typeof engine.restoreRecord === 'function'
         ) {
-          engine.updateBooking(clientId, {
+          engine.restoreRecord({
+            ...existing,
             status: remoteStatus,
             meta: {
               ...(existing.meta || {}),
               remoteAppointmentId: row.id,
               syncedFrom: 'appointments',
               updatedAt: row.updated_at || new Date().toISOString(),
+              startedAt: row.started_at || existing.meta?.startedAt,
+              completedAt: row.completed_at || existing.meta?.completedAt,
+              postVisitUntil: row.post_visit_until || existing.meta?.postVisitUntil,
+              confirmationSnoozeUntil: row.confirmation_snooze_until || existing.meta?.confirmationSnoozeUntil,
+              checkedInAt: row.checked_in_at || existing.meta?.checkedInAt,
             },
           })
           updated += 1

@@ -1,53 +1,62 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
- * Header search icon visibility — bar scrolls away naturally; icon only appears
- * after the bar is fully clipped under the header, with hysteresis so reverse
- * scroll scales the icon out before the field peeks back.
+ * Header search icon — appears after the in-stage search bar scrolls away,
+ * or after a scroll threshold when the bar lives in a fixed dock.
  */
 export default function useSearchScrollCompact({
   stageRef,
   searchRef,
   enabled = true,
+  fallbackTravel = 72,
 }) {
   const [visible, setVisible] = useState(false)
   const visibleRef = useRef(false)
   const rafRef = useRef(0)
-  const travelRef = useRef(64)
+  const travelRef = useRef(fallbackTravel)
 
   const measure = useCallback(() => {
     if (!enabled) return
 
     const stage = stageRef.current
-    const search = searchRef.current
-    if (!stage || !search) return
+    if (!stage) return
 
-    const height = search.offsetHeight
-    if (height > 24) travelRef.current = height
-
-    const travel = travelRef.current
-    // Must scroll a little past full hide so the icon never overlaps a peeking bar.
-    const showAt = travel + 8
-    // Drop the icon while the bar is still fully clipped (before it re-enters).
-    const hideAt = travel
-
-    const stageTop = stage.getBoundingClientRect().top
-    const searchBottom = search.getBoundingClientRect().bottom
-    const fullyHidden = searchBottom <= stageTop + 0.5
+    const search = searchRef?.current
     const y = stage.scrollTop
 
-    let next = visibleRef.current
-    if (!visibleRef.current) {
-      next = fullyHidden && y >= showAt
-    } else if (!fullyHidden || y < hideAt) {
-      next = false
+    if (search && stage.contains(search)) {
+      const height = search.offsetHeight
+      if (height > 24) travelRef.current = height
+
+      const travel = travelRef.current
+      const showAt = travel + 8
+      const hideAt = travel
+      const stageTop = stage.getBoundingClientRect().top
+      const searchBottom = search.getBoundingClientRect().bottom
+      const fullyHidden = searchBottom <= stageTop + 0.5
+
+      let next = visibleRef.current
+      if (!visibleRef.current) {
+        next = fullyHidden && y >= showAt
+      } else if (!fullyHidden || y < hideAt) {
+        next = false
+      }
+
+      if (next !== visibleRef.current) {
+        visibleRef.current = next
+        setVisible(next)
+      }
+      return
     }
 
+    // Docked search (outside stage): threshold on scrollTop.
+    const travel = travelRef.current || fallbackTravel
+    const next = y >= travel + 8
     if (next !== visibleRef.current) {
       visibleRef.current = next
       setVisible(next)
     }
-  }, [enabled, searchRef, stageRef])
+  }, [enabled, fallbackTravel, searchRef, stageRef])
 
   useEffect(() => {
     if (!enabled) {

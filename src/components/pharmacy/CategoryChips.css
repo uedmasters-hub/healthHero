@@ -23,22 +23,31 @@
   scroll-snap-align: start;
   padding: var(--space-2-5) var(--space-4);
   border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   background: var(--card-bg);
   color: var(--text-primary);
   font: inherit;
-  font-size: var(--text-label-size, 13px);
+  font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition:
-    transform 0.18s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease;
+  box-shadow: none;
+  transition: var(--interact-transition);
+}
+
+.category-chip:hover:not(.is-active):not([aria-pressed='true']) {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .category-chip:active {
-  transform: scale(0.96);
-  background: var(--active-bg);
-  border-color: var(--border-strong);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
+  transform: none;
+}
+
+.category-chip.is-active,
+.category-chip[aria-pressed='true'] {
+  background: var(--interact-selected-bg);
+  border-color: var(--interact-selected-border);
+  color: var(--text-primary);
 }

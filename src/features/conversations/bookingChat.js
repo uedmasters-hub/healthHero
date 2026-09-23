@@ -9,7 +9,8 @@ import { resolveProviderPhoto } from '../../lib/providerPhoto'
 /** Statuses where messaging the care provider is allowed. */
 export const PROVIDER_CHAT_ENABLED_STATUSES = Object.freeze([
   BOOKING_STATUS.CHECKED_IN,
-  'in_progress',
+  BOOKING_STATUS.IN_PROGRESS,
+  BOOKING_STATUS.AWAITING_COMPLETION,
   'consultation_active',
   BOOKING_STATUS.COMPLETED,
 ])
@@ -21,7 +22,8 @@ const STATUS_LABELS = Object.freeze({
   [BOOKING_STATUS.CONFIRMED]: 'Confirmed',
   [BOOKING_STATUS.UPCOMING]: 'Upcoming',
   [BOOKING_STATUS.CHECKED_IN]: 'Checked in',
-  in_progress: 'In consultation',
+  [BOOKING_STATUS.IN_PROGRESS]: 'In consultation',
+  [BOOKING_STATUS.AWAITING_COMPLETION]: 'Visit check-in',
   consultation_active: 'In consultation',
   [BOOKING_STATUS.COMPLETED]: 'Completed',
   [BOOKING_STATUS.CANCELLED]: 'Cancelled',

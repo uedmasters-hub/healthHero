@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
-import { getAppointmentJourney } from '../lib/appointmentJourney'
+import { getAppointmentJourney, VISIT_PHASE } from '../lib/appointmentJourney'
 import { buildAppointmentPreview } from '../lib/appointmentPreview'
 import {
   HOME_CAROUSEL_LIMIT,
   getServiceCta,
   presentBookingCard,
   useHomeCarousel,
+  useHomeSurface,
 } from '../booking'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
@@ -67,11 +68,17 @@ function UpcomingBookingCard({
   sharedSourceRef,
   revealProps,
   origin = 'home',
+  phaseOverride = null,
 }) {
   const navigate = useNavigate()
   const shared = useSharedHero()
   const { show: showDemoPreview } = useDemoPreview()
-  const { adoptBooking, getResumePath } = useBooking()
+  const {
+    adoptBooking,
+    getResumePath,
+    confirmVisitCompleted,
+    snoozeVisitConfirmation,
+  } = useBooking()
 
   const presented = presentBookingCard(booking)
   const {
@@ -88,9 +95,11 @@ function UpcomingBookingCard({
   } = presented
 
   const journey = getAppointmentJourney(booking)
+  const phase = phaseOverride || journey.phase
   const cta = getServiceCta(booking, journey.cta)
   const badge = journey.badge || serviceMeta.shortLabel
   const badgeTone = journey.badgeTone || journey.status || 'booked'
+  const bookingId = booking.engineId || booking.id
 
   const openBooking = () => {
     if (isPreviewServiceType(serviceType)) {
@@ -98,10 +107,20 @@ function UpcomingBookingCard({
       return
     }
 
-    const bookingId = booking.engineId || booking.id
     adoptBooking?.(booking)
     const path = getResumePath?.(bookingId) || journey.path || '/treat'
-    const go = () => navigate(path, { state: { bookingId, origin } })
+    const go = () => navigate(path, {
+      state: {
+        bookingId,
+        origin,
+        visitData: phase === VISIT_PHASE.POST_VISIT ? undefined : undefined,
+      },
+    })
+
+    if (phase === VISIT_PHASE.POST_VISIT) {
+      navigate('/post-visit-summary', { state: { bookingId, origin } })
+      return
+    }
 
     if (journey.stage === 'payment_pending') {
       go()
@@ -124,21 +143,44 @@ function UpcomingBookingCard({
     go()
   }
 
+  const onYes = (e) => {
+    e.stopPropagation()
+    confirmVisitCompleted?.(bookingId)
+    navigate('/post-visit-summary', { state: { bookingId, origin } })
+  }
+
+  const onNotYet = (e) => {
+    e.stopPropagation()
+    snoozeVisitConfirmation?.(bookingId)
+  }
+
+  const isCheckin = phase === VISIT_PHASE.VISIT_CHECKIN
+  const isActiveVisit = phase === VISIT_PHASE.ACTIVE_VISIT
+  const isPostVisit = phase === VISIT_PHASE.POST_VISIT
+
   return (
     <RevealItem
-      className={`upcoming-card is-${journey.status || 'booked'} ${active ? 'is-active' : 'is-adjacent'}`}
+      className={[
+        'upcoming-card',
+        `is-${journey.status || 'booked'}`,
+        active ? 'is-active' : 'is-adjacent',
+        isCheckin ? 'is-visit-checkin' : '',
+        isActiveVisit ? 'is-active-visit' : '',
+        isPostVisit ? 'is-post-visit' : '',
+      ].filter(Boolean).join(' ')}
       revealed={revealProps.revealed}
       cached={revealProps.cached}
       ref={(node) => {
         revealProps.setRef?.(node)
         if (sharedSourceRef) sharedSourceRef.current = node
       }}
-      onClick={openBooking}
+      onClick={isCheckin ? undefined : openBooking}
       onFocus={onActivate}
       role="group"
       aria-label={`${serviceMeta.label}: ${title}`}
       tabIndex={0}
       onKeyDown={(e) => {
+        if (isCheckin) return
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           openBooking()
@@ -147,7 +189,15 @@ function UpcomingBookingCard({
     >
       <div className="upcoming-card-inner">
         <div className="upcoming-service-row">
-          <span className="upcoming-service-type">{serviceMeta.label}</span>
+          <span className="upcoming-service-type">
+            {isCheckin
+              ? 'Visit check-in'
+              : isActiveVisit
+                ? 'Active visit'
+                : isPostVisit
+                  ? 'Post visit'
+                  : serviceMeta.label}
+          </span>
           <span className={`upcoming-badge is-${badgeTone}`}>{badge}</span>
         </div>
 
@@ -166,7 +216,7 @@ function UpcomingBookingCard({
           <div className="upcoming-info">
             <div className="upcoming-name-row">
               <span className="upcoming-doctor-name">{title}</span>
-              {showRating ? (
+              {showRating && !isCheckin ? (
                 <span className="upcoming-rating">
                   <span className="upcoming-rating-star" aria-hidden="true">★</span>
                   {rating}
@@ -177,33 +227,51 @@ function UpcomingBookingCard({
           </div>
         </div>
 
-        <div className="upcoming-schedule">
-          <div className="upcoming-detail">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-            <span>{dateLabel || '—'}</span>
+        {isCheckin ? (
+          <div className="upcoming-checkin-prompt">
+            <p className="upcoming-checkin-question">
+              {journey.prompt || 'Have you completed your visit?'}
+            </p>
+            <div className="upcoming-checkin-actions">
+              <button type="button" className="upcoming-checkin-yes" onClick={onYes}>
+                Yes
+              </button>
+              <button type="button" className="upcoming-checkin-not-yet" onClick={onNotYet}>
+                Not yet
+              </button>
+            </div>
           </div>
-          <span className="upcoming-divider" aria-hidden="true" />
-          <div className="upcoming-detail">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            <span>{timeLabel || '—'}</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="upcoming-schedule">
+              <div className="upcoming-detail">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span>{dateLabel || '—'}</span>
+              </div>
+              <span className="upcoming-divider" aria-hidden="true" />
+              <div className="upcoming-detail">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>{timeLabel || '—'}</span>
+              </div>
+            </div>
 
-        <div className="upcoming-cta">
-          <span>{cta}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </div>
+            <div className="upcoming-cta">
+              <span>{cta}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </div>
+          </>
+        )}
       </div>
     </RevealItem>
   )
@@ -211,7 +279,7 @@ function UpcomingBookingCard({
 
 /**
  * Shared Upcoming Bookings carousel — single store subscription via useHomeCarousel.
- * Used on Homepage and Treat so both surfaces stay in sync.
+ * Home also surfaces Active Visit / Visit Check-in / Post Visit as a singular hero.
  */
 export default function UpcomingBookingsCarousel({
   onSeeMore,
@@ -225,17 +293,34 @@ export default function UpcomingBookingsCarousel({
 }) {
   const navigate = useNavigate()
   const { hydrated } = useBooking()
+  const homeSurface = useHomeSurface()
   const allCarousel = useHomeCarousel(HOME_CAROUSEL_LIMIT)
-  const carousel = excludeBookingId
-    ? allCarousel.filter((b) => (b.engineId || b.id) !== excludeBookingId)
-    : allCarousel
+  const heroPhase = homeSurface?.phase
+  const heroBooking = homeSurface?.booking
+  const showHero = origin === 'home'
+    && heroBooking
+    && [VISIT_PHASE.ACTIVE_VISIT, VISIT_PHASE.VISIT_CHECKIN, VISIT_PHASE.POST_VISIT].includes(heroPhase)
+
+  const carousel = useMemo(() => {
+    let list = allCarousel
+    if (excludeBookingId) {
+      list = list.filter((b) => (b.engineId || b.id) !== excludeBookingId)
+    }
+    if (showHero) {
+      const heroId = heroBooking.engineId || heroBooking.id
+      list = list.filter((b) => (b.engineId || b.id) !== heroId)
+    }
+    return list
+  }, [allCarousel, excludeBookingId, showHero, heroBooking])
+
   const trackRef = useRef(null)
   const slideNodes = useRef([])
   const sharedSourceRefs = useRef([])
+  const heroSourceRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
     delay: 120,
-    namespace: `upcoming-carousel:${origin}:${carousel?.length || 0}`,
+    namespace: `upcoming-carousel:${origin}:${carousel?.length || 0}:${showHero ? heroPhase : 'none'}`,
   })
 
   const syncActiveFromScroll = useCallback(() => {
@@ -288,6 +373,10 @@ export default function UpcomingBookingsCarousel({
     navigate('/treat', { state: { focus: 'bookings', origin: 'home-carousel' } })
   }
 
+  const sectionLabel = showHero
+    ? (getAppointmentJourney(heroBooking).sectionLabel || 'Upcoming Bookings')
+    : 'Upcoming Bookings'
+
   if (!hydrated) {
     return (
       <div className={`book-appointment ${className}`.trim()}>
@@ -303,7 +392,7 @@ export default function UpcomingBookingsCarousel({
     )
   }
 
-  if (!allCarousel.length) {
+  if (!showHero && !allCarousel.length) {
     if (!emptyFallback) {
       return (
         <div className={`book-appointment ${className}`.trim()}>
@@ -349,8 +438,8 @@ export default function UpcomingBookingsCarousel({
     <div className={`book-appointment has-carousel ${className}`.trim()}>
       {!hideHeader ? (
         <div className="upcoming-header">
-          <h3 className="upcoming-label">Upcoming Bookings</h3>
-          {!hideSeeMore ? (
+          <h3 className="upcoming-label">{sectionLabel}</h3>
+          {!hideSeeMore && (carousel.length > 0 || showHero) ? (
             <button type="button" className="upcoming-see-more" onClick={handleSeeMore}>
               {seeMoreLabel}
             </button>
@@ -358,37 +447,58 @@ export default function UpcomingBookingsCarousel({
         </div>
       ) : null}
 
+      {showHero ? (
+        <div className="upcoming-hero-slot">
+          <UpcomingBookingCard
+            booking={heroBooking}
+            active
+            phaseOverride={heroPhase}
+            origin={origin}
+            sharedSourceRef={heroSourceRef}
+            revealProps={{
+              revealed: isRevealed(0),
+              cached: isCached,
+              setRef: setItemRef(0),
+            }}
+          />
+        </div>
+      ) : null}
+
       {carousel.length ? (
         <>
+          {showHero ? (
+            <div className="upcoming-header upcoming-header-secondary">
+              <h3 className="upcoming-label">Upcoming Bookings</h3>
+            </div>
+          ) : null}
           <div
             className={`upcoming-carousel${carousel.length === 1 ? ' is-single' : ''}`}
             ref={trackRef}
-            role="region"
-            aria-roledescription="carousel"
-            aria-label="Upcoming bookings"
           >
             <div className="upcoming-track">
               {carousel.map((booking, index) => {
-                if (!sharedSourceRefs.current[index]) sharedSourceRefs.current[index] = { current: null }
+                const id = booking.engineId || booking.id
+                if (!sharedSourceRefs.current[index]) {
+                  sharedSourceRefs.current[index] = { current: null }
+                }
                 return (
                   <div
-                    key={booking.engineId || booking.id || index}
+                    key={id}
                     className="upcoming-slide"
                     ref={(node) => {
                       slideNodes.current[index] = node
                     }}
-                    aria-hidden={activeIndex !== index}
                   >
                     <UpcomingBookingCard
                       booking={booking}
                       active={activeIndex === index}
                       onActivate={() => setActiveIndex(index)}
-                      sharedSourceRef={sharedSourceRefs.current[index]}
                       origin={origin}
+                      sharedSourceRef={sharedSourceRefs.current[index]}
                       revealProps={{
-                        revealed: origin === 'treat' ? true : isRevealed(index),
-                        cached: origin === 'treat' ? true : isCached,
-                        setRef: setItemRef(index),
+                        revealed: isRevealed(showHero ? index + 1 : index),
+                        cached: isCached,
+                        setRef: setItemRef(showHero ? index + 1 : index),
                       }}
                     />
                   </div>
@@ -396,16 +506,14 @@ export default function UpcomingBookingsCarousel({
               })}
             </div>
           </div>
-
           {carousel.length > 1 ? (
             <div className="upcoming-dots" role="tablist" aria-label="Booking pages">
               {carousel.map((booking, index) => (
                 <button
-                  key={`dot-${booking.engineId || booking.id || index}`}
+                  key={booking.engineId || booking.id}
                   type="button"
                   role="tab"
                   aria-selected={activeIndex === index}
-                  aria-label={`Show booking ${index + 1}`}
                   className={`upcoming-dot ${activeIndex === index ? 'is-active' : ''}`}
                   onClick={() => scrollToIndex(index)}
                 />
@@ -413,9 +521,9 @@ export default function UpcomingBookingsCarousel({
             </div>
           ) : null}
         </>
-      ) : (
-        <p className="upcoming-empty">Your next visit is highlighted above.</p>
-      )}
+      ) : showHero ? (
+        <p className="upcoming-empty">Your next visit will appear here when scheduled.</p>
+      ) : null}
     </div>
   )
 }

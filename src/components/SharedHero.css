@@ -140,7 +140,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   display: flex;
   align-items: center;

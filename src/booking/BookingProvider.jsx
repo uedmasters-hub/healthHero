@@ -24,6 +24,7 @@ import { getBookingEngine } from './engine'
 import { toLegacyBooking } from './models'
 import { selectActive, selectHomeBooking } from './selectors'
 import { hydrateAppointmentsFromRemote } from './appointmentSync'
+import { rpcAdvanceMyAppointments } from './lifecycleRpc'
 
 const BookingContext = createContext(null)
 
@@ -66,7 +67,11 @@ export function BookingProvider({ children }) {
 
       const uid = engine.getUserId?.() || null
       if (uid) {
+        await rpcAdvanceMyAppointments().catch(() => {})
         await hydrateAppointmentsFromRemote(engine, uid)
+        engine.tickLifecycle?.()
+      } else {
+        engine.tickLifecycle?.()
       }
       if (!cancelled) setHydrated(true)
     }
@@ -75,6 +80,29 @@ export function BookingProvider({ children }) {
       cancelled = true
     }
   }, [engine])
+
+  useEffect(() => {
+    if (!hydrated) return undefined
+    const tick = () => {
+      try {
+        engine.tickLifecycle?.()
+      } catch {
+        /* ignore */
+      }
+    }
+    tick()
+    const id = window.setInterval(tick, 30_000)
+    const onVis = () => {
+      if (document.visibilityState === 'visible') tick()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    window.addEventListener('focus', tick)
+    return () => {
+      window.clearInterval(id)
+      document.removeEventListener('visibilitychange', onVis)
+      window.removeEventListener('focus', tick)
+    }
+  }, [engine, hydrated])
 
   // Active booking is the focused record for management screens.
   // Homepage carousel uses selectHomeCarousel separately (newest four).
@@ -160,6 +188,10 @@ export function BookingProvider({ children }) {
     cancelAppointment: (...args) => engine.cancelAppointment(...args),
     checkIn: (...args) => engine.checkIn(...args),
     cancelCheckIn: (...args) => engine.cancelCheckIn(...args),
+    confirmVisitCompleted: (...args) => engine.confirmVisitCompleted(...args),
+    snoozeVisitConfirmation: (...args) => engine.snoozeVisitConfirmation(...args),
+    markNoShow: (...args) => engine.markNoShow(...args),
+    tickLifecycle: (...args) => engine.tickLifecycle(...args),
     adoptBooking: (...args) => engine.adoptLegacyBooking(...args),
     getResumePath: (...args) => engine.getResumePath(...args),
     getBooking: (id) => toLegacyBooking(engine.getById(id)),

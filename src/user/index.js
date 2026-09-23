@@ -78,3 +78,5 @@ export {
   listItemTitle,
 } from './health'
 export { UserProvider, useUser, getActiveUser } from './UserProvider'
+export { computeProfileCompletion, PROFILE_COMPLETION_RING_PX } from './profileCompletion'
+export { useProfileCompletion } from './useProfileCompletion'

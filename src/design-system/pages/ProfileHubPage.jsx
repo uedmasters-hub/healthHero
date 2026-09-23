@@ -29,11 +29,11 @@ export default function ProfileHubPage() {
             { icon: '🛡️', label: 'Insurance', route: '/profile/insurance', desc: 'Insurance provider and policy details' },
             { icon: '💬', label: 'Support', route: '/profile/support', desc: 'Help center, FAQs, contact support' },
           ].map((ws) => (
-            <div key={ws.route} style={{ padding: 16, background: 'white', border: '1px solid #eef0f3', borderRadius: 12, textAlign: 'center' }}>
+            <div key={ws.route} style={{ padding: 16, background: 'white', border: '1px solid var(--border)', borderRadius: 12, textAlign: 'center' }}>
               <div style={{ fontSize: 28, marginBottom: 8 }}>{ws.icon}</div>
               <div style={{ fontSize: 14, fontWeight: 600 }}>{ws.label}</div>
-              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>{ws.desc}</div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4, fontFamily: 'monospace' }}>{ws.route}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{ws.desc}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4, fontFamily: 'monospace' }}>{ws.route}</div>
             </div>
           ))}
         </div>

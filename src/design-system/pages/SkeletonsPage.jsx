@@ -52,14 +52,14 @@ export default function SkeletonsPage() {
           <div style={{ display: 'flex', gap: 16, width: '100%' }}>
             <div style={{ flex: 1, textAlign: 'center' }}>
               <div className="shimmer" style={{ height: 120, borderRadius: 12, marginBottom: 8 }} />
-              <div style={{ fontSize: 12, color: '#6b7280' }}>Loading (shimmer)</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Loading (shimmer)</div>
             </div>
-            <div style={{ fontSize: 24, color: '#9ca3af', alignSelf: 'center' }}>→</div>
+            <div style={{ fontSize: 24, color: 'var(--text-faint)', alignSelf: 'center' }}>→</div>
             <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ height: 120, borderRadius: 12, background: '#eef0ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#5b5fc6' }}>Content</span>
+              <div style={{ height: 120, borderRadius: 12, background: 'var(--primary-300)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#4e2a84' }}>Content</span>
               </div>
-              <div style={{ fontSize: 12, color: '#6b7280' }}>Revealed</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Revealed</div>
             </div>
           </div>
         </Preview>
@@ -69,7 +69,7 @@ export default function SkeletonsPage() {
         <CodeBlock title="Shimmer animation" code={`.shimmer {
   background: linear-gradient(
     90deg,
-    var(--border) 25%,        /* #EEEFF3 — rest color */
+    var(--border) 25%,        /* neutral hairline — rest color */
     var(--shimmer-mid) 37%,   /* #e4e7ee — bright peak */
     var(--border) 63%
   );
@@ -135,7 +135,7 @@ export default function SkeletonsPage() {
 
       <Section title="Skeleton patterns in the app">
         <TokenTable tokens={[
-          { token: '--border', value: '#EEEFF3', usage: 'Skeleton rest color (25% and 63% stops)' },
+          { token: '--border', value: 'primary-800 @ 12%', usage: 'Skeleton rest color (25% and 63% stops)' },
           { token: '--shimmer-mid', value: '#e4e7ee', usage: 'Skeleton bright peak (37% stop)' },
           { token: 'animation duration', value: '1.45s', usage: 'Shimmer cycle duration' },
           { token: 'reveal opacity', value: '0.28s', usage: 'Content fade-in duration' },

@@ -7,6 +7,8 @@ export const BOOKING_STATUS = Object.freeze({
   CONFIRMED: 'confirmed',
   UPCOMING: 'upcoming',
   CHECKED_IN: 'checked_in',
+  IN_PROGRESS: 'in_progress',
+  AWAITING_COMPLETION: 'awaiting_completion',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
   RESCHEDULED: 'rescheduled',
@@ -20,6 +22,7 @@ export const LEGACY_STATUS_MAP = Object.freeze({
   booked: BOOKING_STATUS.CONFIRMED,
   payment_pending: BOOKING_STATUS.PENDING_PAYMENT,
   checked_in: BOOKING_STATUS.CHECKED_IN,
+  consultation_active: BOOKING_STATUS.IN_PROGRESS,
 })
 
 export const PAYMENT_STATUS = Object.freeze({
@@ -48,6 +51,10 @@ export const BOOKING_EVENT = Object.freeze({
   PREP_UPDATED: 'booking.prep_updated',
   CHECKED_IN: 'booking.checked_in',
   CHECKIN_CANCELLED: 'booking.checkin_cancelled',
+  VISIT_STARTED: 'booking.visit_started',
+  VISIT_AWAITING_CONFIRMATION: 'booking.visit_awaiting_confirmation',
+  VISIT_COMPLETED: 'booking.completed',
+  VISIT_SNOOZED: 'booking.visit_snoozed',
   RESCHEDULE_STARTED: 'booking.reschedule_started',
   RESCHEDULED: 'booking.rescheduled',
   CANCELLED: 'booking.cancelled',
@@ -66,6 +73,8 @@ export const ACTIVE_STATUSES = Object.freeze([
   BOOKING_STATUS.CONFIRMED,
   BOOKING_STATUS.UPCOMING,
   BOOKING_STATUS.CHECKED_IN,
+  BOOKING_STATUS.IN_PROGRESS,
+  BOOKING_STATUS.AWAITING_COMPLETION,
 ])
 
 /** Confirmed visits only — drafts and unpaid checkouts are not upcoming appointments. */
@@ -75,7 +84,15 @@ export const CONFIRMED_APPOINTMENT_STATUSES = Object.freeze([
   BOOKING_STATUS.CHECKED_IN,
 ])
 
-export const HOME_VISIBLE_STATUSES = CONFIRMED_APPOINTMENT_STATUSES
+/** Statuses that may appear on Home (phase filter still applies). */
+export const HOME_VISIBLE_STATUSES = Object.freeze([
+  BOOKING_STATUS.CONFIRMED,
+  BOOKING_STATUS.UPCOMING,
+  BOOKING_STATUS.CHECKED_IN,
+  BOOKING_STATUS.IN_PROGRESS,
+  BOOKING_STATUS.AWAITING_COMPLETION,
+  BOOKING_STATUS.COMPLETED,
+])
 
 import { BRAND_STORAGE } from '../lib/brand'
 

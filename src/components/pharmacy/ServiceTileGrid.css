@@ -18,11 +18,8 @@
   font: inherit;
   color: var(--text-primary);
   cursor: pointer;
-  box-shadow: var(--shadow-card);
-  transition:
-    transform 0.22s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    box-shadow 0.22s ease,
-    background 0.2s ease;
+  box-shadow: none;
+  transition: var(--interact-transition);
 }
 
 .service-tile .reveal-body {
@@ -37,12 +34,13 @@
 }
 
 .service-tile:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .service-tile:active {
-  transform: scale(0.97);
-  box-shadow: var(--shadow-sm);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .service-tile__icon {
@@ -82,7 +80,7 @@
   right: var(--space-4);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-muted, #9ca3af);
+  color: var(--text-muted);
   display: inline-flex;
   pointer-events: none;
 }

@@ -26,14 +26,12 @@
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
   background: var(--card-bg);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   text-align: left;
   font: inherit;
   color: inherit;
   cursor: pointer;
-  transition:
-    transform 0.2s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    background 0.2s ease;
+  transition: var(--interact-transition);
 }
 
 .recent-card .reveal-body {
@@ -47,11 +45,13 @@
 }
 
 .recent-card:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .recent-card:active {
-  transform: scale(0.97);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .recent-card__thumb {

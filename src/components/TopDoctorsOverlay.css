@@ -206,7 +206,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);

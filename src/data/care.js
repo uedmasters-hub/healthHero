@@ -48,7 +48,7 @@ export const featuredVisit = {
     name: 'Vivek Menon',
     specialty: 'Endocrinologist',
     initial: 'V',
-    color: '#5B5FC6',
+    color: '#4e2a84',
     photo: '/img/doctors/doctor-m2.png',
     address: '88 Anna Salai, Chennai',
     fee: 1600,

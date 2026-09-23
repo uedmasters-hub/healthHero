@@ -20,6 +20,8 @@ const TAB_ROOTS = new Set([
 const PUSH_DETAIL_RULES = Object.freeze([
   (p) => p === '/profile' || p.startsWith('/profile/'),
   (p) => p.startsWith('/doctor/'),
+  (p) => p.startsWith('/centers/'),
+  (p) => p.startsWith('/pharmacy/'),
   (p) => p.startsWith('/insights/'),
   (p) => p === '/notifications',
   (p) => p.startsWith('/explore/'),

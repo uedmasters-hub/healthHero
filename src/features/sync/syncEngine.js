@@ -177,7 +177,10 @@ async function bootstrapSession(sessionUser) {
 
       const engine = await loadEngine()
       if (engine?.getUserId?.() === sessionUser.id || !engine?.getUserId?.()) {
+        const { rpcAdvanceMyAppointments } = await import('../../booking/lifecycleRpc')
+        await rpcAdvanceMyAppointments().catch(() => {})
         await hydrateAppointmentsFromRemote(engine, sessionUser.id).catch(() => {})
+        engine.tickLifecycle?.()
       }
 
       // Remote is SSOT — replace local mirror; never bulk-push local seed/unread.
@@ -187,7 +190,10 @@ async function bootstrapSession(sessionUser) {
         userId: sessionUser.id,
         onAppointmentsChange: async () => {
           const eng = await loadEngine()
-          hydrateAppointmentsFromRemote(eng, sessionUser.id).catch(() => {})
+          const { rpcAdvanceMyAppointments } = await import('../../booking/lifecycleRpc')
+          await rpcAdvanceMyAppointments().catch(() => {})
+          await hydrateAppointmentsFromRemote(eng, sessionUser.id).catch(() => {})
+          eng?.tickLifecycle?.()
         },
         onNotificationEvent: (payload) => {
           handleNotificationRealtimeEvent(payload)

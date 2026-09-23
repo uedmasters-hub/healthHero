@@ -20,10 +20,10 @@ export default function BorderPage() {
           <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
         </thead>
         <tbody>
-          <tr><td className="ds-token-name">--border</td><td>#EEEFF3</td><td>Default borders — cards, inputs, sheets</td></tr>
-          <tr><td className="ds-token-name">--border-subtle</td><td>#F0F1F4</td><td>Hairline dividers inside surfaces</td></tr>
-          <tr><td className="ds-token-name">--border-strong</td><td>#E5E7EB</td><td>Emphasized separators, footers</td></tr>
-          <tr><td className="ds-token-name">--border-focus</td><td>var(--primary)</td><td>Focus ring color</td></tr>
+          <tr><td className="ds-token-name">--border</td><td>primary-800 @ 12%</td><td>Default hairline — cards, inputs, sheets</td></tr>
+          <tr><td className="ds-token-name">--border-subtle / --divider</td><td>primary-800 @ 9%</td><td>Hairline dividers inside surfaces</td></tr>
+          <tr><td className="ds-token-name">--border-strong</td><td>primary-800 @ 20%</td><td>Emphasized separators, footers</td></tr>
+          <tr><td className="ds-token-name">--border-focus</td><td>#8c60ff (primary-500)</td><td>Focus accent</td></tr>
         </tbody>
       </table>
 
@@ -50,7 +50,7 @@ border-top: var(--border-width) solid var(--border-subtle);
 border-left: var(--border-width-strong) solid var(--primary);
 
 /* Focus ring */
-outline: 2px solid var(--border-focus);
+outline: 3px solid var(--primary-500);
 outline-offset: 2px;`}</code></pre>
 
       <div className="ds-do-dont-grid">

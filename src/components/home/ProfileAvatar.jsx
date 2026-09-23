@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom'
-import { useUser } from '../../user'
+import { useProfileCompletion, useUser } from '../../user'
+import ProfileCompletionRing from './ProfileCompletionRing'
 
 /** Permanent 44×44 profile control — never animates with the notification capsule. */
 export default function ProfileAvatar({ className = '' }) {
   const navigate = useNavigate()
   const { profile, isDemo } = useUser()
+  const { percent } = useProfileCompletion()
 
   return (
     <button
@@ -13,11 +15,13 @@ export default function ProfileAvatar({ className = '' }) {
       onClick={() => navigate('/profile')}
       aria-label="Open profile"
     >
-      {profile?.avatar ? (
-        <img src={profile.avatar} alt="" className="profile-avatar-img" />
-      ) : (
-        <span className="profile-avatar-placeholder">{profile?.initials || 'U'}</span>
-      )}
+      <ProfileCompletionRing percent={percent} className="profile-avatar__ring">
+        {profile?.avatar ? (
+          <img src={profile.avatar} alt="" className="profile-avatar-img" />
+        ) : (
+          <span className="profile-avatar-placeholder">{profile?.initials || 'U'}</span>
+        )}
+      </ProfileCompletionRing>
       {isDemo ? <span className="profile-avatar-pro">PRO</span> : null}
     </button>
   )

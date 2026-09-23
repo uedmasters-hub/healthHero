@@ -41,8 +41,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
-  color: var(--white);
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-semibold);
 }
@@ -68,7 +68,7 @@
 
 .settings-pro {
   flex-shrink: 0;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-badge-size);
   font-weight: var(--font-weight-bold);

@@ -7,7 +7,7 @@ import { getViewedDoctorIds } from '../lib/recentDoctors'
 import { NEPAL_LOCATION_OPTIONS, NEPAL_DEFAULT_LOCATION, ALL_NEPAL_LOCATION, detectNepalCityFromDevice } from '../data/nepalGeography'
 import { useAppSheet } from './PageTransition'
 import AppBottomSheet from './AppBottomSheet'
-import { SearchField } from './SearchBar'
+import SearchBar from './SearchBar'
 import DoctorCard from './DoctorCard'
 import { BookingReveal } from './BookingReveal'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
@@ -482,10 +482,12 @@ export default function DoctorList({
   return (
     <div className={`select-provider${embedded ? ' select-provider--embedded' : ''}`}>
       <div className="provider-search">
-        <SearchField
-          placeholder="Search doctor, degree, or city"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <SearchBar
+          mode="inline"
+          scope="doctors"
+          placeholder="Name, city or degree"
+          query={search}
+          onQueryChange={setSearch}
         />
       </div>
 

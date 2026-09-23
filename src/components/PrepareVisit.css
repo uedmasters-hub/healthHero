@@ -123,13 +123,8 @@
   flex-shrink: 0;
   background: var(--white);
   color: var(--text-muted);
-  border: var(--border-width) solid var(--border-strong);
-  transition:
-    background 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  border: var(--border-width) solid var(--border);
+  transition: var(--interact-transition);
 }
 
 .prepare-step.completed .prepare-step-icon {
@@ -137,15 +132,15 @@
   border-color: var(--success-border);
   color: var(--success);
   box-shadow: none;
-  transform: scale(1);
+  transform: none;
 }
 
 .prepare-step.current .prepare-step-icon {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--white);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent);
-  transform: scale(1.08);
+  background: var(--interact-selected-bg);
+  border-color: var(--interact-selected-border);
+  color: var(--primary-950);
+  box-shadow: none;
+  transform: none;
 }
 
 .prepare-step.pending .prepare-step-icon {

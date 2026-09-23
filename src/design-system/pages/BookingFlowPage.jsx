@@ -28,11 +28,11 @@ export default function BookingFlowPage() {
             { step: '3', label: 'Select Patient', route: '/booking/patient', desc: 'Choose who the appointment is for' },
             { step: '4', label: 'Confirm', route: '/booking/confirm', desc: 'Review details, add notes, confirm booking' },
           ].map((s) => (
-            <div key={s.step} style={{ flex: '1 1 200px', padding: 16, background: 'white', border: '1px solid #eef0f3', borderRadius: 12 }}>
-              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#5b5fc6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, marginBottom: 8 }}>{s.step}</div>
+            <div key={s.step} style={{ flex: '1 1 200px', padding: 16, background: 'white', border: '1px solid var(--border)', borderRadius: 12 }}>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#4e2a84', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, marginBottom: 8 }}>{s.step}</div>
               <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 2 }}>{s.label}</div>
-              <div style={{ fontSize: 12, color: '#6b7280' }}>{s.desc}</div>
-              <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4, fontFamily: 'monospace' }}>{s.route}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{s.desc}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4, fontFamily: 'monospace' }}>{s.route}</div>
             </div>
           ))}
         </div>
@@ -110,7 +110,7 @@ export default function BookingFlowPage() {
       <Section title="Tokens used">
         <TokenTable tokens={[
           { token: '--app-flow-cta-height', value: '52px', usage: 'CTA button height' },
-          { token: '--radius-cta', value: '26px', usage: 'CTA border radius' },
+          { token: '--radius-cta', value: 'pill', usage: 'CTA border radius' },
           { token: '--page-padding', value: '20px', usage: 'Page horizontal padding' },
           { token: '--section-gap', value: '24px', usage: 'Gap between content sections' },
           { token: '--card-padding', value: '16px', usage: 'Card internal padding' },

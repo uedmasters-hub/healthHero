@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from './Header'
 import SearchBar from './SearchBar'
@@ -19,6 +19,7 @@ import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshHomeData } from '../features/sync/pageRefresh'
 import { clearLock, freezeNow } from '../lib/scrollLock'
 import { isHomePath } from '../lib/careFlow'
+import { resolveSearchScope, useSearchQuery } from '../features/search'
 
 export default function HomePage() {
   const location = useLocation()
@@ -30,8 +31,12 @@ export default function HomePage() {
 
   const searchActive = location.pathname === '/search'
   const isFront = isHomePath(location.pathname)
-  const [query, setQuery] = useState('')
-  // Only freeze while the hero is actually morphing — settled leftovers must not block Home.
+  const searchOrigin = location.state?.searchOrigin
+  const scope = resolveSearchScope(
+    location.pathname,
+    searchOrigin === 'pharmacy' ? 'pharmacy' : searchOrigin === 'centers' ? 'centers' : null,
+  )
+  const [query, setQuery] = useSearchQuery(scope)
   const freezeHome = !isFront || searchActive || isAnyOverlayActive || Boolean(shared?.morphing)
   const searchPlaceholder = location.state?.searchPlaceholder
   const searchReturnTo = location.state?.returnTo
@@ -61,13 +66,13 @@ export default function HomePage() {
     shared.reset?.()
   }, [isFront, shared?.active, shared?.phase, shared])
 
-  useEffect(() => {
-    if (!searchActive) setQuery('')
-  }, [searchActive])
-
   const openSearch = () => {
     freezeNow('home')
-    navigate('/search')
+    navigate('/search', {
+      state: searchOrigin
+        ? { searchOrigin, searchPlaceholder, returnTo: searchReturnTo }
+        : undefined,
+    })
   }
 
   const closeSearch = () => {
@@ -93,40 +98,38 @@ export default function HomePage() {
         </div>
       </div>
 
-      {searchActive ? (
-        <SearchBar
-          active
-          query={query}
-          onQueryChange={setQuery}
-          onCancel={closeSearch}
-          idlePlaceholder={searchPlaceholder}
-          activePlaceholder={searchPlaceholder}
-        />
-      ) : null}
-
       <div className="home-body">
-        <div className="home-stage" ref={stageRef}>
-          <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-          {!searchActive ? (
-            <SearchBar
-              scrollMode
-              barRef={searchBarRef}
-              query={query}
-              onQueryChange={setQuery}
-              onCancel={() => navigate('/')}
-            />
-          ) : null}
-
-          <div className="home-feed" aria-hidden={searchActive} {...(searchActive ? { inert: true } : {})}>
-            <Categories />
-            <BookAppointment />
-            <Services />
-            <TopDoctors />
-            <HealthInsights />
-            <AppFooter page="home" />
-          </div>
+        {/* Single shared SearchBar — expands in place; Cancel sits outside the field */}
+        <div className="home-search-dock">
+          <SearchBar
+            active={searchActive}
+            mode="expandable"
+            scrollMode={!searchActive}
+            scope={scope}
+            barRef={searchBarRef}
+            query={query}
+            onQueryChange={setQuery}
+            onCancel={closeSearch}
+            onOpenSearch={openSearch}
+            idlePlaceholder={searchPlaceholder}
+            activePlaceholder={searchPlaceholder}
+          />
         </div>
-        <SearchSuggestions query={query} active={searchActive} />
+
+        <div className="home-main">
+          <div className="home-stage" ref={stageRef}>
+            <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
+            <div className="home-feed" aria-hidden={searchActive} {...(searchActive ? { inert: true } : {})}>
+              <Categories />
+              <BookAppointment />
+              <Services />
+              <TopDoctors />
+              <HealthInsights />
+              <AppFooter page="home" />
+            </div>
+          </div>
+          <SearchSuggestions query={query} active={searchActive} scope={scope} />
+        </div>
       </div>
     </div>
   )

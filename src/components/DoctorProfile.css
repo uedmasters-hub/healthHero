@@ -272,12 +272,21 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  width: 100%;
   padding: var(--space-3-5);
   background: var(--white);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   margin-bottom: var(--space-2-5);
   box-shadow: none;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.center-card:disabled {
+  cursor: default;
 }
 
 .center-icon {
@@ -418,7 +427,7 @@
 
 .rating-bar-fill {
   height: 100%;
-  background: var(--primary);
+  background: var(--cta);
   border-radius: var(--radius-2xs);
   transition: width 0.3s ease;
 }
@@ -492,7 +501,13 @@
 }
 
 .view-all-reviews:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.view-all-reviews:active {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .profile-stats {

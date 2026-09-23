@@ -129,7 +129,7 @@
   min-height: 46px;
   border: none;
   border-radius: var(--radius-card);
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font: inherit;
   font-size: var(--text-body-lg-size);

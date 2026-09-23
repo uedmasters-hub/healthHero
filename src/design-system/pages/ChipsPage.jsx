@@ -33,12 +33,12 @@ export default function ChipsPage() {
           <tr><th>Property</th><th>Token</th><th>Value</th></tr>
         </thead>
         <tbody>
-          <tr><td>Background (default)</td><td><code>--badge-bg</code></td><td>#F2F4F7</td></tr>
-          <tr><td>Background (brand)</td><td><code>--primary-soft</code></td><td>#EEF0FF</td></tr>
-          <tr><td>Background (success)</td><td><code>--success-bg</code></td><td>#E8F5E9</td></tr>
-          <tr><td>Border radius</td><td><code>--radius-full</code></td><td>999px</td></tr>
-          <tr><td>Font size</td><td><code>--text-label-size</code></td><td>13px</td></tr>
-          <tr><td>Icon size</td><td><code>--icon-chip-size</code></td><td>28px</td></tr>
+          <tr><td>Background (default)</td><td><code>--badge-bg</code></td><td>#f5f4fa (neutral-100)</td></tr>
+          <tr><td>Background (brand)</td><td><code>--primary-300</code></td><td>#e5e3ff</td></tr>
+          <tr><td>Background (success)</td><td><code>--success-bg</code></td><td>#a4eefb</td></tr>
+          <tr><td>Border radius</td><td><code>--radius-full</code></td><td>9999px</td></tr>
+          <tr><td>Font size</td><td><code>--text-label-size</code></td><td>0.9375rem</td></tr>
+          <tr><td>Icon size</td><td><code>--icon-chip-size</code></td><td>1.75rem</td></tr>
         </tbody>
       </table>
 

@@ -78,7 +78,7 @@
   height: var(--space-12);
   margin-top: calc(var(--space-12) / -2);
   border-radius: var(--radius-card);
-  background: var(--primary);
+  background: var(--brand-action);
   display: flex;
   align-items: center;
   justify-content: center;

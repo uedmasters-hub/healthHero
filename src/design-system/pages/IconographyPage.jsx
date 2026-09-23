@@ -20,9 +20,10 @@ export default function IconographyPage() {
 
       <h2>Icon system</h2>
       <p>
-        eMedicalls uses SVG icons with a consistent 2px stroke weight. Icons are
-        functional — they clarify meaning, not decorate. Every icon should have a text
-        label or accessible aria-label.
+        eMedicalls uses SVG icons with a consistent 2px stroke weight
+        (<code>--icon-stroke</code>). Default glyph size for chrome is 20×20
+        (<code>--icon-lg</code>) inside a 44×44 touch target. Icons clarify meaning —
+        every icon needs a text label or accessible <code>aria-label</code>.
       </p>
 
       <h2>Icon sizes</h2>
@@ -44,7 +45,7 @@ export default function IconographyPage() {
       <h2>Icon containers</h2>
       <h3>Icon buttons</h3>
       <p>
-        Interactive icons use <code>.ds-icon-btn</code> with a minimum 44×44px touch target.
+        Interactive icons use <code>.ds-icon-btn</code> with a minimum <code>2.75rem</code> touch target.
         The visual icon is smaller than the hit area for comfortable tapping.
       </p>
 

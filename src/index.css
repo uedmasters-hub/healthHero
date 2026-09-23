@@ -1,7 +1,65 @@
 /* =============================================================================
-   eMedicalls Design System — single source of truth
-   Layouts, flows, and interactions stay unchanged; visuals resolve through tokens.
+   eMedicalls Design System — PocketPills production tokens (source of truth)
+   Visual system adopts PocketPills exactly. Motion/transition tokens are preserved.
+   Architecture: PP primitives → semantic roles → eMedicalls component aliases.
    ============================================================================= */
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-Italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-MediumItalic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/satoshi/Satoshi-BoldItalic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
 
 * {
   margin: 0;
@@ -10,178 +68,387 @@
 }
 
 :root {
-  /* —— Brand / Primary —— */
-  --primary: #5B5FC6;
-  --primary-light: #7B7FD7;
-  --primary-dark: #4A4EB0;
-  --primary-gradient-end: #9B9FE8;
-  --primary-soft: #EEF0FF;
-  --primary-soft-strong: #E4E6F8;
-  --primary-press: #F4F4FF;
+  /* ── PocketPills primitives ───────────────────────────── */
+  --primary-950: #4e2a84;
+  --primary-900: #220f3e;
+  --primary-800: #37325d;
+  --primary-700: #6b1ce2;
+  --primary-600: #7b47ff;
+  --primary-500: #8c60ff;
+  --primary-400: #aaa4ff;
+  --primary-300: #e5e3ff;
+  --primary-200: #f5f4fa;
+  --primary-100: #ffffff;
 
-  /* —— Surfaces ——
-     Page = app canvas; Card = elevated white panel; Muted = inactive/skeleton fill.
-     Soft brand fills share one token so icon wells and primary tints stay aligned. */
-  --white: #FFFFFF;
-  --card-bg: #FFFFFF;
-  --bg: #F5F5F8;
-  --bg-dark: var(--surface-muted);
-  --surface-muted: #F3F4F8;
-  --surface-subtle: var(--surface-muted);
-  --surface-soft: var(--surface-muted);
-  --media-bg: #EEF1F6;
-  --avatar-bg: var(--primary-soft);
-  --chip-bg: #EAF4FC;
-  --chip-bg-alt: var(--chip-bg);
-  --badge-bg: #F2F4F7;
-  --active-bg: #F0F0FF;
-  --service-icon-bg: var(--primary-soft);
-  --slot-day-bg: var(--surface-muted);
+  --neutral-900: #180730;
+  --neutral-800: #362952;
+  --neutral-700: #534b74;
+  --neutral-600: #67648b;
+  --neutral-500: #8e90b8;
+  --neutral-400: #aaacca;
+  --neutral-300: #c8c8dc;
+  --neutral-200: #e7e7f2;
+  --neutral-100: #f5f4fa;
+  --neutral-50: #fafafa;
+  --neutral-0: #ffffff;
 
-  /* —— Text —— */
-  --text-primary: #1A1A2E;
-  --text-secondary: #6B7280;
-  --text-muted: var(--text-secondary);
-  --text-faint: #9CA3AF; /* decorative / disabled chrome only */
-  --text-on-primary: #FFFFFF;
-  --text-link: var(--primary);
+  --secondary-900: #043b45;
+  --secondary-800: #0a5a68;
+  --secondary-700: #54c7da;
+  --secondary-600: #a4eefb;
+  --secondary-500: #dbf7fa;
 
-  /* —— Borders / Dividers ——
-     Default = cards, inputs, sheets, calendars, containers (one value only).
-     Subtle = hairline dividers inside surfaces.
-     Strong = emphasized separators (footers, sticky chrome). */
-  --border: #EEEFF3;
-  --border-subtle: #F0F1F4;
-  --border-strong: #E5E7EB;
-  --border-card: var(--border);
-  --border-soft: var(--border-subtle);
-  --border-focus: var(--primary);
-  --divider: var(--border-subtle);
+  --success-900: #043b45;
+  --success-700: #0a5a68;
+  --success-500: #54c7da;
+  --success-300: #a4eefb;
+
+  --warning-900: #b94801;
+  --warning-700: #ffa13c;
+  --warning-500: #ffebd5;
+  --warning-300: #fff5e8;
+
+  --error-900: #b8310f;
+  --error-700: #ff5950;
+  --error-500: #ffe8e8;
+  --error-300: #fff5f5;
+
+  --gray-500: #8a8a8a;
+
+  /* PP space (production rem) */
+  --space-xxs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 2.5rem;
+  --space-4xl: 3rem;
+  --space-5xl: 6rem;
+
+  /* PP radius (production rem) */
+  --radius-pp-xs: 0.125rem;
+  --radius-pp-s: 0.5rem;
+  --radius-pp-m: 1rem;
+  --radius-pp-l: 1.5rem;
+  --radius-pp-x: 2.25rem;
+  --radius-pp-xl: 3rem;
+
+  /* PP type sizes */
+  --font-size-h1: 2.875rem;
+  --font-size-h2: 2.563rem;
+  --font-size-h3: 1.813rem;
+  --font-size-h4: 1.625rem;
+  --font-size-h5: 1.4375rem;
+  --font-size-h6: 1.25rem;
+  --font-size-body-xxl: 1.5rem;
+  --font-size-body-xl: 1.375rem;
+  --font-size-body-l: 1.25rem;
+  --font-size-body-m: 1.125rem;
+  --font-size-body-s: 1rem;
+  --font-size-body-xs: 0.9375rem;
+  --font-size-body-xxs: 0.75rem;
+
+  /* PP buttons */
+  --btn-padding-default: 1rem 2rem;
+  --btn-padding-sm: 0.75rem 1.5rem;
+  --btn-padding-lg: 0.625rem 1.5rem;
+  --btn-font-size-default: 1.125rem;
+  --btn-font-size-sm: 0.9375rem;
+  --btn-font-size-lg: 1.125rem;
+
+  /* ── PP semantic layer ────────────────────────────────── */
+  --color-primary: var(--primary-950);
+  --color-primary-hover: var(--neutral-600);
+  --color-primary-pressed: var(--neutral-800);
+  --color-primary-subtle: var(--primary-200);
+  --color-primary-fg: var(--neutral-0);
+
+  --color-cta: var(--neutral-800);
+  --color-cta-hover: var(--neutral-600);
+  --color-cta-pressed: var(--neutral-800);
+  --color-cta-disabled-bg: var(--neutral-200);
+  --color-cta-disabled-fg: var(--gray-500);
+
+  --color-wellness: var(--secondary-800);
+  --color-wellness-subtle: var(--secondary-500);
+  --color-accent: var(--primary-950);
+  --color-accent-subtle: var(--primary-300);
+
+  --color-success: var(--success-700);
+  --color-success-subtle: var(--success-300);
+  --color-warning: var(--warning-900);
+  --color-warning-subtle: var(--warning-500);
+  --color-danger: var(--error-900);
+  --color-danger-subtle: var(--error-500);
+  --color-info: var(--primary-800);
+  --color-info-subtle: var(--primary-300);
+  --color-processing: #0369a1;
+  --color-processing-subtle: #e0f2fe;
+
+  --surface-0: var(--neutral-100);
+  --surface-1: var(--neutral-100);
+  --surface-2: var(--neutral-0);
+  --surface-3: var(--neutral-0);
+  --surface-4: var(--neutral-0);
+
+  --text-inverse: var(--neutral-0);
+
+  --border-default: color-mix(in srgb, var(--primary-800) 8%, transparent);
+  --border-divider: color-mix(in srgb, var(--primary-800) 6%, transparent);
+
+  /* Interactive surface language (SSOT) — light tint + stronger border */
+  --interact-hover-bg: color-mix(in srgb, var(--primary-300) 38%, var(--neutral-0));
+  --interact-hover-border: var(--border-strong);
+  --interact-pressed-bg: color-mix(in srgb, var(--primary-300) 62%, var(--neutral-0));
+  --interact-pressed-border: color-mix(in srgb, var(--primary-800) 24%, transparent);
+  --interact-selected-bg: var(--primary-300);
+  --interact-selected-border: color-mix(in srgb, var(--primary-950) 22%, transparent);
+  --interact-transition: background var(--transition), border-color var(--transition),
+    color var(--transition), opacity var(--transition), box-shadow var(--transition);
+
+  --state-hover: var(--interact-hover-bg);
+  --state-pressed: var(--interact-pressed-bg);
+
+  --pp-navy: var(--primary-900);
+  --pp-violet: var(--primary-800);
+  --pp-headline: var(--primary-950);
+  --pp-lavender: var(--primary-300);
+  --pp-page: var(--primary-200);
+  /* Decorative only — muted mix from the primary scale */
+  --pp-star: color-mix(in srgb, var(--primary-400) 58%, var(--neutral-400));
+  --pp-green: #0f4c3f;
+
+  /*
+    Home hierarchy (~70% neutral / 20% support / 10% emphasis):
+    --accent           → active nav + primary CTAs only
+    --accent-quiet     → FAB utility indigo (not competing with nav)
+    --featured-*       → single hero surface (Upcoming card)
+    Everything else stays neutral slate / faint lavender.
+  */
+  --accent: var(--primary-950);
+  --accent-hover: var(--primary-800);
+  --accent-pressed: var(--primary-900);
+  --accent-fg: var(--neutral-0);
+  --accent-subtle: var(--primary-300);
+  --accent-muted: var(--primary-800);
+  --accent-quiet: color-mix(in srgb, var(--primary-800) 62%, var(--neutral-600));
+
+  --brand-action: var(--accent);
+  --brand-action-hover: var(--accent-hover);
+  --brand-action-pressed: var(--accent-pressed);
+  --brand-action-fg: var(--accent-fg);
+
+  /* Featured booking card — the single Home hero */
+  --featured-gradient-start: color-mix(in srgb, var(--primary-800) 68%, var(--primary-400));
+  --featured-gradient-mid: var(--primary-800);
+  --featured-gradient-end: var(--primary-900);
+  --featured-ink: var(--neutral-0);
+  --featured-ink-muted: color-mix(in srgb, var(--neutral-0) 82%, transparent);
+  --featured-ink-soft: color-mix(in srgb, var(--neutral-0) 58%, transparent);
+  --featured-glass: color-mix(in srgb, var(--neutral-0) 18%, transparent);
+  --featured-glass-border: color-mix(in srgb, var(--neutral-0) 28%, transparent);
+
+  /* Avatar — very light lavender identity chip */
+  --avatar-surface: color-mix(in srgb, var(--primary-300) 42%, var(--primary-200));
+  --avatar-ink: var(--primary-800);
+
+  /* Ready badge — pastel sage */
+  --badge-ready-bg: color-mix(in srgb, var(--secondary-600) 35%, var(--neutral-0));
+  --badge-ready-fg: var(--secondary-900);
+  --badge-ready-border: color-mix(in srgb, var(--secondary-800) 16%, transparent);
+
+  /* FAB — quiet utility control */
+  --fab-bg: var(--accent-quiet);
+  --fab-bg-open: color-mix(in srgb, var(--accent-quiet) 88%, var(--neutral-700));
+  --fab-fg: var(--neutral-0);
+  --fab-shadow: 0 2px 8px color-mix(in srgb, var(--primary-900) 10%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--primary-900) 4%, transparent);
+
+  /* ── eMedicalls aliases → PocketPills (keep component contracts) ── */
+
+  /* Brand / Primary — identity; prefer --accent / --text-link for UI roles */
+  --primary: var(--accent);
+  --primary-light: var(--accent-muted);
+  --primary-dark: var(--primary-900);
+  --primary-gradient-end: var(--primary-400);
+  --primary-soft: var(--primary-200);
+  --primary-soft-strong: var(--primary-300);
+  --primary-press: var(--primary-300);
+
+  /* Primary actions — single brand accent (nav, Book CTA, flow CTAs) */
+  --cta: var(--accent);
+  --cta-hover: var(--accent-hover);
+  --cta-pressed: var(--accent-pressed);
+  --cta-disabled-bg: var(--neutral-200);
+  --cta-disabled-fg: var(--gray-500);
+
+  /* Surfaces */
+  --white: var(--neutral-0);
+  --card-bg: var(--neutral-0);
+  --bg: var(--pp-page);
+  --bg-dark: var(--neutral-100);
+  --surface-muted: var(--neutral-100);
+  --surface-subtle: var(--neutral-100);
+  --surface-soft: var(--neutral-100);
+  --media-bg: var(--neutral-200);
+  --avatar-bg: var(--avatar-surface);
+  --chip-bg: var(--primary-300);
+  --chip-bg-alt: var(--primary-200);
+  --badge-bg: var(--neutral-100);
+  --active-bg: var(--interact-hover-bg);
+  --service-icon-bg: transparent;
+  --slot-day-bg: var(--neutral-100);
+
+  /* Text / ink */
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-700);
+  --text-tertiary: var(--neutral-600);
+  --text-muted: var(--neutral-700);
+  --text-faint: var(--neutral-500);
+  --text-on-primary: var(--neutral-0);
+  --text-on-cta: var(--neutral-0);
+  --text-link: var(--text-secondary);
+  --text-disabled: var(--neutral-500);
+
+  /* Borders */
+  --border: var(--border-default);
+  --border-subtle: var(--border-divider);
+  --border-strong: color-mix(in srgb, var(--primary-800) 20%, transparent);
+  --border-card: var(--border-default);
+  --border-soft: var(--border-divider);
+  --border-focus: var(--accent);
+  --divider: var(--border-divider);
   --border-width: 1px;
   --border-width-emphasis: 1.5px;
   --border-width-strong: 2px;
 
-  /* —— Semantic status —— */
-  --success: #059669;
-  --success-light: #4ADE80;
-  --success-bg: #E8F5E9;
-  --success-bg-light: #F0FDF4;
-  --success-border: #A7F3D0;
-  --success-border-soft: var(--success-border);
-  --success-text: #047857;
+  /* Status */
+  --success: var(--color-success);
+  --success-light: var(--success-500);
+  --success-bg: var(--color-success-subtle);
+  --success-bg-light: var(--secondary-500);
+  --success-border: var(--secondary-600);
+  --success-border-soft: var(--secondary-600);
+  --success-text: var(--success-900);
 
-  --danger: #DC2626;
-  --danger-bg: #FEF2F2;
-  --danger-soft: #FFF7F7;
+  --danger: var(--color-danger);
+  --danger-bg: var(--color-danger-subtle);
+  --danger-soft: var(--error-300);
 
-  --warning: #D97706;
-  --warning-bg: #FEF3C7;
-  --warning-border: #FFD54F;
-  --urgent: #C2410C;
-  --urgent-bg: #FFF4E6;
-  --urgent-soft: #FFF4ED;
+  --warning: var(--color-warning);
+  --warning-bg: var(--color-warning-subtle);
+  --warning-border: var(--warning-700);
+  --urgent: var(--warning-900);
+  --urgent-bg: var(--warning-300);
+  --urgent-soft: var(--warning-300);
 
-  --info: #3B5BDB;
-  --info-bg: #EDF2FF;
+  --info: var(--accent-muted);
+  --info-bg: var(--accent-subtle);
 
-  --rating: #F59E0B;
-  --rating-star: var(--rating);
+  --rating: var(--pp-star);
+  --rating-star: var(--pp-star);
 
   --upcoming: var(--warning);
   --upcoming-bg: var(--warning-bg);
 
-  --toggle-off: #D1D5DB;
+  --toggle-off: var(--neutral-300);
 
-  /* —— Overlay / Scrim —— */
-  --overlay: rgba(0, 0, 0, 0.12);
-  --overlay-strong: rgba(0, 0, 0, 0.18);
+  /* Overlay */
+  --overlay: color-mix(in srgb, var(--neutral-900) 12%, transparent);
+  --overlay-strong: color-mix(in srgb, var(--neutral-900) 18%, transparent);
   --overlay-dark: var(--overlay);
   --overlay-lightbox: #0c0e14;
   --surface-lightbox: #1c1d22;
-  --surface-lightbox-bar: #1F2937;
-  --frame-backdrop: #121214;
-  --shimmer-mid: #e4e7ee;
+  --surface-lightbox-bar: var(--neutral-800);
+  --frame-backdrop: var(--neutral-900);
+  --shimmer-mid: var(--neutral-200);
 
-  /* —— Elevation / Shadow ——
-     Card elevation is one treatment; hover/sheet/modal escalate intentionally. */
-  --shadow-xs: var(--shadow-sm);
-  --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.08);
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-card: 0 4px 16px rgba(17, 24, 39, 0.05);
+  /* Elevation — PP shadow-card / float / modal */
+  --shadow-xs: 0 1px 2px rgba(24, 7, 48, 0.06);
+  --shadow-sm: 0 1px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --shadow-card-lg: var(--shadow-card);
-  --shadow-hover: 0 4px 16px rgba(91, 95, 198, 0.12);
-  --shadow-sheet: 0 8px 28px rgba(17, 24, 39, 0.12);
-  --shadow-modal: 0 16px 40px rgba(17, 24, 39, 0.18);
-  --shadow-focus: 0 0 0 3px rgba(91, 95, 198, 0.28);
-  --shadow-ring-soft: 0 0 0 8px var(--service-icon-bg);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-sheet: 0 8px 28px rgba(24, 7, 48, 0.12);
+  --shadow-modal: 0 16px 48px rgba(24, 7, 48, 0.16);
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+  --shadow-ring-soft: 0 0 0 8px var(--primary-300);
+  --shadow-btn: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-  /* —— Radius ——
-     Tile = compact squares (services); Card = content panels / doctor cards;
-     CTA = primary buttons; Full = avatars & circular controls. */
-  --radius-2xs: 4px;
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-md: 14px;
-  --radius-lg: 16px;
-  --radius-card: 22px;
+  /* Radius — PP scale mapped to eMedicalls names */
+  --radius-2xs: var(--radius-pp-xs);
+  --radius-xs: 0.375rem;
+  --radius-sm: var(--radius-pp-s);
+  --radius: var(--radius-pp-s);
+  --radius-md: 0.75rem;
+  --radius-lg: var(--radius-pp-m);
+  --radius-card: 24px;
   --radius-xl: var(--radius-card);
-  --radius-cta: 26px;
-  --radius-device: 32px; /* phone bezel / outer chrome only */
-  --radius-full: 999px;
+  --radius-cta: 9999px;
+  --radius-device: var(--radius-pp-x);
+  --radius-full: 9999px;
   --radius-pill: var(--radius-full);
-  /* Sheet top radius lives under Layout tokens as --app-sheet-radius */
 
-  /* —— Spacing scale (4px base + half-steps for legacy control padding) —— */
+  /* Spacing — keep eMedicalls step names; values = PP 4px ladder */
   --space-0: 0;
-  --space-0-5: 2px;
-  --space-1: 4px;
-  --space-1-5: 6px;
-  --space-2: 8px;
-  --space-2-5: 10px;
-  --space-3: 12px;
-  --space-3-5: 14px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-5-5: 22px;
-  --space-6: 24px;
-  --space-7: 28px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
+  --space-0-5: var(--space-xxs);
+  --space-1: var(--space-xs);
+  --space-1-5: 0.375rem;
+  --space-2: var(--space-sm);
+  --space-2-5: 0.625rem;
+  --space-3: var(--space-md);
+  --space-3-5: 0.875rem;
+  --space-4: var(--space-lg);
+  --space-5: 1.25rem;
+  --space-5-5: 1.375rem;
+  --space-6: var(--space-xl);
+  --space-7: 1.75rem;
+  --space-8: var(--space-2xl);
+  --space-10: var(--space-3xl);
+  --space-12: var(--space-4xl);
+  --space-16: 4rem;
 
   --page-padding: var(--space-5);
   --content-padding: var(--space-5);
-  --section-gap: var(--space-6);
-  --card-gap: var(--space-4);
-  --card-padding: var(--space-4);
-  --stack-gap: var(--space-3);
-  --section-header-gap: 11px;
+  --section-gap: var(--space-xl);
+  --card-gap: var(--space-lg);
+  --card-padding: var(--space-lg);
+  --stack-gap: var(--space-md);
+  --section-header-gap: var(--space-md);
+  --layout-gutter: var(--space-5);
+  --provider-gap: var(--space-xl);
 
-  /* —— Sizing / Touch / Icons ——
-     One stroke weight for the whole family. Subtle vs bold is color/surface, never thinner strokes. */
-  --touch-min: 44px;
-  --icon-xs: 12px;
-  --icon-sm: 16px;
-  --icon-md: 18px;
-  --icon-lg: 20px;
-  --icon-xl: 22px;
-  --icon-2xl: 24px;
-  --icon-stroke: 2;
-  --icon-stroke-bold: var(--icon-stroke); /* alias — no second weight */
+  /* Touch / fields / icons — PP h-11 / h-12 */
+  --touch-min: 2.75rem;
+  --field-height: 3rem;
+  --field-height-sm: 2.75rem;
+  --field-radius: var(--radius-pp-m);
+  --field-pad-x: var(--space-lg);
+  --icon-xs: 0.75rem;
+  --icon-sm: 1rem;
+  --icon-md: 1.125rem;
+  --icon-lg: 1.25rem;
+  --icon-xl: 1.375rem;
+  --icon-2xl: 1.5rem;
+  --icon-stroke: 1.8;
+  --icon-stroke-bold: var(--icon-stroke);
 
   --icon-btn-size: var(--touch-min);
-  --icon-btn-visual: 40px;
-  --icon-well-size: 36px;
+  --icon-btn-visual: 2.5rem;
+  --icon-well-size: 2.25rem;
   --icon-well-size-lg: var(--touch-min);
-  --icon-chip-size: 28px;
+  --icon-chip-size: 1.75rem;
   --icon-btn-radius: var(--radius-full);
   --icon-btn-border: var(--border-width) solid var(--border);
-  --icon-gap: var(--space-2);
+  --icon-gap: var(--space-sm);
 
-  --icon-color-default: var(--text-primary);
-  --icon-color-muted: var(--text-secondary);
-  --icon-color-brand: var(--primary);
+  --icon-color-default: var(--neutral-600);
+  --icon-color-muted: var(--neutral-500);
+  --icon-color-brand: var(--neutral-600);
+  --icon-color-brand-active: var(--accent);
   --icon-color-on-brand: var(--text-on-primary);
   --icon-color-danger: var(--danger);
   --icon-color-success: var(--success);
@@ -191,77 +458,80 @@
   --icon-surface-ghost: transparent;
   --icon-surface-subtle: var(--card-bg);
   --icon-surface-muted: var(--surface-muted);
-  --icon-surface-press: var(--primary-press);
-  --icon-surface-brand: var(--primary-soft);
-  --icon-surface-info: var(--info-bg);
-  --icon-surface-danger: var(--danger-bg);
-  --icon-surface-success: var(--success-bg);
-  --icon-surface-warning: var(--warning-bg);
-  --icon-surface-selected: var(--active-bg);
+  --icon-surface-press: var(--interact-pressed-bg);
+  --icon-surface-brand: var(--primary-300);
+  --icon-surface-info: var(--color-info-subtle);
+  --icon-surface-danger: var(--color-danger-subtle);
+  --icon-surface-success: var(--color-success-subtle);
+  --icon-surface-warning: var(--color-warning-subtle);
+  --icon-surface-selected: var(--interact-selected-bg);
 
-  --avatar-sm: 40px;
-  --avatar-md: 52px;
-  --avatar-lg: 56px;
-  --avatar-xl: 72px;
+  --avatar-sm: 2.5rem;
+  --avatar-md: 3.25rem;
+  --avatar-lg: 3.5rem;
+  --avatar-xl: 4.5rem;
   --header-control: var(--icon-btn-size);
-  --app-flow-cta-height: 52px;
-  --nav-height: 64px;
+  --app-flow-cta-height: 3.5rem;
+  --nav-height: 4rem;
 
-  /* —— Typography scale —— */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Typography — Satoshi + PP scale */
+  --font-sans: "Satoshi", "Noto Sans Devanagari", "Noto Sans", "Hiragano Sans", "Kohinoor Devanagari", Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-nepali: "Noto Sans Devanagari", "Kohinoor Devanagari", "Noto Sans", "Satoshi", sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
-  --font-weight-semibold: 600;
+  --font-weight-semibold: 700;
   --font-weight-bold: 700;
+  --font-weight-black: 900;
 
-  --text-display-size: 22px;
-  --text-display-line: 1.25;
-  --text-display-weight: var(--font-weight-bold);
+  --text-display-size: var(--font-size-h5);
+  --text-display-line: 1.2;
+  --text-display-weight: var(--font-weight-medium);
 
-  --text-heading-size: 17px;
-  --text-heading-line: 1.3;
-  --text-heading-weight: var(--font-weight-semibold);
+  --text-heading-size: var(--font-size-h6);
+  --text-heading-line: 1.2;
+  --text-heading-weight: var(--font-weight-medium);
 
-  --text-title-size: 16px;
+  --text-title-size: var(--font-size-body-s);
   --text-title-line: 1.3;
-  --text-title-weight: var(--font-weight-semibold);
+  --text-title-weight: var(--font-weight-medium);
 
-  --text-body-size: 14px;
-  --text-body-line: 1.45;
+  --text-body-size: var(--font-size-body-s);
+  --text-body-line: 1.5;
   --text-body-weight: var(--font-weight-regular);
 
-  --text-body-lg-size: 15px;
-  --text-body-lg-line: 1.45;
+  --text-body-lg-size: var(--font-size-body-m);
+  --text-body-lg-line: 1.5;
 
-  --text-label-size: 13px;
+  --text-label-size: var(--font-size-body-xs);
   --text-label-line: 1.35;
   --text-label-weight: var(--font-weight-medium);
 
-  --text-caption-size: 12px;
-  --text-caption-line: 1.35;
+  --text-caption-size: var(--font-size-body-xxs);
+  --text-caption-line: 1.5;
   --text-caption-weight: var(--font-weight-medium);
 
-  --text-overline-size: 11px;
-  --text-overline-line: 1.3;
-  --text-overline-weight: var(--font-weight-semibold);
-  --text-overline-tracking: 0.06em;
+  --text-overline-size: 0.8125rem;
+  --text-overline-line: 1.35;
+  --text-overline-weight: var(--font-weight-bold);
+  --text-overline-tracking: 0.04em;
 
-  --text-subtitle-size: 18px;
-  --text-subtitle-line: 1.3;
-  --text-subtitle-weight: var(--font-weight-semibold);
+  --text-subtitle-size: var(--font-size-body-m);
+  --text-subtitle-line: 1.2;
+  --text-subtitle-weight: var(--font-weight-medium);
 
-  --text-micro-size: 10px;
+  --text-micro-size: 0.625rem;
   --text-micro-line: 1.3;
 
-  --text-lead-size: 20px;
-  --text-hero-size: 28px;
-  --text-stat-size: 42px;
-  --text-badge-size: 9px;
+  --text-lead-size: var(--font-size-body-l);
+  --text-hero-size: var(--font-size-h4);
+  --text-stat-size: var(--font-size-h2);
+  --text-badge-size: 0.5625rem;
 
-  --letter-tight: -0.25px;
-  --letter-snug: -0.15px;
+  --letter-tight: 0;
+  --letter-snug: 0;
+  --letter-body: 0.02em;
 
-  /* —— Opacity —— */
+  /* Opacity */
   --opacity-disabled: 0.45;
   --opacity-muted: 0.7;
   --opacity-soft: 0.5;
@@ -271,10 +541,9 @@
   --opacity-hidden: 0;
   --opacity-visible: 1;
 
-  /* —— Motion —— */
+  /* —— Motion (PRESERVED — do not adopt PP motion) —— */
   --ease-standard: ease;
   --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
-  /* Calm ease-out (Apple Maps / Wallet) — no overshoot */
   --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-page: cubic-bezier(0.32, 0.72, 0, 1);
   --duration-fast: 0.15s;
@@ -290,7 +559,7 @@
   --transition-reveal: opacity var(--duration-moderate) var(--ease-standard),
     transform 0.32s var(--ease-emphasized);
 
-  /* —— Layout / Frame —— */
+  /* Layout / Frame */
   --phone-width: 440px;
   --phone-height: 956px;
   --phone-scale: 1;
@@ -298,15 +567,12 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --bottom-bar-pad: calc(var(--space-2-5) + max(var(--frame-footer), var(--safe-bottom)));
   --app-flow-footer-pad-top: var(--space-3-5);
-  /* Single-CTA flow footer clearance (Doctor Profile, booking steps) */
   --app-flow-footer-clearance: calc(
     var(--app-flow-footer-pad-top)
     + var(--app-flow-cta-height)
     + var(--bottom-bar-pad)
   );
-  /* Gap between any secondary floater and a sticky bottom CTA */
   --fab-cta-gap: 22px;
-  /* Sticky footer CTA — compact vertical rhythm (button/radius/horizontal unchanged) */
   --sticky-footer-pad-top: var(--space-2-5);
   --sticky-footer-cta-gap: var(--space-1);
   --sticky-footer-secondary-pad-y: var(--space-1-5);
@@ -320,8 +586,7 @@
     + var(--sticky-footer-pad-bottom)
   );
   --app-sheet-max-height: 85%;
-  /* Sheet top corners only — never pill/full (those create the dome distortion) */
-  --app-sheet-radius: 20px;
+  --app-sheet-radius: 24px;
   --sheet-surface: var(--card-bg);
   --sheet-pad-x: var(--space-5);
   --sheet-pad-top: var(--space-2);
@@ -332,7 +597,6 @@
   --z-footer: 100;
   --z-overlay: 1000;
   --z-sheet: 1001;
-  /* Phone-screen layers — scrim covers status bar; elevated UI sits above */
   --z-status: 20;
   --z-home-indicator: 25;
   --z-scrim: 8000;
@@ -356,10 +620,21 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
+  letter-spacing: var(--letter-body);
+  font-weight: var(--font-weight-regular);
   background: var(--frame-backdrop);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+  line-height: 1.2;
+  color: var(--pp-headline);
 }
 
 #root {
@@ -390,7 +665,7 @@ html.is-native-shell #root {
 }
 
 html.is-native-shell body {
-  background: var(--white);
+  background: var(--bg);
 }
 
 /* Island sits just below the safe-area padding on #phone-screen */
@@ -431,9 +706,9 @@ input[type='button']:focus-visible,
 input[type='submit']:focus-visible,
 input[type='reset']:focus-visible,
 input[type='file']:focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
-  box-shadow: var(--shadow-focus);
+  box-shadow: none;
 }
 
 /*
@@ -480,6 +755,7 @@ select:is(:focus, :focus-visible, :active) {
   font-size: var(--text-heading-size);
   line-height: var(--text-heading-line);
   font-weight: var(--text-heading-weight);
+  letter-spacing: var(--letter-snug);
   color: var(--text-primary);
 }
 
@@ -494,6 +770,7 @@ select:is(:focus, :focus-visible, :active) {
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
   font-weight: var(--text-body-weight);
+  letter-spacing: var(--letter-body);
   color: var(--text-primary);
 }
 
@@ -520,11 +797,17 @@ select:is(:focus, :focus-visible, :active) {
   color: var(--text-secondary);
 }
 
-/* —— Shared surface primitives —— */
+/* —— Shared surface primitives ——
+   Resting panels: hairline edge first; soft shadow only when elevation is intentional. */
 .ds-card {
   background: var(--card-bg);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
+  box-shadow: none;
+}
+
+.ds-card.is-elevated,
+.ds-card-elevated {
   box-shadow: var(--shadow-card);
 }
 
@@ -533,6 +816,144 @@ select:is(:focus, :focus-visible, :active) {
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: none;
+}
+
+/*
+  Interactive surface language (SSOT).
+  Hover = light tint + stronger border. Pressed = deeper tint.
+  Selected = lavender fill + selected border. No glow / scale / lift shadows.
+*/
+.ds-interact {
+  border: var(--border-width) solid var(--border);
+  background: var(--card-bg);
+  box-shadow: none;
+  transition: var(--interact-transition);
+}
+
+.ds-interact:hover:not(:disabled):not([aria-disabled='true']):not(.is-selected):not(.is-active):not([aria-selected='true']):not([aria-pressed='true']) {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.ds-interact:active:not(:disabled):not([aria-disabled='true']) {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
+}
+
+.ds-interact.is-selected,
+.ds-interact.is-active,
+.ds-interact[aria-selected='true'],
+.ds-interact[aria-pressed='true'] {
+  background: var(--interact-selected-bg);
+  border-color: var(--interact-selected-border);
+  box-shadow: none;
+}
+
+/* Borderless rows (sheet options, nav rows) — tint only */
+.ds-interact-row {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transition: var(--interact-transition);
+}
+
+.ds-interact-row:hover:not(:disabled):not([aria-disabled='true']):not(.is-selected):not(.is-active):not([aria-selected='true']):not(.active) {
+  background: var(--interact-hover-bg);
+}
+
+.ds-interact-row:active:not(:disabled):not([aria-disabled='true']) {
+  background: var(--interact-pressed-bg);
+}
+
+.ds-interact-row.is-selected,
+.ds-interact-row.is-active,
+.ds-interact-row.active,
+.ds-interact-row[aria-selected='true'],
+.ds-interact-row[aria-pressed='true'] {
+  background: var(--interact-selected-bg);
+}
+
+/* Filter / choice chips — same language, pill radius */
+.ds-interact-chip {
+  border: var(--border-width) solid var(--border);
+  background: var(--card-bg);
+  border-radius: var(--radius-full);
+  box-shadow: none;
+  transition: var(--interact-transition);
+}
+
+.ds-interact-chip:hover:not(:disabled):not(.is-active):not(.is-selected):not([aria-pressed='true']) {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.ds-interact-chip:active:not(:disabled) {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
+}
+
+.ds-interact-chip.is-active,
+.ds-interact-chip.is-selected,
+.ds-interact-chip[aria-pressed='true'] {
+  background: var(--interact-selected-bg);
+  border-color: var(--interact-selected-border);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+/* Structured text field — 3rem / 1rem radius (PP), reusable across forms */
+.ds-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--field-height);
+  padding: 0 var(--field-pad-x);
+  background: var(--card-bg);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--field-radius);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  transition: var(--interact-transition);
+}
+
+.ds-field:hover:not(:disabled):not(:focus-within) {
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.ds-field:focus-within {
+  border-color: var(--primary-600);
+}
+
+.ds-field.is-error,
+.ds-field[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.ds-field-label {
+  display: block;
+  margin: 0 0 var(--space-1-5);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+.ds-field-hint,
+.ds-field-error {
+  margin: var(--space-1-5) 0 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+}
+
+.ds-field-hint {
+  color: var(--text-tertiary);
+}
+
+.ds-field-error {
+  color: var(--danger);
 }
 
 .ds-section-title {
@@ -659,25 +1080,28 @@ select:is(:focus, :focus-visible, :active) {
   padding: var(--space-3-5) var(--space-4);
   border: none;
   border-radius: var(--radius-cta);
-  background: var(--primary);
-  color: var(--text-on-primary);
-  font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  background: var(--cta);
+  color: var(--text-on-cta);
+  font-size: var(--btn-font-size-default);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition), opacity var(--transition);
 }
 
 .app-flow-cta:hover:not(:disabled) {
-  background: var(--primary-dark);
+  background: var(--cta-hover);
 }
 
 .app-flow-cta:active:not(:disabled) {
+  background: var(--cta-pressed);
   opacity: var(--opacity-pressed);
 }
 
 .app-flow-cta:disabled {
-  opacity: var(--opacity-disabled);
+  background: var(--cta-disabled-bg);
+  color: var(--cta-disabled-fg);
+  opacity: 1;
   cursor: not-allowed;
 }
 
@@ -716,25 +1140,28 @@ select:is(:focus, :focus-visible, :active) {
   padding: var(--space-3-5) var(--space-4);
   border: none;
   border-radius: var(--radius-cta);
-  background: var(--primary);
-  color: var(--text-on-primary);
-  font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  background: var(--cta);
+  color: var(--text-on-cta);
+  font-size: var(--btn-font-size-default);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition), opacity var(--transition);
 }
 
 .sticky-footer-cta__primary:hover:not(:disabled) {
-  background: var(--primary-dark);
+  background: var(--cta-hover);
 }
 
 .sticky-footer-cta__primary:active:not(:disabled) {
+  background: var(--cta-pressed);
   opacity: var(--opacity-pressed);
 }
 
 .sticky-footer-cta__primary:disabled {
-  opacity: var(--opacity-disabled);
+  background: var(--cta-disabled-bg);
+  color: var(--cta-disabled-fg);
+  opacity: 1;
   cursor: not-allowed;
 }
 
@@ -745,10 +1172,10 @@ select:is(:focus, :focus-visible, :active) {
   margin: 0;
   background: none;
   border: none;
-  color: var(--primary);
+  color: var(--primary-600);
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   text-align: center;
@@ -814,23 +1241,22 @@ select:is(:focus, :focus-visible, :active) {
 }
 
 .ds-icon-btn:hover:not(:disabled) {
-  background: var(--icon-surface-muted);
+  background: var(--interact-hover-bg);
 }
 
 .ds-icon-btn.is-subtle:hover:not(:disabled) {
-  background: var(--icon-surface-muted);
-  border-color: var(--border-strong);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
 }
 
 .ds-icon-btn:active:not(:disabled) {
-  background: var(--icon-surface-press);
-  opacity: var(--opacity-pressed);
+  background: var(--interact-pressed-bg);
 }
 
 .ds-icon-btn:focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
-  box-shadow: var(--shadow-focus);
+  box-shadow: none;
 }
 
 .ds-icon-btn:disabled,
@@ -841,9 +1267,9 @@ select:is(:focus, :focus-visible, :active) {
 
 .ds-icon-btn.is-selected,
 .ds-icon-btn[aria-pressed='true'] {
-  background: var(--icon-surface-selected);
+  background: var(--interact-selected-bg);
   color: var(--icon-color-brand);
-  border-color: var(--primary);
+  border-color: var(--interact-selected-border);
 }
 
 .ds-icon-btn.is-brand {

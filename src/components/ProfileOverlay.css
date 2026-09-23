@@ -183,15 +183,15 @@
   justify-content: center;
   font-size: var(--text-display-size);
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
-  color: var(--white);
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
 }
 
 .profile-pro-badge-sm {
   position: absolute;
   bottom: -2px;
   right: -4px;
-  background: var(--primary);
+  background: var(--cta);
   color: var(--white);
   font-size: var(--text-badge-size);
   font-weight: var(--font-weight-bold);

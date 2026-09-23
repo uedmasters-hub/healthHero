@@ -22,6 +22,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshTreatData } from '../features/sync/pageRefresh'
 import { useUser } from '../user'
+import { useSearchQuery } from '../features/search'
 import { ProfileSheets } from './profile/ProfileHealth'
 import './TreatPage.css'
 
@@ -32,7 +33,7 @@ const sortOptions = [
   { id: 'name', label: 'Doctor A–Z' },
 ]
 const visitFilters = ['All types', 'In-Person', 'Video Consultation']
-const TREAT_SEARCH_PLACEHOLDER = 'Search your care'
+const TREAT_SEARCH_PLACEHOLDER = 'Search your care, visits, and records…'
 
 function matchesVisitType(booking, visitType) {
   if (visitType === 'All types') return true
@@ -50,7 +51,7 @@ export default function TreatPage() {
   const historySectionRef = useRef(null)
   const scrollRef = useRef(null)
   const [searchActive, setSearchActive] = useState(false)
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useSearchQuery('treat')
   const [recordSheet, setRecordSheet] = useState(null)
   const onRefresh = useCallback(() => refreshTreatData(), [])
   const ptr = usePullToRefresh(scrollRef, onRefresh, {
@@ -71,12 +72,7 @@ export default function TreatPage() {
 
   const closeSearch = useCallback(() => {
     setSearchActive(false)
-    setQuery('')
   }, [])
-
-  useEffect(() => {
-    if (!searchActive) setQuery('')
-  }, [searchActive])
 
   useEffect(() => {
     if (location.state?.focus !== 'bookings') return undefined
@@ -146,14 +142,14 @@ export default function TreatPage() {
       return
     }
     if (visit.historyTab === 'Completed') {
-      const start = visit.start instanceof Date && !Number.isNaN(visit.start.getTime())
-        ? visit.start
-        : new Date()
       navigate('/post-visit-summary', {
         state: {
+          bookingId: visit.engineId || visit.id,
           visitData: visitSummary({
             doctor: visit.doctor || {},
-            start,
+            start: visit.start instanceof Date && !Number.isNaN(visit.start.getTime())
+              ? visit.start
+              : new Date(),
             visitType: visit.visitType || 'In-Person',
             condition: visit.condition,
             dateLabel: visit.dateLabel,
@@ -235,6 +231,8 @@ export default function TreatPage() {
       {searchActive ? (
         <SearchBar
           active
+          mode="expandable"
+          scope="treat"
           query={query}
           onQueryChange={setQuery}
           onCancel={closeSearch}

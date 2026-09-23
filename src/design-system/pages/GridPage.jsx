@@ -12,7 +12,8 @@ export default function GridPage() {
       <h2>Mobile-first layout</h2>
       <p>
         eMedicalls is primarily a mobile-first product. The base layout uses a single-column
-        structure with consistent horizontal padding defined by <code>--page-padding</code> (20px).
+        structure with consistent horizontal padding defined by <code>--page-padding</code> /
+        <code>--layout-gutter</code> (1.25rem). Sections stack with <code>--section-gap</code> (1.5rem).
       </p>
 
       <h3>Base layout</h3>
@@ -47,10 +48,10 @@ export default function GridPage() {
           <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
         </thead>
         <tbody>
-          <tr><td className="ds-token-name">--page-padding</td><td>20px</td><td>Mobile page edges</td></tr>
-          <tr><td className="ds-token-name">--card-padding</td><td>16px</td><td>Card internal padding</td></tr>
-          <tr><td className="ds-token-name">--card-gap</td><td>16px</td><td>Space between cards in a grid</td></tr>
-          <tr><td className="ds-token-name">--section-gap</td><td>24px</td><td>Space between content sections</td></tr>
+          <tr><td className="ds-token-name">--page-padding</td><td>1.25rem</td><td>Mobile page edges</td></tr>
+          <tr><td className="ds-token-name">--card-padding</td><td>1rem</td><td>Card internal padding</td></tr>
+          <tr><td className="ds-token-name">--card-gap</td><td>1rem</td><td>Space between cards in a grid</td></tr>
+          <tr><td className="ds-token-name">--section-gap</td><td>1.5rem</td><td>Space between content sections</td></tr>
         </tbody>
       </table>
 

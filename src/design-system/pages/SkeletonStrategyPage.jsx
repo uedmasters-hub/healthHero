@@ -103,7 +103,7 @@ All items → 0ms delay → revealed instantly`} />
           { token: 'Content fade', value: '0.28s', usage: 'Opacity transition for reveal' },
           { token: 'Content slide', value: '0.32s', usage: 'Transform transition (emphasized easing)' },
           { token: 'Easing', value: 'cubic-bezier(0.22, 1, 0.36, 1)', usage: 'Emphasized easing for natural feel' },
-          { token: 'Shimmer rest color', value: '#EEEFF3', usage: 'Skeleton base color (25% and 63% stops)' },
+          { token: 'Shimmer rest color', value: 'var(--border)', usage: 'Skeleton base color (25% and 63% stops)' },
           { token: 'Shimmer peak color', value: '#e4e7ee', usage: 'Bright gradient peak (37% stop)' },
         ]} />
       </Section>

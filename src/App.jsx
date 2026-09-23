@@ -32,7 +32,10 @@ import RescheduleSuccess from './components/RescheduleSuccess'
 import TreatPage from './components/TreatPage'
 import PostVisitSummary from './components/PostVisitSummary'
 import PharmacyPage from './components/PharmacyPage'
+import PharmacyBrowsePage from './components/PharmacyBrowsePage'
+import PharmacyDetailPage from './components/PharmacyDetailPage'
 import CentersPage from './components/CentersPage'
+import FacilityPage from './components/FacilityPage'
 import SettingsPage from './components/SettingsPage'
 import NotificationsPage from './components/NotificationsPage'
 import ExploreSpecialisationsPage from './components/ExploreSpecialisationsPage'
@@ -50,6 +53,8 @@ import AuthGate from './components/auth/AuthGate'
 import { AuthProvider } from './features/auth/AuthProvider'
 import { SyncProvider } from './features/sync'
 import { UserProvider, useUser } from './user'
+import { I18nProvider } from './i18n'
+import { SearchProvider } from './features/search'
 import { isHomePath } from './lib/careFlow'
 import { isSupabaseConfigured, supabaseConfigError } from './lib/supabase'
 import DesignSystemLayout from './design-system/DesignSystemLayout'
@@ -136,7 +141,10 @@ function AppRoutes() {
             <Route path="/treat" element={<TreatPage />} />
             <Route path="/post-visit-summary" element={<PostVisitSummary />} />
             <Route path="/pharmacy" element={<PharmacyPage />} />
+            <Route path="/pharmacy/browse" element={<PharmacyBrowsePage />} />
+            <Route path="/pharmacy/:pharmacyId" element={<PharmacyDetailPage />} />
             <Route path="/centers" element={<CentersPage />} />
+            <Route path="/centers/:centerId" element={<FacilityPage />} />
             <Route path="/calendar" element={<CentersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
@@ -228,7 +236,7 @@ function ConfigErrorScreen({ message }) {
         padding: 24,
         textAlign: 'center',
         background: '#fff',
-        color: '#1a1a2e',
+        color: 'var(--text-primary)',
         fontFamily: 'inherit',
       }}
     >
@@ -255,7 +263,11 @@ function AppGate() {
       <AuthProvider>
         <SyncProvider>
           <UserProvider>
-            <AppProviders />
+            <I18nProvider>
+              <SearchProvider>
+                <AppProviders />
+              </SearchProvider>
+            </I18nProvider>
           </UserProvider>
         </SyncProvider>
       </AuthProvider>

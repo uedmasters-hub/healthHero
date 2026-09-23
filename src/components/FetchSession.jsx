@@ -29,6 +29,10 @@ function sessionScope(pathname) {
   }
   const doctor = pathname.match(/^\/doctor\/([^/]+)/)
   if (doctor) return `doctor:${doctor[1]}`
+  const facility = pathname.match(/^\/centers\/([^/]+)/)
+  if (facility) return `facility:${facility[1]}`
+  const pharmacy = pathname.match(/^\/pharmacy\/([^/]+)/)
+  if (pharmacy) return `pharmacy:${pharmacy[1]}`
   return pathname
 }
 

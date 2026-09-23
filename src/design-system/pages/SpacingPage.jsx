@@ -13,6 +13,7 @@ const spacings = [
   { token: '--space-8', value: 32, label: 'space-8' },
   { token: '--space-10', value: 40, label: 'space-10' },
   { token: '--space-12', value: 48, label: 'space-12' },
+  { token: '--space-16', value: 64, label: 'space-16' },
 ]
 
 export default function SpacingPage() {
@@ -22,14 +23,14 @@ export default function SpacingPage() {
         <div className="ds-page-breadcrumb">Foundations / Spacing</div>
         <h1 className="ds-page-title">Spacing</h1>
         <p className="ds-page-description">
-          A consistent 4px-based spacing scale that creates visual rhythm across all surfaces.
+          PocketPills spacing ladder (rem) mapped onto eMedicalls step names for rhythm across all surfaces.
         </p>
       </div>
 
       <h2>The spacing scale</h2>
       <p>
-        eMedicalls uses a 4px base unit with half-steps for fine-tuning. All spacing values
-        are expressed as CSS custom properties for consistency and easy modification.
+        Values follow PocketPills production rem steps (<code>--space-xxs</code>…<code>--space-5xl</code>),
+        exposed through eMedicalls aliases like <code>--space-1</code>…<code>--space-16</code>.
       </p>
 
       <div style={{ margin: '0 0 32px' }}>
@@ -58,6 +59,7 @@ export default function SpacingPage() {
           <tr><td className="ds-token-name">--space-8</td><td>32px</td><td>Large section separation</td></tr>
           <tr><td className="ds-token-name">--space-10</td><td>40px</td><td>Major layout divisions</td></tr>
           <tr><td className="ds-token-name">--space-12</td><td>48px</td><td>Page-level spacing</td></tr>
+          <tr><td className="ds-token-name">--space-16</td><td>64px</td><td>Major layout breathing room</td></tr>
         </tbody>
       </table>
 
@@ -70,7 +72,9 @@ export default function SpacingPage() {
         <tbody>
           <tr><td className="ds-token-name">--page-padding</td><td>var(--space-5)</td><td>Mobile page horizontal padding</td></tr>
           <tr><td className="ds-token-name">--content-padding</td><td>var(--space-5)</td><td>Content horizontal padding</td></tr>
+          <tr><td className="ds-token-name">--layout-gutter</td><td>var(--space-5)</td><td>Standard layout gutter</td></tr>
           <tr><td className="ds-token-name">--section-gap</td><td>var(--space-6)</td><td>Gap between page sections</td></tr>
+          <tr><td className="ds-token-name">--section-header-gap</td><td>var(--space-3)</td><td>Title ↔ content within a section</td></tr>
           <tr><td className="ds-token-name">--card-gap</td><td>var(--space-4)</td><td>Gap between adjacent cards</td></tr>
           <tr><td className="ds-token-name">--card-padding</td><td>var(--space-4)</td><td>Inner padding of card surfaces</td></tr>
         </tbody>

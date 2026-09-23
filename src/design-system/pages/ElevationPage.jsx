@@ -1,12 +1,12 @@
 const elevations = [
-  { name: 'Shadow XS', token: '--shadow-xs', value: '0 1px 3px rgba(17, 24, 39, 0.08)' },
-  { name: 'Shadow SM', token: '--shadow-sm', value: '0 1px 3px rgba(17, 24, 39, 0.08)' },
-  { name: 'Shadow', token: '--shadow', value: '0 2px 8px rgba(0, 0, 0, 0.08)' },
-  { name: 'Card', token: '--shadow-card', value: '0 4px 16px rgba(17, 24, 39, 0.05)' },
-  { name: 'Hover', token: '--shadow-hover', value: '0 4px 16px rgba(91, 95, 198, 0.12)' },
-  { name: 'Sheet', token: '--shadow-sheet', value: '0 8px 28px rgba(17, 24, 39, 0.12)' },
-  { name: 'Modal', token: '--shadow-modal', value: '0 16px 40px rgba(17, 24, 39, 0.18)' },
-  { name: 'Focus', token: '--shadow-focus', value: '0 0 0 3px rgba(91, 95, 198, 0.28)' },
+  { name: 'Shadow XS', token: '--shadow-xs', value: '0 1px 2px rgba(24, 7, 48, 0.06)', usage: 'Hairline depth' },
+  { name: 'Shadow SM', token: '--shadow-sm', value: '0 1px 3px / 0 1px 2px', usage: 'Subtle lift (PP card)' },
+  { name: 'Shadow', token: '--shadow', value: '0 2px 4px rgba(0,0,0,0.05)', usage: 'Menus, popovers' },
+  { name: 'Card', token: '--shadow-card', value: '0 1px 3px / 0 1px 2px', usage: 'Optional elevated cards' },
+  { name: 'Button', token: '--shadow-btn', value: '0 2px 4px rgba(0,0,0,0.05)', usage: 'Secondary button lift' },
+  { name: 'Hover', token: '--shadow-hover', value: '0 10px 15px / 0 4px 6px', usage: 'Interactive hover (PP float)' },
+  { name: 'Sheet', token: '--shadow-sheet', value: '0 8px 28px rgba(24, 7, 48, 0.12)', usage: 'Bottom sheets' },
+  { name: 'Modal', token: '--shadow-modal', value: '0 16px 48px rgba(24, 7, 48, 0.16)', usage: 'Dialogs / overlays' },
 ]
 
 export default function ElevationPage() {
@@ -16,24 +16,28 @@ export default function ElevationPage() {
         <div className="ds-page-breadcrumb">Foundations / Elevation</div>
         <h1 className="ds-page-title">Elevation</h1>
         <p className="ds-page-description">
-          Shadow system that communicates depth and spatial relationships between surfaces.
+          PocketPills elevation: edge-first surfaces with soft shadows reserved for true lift
+          (menus, sheets, modals).
         </p>
       </div>
 
       <h2>Elevation philosophy</h2>
       <p>
-        Elevation in eMedicalls is communicated through shadows, not color changes. Higher
-        elevation means the surface is closer to the user — like a modal floating above the page.
-        Each elevation level has a specific purpose.
+        Resting cards and panels are defined by a <strong>hairline lavender border</strong>, not a heavy drop shadow.
+        Shadows escalate only when a surface floats above the lavender page canvas — sheets, modals, and transient menus.
+      </p>
+      <p>
+        Default <code>.ds-card</code> uses border only. Add <code>.ds-card-elevated</code> (or <code>.is-elevated</code>)
+        when a soft card shadow is intentional.
       </p>
 
       <h2>Elevation levels</h2>
       <div className="ds-elevation-grid">
         {elevations.map((e) => (
           <div key={e.token} className="ds-elevation-item">
-            <div className="ds-elevation-box" style={{ boxShadow: e.value }} />
+            <div className="ds-elevation-box" style={{ boxShadow: `var(${e.token})` }} />
             <div className="ds-elevation-label">{e.name}</div>
-            <div style={{ fontSize: 11, color: '#6b7280' }}>{e.token}</div>
+            <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{e.token}</div>
           </div>
         ))}
       </div>
@@ -41,34 +45,26 @@ export default function ElevationPage() {
       <h2>Token reference</h2>
       <table className="ds-token-table">
         <thead>
-          <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+          <tr><th>Token</th><th>Usage</th></tr>
         </thead>
         <tbody>
           {elevations.map((e) => (
             <tr key={e.token}>
               <td className="ds-token-name">{e.token}</td>
-              <td className="ds-token-value" style={{ fontSize: 11 }}>{e.value}</td>
-              <td>{e.name === 'Card' && 'Cards, panels'}
-                {e.name === 'Hover' && 'Interactive hover states'}
-                {e.name === 'Sheet' && 'Bottom sheets, drawers'}
-                {e.name === 'Modal' && 'Modal dialogs, lightboxes'}
-                {e.name === 'Focus' && 'Focus ring indicator'}
-                {!['Card', 'Hover', 'Sheet', 'Modal', 'Focus'].includes(e.name) && 'Subtle depth'}
-              </td>
+              <td>{e.usage}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h2>Usage guidelines</h2>
       <div className="ds-do-dont-grid">
         <div className="ds-do-card">
           <h4>Do</h4>
-          <p>Use elevation progressively. Higher elements should have stronger shadows to communicate z-depth.</p>
+          <p>Prefer border + white island on the tinted canvas for resting content.</p>
         </div>
         <div className="ds-dont-card">
           <h4>Don't</h4>
-          <p>Use heavy shadows on already-elevated surfaces. Stacking shadows looks muddy and unprofessional.</p>
+          <p>Stack strong shadows on every card. It muddies hierarchy and fights the soft canvas.</p>
         </div>
       </div>
 

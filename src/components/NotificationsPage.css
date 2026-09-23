@@ -79,20 +79,27 @@
   text-align: left;
   padding: var(--space-3-5);
   border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   background: var(--white);
   cursor: pointer;
   font-family: inherit;
-  transition: border-color 0.15s, background 0.15s;
+  box-shadow: none;
+  transition: var(--interact-transition);
 }
 
 .notification-card-inner:hover {
-  border-color: var(--border-strong);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.notification-card-inner:active {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .notification-card.unread .notification-card-inner {
-  background: var(--active-bg);
-  border-color: var(--primary-soft-strong);
+  background: var(--interact-selected-bg);
+  border-color: var(--interact-selected-border);
 }
 
 /* ── Dismiss button ────────────────────────────────────────────────── */
@@ -112,7 +119,7 @@
   color: var(--text-muted);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s, background 0.15s;
+  transition: var(--interact-transition);
   z-index: 1;
 }
 
@@ -122,8 +129,12 @@
 }
 
 .notification-card-dismiss:hover {
-  background: var(--surface-muted);
+  background: var(--interact-hover-bg);
   color: var(--text-primary);
+}
+
+.notification-card-dismiss:active {
+  background: var(--interact-pressed-bg);
 }
 
 /* ── Icon ──────────────────────────────────────────────────────────── */

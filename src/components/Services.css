@@ -21,8 +21,8 @@
 .view-all-link {
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
-  font-weight: var(--font-weight-semibold);
-  color: var(--primary);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
   text-decoration: none;
   cursor: pointer;
   flex-shrink: 0;
@@ -36,7 +36,8 @@
 }
 
 .view-all-link:hover {
-  text-decoration: underline;
+  color: var(--text-primary);
+  text-decoration: none;
 }
 
 .services-grid {
@@ -55,10 +56,11 @@
   gap: var(--space-0);
   padding: var(--space-5) var(--space-3);
   background: var(--card-bg);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: none;
   cursor: pointer;
-  transition: background var(--transition);
+  transition: var(--interact-transition);
   text-align: center;
   min-height: calc(var(--space-12) * 2 + var(--space-1));
   height: 100%;
@@ -78,7 +80,13 @@
 }
 
 .service-card:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.service-card:active {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .service-icon-wrapper {
@@ -88,6 +96,12 @@
   align-items: center;
   justify-content: center;
   color: var(--icon-color-brand);
+  transition: color var(--transition);
+}
+
+.service-card:hover .service-icon-wrapper,
+.service-card:active .service-icon-wrapper {
+  color: var(--icon-color-brand-active);
 }
 
 .service-icon-wrapper svg {
@@ -216,9 +230,10 @@
   padding: var(--space-5) var(--space-3);
   background: var(--white);
   border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   cursor: pointer;
-  transition: all var(--transition);
+  box-shadow: none;
+  transition: var(--interact-transition);
   min-height: 100px;
   justify-content: center;
   width: 100%;
@@ -227,7 +242,13 @@
 }
 
 .services-bottom-sheet-item:hover {
-  background: var(--active-bg);
+  background: var(--interact-hover-bg);
+  border-color: var(--interact-hover-border);
+}
+
+.services-bottom-sheet-item:active {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .sheet-skeleton {

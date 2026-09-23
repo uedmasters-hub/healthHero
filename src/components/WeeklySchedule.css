@@ -49,3 +49,12 @@
   color: var(--text-faint);
   white-space: nowrap;
 }
+
+.weekly-slot-empty {
+  margin: 0;
+  padding: var(--space-4) 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+  text-align: center;
+}

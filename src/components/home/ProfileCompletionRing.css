@@ -1,0 +1,83 @@
+.profile-completion-ring {
+  --pcr-size: 100%;
+  --pcr-stroke: 1.5px;
+  --pcr-stroke-emphasis: 2.5px;
+  --pcr-gap: 1px;
+  --pcr-extent: calc(var(--pcr-stroke-emphasis) + var(--pcr-gap));
+  --pcr-accent: color-mix(in srgb, var(--primary-600, var(--primary)) 68%, transparent);
+  --pcr-accent-strong: color-mix(in srgb, var(--primary-700, var(--primary)) 88%, transparent);
+  --pcr-track: var(--border);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pcr-size);
+  height: var(--pcr-size);
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.profile-completion-ring__svg {
+  position: absolute;
+  inset: calc(-1 * var(--pcr-extent));
+  width: calc(100% + 2 * var(--pcr-extent));
+  height: calc(100% + 2 * var(--pcr-extent));
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+
+.profile-completion-ring__track,
+.profile-completion-ring__progress {
+  stroke-width: var(--pcr-stroke);
+  transition:
+    stroke-width 0.22s var(--ease-standard, ease),
+    stroke 0.22s var(--ease-standard, ease);
+}
+
+.profile-completion-ring__track {
+  stroke: var(--pcr-track);
+  stroke-linecap: round;
+}
+
+.profile-completion-ring__progress {
+  stroke: var(--pcr-accent);
+  stroke-linecap: round;
+  transition:
+    stroke-dasharray 0.45s var(--ease-standard, ease),
+    stroke-width 0.22s var(--ease-standard, ease),
+    stroke 0.22s var(--ease-standard, ease);
+}
+
+.profile-completion-ring.is-complete {
+  --pcr-accent: color-mix(in srgb, var(--primary-700, var(--primary)) 78%, transparent);
+  --pcr-accent-strong: var(--primary-700, var(--primary));
+}
+
+.profile-completion-ring__inner {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+/* Desktop / fine pointer: quiet thicken on hover */
+@media (hover: hover) and (pointer: fine) {
+  .profile-avatar:hover .profile-completion-ring,
+  .profile-completion-ring:hover {
+    --pcr-stroke: var(--pcr-stroke-emphasis);
+    --pcr-accent: var(--pcr-accent-strong);
+  }
+}
+
+/* Mobile / touch: same emphasis only while pressed */
+.profile-avatar:active .profile-completion-ring,
+.profile-completion-ring:active {
+  --pcr-stroke: var(--pcr-stroke-emphasis);
+  --pcr-accent: var(--pcr-accent-strong);
+}

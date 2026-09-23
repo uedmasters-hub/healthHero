@@ -16,6 +16,7 @@ export {
 
 export {
   selectHomeBooking,
+  selectHomeSurface,
   selectUpcoming,
   selectPendingPayment,
   selectHistory,
@@ -54,9 +55,22 @@ export {
   useBookingById,
   useActiveBooking,
   useHomeCarousel,
+  useHomeSurface,
   useTreatGroups,
   useLiveAppointment,
   useCareHistory,
   useRouteBookingId,
 } from './hooks'
 export { presentBookingCard, resolveCatalogDoctor } from './presentBooking'
+export {
+  VISIT_PHASE,
+  resolveVisitPhase,
+  getVisitBounds,
+  desiredStatusForTime,
+} from './visitLifecycle'
+export {
+  rpcAdvanceAppointment,
+  rpcAdvanceMyAppointments,
+  rpcConfirmVisitCompleted,
+  rpcSnoozeVisitConfirmation,
+} from './lifecycleRpc'

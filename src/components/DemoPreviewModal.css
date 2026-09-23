@@ -59,7 +59,7 @@
   min-height: var(--app-flow-cta-height);
   border: none;
   border-radius: var(--radius-cta);
-  background: var(--primary);
+  background: var(--cta);
   color: var(--text-on-primary);
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-semibold);

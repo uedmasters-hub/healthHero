@@ -195,7 +195,7 @@ export default function DesignSystemLayout() {
         max-height: none !important;
         overscroll-behavior: auto !important;
       }
-      body { background: #f8f9fc !important; }
+      body { background: var(--pp-page) !important; }
       #root { background: transparent !important; }
       ::-webkit-scrollbar { display: auto !important; }
     `

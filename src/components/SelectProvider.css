@@ -23,8 +23,16 @@
 }
 
 .provider-search {
+  /* Break out of page pad so SearchBar owns the immutable horizontal inset */
+  margin-inline: calc(var(--content-padding) * -1);
   margin-bottom: var(--space-3-5);
-  min-height: 48px;
+  min-height: var(--search-field-height, 52px);
+  width: auto;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
 }
 
 /* Filter chips — reserved row height prevents first-frame collapse */
@@ -47,12 +55,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-1-5);
   box-sizing: border-box;
   height: 38px;
-  padding: 0 18px;
-  border-radius: 20px;
-  border: var(--border-width-emphasis) solid #E5E7EB;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  border: var(--border-width) solid var(--border);
   background: var(--white);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
@@ -64,35 +72,34 @@
   font-family: inherit;
   box-shadow: none;
   -webkit-tap-highlight-color: transparent;
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease,
-    color 150ms ease;
+  transition: var(--interact-transition);
 }
 
-.filter-chip:hover {
-  border-color: #D1D5DB;
-  background: #FAFBFC;
+.filter-chip:hover:not(.active) {
+  border-color: var(--interact-hover-border);
+  background: var(--interact-hover-bg);
 }
 
-.filter-chip:active {
-  background: #F3F4F6;
+.filter-chip:active:not(.active) {
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .filter-chip.active {
-  border-color: var(--primary);
-  background: var(--primary-press);
-  color: var(--primary);
+  border-color: var(--interact-selected-border);
+  background: var(--interact-selected-bg);
+  color: var(--text-primary);
   box-shadow: none;
 }
 
 .filter-chip.active:hover {
-  border-color: var(--primary);
-  background: var(--primary-soft);
+  border-color: var(--interact-selected-border);
+  background: var(--interact-selected-bg);
 }
 
 .filter-chip.active:active {
-  background: var(--primary-press);
+  background: var(--interact-pressed-bg);
+  border-color: var(--interact-pressed-border);
 }
 
 .filter-chip-icon {
@@ -457,16 +464,20 @@
   border-radius: var(--radius);
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s ease;
+  transition: var(--interact-transition);
   text-align: left;
 }
 
-.filter-option:hover {
-  background: var(--bg);
+.filter-option:hover:not(.active) {
+  background: var(--interact-hover-bg);
+}
+
+.filter-option:active:not(.active) {
+  background: var(--interact-pressed-bg);
 }
 
 .filter-option.active {
-  background: var(--service-icon-bg);
+  background: var(--interact-selected-bg);
 }
 
 .filter-option-circle {
@@ -483,7 +494,7 @@
 
 .filter-option.active .filter-option-circle {
   border-color: var(--primary);
-  background: var(--primary);
+  background: var(--cta);
 }
 
 .filter-option.active .filter-option-circle::after {

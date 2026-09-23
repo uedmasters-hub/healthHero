@@ -536,7 +536,7 @@ export function clearProviderQueryCache() {
   queryCache.clear()
 }
 
-export async function fetchProviderAvailability(doctorOrId, { days = 7 } = {}) {
+export async function fetchProviderAvailability(doctorOrId, { days = 60 } = {}) {
   const providerId = resolveProviderUuid(doctorOrId)
   if (!providerId || !isSupabaseConfigured) return []
   try {

@@ -1,117 +1,575 @@
+/* =============================================================================
+   SearchBar — immutable shell
+   One 52px field geometry everywhere. Modes only change internal chrome state
+   (lang / mic / clear / dismiss visibility), never padding, width, or borders.
+   ============================================================================= */
+
 .search-bar {
-  padding: var(--space-2) var(--content-padding) var(--space-4);
+  --search-field-height: 52px;
+  --search-field-pad-start: 18px;
+  --search-field-pad-end: 8px;
+  --search-lang-visual-h: 34px;
+  --search-dismiss-visual: 36px;
+  --search-cluster-gap: 6px;
+  --search-input-pad-end: 4px;
+  --search-status-h: 20px;
+  --search-bar-pad-block-start: var(--space-2);
+  --search-bar-pad-block-end: var(--space-3);
+  --search-bar-pad-inline: var(--content-padding);
+
+  padding:
+    var(--search-bar-pad-block-start)
+    max(var(--search-bar-pad-inline), env(safe-area-inset-right, 0px))
+    var(--search-bar-pad-block-end)
+    max(var(--search-bar-pad-inline), env(safe-area-inset-left, 0px));
   display: flex;
-  align-items: center;
-  gap: var(--space-0);
-  flex-shrink: 0;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  gap: 0;
+  flex: 1 1 auto;
+  flex-shrink: 1;
   position: relative;
   z-index: 3;
-  transition: gap 0.32s cubic-bezier(0.22, 1, 0.36, 1), padding-right 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Inline / expandable / scroll — same outer shell. No padding overrides. */
+.search-bar.is-inline,
+.search-bar.is-scroll-mode,
+.search-bar.is-active {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  align-self: stretch;
 }
 
 .search-bar.is-scroll-mode {
   z-index: 1;
-  padding-bottom: var(--space-3);
 }
 
-.search-bar.is-active {
-  padding-right: var(--space-4);
-  gap: var(--space-3);
+.search-bar-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
-.search-cancel {
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  min-height: var(--touch-min);
-  font-family: inherit;
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-regular);
-  color: var(--primary);
-  cursor: pointer;
-  flex-shrink: 0;
-  max-width: 0;
-  opacity: var(--opacity-hidden);
-  overflow: hidden;
-  white-space: nowrap;
-  pointer-events: none;
+.search-field-slot {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Dismiss column — only mounted when Cancel is visible (no empty right gap) */
+.search-trailing-slot {
+  flex: 0 0 var(--touch-min);
+  width: var(--touch-min);
+  min-width: var(--touch-min);
+  height: var(--touch-min);
+  margin-top: calc((var(--search-field-height) - var(--touch-min)) / 2);
   display: inline-flex;
   align-items: center;
-  transition: max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+  justify-content: center;
+  position: relative;
 }
 
-.search-bar.is-active .search-cancel {
-  max-width: var(--avatar-xl);
-  opacity: var(--opacity-visible);
-  pointer-events: auto;
-}
-
-.search-field-clear {
-  width: var(--icon-btn-visual);
-  height: var(--icon-btn-visual);
-  margin-right: calc((var(--icon-btn-visual) - var(--icon-lg)) / -2);
+.search-dismiss {
+  appearance: none;
   border: none;
-  background: none;
+  background: transparent;
+  box-sizing: border-box;
+  margin: 0;
   padding: 0;
-  color: var(--text-faint);
-  cursor: pointer;
-  display: flex;
+  width: var(--touch-min);
+  min-width: var(--touch-min);
+  height: var(--touch-min);
+  min-height: var(--touch-min);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  cursor: pointer;
+  color: var(--text-secondary);
+  -webkit-tap-highlight-color: transparent;
 }
 
-.search-field-clear svg {
-  width: var(--icon-md);
-  height: var(--icon-md);
+.search-dismiss-visual {
+  display: grid;
+  place-items: center;
+  width: var(--search-dismiss-visual);
+  height: var(--search-dismiss-visual);
+  border-radius: var(--radius-full);
+  background: var(--surface-muted);
+  border: var(--border-width) solid var(--border);
+  box-shadow: var(--shadow-xs);
+  color: var(--text-secondary);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.search-field-reveal {
-  flex: 1;
-  min-width: 0;
+.search-dismiss-visual svg {
+  width: 14px;
+  height: 14px;
+}
+
+.search-dismiss:hover .search-dismiss-visual,
+.search-dismiss:focus-visible .search-dismiss-visual {
+  background: var(--white);
+  color: var(--text-primary);
+  border-color: var(--border-strong, var(--border));
+}
+
+.search-dismiss:active .search-dismiss-visual {
+  background: color-mix(in srgb, var(--surface-muted) 70%, var(--border));
+}
+
+.search-field-wrap {
+  position: relative;
   width: 100%;
-  border-radius: var(--radius-full);
-}
-
-.search-field-reveal .reveal-body {
-  border-radius: var(--radius-full);
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  overflow: visible;
 }
 
 .search-field {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  height: var(--app-flow-cta-height);
-  padding: 0 var(--space-4);
+  height: var(--search-field-height);
+  min-height: var(--search-field-height);
+  max-height: var(--search-field-height);
+  padding: 0 var(--search-field-pad-end) 0 var(--search-field-pad-start);
   background: var(--surface-muted);
   border-radius: var(--radius-full);
   outline: none;
   box-shadow: none;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+  /* Immutable border — listening/focus never expand the shell */
+  border: var(--border-width) solid transparent;
 }
 
+.search-field.is-listening,
+.search-field.is-processing,
 .search-field:focus,
-.search-field:focus-within {
+.search-field:focus-within,
+.search-field.is-listening:focus-within,
+.search-field.is-processing:focus-within {
   outline: none;
+  border-color: transparent;
   box-shadow: none;
 }
 
-.search-field-icon,
-.search-field-mic {
-  width: var(--icon-xl);
-  height: var(--icon-xl);
+.search-field-icon {
+  width: 20px;
+  height: 20px;
   color: var(--text-secondary);
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  opacity: 0.9;
 }
 
-.search-field-mic {
+/* Trailing cluster: lang + mic — fixed footprint inside the field */
+.search-field-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--search-cluster-gap);
+  flex: 0 0 auto;
+  width: auto;
+  min-width: calc(var(--search-lang-visual-h) + var(--search-cluster-gap) + var(--touch-min));
+  height: 100%;
+  align-self: center;
+  margin-left: var(--space-2);
+  padding-left: var(--search-input-pad-end);
+  position: relative;
+  z-index: 1;
+}
+
+.search-lang-hit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-height: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+  box-sizing: border-box;
+  /* Width always reserved — fade/scale only so the mic never shifts */
+  transform-origin: center;
+  transition:
+    opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.search-lang-hit.is-shown {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.search-lang-hit.is-hidden {
+  opacity: 0;
+  transform: scale(0.86);
+  pointer-events: none;
+}
+
+.search-lang-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: var(--search-lang-visual-h);
+  padding: 3px;
+  gap: 0;
+  border-radius: var(--radius-full);
+  border: var(--border-width) solid var(--border);
+  background: var(--white);
+  box-shadow: var(--shadow-xs);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.search-lang-btn {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0 12px;
+  min-width: 2.25rem;
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full);
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.search-lang-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--primary);
+  pointer-events: none;
+  user-select: none;
+}
+
+.search-lang-btn.is-on {
+  background: var(--primary);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.search-lang-btn.is-on .search-lang-chip {
+  color: var(--white);
+}
+
+.search-lang-btn:not(.is-on):hover .search-lang-chip {
+  color: var(--primary-700, var(--primary));
+}
+
+.search-field-mic-btn {
+  position: relative;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 0;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  isolation: isolate;
+}
+
+/* Soft circular surface behind the mic glyph */
+.search-field-mic-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--search-lang-visual-h);
+  height: var(--search-lang-visual-h);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  z-index: 0;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Thin ring — idle transparent; listening = animated pulse */
+.search-field-mic-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--search-lang-visual-h);
+  height: var(--search-lang-visual-h);
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  z-index: 0;
+  box-sizing: border-box;
+  border: 1.5px solid transparent;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.search-field-mic-btn:hover::before {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.search-field-mic-btn:active::before {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.search-field-mic-btn.is-listening::before,
+.search-field-mic-btn.is-processing::before {
+  background: color-mix(in srgb, var(--primary) 9%, var(--white));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.search-field-mic-btn.is-listening::after,
+.search-field-mic-btn.is-processing::after {
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
+    0 0 10px color-mix(in srgb, var(--primary) 24%, transparent);
+  animation: search-mic-ring-pulse 1.85s ease-in-out infinite;
+}
+
+.search-field-mic-btn.is-listening,
+.search-field-mic-btn.is-processing {
+  color: var(--primary);
+}
+
+.search-field-mic-btn.is-disabled,
+.search-field-mic-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+@keyframes search-mic-ring-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
+      0 0 8px color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+  50% {
+    opacity: 0.68;
+    transform: translate(-50%, -50%) scale(1.06);
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--primary) 6%, transparent),
+      0 0 14px color-mix(in srgb, var(--primary) 28%, transparent);
+  }
+}
+
+.search-field-clear {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-faint, var(--text-secondary));
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 0;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.15s ease;
+  pointer-events: none;
+}
+
+.search-field-clear-slot.is-visible .search-field-clear {
+  opacity: 0.72;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.search-field-clear:hover {
+  opacity: 1;
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.search-field-clear:active {
+  opacity: 1;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.search-field-clear svg {
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+}
+
+.search-field-input-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.search-field-clear-slot {
+  flex: 0 0 0;
+  width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-field-clear-slot.is-reserved,
+.search-field-clear-slot.is-visible {
+  flex-basis: 22px;
+  width: 22px;
+  overflow: visible;
+}
+
+.search-field-clear-slot.is-reserved:not(.is-visible) {
+  /* reserved — no jump when × appears */
+}
+
+.search-field-mic-spacer {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  flex: 0 0 auto;
+}
+
+.search-field-mic-glyph {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  transform: scale(1);
+  transform-origin: center;
+  transition: transform 0.18s var(--ease-standard, ease), opacity 0.18s ease;
+}
+
+.search-field-mic-btn:hover .search-field-mic-glyph,
+.search-field-mic-btn:focus-visible .search-field-mic-glyph {
+  transform: scale(0.92);
+}
+
+.search-field-mic-btn:active .search-field-mic-glyph {
+  transform: scale(0.88);
+}
+
+.search-field-mic-btn.is-listening .search-field-mic-glyph,
+.search-field-mic-btn.is-processing .search-field-mic-glyph {
+  transform: scale(1);
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .search-field-mic-btn:hover .search-field-mic-glyph {
+    transform: scale(1);
+  }
+
+  .search-field-mic-btn:active .search-field-mic-glyph {
+    transform: scale(0.88);
+  }
+}
+
+/* Reserved in-flow status layer — sits under the 52px field, never overlays suggestions */
+.search-status-layer {
+  display: grid;
+  align-items: center;
+  height: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0 18px 0 18px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  /* Height reserved via .is-reserved — opacity-only changes when text appears */
+  transition: opacity 0.2s ease;
+}
+
+.search-status-layer.is-reserved {
+  height: var(--search-status-h);
+  min-height: var(--search-status-h);
+  margin-top: 6px;
+}
+
+.search-status-layer.is-visible {
+  opacity: 1;
+}
+
+.search-status-layer.is-leaving {
+  opacity: 0;
+}
+
+.search-status-text {
+  margin: 0;
+  font-size: var(--text-caption-size, 12px);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-secondary);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-status-layer.is-listening .search-status-text {
+  color: color-mix(in srgb, var(--primary) 78%, var(--text-secondary));
+}
+
+.search-status-layer.is-error .search-status-text {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 .search-field-input {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  width: 0;
+  max-width: 100%;
   border: none;
   background: transparent;
   font-size: var(--text-title-size);
@@ -122,6 +580,9 @@
   font-family: inherit;
   line-height: var(--text-title-line);
   caret-color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .search-field-input:focus,
@@ -130,8 +591,26 @@
   box-shadow: none;
   border: none;
   background: transparent;
+  text-overflow: clip;
 }
 
 .search-field-input::placeholder {
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 1;
+}
+
+.search-field-input::-webkit-input-placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-field-input::-moz-placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 1;
 }
