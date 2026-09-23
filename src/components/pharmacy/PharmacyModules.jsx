@@ -5,7 +5,6 @@ import './PharmacyModules.css'
 
 export function PharmacyTipCard({ tip, onClick, className = '' }) {
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 320,
     namespace: `pharmacy-tip:${tip?.id || 'tip'}`,
   })
   if (!tip) return null
@@ -40,7 +39,6 @@ export function PharmacySupportCard({
   className = '',
 }) {
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 340,
     namespace: 'pharmacy-support',
   })
 

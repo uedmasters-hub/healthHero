@@ -319,7 +319,6 @@ export default function UpcomingBookingsCarousel({
   const heroSourceRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 120,
     namespace: `upcoming-carousel:${origin}:${carousel?.length || 0}:${showHero ? heroPhase : 'none'}`,
   })
 

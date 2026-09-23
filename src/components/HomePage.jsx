@@ -66,12 +66,16 @@ export default function HomePage() {
     shared.reset?.()
   }, [isFront, shared?.active, shared?.phase, shared])
 
-  const openSearch = () => {
+  const openSearch = (opts = {}) => {
     freezeNow('home')
+    const base = searchOrigin
+      ? { searchOrigin, searchPlaceholder, returnTo: searchReturnTo }
+      : {}
     navigate('/search', {
-      state: searchOrigin
-        ? { searchOrigin, searchPlaceholder, returnTo: searchReturnTo }
-        : undefined,
+      state: {
+        ...base,
+        ...(opts.startVoice ? { startVoice: true } : {}),
+      },
     })
   }
 

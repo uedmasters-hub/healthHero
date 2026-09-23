@@ -42,7 +42,6 @@ export default function TopDoctors() {
   }
 
   const stagger = useStaggerReveal({
-    delay: 380,
     dataset: 'home:top-doctors',
   })
   const { containerRef, setItemRef, isRevealed, isCached } = stagger

@@ -20,7 +20,6 @@ export default function PromoCarousel({
   const [activeIndex, setActiveIndex] = useState(0)
   const pauseUntilRef = useRef(0)
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 120,
     namespace: `promo-carousel:${slides.length}`,
   })
 

@@ -4,12 +4,11 @@ import { useTransition } from './PageTransition'
 import { useFetchSession } from './FetchSession'
 import { articlePath, articles } from '../data/articles'
 import { InsightCardBody } from './InsightCard'
+import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './HealthInsights.css'
 import './InsightsBottomSheet.css'
 
 const FAST_STAGGER = 28
-const INITIAL_DELAY = 320
-const OFFSCREEN_DELAY = 600
 const CACHE_KEY = 'overlay:insights'
 
 export default function InsightsBottomSheet() {
@@ -24,13 +23,16 @@ export default function InsightsBottomSheet() {
   const queueRef = useRef([])
   const processingRef = useRef(false)
   const timersRef = useRef([])
-  const initialDoneRef = useRef(false)
 
   const revealCard = useCallback((idx) => {
     if (revealedRef.current.has(idx)) return
     revealedRef.current.add(idx)
+    const mounted = itemRefs.current.filter(Boolean).length
+    if (mounted > 0 && revealedRef.current.size >= mounted) {
+      session.markLoaded(CACHE_KEY)
+    }
     forceUpdate((n) => n + 1)
-  }, [])
+  }, [session])
 
   const processQueue = useCallback(() => {
     if (processingRef.current || queueRef.current.length === 0) return
@@ -53,83 +55,55 @@ export default function InsightsBottomSheet() {
     const container = contentRef.current
     if (!container) return []
     const containerRect = container.getBoundingClientRect()
+    const buffer = Math.round(containerRect.height * VIEWPORT_PRELOAD_SCREENS)
     const visible = []
 
     itemRefs.current.forEach((el, idx) => {
       if (skipFetch || !el || revealedRef.current.has(idx)) return
       const rect = el.getBoundingClientRect()
-      const visibleHeight = Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
-      if (visibleHeight > rect.height * 0.2) {
-        visible.push(idx)
-      }
+      if (isInLoadZone(rect, containerRect, buffer)) visible.push(idx)
     })
     return visible
   }, [skipFetch])
 
-  const checkVisibilityInitial = useCallback(() => {
+  const hydrateVisible = useCallback(() => {
     const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach((idx) => queueRef.current.push(idx))
-      processQueue()
-    }
-
-    const t = setTimeout(() => {
-      initialDoneRef.current = true
-    }, OFFSCREEN_DELAY)
-    timersRef.current.push(t)
-  }, [getVisibleIndices, processQueue])
-
-  const checkVisibilityScroll = useCallback(() => {
-    if (!initialDoneRef.current) return
-    const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach((idx) => {
-        if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
-      })
-      processQueue()
-    }
+    if (indices.length === 0) return
+    indices.forEach((idx) => {
+      if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
+    })
+    processQueue()
   }, [getVisibleIndices, processQueue])
 
   useEffect(() => {
     if (!isInsightsOpen || isInsightsSlidingOut) return undefined
-    if (skipFetch) {
-      initialDoneRef.current = true
-      return undefined
-    }
-    initialDoneRef.current = false
-    const t = setTimeout(checkVisibilityInitial, INITIAL_DELAY)
-    const done = setTimeout(() => {
-      session.markLoaded(CACHE_KEY)
-      forceUpdate((n) => n + 1)
-    }, INITIAL_DELAY + OFFSCREEN_DELAY)
-    return () => {
-      clearTimeout(t)
-      clearTimeout(done)
-    }
-  }, [isInsightsOpen, isInsightsSlidingOut, checkVisibilityInitial, skipFetch, session])
+    if (skipFetch) return undefined
+    const raf = requestAnimationFrame(() => hydrateVisible())
+    return () => cancelAnimationFrame(raf)
+  }, [isInsightsOpen, isInsightsSlidingOut, hydrateVisible, skipFetch])
 
   useEffect(() => {
     const container = contentRef.current
     if (!container || !isInsightsOpen) return undefined
-    const onScroll = () => checkVisibilityScroll()
+    const onScroll = () => hydrateVisible()
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => container.removeEventListener('scroll', onScroll)
-  }, [isInsightsOpen, checkVisibilityScroll])
+  }, [isInsightsOpen, hydrateVisible])
 
   useEffect(() => {
     if (isInsightsOpen && !skipFetch) {
       revealedRef.current = new Set()
       queueRef.current = []
       processingRef.current = false
-      initialDoneRef.current = false
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
     }
     return () => {
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
+      if (revealedRef.current.size > 0) session.markLoaded(CACHE_KEY)
     }
-  }, [isInsightsOpen, skipFetch])
+  }, [isInsightsOpen, skipFetch, session])
 
   const handleClose = () => {
     if (isInsightsSlidingOut) return

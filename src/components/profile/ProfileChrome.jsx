@@ -19,7 +19,7 @@ export function dash(value) {
 }
 
 export function ProfilePage({ title, onBack, action, children, dataset }) {
-  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 160, dataset })
+  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ dataset })
   const defaultBack = usePushBack('/profile')
   const goBack = onBack || defaultBack
   const pageRef = containerRef

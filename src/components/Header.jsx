@@ -79,7 +79,7 @@ export default function Header({ endAccessory = null }) {
   const [locateHint, setLocateHint] = useState('')
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const [search, setSearch] = useState('')
-  const cityReveal = useStaggerReveal({ dataset: isPresented ? 'cities' : null, delay: 180 })
+  const cityReveal = useStaggerReveal({ dataset: isPresented ? 'cities' : null })
 
   const filteredCities = nepalCities.filter((city) =>
     city.toLowerCase().includes(search.toLowerCase())

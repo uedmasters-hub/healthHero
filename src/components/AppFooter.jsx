@@ -109,10 +109,8 @@ function FooterLink({ label }) {
 }
 
 export default function AppFooter({ page = 'home' }) {
-  const delay = page === 'treat' ? 220 : 480
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
     dataset: `app-footer:${page}`,
-    delay,
     batchSize: 1,
     stagger: 72,
   })

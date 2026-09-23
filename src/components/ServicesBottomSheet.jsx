@@ -4,6 +4,7 @@ import { useTransition } from './PageTransition'
 import { useFetchSession } from './FetchSession'
 import { useDemoPreview } from './DemoPreviewModal'
 import { runServiceAction } from '../lib/serviceActions'
+import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './Services.css'
 
 const LineIcon = ({ d, children }) => (
@@ -344,8 +345,6 @@ const allServices = [
 ]
 
 const FAST_STAGGER = 28
-const INITIAL_DELAY = 320
-const OFFSCREEN_DELAY = 600
 
 const CACHE_KEY = 'overlay:services'
 
@@ -362,13 +361,16 @@ export default function ServicesBottomSheet() {
   const queueRef = useRef([])
   const processingRef = useRef(false)
   const timersRef = useRef([])
-  const initialDoneRef = useRef(false)
 
   const revealCard = useCallback((idx) => {
     if (revealedRef.current.has(idx)) return
     revealedRef.current.add(idx)
+    const mounted = itemRefs.current.filter(Boolean).length
+    if (mounted > 0 && revealedRef.current.size >= mounted) {
+      session.markLoaded(CACHE_KEY)
+    }
     forceUpdate(n => n + 1)
-  }, [])
+  }, [session])
 
   const processQueue = useCallback(() => {
     if (processingRef.current || queueRef.current.length === 0) return
@@ -391,83 +393,55 @@ export default function ServicesBottomSheet() {
     const container = contentRef.current
     if (!container) return []
     const containerRect = container.getBoundingClientRect()
+    const buffer = Math.round(containerRect.height * VIEWPORT_PRELOAD_SCREENS)
     const visible = []
 
     itemRefs.current.forEach((el, idx) => {
       if (skipFetch || !el || revealedRef.current.has(idx)) return
       const rect = el.getBoundingClientRect()
-      const visibleHeight = Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
-      if (visibleHeight > rect.height * 0.2) {
-        visible.push(idx)
-      }
+      if (isInLoadZone(rect, containerRect, buffer)) visible.push(idx)
     })
     return visible
   }, [skipFetch])
 
-  const checkVisibilityInitial = useCallback(() => {
+  const hydrateVisible = useCallback(() => {
     const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach(idx => queueRef.current.push(idx))
-      processQueue()
-    }
-
-    const t = setTimeout(() => {
-      initialDoneRef.current = true
-    }, OFFSCREEN_DELAY)
-    timersRef.current.push(t)
-  }, [getVisibleIndices, processQueue])
-
-  const checkVisibilityScroll = useCallback(() => {
-    if (!initialDoneRef.current) return
-    const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach(idx => {
-        if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
-      })
-      processQueue()
-    }
+    if (indices.length === 0) return
+    indices.forEach(idx => {
+      if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
+    })
+    processQueue()
   }, [getVisibleIndices, processQueue])
 
   useEffect(() => {
     if (!isServicesOpen || isServicesSlidingOut) return undefined
-    if (skipFetch) {
-      initialDoneRef.current = true
-      return undefined
-    }
-    initialDoneRef.current = false
-    const t = setTimeout(checkVisibilityInitial, INITIAL_DELAY)
-    const done = setTimeout(() => {
-      session.markLoaded(CACHE_KEY)
-      forceUpdate((n) => n + 1)
-    }, INITIAL_DELAY + OFFSCREEN_DELAY)
-    return () => {
-      clearTimeout(t)
-      clearTimeout(done)
-    }
-  }, [isServicesOpen, isServicesSlidingOut, checkVisibilityInitial, skipFetch, session])
+    if (skipFetch) return undefined
+    const raf = requestAnimationFrame(() => hydrateVisible())
+    return () => cancelAnimationFrame(raf)
+  }, [isServicesOpen, isServicesSlidingOut, hydrateVisible, skipFetch])
 
   useEffect(() => {
     const container = contentRef.current
     if (!container || !isServicesOpen) return
-    const onScroll = () => checkVisibilityScroll()
+    const onScroll = () => hydrateVisible()
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => container.removeEventListener('scroll', onScroll)
-  }, [isServicesOpen, checkVisibilityScroll])
+  }, [isServicesOpen, hydrateVisible])
 
   useEffect(() => {
     if (isServicesOpen && !skipFetch) {
       revealedRef.current = new Set()
       queueRef.current = []
       processingRef.current = false
-      initialDoneRef.current = false
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
     }
     return () => {
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
+      if (revealedRef.current.size > 0) session.markLoaded(CACHE_KEY)
     }
-  }, [isServicesOpen, skipFetch])
+  }, [isServicesOpen, skipFetch, session])
 
   const handleClose = () => {
     if (isServicesSlidingOut) return

@@ -43,7 +43,6 @@ export default function OrderList({
   className = '',
 }) {
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 240,
     namespace: `pharmacy-orders:${orders.length}`,
   })
 

@@ -73,7 +73,9 @@ export default function Services() {
   const navigate = useNavigate()
   const { openServices } = useTransition()
   const { show: showDemoPreview } = useDemoPreview()
-  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 340 })
+  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
+    dataset: 'home:services',
+  })
 
   const handleService = (name) => {
     runServiceAction(name, {

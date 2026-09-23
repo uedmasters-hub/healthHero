@@ -9,7 +9,6 @@ export default function CategoryChips({
   className = '',
 }) {
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 280,
     namespace: `pharmacy-cats:${items.length}`,
   })
 

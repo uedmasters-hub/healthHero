@@ -10,7 +10,9 @@ export default function HealthInsights() {
   const navigate = useNavigate()
   const { openInsights } = useTransition()
   const insights = getHomeInsights()
-  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 420 })
+  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
+    dataset: 'home:health-insights',
+  })
 
   const openArticle = (article) => {
     navigate(articlePath(article.id), {

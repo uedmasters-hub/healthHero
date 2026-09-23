@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { freezeNow } from '../lib/scrollLock'
 import { useI18n, voiceLangFromSiteLang } from '../i18n'
 import {
@@ -8,6 +8,9 @@ import {
   VOICE_STATE,
   voiceErrorMessage,
   voiceStatusMessage,
+  queueVoiceStart,
+  takeVoiceStart,
+  clearVoiceStart,
 } from '../features/search'
 import './SearchBar.css'
 
@@ -60,17 +63,22 @@ function SearchFieldCore({
   onRequestOpen,
   reserveStatus = false,
   onChromeChange,
+  /** When true, begin VoiceSearchService.start() as soon as interactive */
+  autoStartVoice = false,
 }) {
   const { tx, lang, setLang } = useI18n()
   const copy = getScopeCopy(scope)
   const [voiceLang, setVoiceLang] = useState(() => voiceLangFromSiteLang(lang))
   const [helper, setHelper] = useState(null)
   const [helperLeaving, setHelperLeaving] = useState(false)
+  /** Optimistic listening chrome while permission/start arms */
+  const [arming, setArming] = useState(false)
   const onChangeRef = useRef(onChange)
   onChangeRef.current = onChange
   const onChromeChangeRef = useRef(onChromeChange)
   onChromeChangeRef.current = onChromeChange
   const lastCommittedRef = useRef('')
+  const didAutoStartRef = useRef(false)
   const restartTimer = useRef(null)
   const helperTimer = useRef(null)
   const leaveTimer = useRef(null)
@@ -85,13 +93,12 @@ function SearchFieldCore({
     transcript,
     error,
     modelProgress,
-    toggle,
     stop,
     start,
     clearError,
   } = useVoiceSearch(voiceLang)
 
-  const voiceActive = listening || requesting
+  const voiceActive = listening || requesting || arming
   const toolsLive = interactive && !readOnly
   const hasText = Boolean(String(value ?? '').trim())
   const showLang = toolsLive && !voiceActive && !processing && !hasText
@@ -112,6 +119,17 @@ function SearchFieldCore({
     }, STATUS_FADE_MS)
   }
 
+  /** Single entry — always VoiceSearchService.start() */
+  const beginVoice = () => {
+    if (unavailable || !supported) {
+      showHelper(tx('Voice search isn’t available here — type to search instead.'), { error: true })
+      return false
+    }
+    setArming(true)
+    void start()
+    return true
+  }
+
   useEffect(() => {
     setVoiceLang(voiceLangFromSiteLang(lang))
   }, [lang])
@@ -124,7 +142,15 @@ function SearchFieldCore({
   }, [transcript])
 
   useEffect(() => {
+    if (listening || requesting) setArming(false)
+    if (state === VOICE_STATE.error || state === VOICE_STATE.idle) {
+      if (!listening && !requesting) setArming(false)
+    }
+  }, [listening, requesting, state])
+
+  useEffect(() => {
     if (state !== VOICE_STATE.error || !error) return undefined
+    setArming(false)
     const msg = voiceErrorMessage(error, tx)
     if (msg) showHelper(msg, { error: true })
     const t = window.setTimeout(() => clearError(), STATUS_FADE_MS + 240)
@@ -140,6 +166,23 @@ function SearchFieldCore({
     })
   }, [voiceActive, processing, hasText])
 
+  // Consume queued / prop-driven voice start once the field is interactive.
+  useEffect(() => {
+    if (!toolsLive) return undefined
+    if (didAutoStartRef.current) {
+      clearVoiceStart()
+      return undefined
+    }
+    const should = autoStartVoice || takeVoiceStart()
+    if (!should) return undefined
+    didAutoStartRef.current = true
+    const id = window.setTimeout(() => {
+      beginVoice()
+    }, 40)
+    return () => window.clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toolsLive, autoStartVoice])
+
   useEffect(() => () => {
     if (restartTimer.current) window.clearTimeout(restartTimer.current)
     if (helperTimer.current) window.clearTimeout(helperTimer.current)
@@ -148,37 +191,61 @@ function SearchFieldCore({
 
   const resolvedPlaceholder = tx(placeholder || copy.placeholder)
 
-  const ensureOpen = () => {
-    if (readOnly && typeof onRequestOpen === 'function') {
-      onRequestOpen()
-      return true
-    }
-    return false
-  }
-
   const toggleVoice = (e) => {
     e?.preventDefault?.()
     e?.stopPropagation?.()
-    if (ensureOpen()) return
+
+    // Idle Home (readOnly): one tap → open shared search already listening.
+    if (readOnly && typeof onRequestOpen === 'function') {
+      if (unavailable || !supported) {
+        showHelper(tx('Voice search isn’t available here — type to search instead.'), { error: true })
+        onRequestOpen({ startVoice: false })
+        return
+      }
+      // Arm listening immediately on this instance; queue in case the bar remounts.
+      setArming(true)
+      didAutoStartRef.current = true
+      queueVoiceStart()
+      void start()
+      onRequestOpen({ startVoice: true })
+      return
+    }
+
     if (!toolsLive) return
     if (unavailable || !supported) {
       showHelper(tx('Voice search isn’t available here — type to search instead.'), { error: true })
       return
     }
-    toggle()
+    if (voiceActive || processing) {
+      setArming(false)
+      stop()
+      return
+    }
+    beginVoice()
   }
 
   const switchVoiceLang = (next) => {
     if (restartTimer.current) window.clearTimeout(restartTimer.current)
     const wasActive = voiceActive
-    if (wasActive) stop()
+    if (wasActive) {
+      setArming(false)
+      stop()
+    }
     setVoiceLang(next)
     setLang(next === 'ne-NP' ? 'ne' : 'en')
     if (wasActive && toolsLive) {
       restartTimer.current = window.setTimeout(() => {
-        void start()
+        beginVoice()
       }, 450)
     }
+  }
+
+  const ensureOpen = () => {
+    if (readOnly && typeof onRequestOpen === 'function') {
+      onRequestOpen({ startVoice: false })
+      return true
+    }
+    return false
   }
 
   const handleClear = (e) => {
@@ -363,8 +430,10 @@ export default function SearchBar({
   showDismiss,
   showMic = true,
   autoFocus = false,
+  autoStartVoice = false,
 }) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { tx } = useI18n()
   const inputRef = useRef(null)
   const copy = getScopeCopy(scope)
@@ -372,6 +441,7 @@ export default function SearchBar({
   const isActive = isInline || active
   const dismissible = showDismiss ?? (!isInline && typeof onCancel === 'function')
   const [chrome, setChrome] = useState({ voiceActive: false, hasText: false, phase: 'idle' })
+  const voiceIntent = Boolean(autoStartVoice || location.state?.startVoice)
 
   /* Cancel only when idle+empty — unmount column otherwise so the field stays full-width */
   const dismissVisible = dismissible && isActive && chrome.phase === 'idle'
@@ -383,14 +453,29 @@ export default function SearchBar({
     return () => window.clearTimeout(id)
   }, [isActive, isInline])
 
-  const openSearch = () => {
+  // Clear one-shot startVoice from history after activation (avoid re-trigger on back).
+  useEffect(() => {
+    if (!isActive || !location.state?.startVoice) return undefined
+    const { startVoice: _drop, ...rest } = location.state
+    const id = window.setTimeout(() => {
+      navigate(`${location.pathname}${location.search || ''}`, {
+        replace: true,
+        state: Object.keys(rest).length ? rest : undefined,
+      })
+    }, 500)
+    return () => window.clearTimeout(id)
+  }, [isActive, location.pathname, location.search, location.state, navigate])
+
+  const openSearch = (opts = {}) => {
     if (isActive) return
     if (typeof onOpenSearch === 'function') {
-      onOpenSearch()
+      onOpenSearch(opts)
       return
     }
     freezeNow('home')
-    navigate('/search')
+    navigate('/search', {
+      state: opts?.startVoice ? { startVoice: true } : undefined,
+    })
   }
 
   const resolvedPlaceholder = placeholder
@@ -431,12 +516,13 @@ export default function SearchBar({
             readOnly={!isActive}
             interactive
             onRequestOpen={isInline ? undefined : openSearch}
-            onFocus={isInline ? undefined : openSearch}
-            onClick={isInline ? undefined : openSearch}
+            onFocus={isInline ? undefined : () => openSearch({ startVoice: false })}
+            onClick={isInline ? undefined : () => openSearch({ startVoice: false })}
             showMic={showMic}
             onClear={() => onQueryChange?.('')}
             autoFocus={autoFocus && isActive}
             reserveStatus={!isInline && isActive}
+            autoStartVoice={voiceIntent && isActive}
             onChromeChange={setChrome}
           />
         </div>

@@ -150,7 +150,7 @@ export function DateStrip({
   stagger = false,
   isDateUnavailable,
 }) {
-  const reveal = useStaggerReveal({ delay: stagger ? 180 : 0, namespace: stagger ? 'cal:strip' : false })
+  const reveal = useStaggerReveal({ namespace: stagger ? 'cal:strip' : false })
 
   return (
     <div className="cal-strip" ref={stagger ? reveal.containerRef : undefined}>

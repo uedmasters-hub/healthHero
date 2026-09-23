@@ -4,13 +4,12 @@ import { useTransition } from './PageTransition'
 import { useFetchSession } from './FetchSession'
 import { SHEET_TOP_COUNT, promoteTopDoctor, useTopDoctors } from '../lib/topDoctorsOrder'
 import DoctorCard from './DoctorCard'
+import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './TopDoctorsOverlay.css'
 import './TopDoctors.css'
 import './DoctorCard.css'
 
 const FAST_STAGGER = 60
-const INITIAL_DELAY = 350
-const OFFSCREEN_DELAY = 550
 const LOADING_TOAST_DELAY = 400
 const LOADING_TOAST_OUT = 220
 
@@ -34,7 +33,6 @@ export default function TopDoctorsOverlay() {
   const queueRef = useRef([])
   const processingRef = useRef(false)
   const timersRef = useRef([])
-  const initialDoneRef = useRef(skipFetch)
   const toastDelayRef = useRef(null)
   const toastOutRef = useRef(null)
   const [loadingToast, setLoadingToast] = useState(null)
@@ -42,8 +40,12 @@ export default function TopDoctorsOverlay() {
   const revealCard = useCallback((idx) => {
     if (revealedRef.current.has(idx)) return
     revealedRef.current.add(idx)
+    const mounted = itemRefs.current.filter(Boolean).length
+    if (mounted > 0 && revealedRef.current.size >= mounted) {
+      session.markLoaded(CACHE_KEY)
+    }
     forceUpdate((n) => n + 1)
-  }, [])
+  }, [session])
 
   const hideLoadingToast = useCallback((immediate = false) => {
     if (toastDelayRef.current) {
@@ -72,7 +74,7 @@ export default function TopDoctorsOverlay() {
     if (processingRef.current || queueRef.current.length === 0) return
     processingRef.current = true
 
-    if (initialDoneRef.current && !toastDelayRef.current) {
+    if (!toastDelayRef.current) {
       toastDelayRef.current = setTimeout(() => {
         toastDelayRef.current = null
         if (processingRef.current) setLoadingToast('visible')
@@ -97,76 +99,47 @@ export default function TopDoctorsOverlay() {
     const container = contentRef.current
     if (!container) return []
     const containerRect = container.getBoundingClientRect()
+    const buffer = Math.round(containerRect.height * VIEWPORT_PRELOAD_SCREENS)
     const visible = []
 
     itemRefs.current.forEach((el, idx) => {
       if (skipFetch || !el || revealedRef.current.has(idx)) return
       const rect = el.getBoundingClientRect()
-      const visibleHeight = Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
-      if (visibleHeight > rect.height * 0.25) {
-        visible.push(idx)
-      }
+      if (isInLoadZone(rect, containerRect, buffer)) visible.push(idx)
     })
     return visible
   }, [skipFetch])
 
-  const checkVisibilityInitial = useCallback(() => {
+  const hydrateVisible = useCallback(() => {
     const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach((idx) => queueRef.current.push(idx))
-      processQueue()
-    }
-
-    const t = setTimeout(() => {
-      initialDoneRef.current = true
-    }, OFFSCREEN_DELAY)
-    timersRef.current.push(t)
-  }, [getVisibleIndices, processQueue])
-
-  const checkVisibilityScroll = useCallback(() => {
-    if (!initialDoneRef.current) return
-    const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach((idx) => {
-        if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
-      })
-      processQueue()
-    }
+    if (indices.length === 0) return
+    indices.forEach((idx) => {
+      if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
+    })
+    processQueue()
   }, [getVisibleIndices, processQueue])
 
   useEffect(() => {
     if (!isTopDoctorsOpen || isTopDoctorsSlidingOut) return undefined
     contentRef.current?.scrollTo({ top: 0, behavior: 'auto' })
-    if (skipFetch) {
-      initialDoneRef.current = true
-      return undefined
-    }
-    initialDoneRef.current = false
-    const t = setTimeout(checkVisibilityInitial, INITIAL_DELAY)
-    const done = setTimeout(() => {
-      session.markLoaded(CACHE_KEY)
-      forceUpdate((n) => n + 1)
-    }, INITIAL_DELAY + OFFSCREEN_DELAY)
-    return () => {
-      clearTimeout(t)
-      clearTimeout(done)
-    }
-  }, [isTopDoctorsOpen, isTopDoctorsSlidingOut, checkVisibilityInitial, skipFetch, session, doctors])
+    if (skipFetch) return undefined
+    const raf = requestAnimationFrame(() => hydrateVisible())
+    return () => cancelAnimationFrame(raf)
+  }, [isTopDoctorsOpen, isTopDoctorsSlidingOut, hydrateVisible, skipFetch, doctors])
 
   useEffect(() => {
     const container = contentRef.current
     if (!container || !isTopDoctorsOpen) return undefined
-    const onScroll = () => checkVisibilityScroll()
+    const onScroll = () => hydrateVisible()
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => container.removeEventListener('scroll', onScroll)
-  }, [isTopDoctorsOpen, checkVisibilityScroll])
+  }, [isTopDoctorsOpen, hydrateVisible])
 
   useEffect(() => {
     if (isTopDoctorsOpen && !skipFetch) {
       revealedRef.current = new Set()
       queueRef.current = []
       processingRef.current = false
-      initialDoneRef.current = false
       hideLoadingToast(true)
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
@@ -174,8 +147,9 @@ export default function TopDoctorsOverlay() {
     return () => {
       if (toastDelayRef.current) clearTimeout(toastDelayRef.current)
       if (toastOutRef.current) clearTimeout(toastOutRef.current)
+      if (revealedRef.current.size > 0) session.markLoaded(CACHE_KEY)
     }
-  }, [isTopDoctorsOpen, skipFetch, hideLoadingToast])
+  }, [isTopDoctorsOpen, skipFetch, hideLoadingToast, session])
 
   useEffect(() => {
     if (isTopDoctorsOpen && !isTopDoctorsSlidingOut) {

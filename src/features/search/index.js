@@ -33,4 +33,7 @@ export {
   voiceStatusMessage,
   detectVoiceCapabilities,
   VoiceSearchService,
+  queueVoiceStart,
+  takeVoiceStart,
+  clearVoiceStart,
 } from './voice'

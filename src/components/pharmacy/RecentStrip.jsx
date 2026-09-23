@@ -9,7 +9,6 @@ export default function RecentStrip({
   className = '',
 }) {
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 300,
     namespace: `pharmacy-recent:${items.length}`,
   })
 

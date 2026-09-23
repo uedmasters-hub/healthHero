@@ -84,7 +84,9 @@ export default function NotificationsPage() {
   const { currentBooking } = useBooking()
   const { notifications, unreadCount, markRead, markAllRead, clearNotification } = useNotifications()
   const { show: showDemoPreview } = useDemoPreview()
-  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 220 })
+  const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
+    dataset: 'notifications',
+  })
   const pageRef = useRef(null)
   const onRefresh = useCallback(() => refreshNotificationsData(), [])
   const ptr = usePullToRefresh(pageRef, onRefresh)

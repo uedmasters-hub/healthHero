@@ -10,7 +10,6 @@ function dash(value) {
 }
 
 const SECTION_COUNT = 5
-const INITIAL_DELAY = 350
 const STAGGER_DELAY = 80
 
 const CACHE_KEY = 'overlay:profile'
@@ -38,16 +37,14 @@ export default function ProfileOverlay() {
     timersRef.current = []
     setRevealedSections(new Set())
 
-    const t = setTimeout(() => {
-      for (let i = 0; i < SECTION_COUNT; i++) {
-        const timer = setTimeout(() => {
-          setRevealedSections(prev => new Set([...prev, i]))
-          if (i === SECTION_COUNT - 1) session.markLoaded(CACHE_KEY)
-        }, i * STAGGER_DELAY)
-        timersRef.current.push(timer)
-      }
-    }, INITIAL_DELAY)
-    timersRef.current.push(t)
+    // Profile overlay sections are above-the-fold — start immediately, micro-stagger only.
+    for (let i = 0; i < SECTION_COUNT; i++) {
+      const timer = setTimeout(() => {
+        setRevealedSections(prev => new Set([...prev, i]))
+        if (i === SECTION_COUNT - 1) session.markLoaded(CACHE_KEY)
+      }, i * STAGGER_DELAY)
+      timersRef.current.push(timer)
+    }
 
     return () => {
       timersRef.current.forEach(clearTimeout)

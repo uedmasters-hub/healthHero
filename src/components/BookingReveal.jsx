@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useFetchSession } from './FetchSession'
 import './BookingFlow.css'
 
-const STAGED_MS = 90
 const SKELETON_MS = 360
 
 /**
@@ -13,6 +12,8 @@ const SKELETON_MS = 360
  * - Otherwise show skeleton only briefly; after STAGED_MS reveal if `hasCache`
  *   so the user is never trapped waiting for data that already exists locally.
  * - Full skeleton delay (SKELETON_MS) only when there is no local cache yet.
+ * - When data arrives (`hasCache` / `instant` flips), reveal immediately — no
+ *   scroll or second interaction required.
  */
 export function useBookingReveal(dataset, enabled = true, { instant = false, hasCache = false } = {}) {
   const session = useFetchSession()
@@ -31,7 +32,7 @@ export function useBookingReveal(dataset, enabled = true, { instant = false, has
 
     setReady(false)
     const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const delay = reduce ? 0 : (hasCache ? STAGED_MS : SKELETON_MS)
+    const delay = reduce ? 0 : SKELETON_MS
     const timer = window.setTimeout(() => {
       session.markLoaded(dataset)
       setReady(true)

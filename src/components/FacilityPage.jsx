@@ -54,7 +54,9 @@ export default function FacilityPage() {
   const location = useLocation()
   const goBack = usePushBack(-1)
   const scrollRef = useRef(null)
-  const { setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 100 })
+  const { setItemRef, isRevealed, isCached } = useStaggerReveal({
+    dataset: 'facility:detail',
+  })
 
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState(null)

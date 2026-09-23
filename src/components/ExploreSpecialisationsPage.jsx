@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { ALL_SPECIALISATIONS, exploreSpecialtyPath, loadSpecialisationsScroll, saveSpecialisationsScroll } from '../data/specialisations'
 import { useFetchSession } from './FetchSession'
 import { useTransition } from './PageTransition'
+import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './SpecialisationsPage.css'
 
 const FAST_STAGGER = 28
-const INITIAL_DELAY = 320
-const OFFSCREEN_DELAY = 600
 const CACHE_KEY = 'overlay:specialisations'
 
 export default function ExploreSpecialisationsPage() {
@@ -22,13 +21,16 @@ export default function ExploreSpecialisationsPage() {
   const queueRef = useRef([])
   const processingRef = useRef(false)
   const timersRef = useRef([])
-  const initialDoneRef = useRef(skipFetch)
 
   const revealCard = useCallback((idx) => {
     if (skipFetch || revealedRef.current.has(idx)) return
     revealedRef.current.add(idx)
+    const mounted = itemRefs.current.filter(Boolean).length
+    if (mounted > 0 && revealedRef.current.size >= mounted) {
+      session.markLoaded(CACHE_KEY)
+    }
     forceUpdate((n) => n + 1)
-  }, [skipFetch])
+  }, [skipFetch, session])
 
   const processQueue = useCallback(() => {
     if (processingRef.current || queueRef.current.length === 0) return
@@ -52,41 +54,24 @@ export default function ExploreSpecialisationsPage() {
     const container = contentRef.current
     if (!container) return []
     const containerRect = container.getBoundingClientRect()
+    const buffer = Math.round(containerRect.height * VIEWPORT_PRELOAD_SCREENS)
     const visible = []
 
     itemRefs.current.forEach((el, idx) => {
       if (!el || revealedRef.current.has(idx)) return
       const rect = el.getBoundingClientRect()
-      const visibleHeight = Math.min(rect.bottom, containerRect.bottom) - Math.max(rect.top, containerRect.top)
-      if (visibleHeight > rect.height * 0.2) {
-        visible.push(idx)
-      }
+      if (isInLoadZone(rect, containerRect, buffer)) visible.push(idx)
     })
     return visible
   }, [skipFetch])
 
-  const checkVisibilityInitial = useCallback(() => {
+  const hydrateVisible = useCallback(() => {
     const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach((idx) => queueRef.current.push(idx))
-      processQueue()
-    }
-
-    const t = setTimeout(() => {
-      initialDoneRef.current = true
-    }, OFFSCREEN_DELAY)
-    timersRef.current.push(t)
-  }, [getVisibleIndices, processQueue])
-
-  const checkVisibilityScroll = useCallback(() => {
-    if (!initialDoneRef.current) return
-    const indices = getVisibleIndices()
-    if (indices.length > 0) {
-      indices.forEach((idx) => {
-        if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
-      })
-      processQueue()
-    }
+    if (indices.length === 0) return
+    indices.forEach((idx) => {
+      if (!queueRef.current.includes(idx)) queueRef.current.push(idx)
+    })
+    processQueue()
   }, [getVisibleIndices, processQueue])
 
   useLayoutEffect(() => {
@@ -96,39 +81,27 @@ export default function ExploreSpecialisationsPage() {
 
   useEffect(() => {
     if (!isSpecialisationsOpen || isSpecialisationsSlidingOut) return undefined
-    if (skipFetch) {
-      initialDoneRef.current = true
-      return undefined
-    }
-    initialDoneRef.current = false
-    const t = setTimeout(checkVisibilityInitial, INITIAL_DELAY)
-    const done = setTimeout(() => {
-      session.markLoaded(CACHE_KEY)
-      forceUpdate((n) => n + 1)
-    }, INITIAL_DELAY + OFFSCREEN_DELAY)
-    return () => {
-      clearTimeout(t)
-      clearTimeout(done)
-    }
-  }, [isSpecialisationsOpen, isSpecialisationsSlidingOut, checkVisibilityInitial, skipFetch, session])
+    if (skipFetch) return undefined
+    const raf = requestAnimationFrame(() => hydrateVisible())
+    return () => cancelAnimationFrame(raf)
+  }, [isSpecialisationsOpen, isSpecialisationsSlidingOut, hydrateVisible, skipFetch])
 
   useEffect(() => {
     const container = contentRef.current
     if (!container || !isSpecialisationsOpen) return undefined
     const onScroll = () => {
       saveSpecialisationsScroll(container.scrollTop)
-      checkVisibilityScroll()
+      hydrateVisible()
     }
     container.addEventListener('scroll', onScroll, { passive: true })
     return () => container.removeEventListener('scroll', onScroll)
-  }, [isSpecialisationsOpen, checkVisibilityScroll])
+  }, [isSpecialisationsOpen, hydrateVisible])
 
   useEffect(() => {
     if (isSpecialisationsOpen && !skipFetch) {
       revealedRef.current = new Set()
       queueRef.current = []
       processingRef.current = false
-      initialDoneRef.current = false
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
     }
@@ -136,8 +109,9 @@ export default function ExploreSpecialisationsPage() {
       if (contentRef.current) saveSpecialisationsScroll(contentRef.current.scrollTop)
       timersRef.current.forEach(clearTimeout)
       timersRef.current = []
+      if (revealedRef.current.size > 0) session.markLoaded(CACHE_KEY)
     }
-  }, [isSpecialisationsOpen, skipFetch])
+  }, [isSpecialisationsOpen, skipFetch, session])
 
   const handleClose = () => {
     if (isSpecialisationsSlidingOut) return

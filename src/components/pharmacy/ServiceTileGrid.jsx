@@ -8,7 +8,6 @@ import './ServiceTileGrid.css'
  */
 export default function ServiceTileGrid({ items = [], onSelect, className = '' }) {
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
-    delay: 200,
     namespace: `pharmacy-services:${items.length}`,
   })
 

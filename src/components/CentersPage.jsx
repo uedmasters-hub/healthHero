@@ -284,7 +284,7 @@ export default function CentersPage() {
 
         {!loading && !error && centers.length ? (
           <ul className="centers-list">
-            {centers.map((center) => {
+            {centers.map((center, index) => {
               const locationLabel = formatPlaceParts(center.city, center.district) || center.address
               const metaBits = [
                 center.type,
@@ -302,7 +302,13 @@ export default function CentersPage() {
                 <li key={center.providerUuid || center.id}>
                   <button type="button" className="centers-card" onClick={() => openFacility(center)}>
                     {center.image ? (
-                      <img src={center.image} alt="" className="centers-card-img" loading="lazy" />
+                      <img
+                        src={center.image}
+                        alt=""
+                        className="centers-card-img"
+                        loading={index < 4 ? 'eager' : 'lazy'}
+                        decoding={index < 4 ? 'sync' : 'async'}
+                      />
                     ) : (
                       <span className="centers-card-img is-placeholder" aria-hidden="true" />
                     )}

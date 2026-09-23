@@ -12,7 +12,9 @@ import './SettingsPage.css'
 export default function SettingsPage() {
   const navigate = useNavigate()
   const { profile, isDemo, logout } = useUser()
-  const { setItemRef, isRevealed, isCached } = useStaggerReveal({ delay: 200 })
+  const { setItemRef, isRevealed, isCached } = useStaggerReveal({
+    dataset: 'settings',
+  })
   const scrollRef = useRef(null)
   const onRefresh = useCallback(() => refreshProfileData(), [])
   const ptr = usePullToRefresh(scrollRef, onRefresh)

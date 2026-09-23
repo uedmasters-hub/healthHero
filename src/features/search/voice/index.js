@@ -11,6 +11,7 @@ export { VOICE_STATE }
 export { voiceErrorMessage, voiceStatusMessage }
 export { detectVoiceCapabilities } from './capabilities'
 export { VoiceSearchService } from './VoiceSearchService'
+export { queueVoiceStart, takeVoiceStart, peekVoiceStart, clearVoiceStart } from './pendingStart'
 
 function initialSnap() {
   const caps = detectVoiceCapabilities()
