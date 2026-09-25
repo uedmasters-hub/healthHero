@@ -73,8 +73,11 @@ export default function DoctorList({
   const {
     locality,
     origin: locationOrigin,
+    latitude: searchLat,
+    longitude: searchLng,
     radiusKm,
     ready: locationReady,
+    source: locationSource,
     nextExpandRadiusKm,
     expandRadius,
     selectPlaceByName,
@@ -146,9 +149,12 @@ export default function DoctorList({
       specialty: activeSpecialty,
       q: debouncedSearch,
       city: browseNationwide ? ALL_NEPAL_LOCATION : locality,
-      sort: sortMeta.sort === 'name' ? 'name' : 'nearest',
+      sort: sortMeta.sort === 'name' || sortMeta.sort === 'rating' || sortMeta.sort === 'fee'
+        ? sortMeta.sort
+        : 'nearest',
       page: 0,
       pageSize: PAGE_SIZE,
+      force: true,
       origin: browseNationwide ? null : locationOrigin,
       radiusKm,
       useRadius: !browseNationwide,
@@ -175,7 +181,10 @@ export default function DoctorList({
     dataset,
     locationReady,
     locationOrigin,
+    searchLat,
+    searchLng,
     radiusKm,
+    locationSource,
   ])
 
   useEffect(() => subscribeProviders(() => {}), [])

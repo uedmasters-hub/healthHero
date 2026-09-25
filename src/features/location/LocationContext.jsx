@@ -58,9 +58,14 @@ export function LocationProvider({ children }) {
   const userId = session?.user?.id || null
   const bootRef = useRef(false)
   const persistTimer = useRef(null)
+  /** Once the user picks a place manually, auto-GPS must not overwrite it. */
+  const manualLockRef = useRef(false)
 
   const [state, setState] = useState(() => {
     const cached = readLocalLocationCache()
+    if (cached?.source === 'manual' && hasCoords(cached)) {
+      manualLockRef.current = true
+    }
     if (cached && hasCoords(cached)) {
       return buildSnapshot({
         ...cached,
@@ -112,7 +117,14 @@ export function LocationProvider({ children }) {
     })
   }, [persist])
 
-  const requestGps = useCallback(async ({ silent = false } = {}) => {
+  const requestGps = useCallback(async ({ silent = false, force = false } = {}) => {
+    if (force) manualLockRef.current = false
+    // Respect an explicit manual pick unless the user refreshes current location.
+    if (manualLockRef.current && !force) {
+      setState((prev) => ({ ...prev, updating: false }))
+      return { ok: true, skipped: true }
+    }
+
     setState((prev) => ({
       ...prev,
       updating: true,
@@ -121,6 +133,11 @@ export function LocationProvider({ children }) {
     }))
     try {
       const coords = await readDevicePosition({ enableHighAccuracy: true })
+      // Re-check lock: user may have picked a city while GPS was in flight.
+      if (manualLockRef.current && !force) {
+        setState((prev) => ({ ...prev, updating: false, status: 'ready' }))
+        return { ok: true, skipped: true }
+      }
       let place
       try {
         place = await reverseGeocode(coords.latitude, coords.longitude)
@@ -129,6 +146,9 @@ export function LocationProvider({ children }) {
       }
       let localityLabel = place?.locality || 'Current location'
       setState((prev) => {
+        if (manualLockRef.current && !force) {
+          return { ...prev, updating: false, status: hasCoords(prev) ? 'ready' : prev.status }
+        }
         if (!place?.locality && prev.locality) localityLabel = prev.locality
         const next = buildSnapshot({
           ...prev,
@@ -167,12 +187,17 @@ export function LocationProvider({ children }) {
     }
   }, [persist])
 
-  const refreshLocation = useCallback(() => requestGps({ silent: true }), [requestGps])
+  const refreshLocation = useCallback(() => {
+    // Explicit refresh clears the manual lock and re-takes GPS.
+    manualLockRef.current = false
+    return requestGps({ silent: true, force: true })
+  }, [requestGps])
 
   const setManualLocation = useCallback(({ locality, latitude, longitude }) => {
     const lat = Number(latitude)
     const lng = Number(longitude)
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return
+    manualLockRef.current = true
     applyLocation({
       locality: String(locality || 'Selected location').trim(),
       latitude: lat,
@@ -207,7 +232,8 @@ export function LocationProvider({ children }) {
     return next
   }, [setRadiusKm, state.radiusKm])
 
-  // Hydrate from Supabase when auth is ready, then request GPS on launch.
+  // Hydrate from Supabase when auth is ready, then request GPS only when no
+  // manual (or already-ready) location is locked in.
   useEffect(() => {
     if (!authReady || bootRef.current) return undefined
     bootRef.current = true
@@ -217,7 +243,18 @@ export function LocationProvider({ children }) {
       if (userId) {
         const remote = await fetchRemoteLocationPrefs(userId)
         if (!cancelled && remote) {
+          if (remote.source === 'manual' && hasCoords(remote)) {
+            manualLockRef.current = true
+          }
           setState((prev) => {
+            // Never clobber a fresher in-session manual pick with remote GPS/cached.
+            if (manualLockRef.current && prev.source === 'manual' && hasCoords(prev)) {
+              return {
+                ...prev,
+                radiusKm: remote.radiusKm || prev.radiusKm,
+                recent: remote.recent?.length ? remote.recent : prev.recent,
+              }
+            }
             const useRemoteCoords = hasCoords(remote)
             const next = buildSnapshot({
               locality: useRemoteCoords ? remote.locality : prev.locality,
@@ -233,7 +270,7 @@ export function LocationProvider({ children }) {
           })
         }
       }
-      if (!cancelled) {
+      if (!cancelled && !manualLockRef.current) {
         await requestGps({ silent: false })
       }
     })()

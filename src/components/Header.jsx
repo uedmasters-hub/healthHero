@@ -115,8 +115,9 @@ export default function Header({ endAccessory = null }) {
 
   const onCurrentLocation = async () => {
     setLocateHint('Allow precise location to continue')
-    const result = await requestGps()
-    if (result.ok) {
+    // Explicit user action — override any prior manual city pick.
+    const result = await requestGps({ force: true })
+    if (result.ok && !result.skipped) {
       setLocateHint('')
       closeSheet()
       return
