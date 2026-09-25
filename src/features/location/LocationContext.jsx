@@ -13,6 +13,7 @@ import {
   clampRadiusKm,
   coordsForPlace,
   nextExpandRadiusKm,
+  canonicalLocality,
 } from './constants'
 import { readDevicePosition, reverseGeocode } from './geocode'
 import {
@@ -39,6 +40,7 @@ function buildSnapshot({
   status = 'idle',
   error = null,
   updating = false,
+  placeId = null,
 } = {}) {
   return {
     locality,
@@ -50,6 +52,7 @@ function buildSnapshot({
     status,
     error,
     updating,
+    placeId: placeId || null,
   }
 }
 
@@ -87,6 +90,7 @@ export function LocationProvider({ children }) {
         latitude: next.latitude,
         longitude: next.longitude,
         source: next.source,
+        placeId: next.placeId || null,
       })
       : (next.recent || [])
     const saved = writeLocalLocationCache({ ...next, recent })
@@ -193,19 +197,21 @@ export function LocationProvider({ children }) {
     return requestGps({ silent: true, force: true })
   }, [requestGps])
 
-  const setManualLocation = useCallback(({ locality, latitude, longitude }) => {
+  const setManualLocation = useCallback(({ locality, latitude, longitude, placeId = null }) => {
     const lat = Number(latitude)
     const lng = Number(longitude)
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return
     manualLockRef.current = true
+    const label = canonicalLocality({ locality, latitude: lat, longitude: lng }) || String(locality || 'Selected location').trim()
     applyLocation({
-      locality: String(locality || 'Selected location').trim(),
+      locality: label,
       latitude: lat,
       longitude: lng,
       source: 'manual',
       status: 'ready',
       updating: false,
       error: null,
+      placeId: placeId || null,
     })
   }, [applyLocation])
 

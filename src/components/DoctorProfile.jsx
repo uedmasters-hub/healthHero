@@ -236,7 +236,8 @@ export default function DoctorProfile() {
   const bookAppointment = () => {
     if (!doctor || !bookingDoctor || !selectedTime || selectedWindow?.isPast) return
     guard(bookingDoctor, ({ forSomeoneElse }) => {
-      navigate('/booking/slot', {
+      // Slot already chosen on the profile — skip Choose Date & Time.
+      navigate('/booking/patient', {
         state: flowState(location, {
           doctor: bookingDoctor,
           date: selectedDate,

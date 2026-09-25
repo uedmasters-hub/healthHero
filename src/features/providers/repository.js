@@ -409,29 +409,35 @@ export async function queryProviders({
           p_specialty: opts.specialty || null,
         }),
       ])
-      if (error) throw error
-      const totalNearby = typeof countRes.data === 'number'
-        ? countRes.data
-        : Number(countRes.data) || (data || []).length
+      // Never abort into empty local fallback on RPC errors/timeouts —
+      // fall through to locality browse instead.
+      if (!error && !countRes.error) {
+        const totalNearby = typeof countRes.data === 'number'
+          ? countRes.data
+          : Number(countRes.data) || (data || []).length
 
-      // Registry doctors often lack primary_center coords — radius RPC returns 0.
-      // Fall back to locality / city text match so Find Doctor still works.
-      if (totalNearby > 0) {
-        const doctors = (data || []).map((row) => normalizeProviderRow(row))
-        indexMany(doctors)
-        const result = {
-          doctors: doctors.map(toListCard),
-          page: opts.page,
-          pageSize: opts.pageSize,
-          hasMore: (opts.page + 1) * opts.pageSize < totalNearby,
-          total: totalNearby,
-          fromCache: false,
-          radiusKm: radius,
-          mode: 'nearby',
+        if (totalNearby > 0) {
+          const doctors = (data || []).map((row) => normalizeProviderRow(row))
+          indexMany(doctors)
+          const result = {
+            doctors: doctors.map(toListCard),
+            page: opts.page,
+            pageSize: opts.pageSize,
+            hasMore: (opts.page + 1) * opts.pageSize < totalNearby,
+            total: totalNearby,
+            fromCache: false,
+            radiusKm: radius,
+            mode: 'nearby',
+          }
+          queryCache.set(key, { at: Date.now(), result })
+          notify()
+          return result
         }
-        queryCache.set(key, { at: Date.now(), result })
-        notify()
-        return result
+      } else if (error || countRes.error) {
+        console.warn(
+          '[providers] nearby_providers failed; using locality browse',
+          error?.message || countRes.error?.message,
+        )
       }
       // continue into city/browse path below with opts.city from locality
     }

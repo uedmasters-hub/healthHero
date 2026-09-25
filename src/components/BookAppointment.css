@@ -444,9 +444,16 @@
   color: var(--featured-ink);
 }
 
-.upcoming-checkin-yes:active,
-.upcoming-checkin-not-yet:active {
-  opacity: var(--opacity-pressed);
+.upcoming-checkin-yes:focus-visible,
+.upcoming-checkin-not-yet:focus-visible {
+  outline: 2px solid var(--featured-ink);
+  outline-offset: 2px;
+}
+
+.upcoming-checkin-yes:disabled,
+.upcoming-checkin-not-yet:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .upcoming-carousel-skel {

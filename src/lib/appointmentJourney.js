@@ -33,13 +33,18 @@ export const APPOINTMENT_STATUS = {
   // Engine-aligned aliases for gradual migration
   CONFIRMED: BOOKING_STATUS.CONFIRMED,
   IN_PROGRESS: BOOKING_STATUS.IN_PROGRESS,
+  VISIT_ACTIVE: BOOKING_STATUS.VISIT_ACTIVE,
+  TESTS_IN_PROGRESS: BOOKING_STATUS.TESTS_IN_PROGRESS,
+  PAUSED: BOOKING_STATUS.PAUSED,
   AWAITING_COMPLETION: BOOKING_STATUS.AWAITING_COMPLETION,
+  COMPLETED_PENDING_PROVIDER: BOOKING_STATUS.COMPLETED_PENDING_PROVIDER,
   EXPIRED: BOOKING_STATUS.EXPIRED,
   CANCELLED: BOOKING_STATUS.CANCELLED,
   COMPLETED: BOOKING_STATUS.COMPLETED,
   REFUNDED: BOOKING_STATUS.REFUNDED,
   NO_SHOW: BOOKING_STATUS.NO_SHOW,
   RESCHEDULED: BOOKING_STATUS.RESCHEDULED,
+  RESCHEDULE_REQUESTED: BOOKING_STATUS.RESCHEDULE_REQUESTED,
 }
 
 export { BOOKING_STATUS, PAYMENT_STATUS, VISIT_PHASE }
@@ -51,6 +56,7 @@ export const APPOINTMENT_STAGE = {
   READY: 'ready',
   ACTIVE_VISIT: 'active_visit',
   VISIT_CHECKIN: 'visit_checkin',
+  WAITING_PROVIDER: 'waiting_provider',
   POST_VISIT: 'post_visit',
 }
 
@@ -63,6 +69,12 @@ export const MENU_ACTION = {
   INVOICE: 'invoice',
   CANCEL_CHECKIN: 'cancel_checkin',
   CANCEL_APPOINTMENT: 'cancel_appointment',
+  COMPLETE_VISIT: 'complete_visit',
+  TESTS_IN_PROGRESS: 'tests_in_progress',
+  PAUSE_VISIT: 'pause_visit',
+  RESUME_VISIT: 'resume_visit',
+  REQUEST_RESCHEDULE: 'request_reschedule',
+  REPORT_VISIT: 'report_visit',
 }
 
 export const PREP_STEPS = [
@@ -128,18 +140,46 @@ export function getAppointmentJourney(booking, now = new Date()) {
     }
   }
 
-  if (phase === VISIT_PHASE.ACTIVE_VISIT) {
+  if (phase === VISIT_PHASE.WAITING_PROVIDER) {
     return {
-      status: APPOINTMENT_STATUS.IN_PROGRESS,
+      status: APPOINTMENT_STATUS.COMPLETED_PENDING_PROVIDER,
+      stage: APPOINTMENT_STAGE.WAITING_PROVIDER,
+      phase,
+      path: '/post-visit-report',
+      badge: 'Waiting for provider',
+      badgeTone: 'prepared',
+      cta: 'Report visit',
+      sectionLabel: 'Waiting for Provider Confirmation',
+      targetLayout: 'hero',
+      sourceLayout: 'appointment',
+      prompt: 'Waiting for your provider to confirm outcomes.',
+    }
+  }
+
+  if (phase === VISIT_PHASE.ACTIVE_VISIT) {
+    const status = getAppointmentStatus(booking)
+    const paused = status === BOOKING_STATUS.PAUSED
+    const testing = status === BOOKING_STATUS.TESTS_IN_PROGRESS
+    return {
+      status: testing
+        ? APPOINTMENT_STATUS.TESTS_IN_PROGRESS
+        : paused
+          ? APPOINTMENT_STATUS.PAUSED
+          : APPOINTMENT_STATUS.VISIT_ACTIVE,
       stage: APPOINTMENT_STAGE.ACTIVE_VISIT,
       phase,
       path: '/appointment',
-      badge: 'Active visit',
+      badge: testing ? 'Tests in progress' : paused ? 'Visit paused' : 'Visit in progress',
       badgeTone: 'checked_in',
-      cta: 'View visit',
-      sectionLabel: 'Active Visit',
+      cta: 'Complete Visit',
+      sectionLabel: 'Visit in Progress',
       targetLayout: 'hero',
       sourceLayout: 'appointment',
+      prompt: testing
+        ? 'Lab or imaging still running?'
+        : paused
+          ? 'Ready to resume your visit?'
+          : 'Still with your care team?',
     }
   }
 
@@ -242,6 +282,8 @@ function buildMenuItems({
   canReschedule,
   canCancelAppointment,
   canCancelCheckIn,
+  canVisitExceptions,
+  isPaused,
 }) {
   const items = []
 
@@ -254,6 +296,42 @@ function buildMenuItems({
     })
   }
 
+  if (canVisitExceptions) {
+    if (isPaused) {
+      items.push({
+        id: MENU_ACTION.RESUME_VISIT,
+        label: 'Resume visit',
+        tone: 'default',
+        action: MENU_ACTION.RESUME_VISIT,
+      })
+    } else {
+      items.push({
+        id: MENU_ACTION.TESTS_IN_PROGRESS,
+        label: 'Tests in progress',
+        tone: 'default',
+        action: MENU_ACTION.TESTS_IN_PROGRESS,
+      })
+      items.push({
+        id: MENU_ACTION.PAUSE_VISIT,
+        label: 'Pause visit',
+        tone: 'default',
+        action: MENU_ACTION.PAUSE_VISIT,
+      })
+    }
+    items.push({
+      id: MENU_ACTION.REQUEST_RESCHEDULE,
+      label: 'Request reschedule',
+      tone: 'default',
+      action: MENU_ACTION.REQUEST_RESCHEDULE,
+    })
+    items.push({
+      id: MENU_ACTION.CONTACT,
+      label: 'Contact clinic',
+      tone: 'default',
+      action: MENU_ACTION.CONTACT,
+    })
+  }
+
   if (canReschedule && (surface === 'details' || surface === 'confirm' || surface === 'ready')) {
     items.push({
       id: MENU_ACTION.RESCHEDULE,
@@ -263,20 +341,22 @@ function buildMenuItems({
     })
   }
 
-  items.push(
-    {
-      id: MENU_ACTION.CONTACT,
-      label: 'Contact Clinic',
-      tone: 'default',
-      action: MENU_ACTION.CONTACT,
-    },
-    {
-      id: MENU_ACTION.CALENDAR,
-      label: 'Add to Calendar',
-      tone: 'default',
-      action: MENU_ACTION.CALENDAR,
-    },
-  )
+  if (!canVisitExceptions) {
+    items.push(
+      {
+        id: MENU_ACTION.CONTACT,
+        label: 'Contact Clinic',
+        tone: 'default',
+        action: MENU_ACTION.CONTACT,
+      },
+      {
+        id: MENU_ACTION.CALENDAR,
+        label: 'Add to Calendar',
+        tone: 'default',
+        action: MENU_ACTION.CALENDAR,
+      },
+    )
+  }
 
   if (surface === 'details' || surface === 'confirm') {
     items.push(
@@ -381,10 +461,27 @@ export function getAppointmentActions(booking, now = new Date(), { surface = 'de
         mode: 'standard',
       }
 
-  const canCancelAppointment = Boolean(booking) && !window.isLocked
+  const canCancelAppointment = Boolean(booking) && (
+    surface === 'home' || surface === 'active_visit'
+      ? [
+        BOOKING_STATUS.VISIT_ACTIVE,
+        BOOKING_STATUS.IN_PROGRESS,
+        BOOKING_STATUS.AWAITING_COMPLETION,
+        BOOKING_STATUS.TESTS_IN_PROGRESS,
+        BOOKING_STATUS.PAUSED,
+        BOOKING_STATUS.CONFIRMED,
+        BOOKING_STATUS.UPCOMING,
+        BOOKING_STATUS.CHECKED_IN,
+      ].includes(String(booking.status || ''))
+      : !window.isLocked
+  )
   // Check-in cancel stays available in the lock window until the appointment start has passed.
   const canCancelCheckIn = stage === APPOINTMENT_STAGE.READY && !window.isPast
-  const canReschedule = canCancelAppointment
+  const canReschedule = surface === 'home' || surface === 'active_visit'
+    ? false
+    : canCancelAppointment
+  const canVisitExceptions = surface === 'home' || surface === 'active_visit'
+  const isPaused = String(booking?.status || '') === BOOKING_STATUS.PAUSED
 
   return {
     ...journey,
@@ -400,12 +497,15 @@ export function getAppointmentActions(booking, now = new Date(), { surface = 'de
     canCancelAppointment,
     canCancelCheckIn,
     canReschedule,
+    canVisitExceptions,
     canEditBooking: !window.isLocked,
     menuItems: buildMenuItems({
-      surface,
+      surface: canVisitExceptions ? 'home' : surface,
       canReschedule,
       canCancelAppointment,
       canCancelCheckIn,
+      canVisitExceptions,
+      isPaused,
     }),
     primaryCta: primaryCtaForSurface(surface, journey, stage),
   }

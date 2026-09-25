@@ -24,6 +24,7 @@ import AppointmentDetail from './components/AppointmentDetail'
 import PreVisitCheckIn from './components/PreVisitCheckIn'
 import PrepareVisit from './components/PrepareVisit'
 import CancelCheckIn from './components/CancelCheckIn'
+import CancelAppointment from './components/CancelAppointment'
 import RescheduleAppointment from './components/RescheduleAppointment'
 import ConfirmReschedule from './components/ConfirmReschedule'
 import ProcessPayment from './components/ProcessPayment'
@@ -31,6 +32,7 @@ import VerifyPayment from './components/VerifyPayment'
 import RescheduleSuccess from './components/RescheduleSuccess'
 import TreatPage from './components/TreatPage'
 import PostVisitSummary from './components/PostVisitSummary'
+import PostVisitReport from './components/PostVisitReport'
 import PharmacyPage from './components/PharmacyPage'
 import PharmacyBrowsePage from './components/PharmacyBrowsePage'
 import PharmacyDetailPage from './components/PharmacyDetailPage'
@@ -135,6 +137,7 @@ function AppRoutes() {
             <Route path="/prepare-visit" element={<PrepareVisit />} />
             <Route path="/pre-checkin" element={<PreVisitCheckIn />} />
             <Route path="/cancel-checkin" element={<CancelCheckIn />} />
+            <Route path="/cancel-appointment" element={<CancelAppointment />} />
             <Route path="/reschedule" element={<RescheduleAppointment />} />
             <Route path="/confirm-reschedule" element={<ConfirmReschedule />} />
             <Route path="/process-payment" element={<ProcessPayment />} />
@@ -142,6 +145,7 @@ function AppRoutes() {
             <Route path="/reschedule-success" element={<RescheduleSuccess />} />
             <Route path="/treat" element={<TreatPage />} />
             <Route path="/post-visit-summary" element={<PostVisitSummary />} />
+            <Route path="/post-visit-report" element={<PostVisitReport />} />
             <Route path="/pharmacy" element={<PharmacyPage />} />
             <Route path="/pharmacy/browse" element={<PharmacyBrowsePage />} />
             <Route path="/pharmacy/:pharmacyId" element={<PharmacyDetailPage />} />

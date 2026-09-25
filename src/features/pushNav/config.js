@@ -30,7 +30,7 @@ const PUSH_DETAIL_RULES = Object.freeze([
   (p) => p === '/appointment',
   (p) => p === '/pre-checkin',
   (p) => p === '/prepare-visit',
-  (p) => p === '/post-visit-summary',
+  (p) => p === '/post-visit-summary' || p === '/post-visit-report',
   (p) => p === '/chat' || p.startsWith('/chat/'),
 ])
 

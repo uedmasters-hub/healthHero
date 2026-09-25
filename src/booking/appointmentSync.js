@@ -34,12 +34,13 @@ export function mapAppointmentStatus(value) {
   const key = String(value || 'draft')
   const allowed = [
     'draft', 'pending_payment', 'payment_processing', 'confirmed', 'upcoming',
-    'checked_in', 'in_progress', 'awaiting_completion', 'completed', 'cancelled',
-    'rescheduled', 'no_show', 'expired', 'refunded',
+    'checked_in', 'in_progress', 'visit_active', 'tests_in_progress', 'paused',
+    'awaiting_completion', 'completed_pending_provider', 'completed', 'cancelled',
+    'rescheduled', 'reschedule_requested', 'no_show', 'expired', 'refunded',
   ]
   if (allowed.includes(key)) return key
   if (key === 'booked') return 'confirmed'
-  if (key === 'consultation_active') return 'in_progress'
+  if (key === 'consultation_active' || key === 'visit_in_progress') return 'visit_active'
   if (key === 'payment_pending') return 'pending_payment'
   return 'draft'
 }
@@ -83,7 +84,11 @@ export function toAppointmentRow(record, userId) {
   const checkedIn = [
     BOOKING_STATUS.CHECKED_IN,
     BOOKING_STATUS.IN_PROGRESS,
+    BOOKING_STATUS.VISIT_ACTIVE,
+    BOOKING_STATUS.TESTS_IN_PROGRESS,
+    BOOKING_STATUS.PAUSED,
     BOOKING_STATUS.AWAITING_COMPLETION,
+    BOOKING_STATUS.COMPLETED_PENDING_PROVIDER,
     'consultation_active',
   ].includes(record.status)
   const row = {
@@ -123,9 +128,17 @@ export function toAppointmentRow(record, userId) {
       new Date(row.completed_at).getTime() + 24 * 60 * 60 * 1000,
     ).toISOString()
   }
-  if (record.meta?.confirmationSnoozeUntil) {
-    row.confirmation_snooze_until = record.meta.confirmationSnoozeUntil
+  if (record.meta?.confirmationSnoozeUntil || record.meta?.visitReminderAt) {
+    row.confirmation_snooze_until = record.meta.visitReminderAt || record.meta.confirmationSnoozeUntil
   }
+  if (record.meta?.patientStatus) row.patient_status = record.meta.patientStatus
+  if (record.meta?.providerStatus) row.provider_status = record.meta.providerStatus
+  if (record.meta?.reconciliationStatus) row.reconciliation_status = record.meta.reconciliationStatus
+  if (record.meta?.patientReport) row.patient_report = record.meta.patientReport
+  if (record.meta?.providerOutcomes) row.provider_outcomes = record.meta.providerOutcomes
+  if (record.meta?.nextCarePath) row.next_care_path = record.meta.nextCarePath
+  if (record.meta?.providerCompletedAt) row.provider_completed_at = record.meta.providerCompletedAt
+  if (record.meta?.patientCompletedAt) row.patient_completed_at = record.meta.patientCompletedAt
   return row
 }
 
@@ -178,7 +191,7 @@ export async function pullRemoteAppointments(engine, userId) {
     const sb = requireSupabase()
     const { data, error } = await sb
       .from('appointments')
-      .select('id, client_id, status, client_payload, scheduled_date, scheduled_time, visit_type, updated_at, started_at, completed_at, post_visit_until, confirmation_snooze_until, checked_in_at, duration_minutes')
+      .select('id, client_id, status, client_payload, scheduled_date, scheduled_time, visit_type, updated_at, started_at, completed_at, post_visit_until, confirmation_snooze_until, checked_in_at, duration_minutes, patient_status, provider_status, reconciliation_status, patient_report, provider_outcomes, next_care_path, provider_completed_at, patient_completed_at')
       .or(`user_id.eq.${userId},patient_id.eq.${userId}`)
     if (error) throw error
 
@@ -211,9 +224,27 @@ export async function pullRemoteAppointments(engine, userId) {
               completedAt: row.completed_at || existing.meta?.completedAt,
               postVisitUntil: row.post_visit_until || existing.meta?.postVisitUntil,
               confirmationSnoozeUntil: row.confirmation_snooze_until || existing.meta?.confirmationSnoozeUntil,
+              visitReminderAt: row.confirmation_snooze_until || existing.meta?.visitReminderAt,
+              lifecycle: remoteStatus || existing.meta?.lifecycle,
+              patientStatus: row.patient_status || existing.meta?.patientStatus,
+              providerStatus: row.provider_status || existing.meta?.providerStatus,
+              reconciliationStatus: row.reconciliation_status || existing.meta?.reconciliationStatus,
+              patientReport: row.patient_report || existing.meta?.patientReport,
+              providerOutcomes: row.provider_outcomes || existing.meta?.providerOutcomes,
+              nextCarePath: row.next_care_path || existing.meta?.nextCarePath,
+              providerCompletedAt: row.provider_completed_at || existing.meta?.providerCompletedAt,
+              patientCompletedAt: row.patient_completed_at || existing.meta?.patientCompletedAt,
               checkedInAt: row.checked_in_at || existing.meta?.checkedInAt,
             },
           })
+          // Auto-reconcile when provider completed while patient was waiting.
+          if (
+            row.provider_status === 'completed'
+            && existing.meta?.providerStatus !== 'completed'
+            && typeof engine.applyProviderCompletion === 'function'
+          ) {
+            engine.applyProviderCompletion(clientId, row.provider_outcomes || {})
+          }
           updated += 1
         } else if (row.id && !existing.meta?.remoteAppointmentId && typeof engine.updateBooking === 'function') {
           engine.updateBooking(clientId, {

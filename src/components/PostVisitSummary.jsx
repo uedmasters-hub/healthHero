@@ -119,6 +119,9 @@ export default function PostVisitSummary() {
   const bookingId = useRouteBookingId(location.state)
   const booking = useBookingById(bookingId)
   const fromState = location.state?.visitData
+  const careFocus = location.state?.careFocus || booking?.meta?.nextCarePath || null
+  const waitingProvider = booking?.status === 'completed_pending_provider'
+    || booking?.meta?.reconciliationStatus === 'awaiting_provider'
 
   const visitData = useMemo(() => {
     if (fromState && !bookingId) return fromState
@@ -199,11 +202,19 @@ export default function PostVisitSummary() {
             </svg>
           </div>
           <div className="postvisit-success-text">
-            <div className="postvisit-success-title">Visit completed successfully</div>
+            <div className="postvisit-success-title">
+              {waitingProvider
+                ? 'Waiting for provider confirmation'
+                : careFocus && careFocus !== 'post_visit_summary'
+                  ? `Next: ${String(careFocus).replace(/_/g, ' ')}`
+                  : 'Visit completed successfully'}
+            </div>
             <div className="postvisit-success-subtitle">
-              {bookingId
-                ? 'Your temporary care hub is available for 24 hours.'
-                : 'Your care plan has been updated.'}
+              {waitingProvider
+                ? 'Official notes will appear here when your clinic confirms. You can still leave a temporary report from Home.'
+                : bookingId
+                  ? 'Your temporary care hub is available for 24 hours.'
+                  : 'Your care plan has been updated.'}
             </div>
           </div>
         </div>

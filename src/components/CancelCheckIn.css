@@ -296,6 +296,31 @@
   background: var(--cta);
 }
 
+.ccancel-reason-item.is-selected .ccancel-reason-text {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ccancel-note-label {
+  display: block;
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--text-caption-size, 0.8125rem);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+}
+
+.ccancel-note {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  padding: var(--space-3);
+  font: inherit;
+  resize: vertical;
+  min-height: 88px;
+  background: var(--white);
+  color: var(--text-primary);
+}
+
 .ccancel-radio-inner {
   width: 8px;
   height: 8px;

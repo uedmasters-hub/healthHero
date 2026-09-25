@@ -108,6 +108,7 @@ export default function Header({ endAccessory = null }) {
         locality: place.locality,
         latitude: place.latitude,
         longitude: place.longitude,
+        placeId: place.placeId || place.id || null,
       })
     }
     closeSheet()
@@ -223,8 +224,11 @@ export default function Header({ endAccessory = null }) {
               className={`location-gps ${fromGps ? 'is-selected' : ''} ${locating ? 'is-busy' : ''} ${status === 'denied' ? 'is-alert' : ''}`}
               onClick={onCurrentLocation}
               disabled={locating}
+              aria-label={fromGps ? 'Use current GPS location, selected' : 'Use current GPS location'}
+              aria-current={fromGps ? 'true' : undefined}
+              aria-busy={locating || undefined}
             >
-              <span className={`location-gps-mark ${locating ? 'is-spin' : ''}`}>
+              <span className={`location-gps-mark ${locating ? 'is-spin' : ''}`} aria-hidden="true">
                 <GpsIcon />
               </span>
               <span className="location-gps-copy">
@@ -238,39 +242,51 @@ export default function Header({ endAccessory = null }) {
               className="location-refresh"
               onClick={onRefreshLocation}
               disabled={locating}
+              aria-label="Refresh current location"
             >
               Refresh location
             </button>
 
             {recentLocations?.length ? (
-              <div className="location-section">
-                <p className="location-section-label">Recent</p>
-                {recentLocations.map((item, i) => (
-                  <RevealItem
-                    as="button"
-                    key={`${item.locality}-${item.at || i}`}
-                    className={`location-item ${locality === item.locality && source !== 'gps' ? 'active' : ''}`}
-                    revealed={cityReveal.isRevealed(i)}
-                    cached={cityReveal.isCached}
-                    ref={cityReveal.setItemRef(i)}
-                    onClick={() => pickManual(item)}
-                  >
-                    <span className="location-item-pin" aria-hidden="true">◷</span>
-                    <span className="location-item-name">{item.locality}</span>
-                  </RevealItem>
-                ))}
+              <div className="location-section" role="group" aria-labelledby="location-recent-label">
+                <p className="location-section-label" id="location-recent-label">Recent</p>
+                {recentLocations.map((item, i) => {
+                  const isActive = locality === item.locality && source !== 'gps'
+                  const key = item.placeId
+                    || `${String(item.locality || '').toLowerCase()}-${Number(item.latitude).toFixed(3)}-${Number(item.longitude).toFixed(3)}`
+                  return (
+                    <RevealItem
+                      as="button"
+                      type="button"
+                      key={key}
+                      className={`location-item ${isActive ? 'active' : ''}`}
+                      revealed={cityReveal.isRevealed(i)}
+                      cached={cityReveal.isCached}
+                      ref={cityReveal.setItemRef(i)}
+                      onClick={() => pickManual(item)}
+                      aria-label={isActive ? `${item.locality}, current location` : `Use ${item.locality}`}
+                      aria-current={isActive ? 'true' : undefined}
+                    >
+                      <span className="location-item-pin" aria-hidden="true">◷</span>
+                      <span className="location-item-name">{item.locality}</span>
+                    </RevealItem>
+                  )
+                })}
               </div>
             ) : null}
 
             {searchHits.length ? (
-              <div className="location-section">
-                <p className="location-section-label">{searching ? 'Searching…' : 'Search results'}</p>
-                {searchHits.map((hit, i) => (
+              <div className="location-section" role="group" aria-labelledby="location-search-label">
+                <p className="location-section-label" id="location-search-label">
+                  {searching ? 'Searching…' : 'Search results'}
+                </p>
+                {searchHits.map((hit) => (
                   <button
                     type="button"
-                    key={hit.id}
+                    key={hit.id || `${hit.locality}-${hit.latitude}-${hit.longitude}`}
                     className="location-item"
                     onClick={() => pickManual(hit)}
+                    aria-label={`Use ${hit.locality}`}
                   >
                     <span className="location-item-pin" aria-hidden="true">⌕</span>
                     <span className="location-item-copy">
@@ -284,29 +300,35 @@ export default function Header({ endAccessory = null }) {
               </div>
             ) : null}
 
-            <div className="location-section">
-              <p className="location-section-label">Suggested</p>
-              {suggested.map((city, i) => (
-                <RevealItem
-                  as="button"
-                  key={city}
-                  className={`location-item ${locality === city && source === 'manual' ? 'active' : ''}`}
-                  revealed={cityReveal.isRevealed(i + (recentLocations?.length || 0))}
-                  cached={cityReveal.isCached}
-                  ref={cityReveal.setItemRef(i + (recentLocations?.length || 0))}
-                  onClick={() => pickManual(city)}
-                >
-                  <span className="location-item-pin" aria-hidden="true">📍</span>
-                  <span className="location-item-name">{city}</span>
-                  {locality === city && source === 'manual' ? (
-                    <svg className="location-item-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  ) : null}
-                </RevealItem>
-              ))}
+            <div className="location-section" role="group" aria-labelledby="location-suggested-label">
+              <p className="location-section-label" id="location-suggested-label">Suggested</p>
+              {suggested.map((city, i) => {
+                const isActive = locality === city && source === 'manual'
+                return (
+                  <RevealItem
+                    as="button"
+                    type="button"
+                    key={city}
+                    className={`location-item ${isActive ? 'active' : ''}`}
+                    revealed={cityReveal.isRevealed(i + (recentLocations?.length || 0))}
+                    cached={cityReveal.isCached}
+                    ref={cityReveal.setItemRef(i + (recentLocations?.length || 0))}
+                    onClick={() => pickManual(city)}
+                    aria-label={isActive ? `${city}, current location` : `Use ${city}`}
+                    aria-current={isActive ? 'true' : undefined}
+                  >
+                    <span className="location-item-pin" aria-hidden="true">📍</span>
+                    <span className="location-item-name">{city}</span>
+                    {isActive ? (
+                      <svg className="location-item-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : null}
+                  </RevealItem>
+                )
+              })}
               {!suggested.length && !searchHits.length ? (
-                <div className="location-empty">No places found</div>
+                <div className="location-empty" role="status">No places found</div>
               ) : null}
             </div>
           </div>

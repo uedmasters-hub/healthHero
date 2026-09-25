@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
-import { getAppointmentJourney, VISIT_PHASE } from '../lib/appointmentJourney'
+import {
+  getAppointmentActions,
+  getAppointmentJourney,
+  MENU_ACTION,
+  VISIT_PHASE,
+} from '../lib/appointmentJourney'
+import { BOOKING_STATUS } from '../booking/constants'
 import { buildAppointmentPreview } from '../lib/appointmentPreview'
 import {
   HOME_CAROUSEL_LIMIT,
@@ -16,6 +22,9 @@ import { useSharedHero } from './SharedHero'
 import { useDemoPreview } from './DemoPreviewModal'
 import { isPreviewServiceType } from '../lib/previewModules'
 import ProviderAvatar from './ProviderAvatar'
+import AppBottomSheet from './AppBottomSheet'
+import { useAppSheet } from './PageTransition'
+import AppointmentMenuOptions from './AppointmentMenuOptions'
 import './BookAppointment.css'
 
 function ServiceIcon({ type }) {
@@ -77,8 +86,13 @@ function UpcomingBookingCard({
     adoptBooking,
     getResumePath,
     confirmVisitCompleted,
+    confirmVisitYes,
+    keepVisitActive,
     snoozeVisitConfirmation,
+    setVisitException,
   } = useBooking()
+  const moreSheet = useAppSheet()
+  const [yesBusy, setYesBusy] = useState(false)
 
   const presented = presentBookingCard(booking)
   const {
@@ -143,19 +157,110 @@ function UpcomingBookingCard({
     go()
   }
 
-  const onYes = (e) => {
+  const onYes = async (e) => {
     e.stopPropagation()
-    confirmVisitCompleted?.(bookingId)
-    navigate('/post-visit-summary', { state: { bookingId, origin } })
+    if (yesBusy) return
+    setYesBusy(true)
+    try {
+      const result = confirmVisitYes
+        ? await confirmVisitYes(bookingId)
+        : { waitingForProvider: true, booking: confirmVisitCompleted?.(bookingId) }
+      if (!result) return
+      if (result.waitingForProvider) {
+        // Home hero flips to Waiting for Provider Confirmation via phase.
+        return
+      }
+      const nav = result.navigation
+      if (nav?.pathname) {
+        navigate(nav.pathname, { state: nav.state })
+        return
+      }
+      navigate('/post-visit-summary', {
+        state: {
+          bookingId,
+          origin,
+          careFocus: result.careFocus || 'post_visit_summary',
+        },
+      })
+    } finally {
+      setYesBusy(false)
+    }
   }
 
   const onNotYet = (e) => {
     e.stopPropagation()
-    snoozeVisitConfirmation?.(bookingId)
+    // Persist visit_active + 30-minute reminder (Supabase SSOT via engine RPC).
+    ;(keepVisitActive || snoozeVisitConfirmation)?.(bookingId)
+  }
+
+  const onCompleteVisit = async (e) => {
+    e.stopPropagation()
+    await onYes(e)
+  }
+
+  const openMore = (e) => {
+    e.stopPropagation()
+    moreSheet.show()
+  }
+
+  const closeMore = () => {
+    moreSheet.hide()
+  }
+
+  const visitActions = getAppointmentActions(booking, new Date(), { surface: 'active_visit' })
+
+  const onMoreAction = (item) => {
+    closeMore()
+    const action = item?.action || item?.id
+    if (action === MENU_ACTION.COMPLETE_VISIT) {
+      onCompleteVisit({ stopPropagation() {} })
+      return
+    }
+    if (action === MENU_ACTION.TESTS_IN_PROGRESS) {
+      setVisitException?.(bookingId, BOOKING_STATUS.TESTS_IN_PROGRESS, {
+        reason: 'Tests in progress',
+      })
+      return
+    }
+    if (action === MENU_ACTION.PAUSE_VISIT) {
+      setVisitException?.(bookingId, BOOKING_STATUS.PAUSED, {
+        reason: 'Visit paused',
+      })
+      return
+    }
+    if (action === MENU_ACTION.RESUME_VISIT) {
+      keepVisitActive?.(bookingId)
+      return
+    }
+    if (action === MENU_ACTION.REQUEST_RESCHEDULE) {
+      adoptBooking?.(booking)
+      navigate('/cancel-appointment', {
+        state: { bookingId, origin, branch: 'reschedule' },
+      })
+      return
+    }
+    if (action === MENU_ACTION.CONTACT) {
+      adoptBooking?.(booking)
+      navigate('/appointment', { state: { bookingId, origin, focus: 'contact' } })
+      return
+    }
+    if (action === MENU_ACTION.CANCEL_APPOINTMENT) {
+      adoptBooking?.(booking)
+      navigate('/cancel-appointment', {
+        state: { bookingId, origin, branch: 'cancel' },
+      })
+    }
+  }
+
+  const onReportVisit = (e) => {
+    e.stopPropagation()
+    adoptBooking?.(booking)
+    navigate('/post-visit-report', { state: { bookingId, origin } })
   }
 
   const isCheckin = phase === VISIT_PHASE.VISIT_CHECKIN
   const isActiveVisit = phase === VISIT_PHASE.ACTIVE_VISIT
+  const isWaitingProvider = phase === VISIT_PHASE.WAITING_PROVIDER
   const isPostVisit = phase === VISIT_PHASE.POST_VISIT
 
   return (
@@ -166,6 +271,7 @@ function UpcomingBookingCard({
         active ? 'is-active' : 'is-adjacent',
         isCheckin ? 'is-visit-checkin' : '',
         isActiveVisit ? 'is-active-visit' : '',
+        isWaitingProvider ? 'is-waiting-provider' : '',
         isPostVisit ? 'is-post-visit' : '',
       ].filter(Boolean).join(' ')}
       revealed={revealProps.revealed}
@@ -174,13 +280,13 @@ function UpcomingBookingCard({
         revealProps.setRef?.(node)
         if (sharedSourceRef) sharedSourceRef.current = node
       }}
-      onClick={isCheckin ? undefined : openBooking}
+      onClick={isCheckin || isActiveVisit || isWaitingProvider ? undefined : openBooking}
       onFocus={onActivate}
       role="group"
-      aria-label={`${serviceMeta.label}: ${title}`}
+      aria-label={`${isWaitingProvider ? 'Waiting for provider' : isActiveVisit ? 'Visit in progress' : serviceMeta.label}: ${title}`}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (isCheckin) return
+        if (isCheckin || isActiveVisit || isWaitingProvider) return
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           openBooking()
@@ -192,11 +298,13 @@ function UpcomingBookingCard({
           <span className="upcoming-service-type">
             {isCheckin
               ? 'Visit check-in'
-              : isActiveVisit
-                ? 'Active visit'
-                : isPostVisit
-                  ? 'Post visit'
-                  : serviceMeta.label}
+              : isWaitingProvider
+                ? 'Waiting for provider'
+                : isActiveVisit
+                  ? 'Visit in progress'
+                  : isPostVisit
+                    ? 'Post visit'
+                    : serviceMeta.label}
           </span>
           <span className={`upcoming-badge is-${badgeTone}`}>{badge}</span>
         </div>
@@ -228,16 +336,82 @@ function UpcomingBookingCard({
         </div>
 
         {isCheckin ? (
-          <div className="upcoming-checkin-prompt">
-            <p className="upcoming-checkin-question">
+          <div className="upcoming-checkin-prompt" role="group" aria-label="Visit check-in">
+            <p className="upcoming-checkin-question" id={`checkin-q-${bookingId}`}>
               {journey.prompt || 'Have you completed your visit?'}
             </p>
-            <div className="upcoming-checkin-actions">
-              <button type="button" className="upcoming-checkin-yes" onClick={onYes}>
-                Yes
+            <div className="upcoming-checkin-actions" role="group" aria-labelledby={`checkin-q-${bookingId}`}>
+              <button
+                type="button"
+                className="upcoming-checkin-yes"
+                onClick={onYes}
+                disabled={yesBusy}
+                aria-busy={yesBusy}
+                aria-label="Yes, visit is complete"
+              >
+                {yesBusy ? 'Checking…' : 'Yes'}
               </button>
-              <button type="button" className="upcoming-checkin-not-yet" onClick={onNotYet}>
+              <button
+                type="button"
+                className="upcoming-checkin-not-yet"
+                onClick={onNotYet}
+                aria-label="Not yet — keep visit in progress"
+              >
                 Not yet
+              </button>
+            </div>
+          </div>
+        ) : isWaitingProvider ? (
+          <div className="upcoming-checkin-prompt" role="group" aria-label="Waiting for provider confirmation">
+            <p className="upcoming-checkin-question" id={`wait-q-${bookingId}`}>
+              {journey.prompt || 'Waiting for your provider to confirm outcomes.'}
+            </p>
+            <div className="upcoming-checkin-actions" role="group" aria-labelledby={`wait-q-${bookingId}`}>
+              <button
+                type="button"
+                className="upcoming-checkin-yes"
+                onClick={onReportVisit}
+                aria-label="Report what happened after the visit"
+              >
+                Report visit
+              </button>
+              <button
+                type="button"
+                className="upcoming-checkin-not-yet"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  adoptBooking?.(booking)
+                  navigate('/appointment', { state: { bookingId, origin, focus: 'contact' } })
+                }}
+                aria-label="Contact clinic"
+              >
+                Contact clinic
+              </button>
+            </div>
+          </div>
+        ) : isActiveVisit ? (
+          <div className="upcoming-checkin-prompt" role="group" aria-label="Visit in progress">
+            <p className="upcoming-checkin-question" id={`active-q-${bookingId}`}>
+              {journey.prompt || 'Still with your care team?'}
+            </p>
+            <div className="upcoming-checkin-actions" role="group" aria-labelledby={`active-q-${bookingId}`}>
+              <button
+                type="button"
+                className="upcoming-checkin-yes"
+                onClick={onCompleteVisit}
+                aria-label="Complete visit"
+              >
+                Complete Visit
+              </button>
+              <button
+                type="button"
+                className="upcoming-checkin-not-yet"
+                onClick={openMore}
+                aria-haspopup="dialog"
+                aria-expanded={moreSheet.isPresented}
+                aria-label="More visit options"
+              >
+                More options
               </button>
             </div>
           </div>
@@ -273,6 +447,27 @@ function UpcomingBookingCard({
           </>
         )}
       </div>
+
+      <AppBottomSheet
+        open={moreSheet.isPresented}
+        closing={moreSheet.isClosing}
+        onClose={closeMore}
+        labelledBy="visit-more-title"
+      >
+        <div className="ds-sheet-header">
+          <h3 id="visit-more-title">Visit options</h3>
+          <button type="button" className="ds-sheet-close" onClick={closeMore} aria-label="Close">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <AppointmentMenuOptions
+          items={visitActions.menuItems}
+          onAction={onMoreAction}
+        />
+      </AppBottomSheet>
     </RevealItem>
   )
 }
@@ -299,7 +494,12 @@ export default function UpcomingBookingsCarousel({
   const heroBooking = homeSurface?.booking
   const showHero = origin === 'home'
     && heroBooking
-    && [VISIT_PHASE.ACTIVE_VISIT, VISIT_PHASE.VISIT_CHECKIN, VISIT_PHASE.POST_VISIT].includes(heroPhase)
+    && [
+      VISIT_PHASE.ACTIVE_VISIT,
+      VISIT_PHASE.VISIT_CHECKIN,
+      VISIT_PHASE.WAITING_PROVIDER,
+      VISIT_PHASE.POST_VISIT,
+    ].includes(heroPhase)
 
   const carousel = useMemo(() => {
     let list = allCarousel

@@ -75,6 +75,7 @@ export function selectHomeSurface(state, now = new Date()) {
 
   return (
     pick(VISIT_PHASE.VISIT_CHECKIN)
+    || pick(VISIT_PHASE.WAITING_PROVIDER)
     || pick(VISIT_PHASE.ACTIVE_VISIT)
     || pick(VISIT_PHASE.POST_VISIT)
     || pick(VISIT_PHASE.UPCOMING)

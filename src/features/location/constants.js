@@ -11,6 +11,12 @@ export const RADIUS_STEP_KM = 10
 export const LOCATION_CACHE_KEY = 'emedicalls.location.v1'
 export const LOCATION_RECENTS_MAX = 8
 
+/** Collapse common aliases so MRU never keeps both "Delhi" and "New Delhi". */
+export const PLACE_ALIASES = Object.freeze({
+  'new delhi': 'Delhi',
+  gurgaon: 'Gurugram',
+})
+
 /** Known place coordinates for manual picks (Nepal + common nearby metros). */
 export const PLACE_COORDS = {
   Kathmandu: { latitude: 27.7172, longitude: 85.3240 },
@@ -48,9 +54,60 @@ export function nextExpandRadiusKm(current) {
   return MAX_SEARCH_RADIUS_KM
 }
 
+/** Trim + lowercase locality for comparisons. */
+export function normalizeLocalityLabel(label) {
+  return String(label || '').trim().replace(/\s+/g, ' ').toLowerCase()
+}
+
+/**
+ * Stable identity for MRU dedupe.
+ * Prefer canonical PLACE_COORDS / alias key (so "Delhi" is unique), then placeId, then rounded geo.
+ */
+export function locationIdentity(entry) {
+  if (!entry) return ''
+
+  const raw = String(entry.locality || '').trim()
+  const norm = normalizeLocalityLabel(raw)
+
+  if (norm) {
+    const aliasTarget = PLACE_ALIASES[norm]
+    if (aliasTarget) return `place:${normalizeLocalityLabel(aliasTarget)}`
+    if (PLACE_COORDS[raw]) return `place:${norm}`
+    const hit = Object.keys(PLACE_COORDS).find((k) => normalizeLocalityLabel(k) === norm)
+    if (hit) return `place:${normalizeLocalityLabel(hit)}`
+  }
+
+  if (entry.placeId) return `id:${String(entry.placeId).trim().toLowerCase()}`
+
+  const lat = Number(entry.latitude)
+  const lng = Number(entry.longitude)
+  if (norm && Number.isFinite(lat) && Number.isFinite(lng)) {
+    return `geo:${norm}|${lat.toFixed(3)},${lng.toFixed(3)}`
+  }
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return `geo:${lat.toFixed(3)},${lng.toFixed(3)}`
+  }
+  return norm ? `name:${norm}` : ''
+}
+
+/** Preferred display locality (canonical place name when known). */
+export function canonicalLocality(entry) {
+  const raw = String(entry?.locality || '').trim().replace(/\s+/g, ' ')
+  if (!raw) return ''
+  const norm = normalizeLocalityLabel(raw)
+  const alias = PLACE_ALIASES[norm]
+  if (alias) return alias
+  if (PLACE_COORDS[raw]) return raw
+  const hit = Object.keys(PLACE_COORDS).find((k) => normalizeLocalityLabel(k) === norm)
+  return hit || raw
+}
+
 export function coordsForPlace(label) {
   const key = String(label || '').trim()
   if (!key) return null
+  const alias = PLACE_ALIASES[normalizeLocalityLabel(key)]
+  const resolved = alias || key
+  if (PLACE_COORDS[resolved]) return { ...PLACE_COORDS[resolved], locality: resolved }
   if (PLACE_COORDS[key]) return { ...PLACE_COORDS[key], locality: key }
   const hit = Object.keys(PLACE_COORDS).find((k) => k.toLowerCase() === key.toLowerCase())
   if (!hit) return null
