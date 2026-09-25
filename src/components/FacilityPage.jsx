@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { fetchFacilityPage, mapsDirectionsUrl } from '../features/providers'
-import { formatPlaceParts } from '../features/geography/formatPlace'
 import DoctorCard from './DoctorCard'
 import GalleryLightbox from './GalleryLightbox'
 import EmptyState from './EmptyState'
@@ -118,10 +117,10 @@ export default function FacilityPage() {
     return hours.find((h) => h.dayOfWeek === today) || null
   }, [hours])
 
-  const subtitle = [
-    facility?.facilityLevel || facility?.type,
-    formatPlaceParts(facility?.city, facility?.district) || facility?.city,
-  ].filter(Boolean).join(' · ')
+  const subtitle = facility?.classification
+    || facility?.facilityLevel
+    || facility?.type
+    || ''
 
   const openDoctor = (doctor) => {
     navigate(`/doctor/${doctor.id}`, {

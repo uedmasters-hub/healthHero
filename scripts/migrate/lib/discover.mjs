@@ -3,8 +3,7 @@ import path from 'node:path'
 import { csvToObjects, inspectHeaders, readJsonFile } from './io.mjs'
 
 /**
- * Discover registry datasets from permanent scripts/data/registry first,
- * then fall back to the temporary API/ workspace during the one-time migration.
+ * Discover registry datasets from the permanent scripts/data/registry copy.
  */
 export function discoverDatasets(root) {
   const candidates = [
@@ -15,8 +14,6 @@ export function discoverDatasets(root) {
       idField: 'NMC Number',
       paths: [
         path.join(root, 'scripts/data/registry/nmc-database-active.csv'),
-        path.join(root, 'API/nmc-api/data/nmc-database-active.csv'),
-        path.join(root, 'API/nmc-api/nmc-database-final.csv'),
       ],
     },
     {
@@ -26,7 +23,6 @@ export function discoverDatasets(root) {
       idField: 'hfCode',
       paths: [
         path.join(root, 'scripts/data/registry/health-facilities.json'),
-        path.join(root, 'API/health-facility-api/data/health-facilities.json'),
       ],
     },
     {
@@ -38,8 +34,6 @@ export function discoverDatasets(root) {
       paths: [
         path.join(root, 'scripts/data/registry/pharmacies.json.backup'),
         path.join(root, 'scripts/data/registry/pharmacies.json'),
-        path.join(root, 'API/pharmacy_api/api/pharmacies.json.backup'),
-        path.join(root, 'API/pharmacy_api/api/pharmacies.json'),
       ],
     },
   ]

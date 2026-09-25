@@ -1,15 +1,16 @@
 /*
-  Search sits OUTSIDE the capsule.
-  Positioned inside .header-actions so we can clear the full shell width.
+  Shared header search control — Home collapsed reference.
+  Borderless, 36×36 touch target, transparent surface.
+  Positioning is owned by the parent (.header-actions / .tab-page-header__actions).
 */
-.header-actions .header-search-btn {
-  position: absolute;
-  top: 50%;
-  z-index: 5;
+
+.header-search-btn {
   box-sizing: border-box;
   width: 36px;
   height: 36px;
-  margin: -18px 0 0 0;
+  min-width: 36px;
+  min-height: 36px;
+  margin: 0;
   padding: 0;
   border: none;
   border-radius: 9999px;
@@ -21,6 +22,50 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transform-origin: center center;
+  will-change: opacity, transform;
+  flex-shrink: 0;
+}
+
+.header-search-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.header-search-btn.is-scroll-driven {
+  pointer-events: none;
+}
+
+.header-search-btn.is-scroll-driven.is-interactive {
+  pointer-events: auto;
+}
+
+.header-search-btn.is-hidden:not(.is-scroll-driven) {
+  opacity: 0;
+  transform: scale3d(0, 0, 1);
+  pointer-events: none;
+}
+
+.header-search-btn.is-visible:not(.is-scroll-driven) {
+  opacity: 1;
+  transform: scale3d(1, 1, 1);
+  pointer-events: auto;
+}
+
+.header-search-btn.is-visible:focus-visible,
+.header-search-btn.is-scroll-driven.is-interactive:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/*
+  Home: absolute inside .header-actions so we can clear the full shell width.
+*/
+.header-actions .header-search-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  margin: -18px 0 0 0;
   will-change: opacity, transform, right;
   /* Left of the 44px avatar slot when capsule is hidden */
   right: calc(var(--ha-slot) + 12px);
@@ -30,35 +75,17 @@
     right 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.header-actions .header-search-btn.is-scroll-driven {
+  transition: right 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Left of the full Bell+Avatar capsule when shell is present */
 .header-actions--has-shell .header-search-btn {
   right: calc(var(--ha-shell-full) - var(--ha-pad) + 12px);
 }
 
-.header-actions .header-search-btn svg {
-  width: 22px;
-  height: 22px;
-  display: block;
-}
-
-.header-actions .header-search-btn.is-hidden {
-  opacity: 0;
-  transform: scale3d(0, 0, 1);
-  pointer-events: none;
-}
-
-.header-actions .header-search-btn.is-visible {
-  opacity: 1;
-  transform: scale3d(1, 1, 1);
-  pointer-events: auto;
-}
-
-.header-actions .header-search-btn.is-visible:focus-visible {
-  outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
-}
-
 @media (prefers-reduced-motion: reduce) {
+  .header-search-btn,
   .header-actions .header-search-btn {
     transition-duration: 0.01ms !important;
   }

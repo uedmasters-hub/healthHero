@@ -4,7 +4,7 @@ import { useBooking } from './BookingContext'
 import useNow from '../hooks/useNow'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
-import SearchBar from './SearchBar'
+import PageSearchHeader from './PageSearchHeader'
 import TreatSearchSuggestions from './TreatSearchSuggestions'
 import UpcomingBookingsCarousel from './UpcomingBookingsCarousel'
 import { visitSummary } from '../data/care'
@@ -32,15 +32,7 @@ const sortOptions = [
   { id: 'oldest', label: 'Oldest first' },
   { id: 'name', label: 'Doctor A–Z' },
 ]
-const visitFilters = ['All types', 'In-Person', 'Video Consultation']
 const TREAT_SEARCH_PLACEHOLDER = 'Search your care, visits, and records…'
-
-function matchesVisitType(booking, visitType) {
-  if (visitType === 'All types') return true
-  const type = booking.visitType || ''
-  if (visitType === 'Video Consultation') return /video|virtual/i.test(type)
-  return /in-?person/i.test(type) || (!/video|virtual/i.test(type) && visitType === 'In-Person')
-}
 
 export default function TreatPage() {
   const navigate = useNavigate()
@@ -50,29 +42,21 @@ export default function TreatPage() {
   const { adoptBooking, getResumePath, focusBooking, hydrated } = useBooking()
   const historySectionRef = useRef(null)
   const scrollRef = useRef(null)
-  const [searchActive, setSearchActive] = useState(false)
+  const searchBarRef = useRef(null)
   const [query, setQuery] = useSearchQuery('treat')
   const [recordSheet, setRecordSheet] = useState(null)
+  const searchActive = Boolean(query.trim())
   const onRefresh = useCallback(() => refreshTreatData(), [])
   const ptr = usePullToRefresh(scrollRef, onRefresh, {
     enabled: !searchActive,
   })
   const [tab, setTab] = useState('All')
   const [sort, setSort] = useState('recent')
-  const [visitType, setVisitType] = useState('All types')
   const [sheet, setSheet] = useState(null)
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const { show: showDemoPreview } = useDemoPreview()
 
   const careHistory = useCareHistory(now)
-
-  const openSearch = useCallback(() => {
-    setSearchActive(true)
-  }, [])
-
-  const closeSearch = useCallback(() => {
-    setSearchActive(false)
-  }, [])
 
   useEffect(() => {
     if (location.state?.focus !== 'bookings') return undefined
@@ -100,7 +84,6 @@ export default function TreatPage() {
   const filteredHistory = useMemo(() => {
     const rows = careHistory
       .filter((visit) => (tab === 'All' ? true : visit.historyTab === tab))
-      .filter((visit) => matchesVisitType(visit, visitType))
       .slice()
 
     rows.sort((a, b) => {
@@ -114,7 +97,7 @@ export default function TreatPage() {
       return sort === 'oldest' ? ta - tb : tb - ta
     })
     return rows
-  }, [careHistory, tab, sort, visitType])
+  }, [careHistory, tab, sort])
 
   const openEngineBooking = (recordOrLegacy) => {
     const isRecord = Boolean(recordOrLegacy?.schedule) && !recordOrLegacy?.engineId
@@ -166,7 +149,7 @@ export default function TreatPage() {
   }
 
   const openSearchItem = (item) => {
-    closeSearch()
+    setQuery('')
     if (item.type === 'appointment' || item.type === 'care-history') {
       if (item.visit) openHistoryItem(item.visit)
       return
@@ -185,61 +168,22 @@ export default function TreatPage() {
   const listTitle = tab === 'All' ? 'All bookings' : `${tab} bookings`
   const sheetTitle = {
     sort: 'Sort care history',
-    filter: 'Filter care',
     cancelled: 'Cancelled visit',
   }[sheet?.type] || ''
 
   return (
-    <div className={`treat-page ${searchActive ? 'is-search' : ''}`}>
-      <header
-        className="treat-header"
-        aria-hidden={searchActive}
-        {...(searchActive ? { inert: true } : {})}
-      >
-        <div className="treat-header-left">
-          <h1 className="treat-title">Treat</h1>
-          <p className="treat-subtitle">Manage your ongoing care</p>
-        </div>
-        <div className="treat-header-actions">
-          <button
-            type="button"
-            className="treat-header-btn"
-            aria-label="Search care"
-            onClick={openSearch}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-          <button type="button" className="treat-header-btn" aria-label="Filter care" onClick={() => openSheet({ type: 'filter' })}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="4" y1="21" x2="4" y2="14" />
-              <line x1="4" y1="10" x2="4" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12" y2="3" />
-              <line x1="20" y1="21" x2="20" y2="16" />
-              <line x1="20" y1="12" x2="20" y2="3" />
-              <line x1="1" y1="14" x2="7" y2="14" />
-              <line x1="9" y1="8" x2="15" y2="8" />
-              <line x1="17" y1="16" x2="23" y2="16" />
-            </svg>
-          </button>
-        </div>
-      </header>
-
-      {searchActive ? (
-        <SearchBar
-          active
-          mode="expandable"
-          scope="treat"
-          query={query}
-          onQueryChange={setQuery}
-          onCancel={closeSearch}
-          idlePlaceholder={TREAT_SEARCH_PLACEHOLDER}
-          activePlaceholder={TREAT_SEARCH_PLACEHOLDER}
-        />
-      ) : null}
+    <div className={`treat-page${searchActive ? ' is-search' : ''}`}>
+      <PageSearchHeader
+        title="Treat"
+        scrollRef={scrollRef}
+        searchBarRef={searchBarRef}
+        scope="treat"
+        placeholder={TREAT_SEARCH_PLACEHOLDER}
+        query={query}
+        onQueryChange={setQuery}
+        locked={searchActive}
+        dockClassName="treat-search-dock"
+      />
 
       <div className="treat-body">
         <div
@@ -383,22 +327,6 @@ export default function TreatPage() {
                   onClick={() => { setSort(option.id); closeSheet() }}
                 >
                   {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {sheet.type === 'filter' && (
-            <div className="treat-sheet-options">
-              <p className="treat-sheet-label">Visit type</p>
-              {visitFilters.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  className={`ds-sheet-option ${visitType === option ? 'is-active' : ''}`}
-                  onClick={() => { setVisitType(option); closeSheet() }}
-                >
-                  {option}
                 </button>
               ))}
             </div>

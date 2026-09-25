@@ -109,6 +109,17 @@
   overflow: hidden;
 }
 
+.booking-layout.is-directory .booking-content.is-directory {
+  overflow: hidden;
+}
+
+.booking-layout.is-directory .booking-content.is-directory > .dir-shell,
+.booking-layout.is-directory .booking-content.is-directory > * {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
 .booking-layout.explore-layout .booking-content {
   overflow: visible;
   display: block;

@@ -132,6 +132,8 @@ function toListCard(d) {
     primaryCenterName: d.primaryCenterName,
     sourceKey: d.sourceKey,
     externalRef: d.externalRef,
+    distanceKm: d.distanceKm ?? null,
+    distance: d.distance ?? null,
   }
 }
 
@@ -188,6 +190,16 @@ export function normalizeProviderRow(row) {
     primaryCenterName: row.primary_center_name || null,
     sourceKey: row.source_key,
     externalRef: row.external_ref,
+    distanceKm: row.distance_km != null && Number.isFinite(Number(row.distance_km))
+      ? Number(row.distance_km)
+      : null,
+    distance: row.distance_km != null && Number.isFinite(Number(row.distance_km))
+      ? (Number(row.distance_km) < 1
+        ? `${Math.max(0.1, Math.round(Number(row.distance_km) * 10) / 10)} km`
+        : Number(row.distance_km) < 10
+          ? `${(Math.round(Number(row.distance_km) * 10) / 10).toFixed(1)} km`
+          : `${Math.round(Number(row.distance_km))} km`)
+      : null,
   }
 }
 
@@ -254,7 +266,16 @@ function queryCacheKey(opts) {
     opts.sort || 'name',
     opts.page || 0,
     opts.pageSize || DEFAULT_PAGE_SIZE,
+    opts.latitude ?? '',
+    opts.longitude ?? '',
+    opts.radiusKm ?? '',
   ].join('|')
+}
+
+function hasOrigin(origin) {
+  return origin
+    && Number.isFinite(Number(origin.latitude))
+    && Number.isFinite(Number(origin.longitude))
 }
 
 function escapeIlike(value) {
@@ -317,19 +338,25 @@ export async function queryProviders({
   q = '',
   city = null,
   district = null,
-  sort = 'name',
+  sort = 'nearest',
   page = 0,
   pageSize = DEFAULT_PAGE_SIZE,
   force = false,
+  origin = null,
+  radiusKm = 20,
+  useRadius = true,
 } = {}) {
   const opts = {
     specialty: specialty || null,
     q: String(q || '').trim(),
     city: isNationwideLocation(city) ? null : city,
     district: isNationwideLocation(district) ? null : district,
-    sort: sort || 'name',
+    sort: sort || 'nearest',
     page: Math.max(0, Number(page) || 0),
     pageSize: Math.min(60, Math.max(8, Number(pageSize) || DEFAULT_PAGE_SIZE)),
+    latitude: hasOrigin(origin) ? Number(origin.latitude) : null,
+    longitude: hasOrigin(origin) ? Number(origin.longitude) : null,
+    radiusKm: Number(radiusKm) || 20,
   }
   const key = queryCacheKey(opts)
   const hit = queryCache.get(key)
@@ -354,13 +381,60 @@ export async function queryProviders({
 
   try {
     const sb = requireSupabase()
+
+    if (
+      useRadius
+      && hasOrigin(origin)
+      && !isNationwideLocation(city)
+    ) {
+      const lat = Number(origin.latitude)
+      const lng = Number(origin.longitude)
+      const radius = Math.min(100, Math.max(10, opts.radiusKm))
+      const offset = opts.page * opts.pageSize
+      const [{ data, error }, countRes] = await Promise.all([
+        sb.rpc('nearby_providers', {
+          p_lat: lat,
+          p_lng: lng,
+          p_radius_km: radius,
+          p_q: opts.q || null,
+          p_specialty: opts.specialty || null,
+          p_limit: opts.pageSize,
+          p_offset: offset,
+        }),
+        sb.rpc('count_nearby_providers', {
+          p_lat: lat,
+          p_lng: lng,
+          p_radius_km: radius,
+          p_q: opts.q || null,
+          p_specialty: opts.specialty || null,
+        }),
+      ])
+      if (error) throw error
+      const doctors = (data || []).map((row) => normalizeProviderRow(row))
+      indexMany(doctors)
+      const total = typeof countRes.data === 'number' ? countRes.data : Number(countRes.data) || doctors.length
+      const result = {
+        doctors: doctors.map(toListCard),
+        page: opts.page,
+        pageSize: opts.pageSize,
+        hasMore: (opts.page + 1) * opts.pageSize < total,
+        total,
+        fromCache: false,
+        radiusKm: radius,
+        mode: 'nearby',
+      }
+      queryCache.set(key, { at: Date.now(), result })
+      notify()
+      return result
+    }
+
     const from = opts.page * opts.pageSize
     const to = from + opts.pageSize - 1
     let qb = applyProviderFilters(
       sb.from('v_provider_search').select(PROVIDER_SELECT, { count: 'exact' }),
       opts,
     )
-    qb = applySort(qb, opts.sort).range(from, to)
+    qb = applySort(qb, opts.sort === 'nearest' ? 'name' : opts.sort).range(from, to)
     const { data, error, count } = await qb
     if (error) throw error
 
@@ -377,6 +451,7 @@ export async function queryProviders({
       hasMore: loadedThrough < total,
       total,
       fromCache: false,
+      mode: 'browse',
     }
     queryCache.set(key, { at: Date.now(), result })
     notify()
@@ -391,6 +466,7 @@ export async function queryProviders({
       hasMore: local.length > (opts.page + 1) * opts.pageSize,
       total: local.length,
       fromCache: false,
+      error: err?.message || 'Failed to load doctors',
     }
   }
 }

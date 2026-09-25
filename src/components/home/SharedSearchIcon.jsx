@@ -10,21 +10,48 @@ const ICON_PATH = (
 
 /**
  * Compact header search — sits outside the Bell+Avatar capsule.
- * Scale 0→1 + fade when `visible`; reverse on dismiss. No shared-element flyer.
+ * Crossfades with the large search field via scroll `progress` (0→1).
+ * Falls back to boolean `visible` when progress is omitted.
  */
 export const HeaderSearchButton = forwardRef(function HeaderSearchButton(
-  { visible = false, onClick },
+  {
+    visible = false,
+    progress = null,
+    interactive = null,
+    style = null,
+    onClick,
+  },
   ref,
 ) {
+  const driven = typeof progress === 'number'
+  const shown = driven ? progress > 0.02 : visible
+  const canInteract = interactive == null
+    ? (driven ? progress >= 0.45 : visible)
+    : interactive
+
+  const drivenStyle = driven
+    ? {
+        opacity: progress,
+        transform: `scale3d(${0.55 + 0.45 * progress}, ${0.55 + 0.45 * progress}, 1)`,
+        ...style,
+      }
+    : style
+
   return (
     <button
       type="button"
       ref={ref}
-      className={['header-search-btn', visible ? 'is-visible' : 'is-hidden'].join(' ')}
+      className={[
+        'header-search-btn',
+        driven ? 'is-scroll-driven' : '',
+        shown ? 'is-visible' : 'is-hidden',
+        canInteract ? 'is-interactive' : '',
+      ].filter(Boolean).join(' ')}
+      style={drivenStyle}
       aria-label="Search"
-      tabIndex={visible ? 0 : -1}
-      aria-hidden={!visible}
-      onClick={onClick}
+      tabIndex={canInteract ? 0 : -1}
+      aria-hidden={!canInteract}
+      onClick={canInteract ? onClick : undefined}
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         {ICON_PATH}

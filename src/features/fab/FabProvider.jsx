@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTransition } from '../../components/PageTransition'
+import { flowState } from '../../lib/careFlow'
 import { FAB_MODE } from './config'
 import { resolveFabConfig } from './resolve'
 import GlobalFab from '../../components/QuickCareFab'
@@ -77,7 +78,9 @@ export function FabProvider({ children }) {
     if (!action) return
 
     if (action.id === 'book') {
-      navigate('/booking')
+      navigate('/booking', {
+        state: flowState(location, { origin: 'fab', returnTo: location.pathname || '/' }),
+      })
       return
     }
     if (action.id === 'emergency') {
@@ -85,7 +88,9 @@ export function FabProvider({ children }) {
       return
     }
     if (action.id === 'chat') {
-      navigate('/chat')
+      navigate('/chat', {
+        state: flowState(location, { origin: 'fab', returnTo: location.pathname || '/' }),
+      })
       return
     }
     if (action.id === 'find-treatment') {
@@ -105,9 +110,11 @@ export function FabProvider({ children }) {
       return
     }
     if (action.to) {
-      navigate(action.to)
+      navigate(action.to, {
+        state: flowState(location, { origin: 'fab', returnTo: location.pathname || '/' }),
+      })
     }
-  }, [config, navigate, openSpecialisations])
+  }, [config, navigate, openSpecialisations, location])
 
   const value = useMemo(() => ({
     mode: config.mode,

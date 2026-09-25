@@ -9,6 +9,7 @@ export const SEARCH_SCOPES = {
   pharmacy: 'pharmacy',
   centers: 'centers',
   doctors: 'doctors',
+  settings: 'settings',
   universal: 'universal',
 }
 
@@ -19,6 +20,7 @@ export const SCOPE_DOMAINS = {
   pharmacy: ['pharmacies', 'medicines'],
   centers: ['centers'],
   doctors: ['doctors', 'specialties'],
+  settings: [],
   universal: ['doctors', 'specialties', 'pharmacies', 'centers', 'services', 'medicines', 'records'],
 }
 
@@ -58,6 +60,13 @@ export const SCOPE_COPY = {
     listeningEn: 'Listening in English… speak, then pause',
     listeningNe: 'Listening in Nepali… speak, then pause',
   },
+  settings: {
+    placeholder: 'Search settings…',
+    idlePlaceholder: 'Search settings…',
+    ariaLabel: 'Search settings',
+    listeningEn: 'Listening in English… speak, then pause',
+    listeningNe: 'Listening in Nepali… speak, then pause',
+  },
   universal: {
     placeholder: 'Search doctors, pharmacies, centres…',
     idlePlaceholder: 'Search doctors, pharmacies, centres…',
@@ -74,6 +83,7 @@ export function resolveSearchScope(pathname = '', explicit = null) {
   if (path.startsWith('/pharmacy')) return SEARCH_SCOPES.pharmacy
   if (path.startsWith('/centers') || path.startsWith('/facility')) return SEARCH_SCOPES.centers
   if (path.startsWith('/booking') || path.startsWith('/explore')) return SEARCH_SCOPES.doctors
+  if (path.startsWith('/settings') || path.startsWith('/profile')) return SEARCH_SCOPES.settings
   if (path === '/search' || path === '/' || path.startsWith('/home')) return SEARCH_SCOPES.home
   return SEARCH_SCOPES.universal
 }

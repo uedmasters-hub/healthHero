@@ -9,7 +9,7 @@ import {
 } from '../../features/notifications/island'
 import NotificationButton from '../../features/notifications/components/NotificationButton'
 import ProfileAvatar from './ProfileAvatar'
-import { isHomePath } from '../../lib/careFlow'
+import { flowState, isHomePath } from '../../lib/careFlow'
 import './HeaderActions.css'
 
 /**
@@ -83,7 +83,12 @@ export default function HeaderActions({ searchSlot = null }) {
             showBadge={showBadge}
             phase={phase === 'dock-ready' ? 'visible' : phase}
             bounce={bellBounce}
-            onClick={() => navigate('/notifications')}
+            onClick={() => navigate('/notifications', {
+              state: flowState(location, {
+                origin: 'header',
+                returnTo: location.pathname || '/',
+              }),
+            })}
           />
         </div>
       ) : null}

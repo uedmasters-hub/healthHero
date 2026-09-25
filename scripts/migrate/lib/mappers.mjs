@@ -1,5 +1,6 @@
 import {
   cleanFacilityName,
+  cleanPharmacyName,
   genderAvatar,
   normalizeFacilityLevel,
   splitDoctorName,
@@ -84,14 +85,17 @@ export function mapHfRow(row, orgId = ORG_FALLBACK) {
   const district = pick(row, ['district', 'District'])
   const facilityLevel = normalizeFacilityLevel(pick(row, ['facilityLevel', 'Facility Level', 'facility_level']))
   const id = stableUuid(`registry.hf.${hfCode}`)
-  const name = cleanFacilityName(nameRaw) || `Facility ${hfCode}`
+  const displayName = cleanFacilityName(nameRaw, { district }) || `Facility ${hfCode}`
+  const registryName = String(nameRaw || '').trim() || displayName
 
   return {
     skip: false,
     row: {
       id,
       org_id: orgId,
-      name,
+      name: displayName,
+      display_name: displayName,
+      registry_name: registryName,
       type: /hospital/i.test(facilityLevel || '') ? 'hospital' : 'clinic',
       hf_code: hfCode,
       facility_level: facilityLevel,
@@ -125,7 +129,21 @@ export function mapDdaRow(row, orgId = ORG_FALLBACK) {
   ]).trim()
   if (!code) return { skip: true, reason: 'missing Pharmacy Code / Registration No' }
 
-  const nameRaw = pick(row, ['Pharmacy Name', 'name', 'pharmacy_name'])
+  const nameRaw = pick(row, [
+    'Pharmacy Name',
+    'english_name',
+    'display_name',
+    'pharmacy_name',
+    'name',
+    'organization_name',
+    'trade_name',
+  ])
+  const trimmedRaw = String(nameRaw || '').trim()
+  // DDA junk stubs — empty (), dashes, license-only — cannot power a real listing.
+  if (!trimmedRaw || /^[\s()\-_–—./|]+$/.test(trimmedRaw) || /^\d{8,16}(?:\s*\(\s*\))?$/.test(trimmedRaw)) {
+    return { skip: true, reason: 'missing usable Pharmacy Name' }
+  }
+
   const { name, nameLocal } = splitPharmacyName(nameRaw)
   const place = pick(row, ['Place', 'place']) || null
   const district = pick(row, ['District', 'district']) || null
@@ -133,13 +151,21 @@ export function mapDdaRow(row, orgId = ORG_FALLBACK) {
   const id = stableUuid(`registry.dda.${code}`)
   const samePlace = place && district
     && String(place).trim().toLowerCase() === String(district).trim().toLowerCase()
+  const registryName = String(nameRaw || '').trim()
+  const displayName = cleanPharmacyName(name || nameRaw, { district: district || place, place })
+    || name
+    || nameRaw
+    || ''
 
   return {
     skip: false,
     row: {
       id,
       org_id: orgId,
-      name: name || `Pharmacy ${code}`,
+      // Normalized English display — never seed a generic "Pharmacy" label.
+      name: displayName,
+      display_name: displayName,
+      registry_name: registryName,
       name_local: nameLocal,
       pharmacy_code: code,
       license_number: code,

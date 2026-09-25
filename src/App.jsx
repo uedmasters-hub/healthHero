@@ -37,6 +37,7 @@ import PharmacyDetailPage from './components/PharmacyDetailPage'
 import CentersPage from './components/CentersPage'
 import FacilityPage from './components/FacilityPage'
 import SettingsPage from './components/SettingsPage'
+import SearchRadiusSettingsPage from './components/SearchRadiusSettingsPage'
 import NotificationsPage from './components/NotificationsPage'
 import ExploreSpecialisationsPage from './components/ExploreSpecialisationsPage'
 import ExploreSpecialtyPage from './components/ExploreSpecialtyPage'
@@ -51,6 +52,7 @@ import BottomNav from './components/BottomNav'
 import { OnboardingProvider } from './components/Onboarding'
 import AuthGate from './components/auth/AuthGate'
 import { AuthProvider } from './features/auth/AuthProvider'
+import { LocationProvider } from './features/location'
 import { SyncProvider } from './features/sync'
 import { UserProvider, useUser } from './user'
 import { I18nProvider } from './i18n'
@@ -147,6 +149,7 @@ function AppRoutes() {
             <Route path="/centers/:centerId" element={<FacilityPage />} />
             <Route path="/calendar" element={<CentersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/settings/search-radius" element={<SearchRadiusSettingsPage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/chat" element={<ChatInboxPage />} />
             <Route path="/chat/new" element={<NewConversationPage />} />
@@ -261,15 +264,17 @@ function AppGate() {
   return (
     <AppShell>
       <AuthProvider>
-        <SyncProvider>
-          <UserProvider>
-            <I18nProvider>
-              <SearchProvider>
-                <AppProviders />
-              </SearchProvider>
-            </I18nProvider>
-          </UserProvider>
-        </SyncProvider>
+        <LocationProvider>
+          <SyncProvider>
+            <UserProvider>
+              <I18nProvider>
+                <SearchProvider>
+                  <AppProviders />
+                </SearchProvider>
+              </I18nProvider>
+            </UserProvider>
+          </SyncProvider>
+        </LocationProvider>
       </AuthProvider>
     </AppShell>
   )

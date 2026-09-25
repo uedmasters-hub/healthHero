@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { usePushBack } from '../../pushNav'
+import { useOriginBack } from '../../pushNav'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { chatLaunchState, listInbox, subscribeInbox } from '../index'
 import { CONVERSATION_KIND } from '../types'
@@ -19,7 +19,7 @@ function threadPath(conversation) {
 
 export default function ChatInboxPage() {
   const navigate = useNavigate()
-  const goBack = usePushBack('/')
+  const goBack = useOriginBack('/')
   const { user, ready } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

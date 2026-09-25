@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileCompletion, useUser } from '../user'
 import { HOME_VISIBLE_STATUSES, useBookingStore } from '../booking'
 import { CARE_SUPPORT, NavGroup, NavRow, ProfileIcons, ProfilePage } from './profile/ProfileChrome'
 import ProfileCompletionRing from './home/ProfileCompletionRing'
 import RevealItem from './RevealItem'
-import { usePushBack } from '../features/pushNav'
+import { useOriginBack } from '../features/pushNav'
+import { flowState } from '../lib/careFlow'
 import './PatientProfile.css'
 
 function sectionProgress(sections, id) {
@@ -13,12 +14,22 @@ function sectionProgress(sections, id) {
 
 export default function PatientProfile() {
   const navigate = useNavigate()
-  const goHome = usePushBack('/')
+  const location = useLocation()
+  const goBack = useOriginBack('/')
   const { profile, isDemo, logout, health } = useUser()
   const { bookings } = useBookingStore()
   const completion = useProfileCompletion()
 
   if (!profile) return null
+
+  const openChild = (path) => {
+    navigate(path, {
+      state: flowState(location, {
+        origin: 'profile',
+        returnTo: '/profile',
+      }),
+    })
+  }
 
   const signOut = () => {
     logout()
@@ -38,10 +49,10 @@ export default function PatientProfile() {
   return (
     <ProfilePage
       title="My Profile"
-      onBack={goHome}
+      onBack={goBack}
       dataset="profile-hub"
       action={(
-        <button type="button" className="profile-header-edit" onClick={() => navigate('/profile/personal')}>
+        <button type="button" className="profile-header-edit" onClick={() => openChild('/profile/personal')}>
           Edit
         </button>
       )}
@@ -97,19 +108,19 @@ export default function PatientProfile() {
                 icon={ProfileIcons.person}
                 label="Personal"
                 progress={personal}
-                onClick={() => navigate('/profile/personal')}
+                onClick={() => openChild('/profile/personal')}
               />
               <NavRow
                 icon={ProfileIcons.district}
                 label="District & Health ID"
                 progress={district}
-                onClick={() => navigate('/profile/personal')}
+                onClick={() => openChild('/profile/personal')}
               />
               <NavRow
                 icon={ProfileIcons.payment}
                 label="Payment"
                 progress={payment}
-                onClick={() => navigate('/profile/account')}
+                onClick={() => openChild('/profile/account')}
               />
             </NavGroup>
           </RevealItem>
@@ -121,19 +132,19 @@ export default function PatientProfile() {
                 icon={ProfileIcons.medical}
                 label="Medical"
                 progress={medical}
-                onClick={() => navigate('/profile/medical')}
+                onClick={() => openChild('/profile/medical')}
               />
               <NavRow
                 icon={ProfileIcons.records}
                 label="Health Records"
                 progress={records}
-                onClick={() => navigate('/profile/records')}
+                onClick={() => openChild('/profile/records')}
               />
               <NavRow
                 icon={ProfileIcons.insurance}
                 label="Insurance"
                 progress={insurance}
-                onClick={() => navigate('/profile/insurance')}
+                onClick={() => openChild('/profile/insurance')}
               />
             </NavGroup>
           </RevealItem>
@@ -141,9 +152,9 @@ export default function PatientProfile() {
           <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
             <h3 className="user-profile-section-title">Support</h3>
             <NavGroup>
-              <NavRow icon={ProfileIcons.message} label="Message" onClick={() => navigate('/profile/support')} />
+              <NavRow icon={ProfileIcons.message} label="Message" onClick={() => openChild('/profile/support')} />
               <NavRow icon={ProfileIcons.call} label="Call Support" href={`tel:${CARE_SUPPORT.phone}`} />
-              <NavRow icon={ProfileIcons.account} label="Account" onClick={() => navigate('/profile/account')} />
+              <NavRow icon={ProfileIcons.account} label="Account" onClick={() => openChild('/profile/account')} />
             </NavGroup>
           </RevealItem>
 

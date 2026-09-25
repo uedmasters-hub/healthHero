@@ -3,13 +3,12 @@
  * Paginated Supabase queries only (no mock/seed payloads).
  */
 import { requireSupabase, isSupabaseConfigured } from '../../lib/supabase'
-import { formatProviderAddress, formatPlaceParts, formatCityDistrict } from '../geography/formatPlace'
-import { NEPAL_DEFAULT_COORDS, isAllNepalLocation } from '../../data/nepalGeography'
+import { formatPlaceParts } from '../geography/formatPlace'
+import { isAllNepalLocation } from '../../data/nepalGeography'
 import {
-  normalizePharmacyNames,
-  formatPharmacyType,
+  normalizePharmacyRow,
   PHARMACY_TYPE_FILTERS,
-} from '../../lib/nepaliText'
+} from '../../lib/pharmacyModel'
 import { haversineKm } from './centersRepository'
 
 const DEFAULT_PAGE_SIZE = 24
@@ -19,20 +18,23 @@ const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fri
 
 const LIST_FROM = 'pharmacies'
 const LIST_SELECT = [
-  'id', 'name', 'name_local', 'pharmacy_code', 'license_number',
+  'id', 'name', 'display_name', 'registry_name', 'name_local', 'pharmacy_code', 'license_number',
   'place', 'district', 'system_type', 'address_line1', 'city',
   'phone', 'email', 'image_url', 'rating_avg', 'delivers',
   'verification_status', 'source_key', 'external_ref',
   'latitude', 'longitude', 'is_active', 'center_id',
+  'client_payload',
 ].join(', ')
 
 const DETAIL_SELECT = [
-  'id', 'org_id', 'center_id', 'name', 'name_local', 'pharmacy_code', 'license_number',
+  'id', 'org_id', 'center_id', 'name', 'display_name', 'registry_name', 'name_local',
+  'pharmacy_code', 'license_number',
   'place', 'district', 'system_type', 'address_line1', 'address_line2',
   'city', 'state', 'postal_code', 'country',
   'phone', 'email', 'image_url', 'rating_avg', 'delivers', 'delivery_radius_km',
   'latitude', 'longitude', 'is_active',
   'verification_status', 'verified_at', 'source_key', 'external_ref',
+  'client_payload',
 ].join(', ')
 
 let cache = []
@@ -130,10 +132,16 @@ function typeMatchValue(typeId) {
 function applyPharmacyFilters(qb, opts) {
   let next = qb.eq('is_active', true)
 
+  // Drop DDA junk stubs (`()`, `--`, license-only) that sort before real English names.
+  // English-only UI: require a Latin letter at the start of the stored name.
+  next = next.filter('name', 'imatch', '^[A-Za-z]')
+
   if (opts.q) {
     const term = escapeIlike(opts.q)
     next = next.or([
       `name.ilike.%${term}%`,
+      `display_name.ilike.%${term}%`,
+      `registry_name.ilike.%${term}%`,
       `name_local.ilike.%${term}%`,
       `pharmacy_code.ilike.%${term}%`,
       `license_number.ilike.%${term}%`,
@@ -178,64 +186,87 @@ function queryCacheKey(opts) {
     opts.page || 0,
     opts.pageSize || DEFAULT_PAGE_SIZE,
     (opts.pharmacyIds || []).join(','),
+    opts.latitude ?? '',
+    opts.longitude ?? '',
+    opts.radiusKm ?? '',
   ].join('|')
 }
 
-function normalizeRow(row, { origin } = {}) {
-  const { name, nameLocal } = normalizePharmacyNames({
-    name: row.name,
-    nameLocal: row.name_local,
-  })
-  const city = row.city || ''
-  const district = row.district || ''
-  const place = row.place || ''
-  const lat = row.latitude != null ? Number(row.latitude) : null
-  const lng = row.longitude != null ? Number(row.longitude) : null
-  const originLat = origin?.latitude ?? NEPAL_DEFAULT_COORDS.latitude
-  const originLng = origin?.longitude ?? NEPAL_DEFAULT_COORDS.longitude
-  const distanceKm = (lat != null && lng != null)
-    ? haversineKm(originLat, originLng, lat, lng)
-    : null
-  const ratingRaw = row.rating_avg != null ? Number(row.rating_avg) : null
-  const rating = ratingRaw != null && ratingRaw > 0 ? ratingRaw : null
-  const license = row.license_number || row.pharmacy_code || ''
+function hasOrigin(origin) {
+  return origin
+    && Number.isFinite(Number(origin.latitude))
+    && Number.isFinite(Number(origin.longitude))
+}
 
+async function queryPharmaciesNearby({
+  q,
+  page,
+  pageSize,
+  origin,
+  radiusKm,
+}) {
+  const sb = requireSupabase()
+  const lat = Number(origin.latitude)
+  const lng = Number(origin.longitude)
+  const radius = Math.min(100, Math.max(10, Number(radiusKm) || 20))
+  const offset = page * pageSize
+
+  const [{ data, error }, countRes] = await Promise.all([
+    sb.rpc('nearby_pharmacies', {
+      p_lat: lat,
+      p_lng: lng,
+      p_radius_km: radius,
+      p_q: q || null,
+      p_limit: pageSize,
+      p_offset: offset,
+    }),
+    sb.rpc('count_nearby_pharmacies', {
+      p_lat: lat,
+      p_lng: lng,
+      p_radius_km: radius,
+      p_q: q || null,
+    }),
+  ])
+  if (error) throw error
+
+  const originPoint = { latitude: lat, longitude: lng }
+  let pharmacies = (data || [])
+    .map((row) => {
+      const normalized = normalizeRow(row, { origin: originPoint })
+      if (row.distance_km != null && Number.isFinite(Number(row.distance_km))) {
+        const distanceKm = Number(row.distance_km)
+        return {
+          ...normalized,
+          distanceKm,
+          distance: formatDistanceKm(distanceKm),
+        }
+      }
+      return normalized
+    })
+    .filter((pharmacy) => pharmacy.hasUsableName && pharmacy.name)
+
+  pharmacies = await enrichPharmaciesPage(pharmacies)
+  const total = typeof countRes.data === 'number' ? countRes.data : Number(countRes.data) || pharmacies.length
   return {
-    id: row.id,
-    pharmacyUuid: row.id,
-    pharmacyCode: row.pharmacy_code || license || null,
-    licenseNumber: license || null,
-    name,
-    nameLocal,
-    place: formatPlaceParts(place),
-    district: formatPlaceParts(district) || formatPlaceParts(city),
-    city: formatPlaceParts(city) || formatPlaceParts(district) || formatPlaceParts(place),
-    address: formatProviderAddress({
-      addressLine1: row.address_line1,
-      place,
-      city,
-      district,
-    }) || formatCityDistrict(city, district) || formatPlaceParts(place),
-    systemType: row.system_type || '',
-    pharmacyType: formatPharmacyType(row.system_type),
-    phone: row.phone || '',
-    email: row.email || '',
-    image: row.image_url || '',
-    rating,
-    delivers: Boolean(row.delivers),
-    verificationStatus: row.verification_status || 'unverified',
-    isVerified: row.verification_status === 'verified',
-    sourceKey: row.source_key,
-    externalRef: row.external_ref,
-    centerId: row.center_id || null,
-    latitude: lat,
-    longitude: lng,
-    distanceKm,
-    distance: formatDistanceKm(distanceKm),
-    openStatus: null,
-    openLabel: null,
-    serviceCount: 0,
+    pharmacies,
+    page,
+    pageSize,
+    hasMore: (page + 1) * pageSize < total,
+    total,
+    error: null,
+    fromCache: false,
+    radiusKm: radius,
+    mode: 'nearby',
   }
+}
+
+function normalizeRow(row, { origin } = {}) {
+  return normalizePharmacyRow(row, {
+    origin,
+    defaultOrigin: null,
+    haversineKm,
+    formatDistanceKm,
+  })
 }
 
 function normalizeDetailRow(row) {
@@ -301,7 +332,8 @@ async function enrichPharmaciesPage(pharmacies) {
         ...pharmacy,
         serviceCount: svcCounts.get(id) || 0,
         openStatus: open.openStatus,
-        openLabel: open.openLabel || (pharmacy.delivers ? 'Delivery available' : null),
+        // Hours only — delivery is a separate chip (avoids "Delivery available · Delivery available")
+        openLabel: open.openLabel,
       }
     })
   } catch (err) {
@@ -427,21 +459,26 @@ export async function queryPharmacies({
   city = null,
   type = 'all',
   openNow = false,
-  sort = 'name',
+  sort = 'nearest',
   page = 0,
   pageSize = DEFAULT_PAGE_SIZE,
   force = false,
   origin = null,
+  radiusKm = 20,
+  useRadius = true,
 } = {}) {
   const opts = {
     q: String(q || '').trim(),
     city: isAllNepalLocation(city) ? null : city,
     type: type || 'all',
     openNow: Boolean(openNow),
-    sort: sort || 'name',
+    sort: sort || 'nearest',
     page: Math.max(0, Number(page) || 0),
     pageSize: Math.min(60, Math.max(8, Number(pageSize) || DEFAULT_PAGE_SIZE)),
     pharmacyIds: null,
+    latitude: hasOrigin(origin) ? Number(origin.latitude) : null,
+    longitude: hasOrigin(origin) ? Number(origin.longitude) : null,
+    radiusKm: Number(radiusKm) || 20,
   }
 
   if (!isSupabaseConfigured) {
@@ -461,7 +498,6 @@ export async function queryPharmacies({
     const medicineIds = await pharmacyIdsForMedicine(opts.q)
     if (Array.isArray(medicineIds) && medicineIds.length) {
       opts.pharmacyIds = medicineIds
-      // When matching inventory, skip free-text OR so we don't dilute with unrelated name hits.
       opts.q = ''
     }
   }
@@ -504,6 +540,31 @@ export async function queryPharmacies({
   }
 
   try {
+    // Prefer server-side radius when we have coordinates and aren't browsing All Nepal
+    // or a constrained medicine/open-now id set (those still use table filters).
+    if (
+      useRadius
+      && hasOrigin(origin)
+      && !isAllNepalLocation(city)
+      && !opts.pharmacyIds?.length
+      && opts.type === 'all'
+    ) {
+      const nearby = await queryPharmaciesNearby({
+        q: opts.q,
+        page: opts.page,
+        pageSize: opts.pageSize,
+        origin,
+        radiusKm: opts.radiusKm,
+      })
+      if (opts.page === 0) {
+        cache = nearby.pharmacies
+        hydrated = true
+        notify()
+      }
+      queryCache.set(key, { at: Date.now(), result: nearby })
+      return nearby
+    }
+
     const sb = requireSupabase()
     const from = opts.page * opts.pageSize
     const to = from + opts.pageSize - 1
@@ -511,13 +572,15 @@ export async function queryPharmacies({
       sb.from(LIST_FROM).select(LIST_SELECT, { count: 'exact' }),
       opts,
     )
-    qb = applyPharmacySort(qb, opts.sort).range(from, to)
+    qb = applyPharmacySort(qb, opts.sort === 'nearest' ? 'name' : opts.sort).range(from, to)
     const { data, error, count } = await qb
     if (error) throw error
 
-    const originPoint = origin || NEPAL_DEFAULT_COORDS
-    let pharmacies = (data || []).map((row) => normalizeRow(row, { origin: originPoint }))
-    if (opts.sort === 'nearest') {
+    const originPoint = hasOrigin(origin) ? origin : null
+    let pharmacies = (data || [])
+      .map((row) => normalizeRow(row, { origin: originPoint || undefined }))
+      .filter((pharmacy) => pharmacy.hasUsableName && pharmacy.name)
+    if (opts.sort === 'nearest' && originPoint) {
       pharmacies = pharmacies.slice().sort((a, b) => {
         const da = a.distanceKm == null ? Number.POSITIVE_INFINITY : a.distanceKm
         const db = b.distanceKm == null ? Number.POSITIVE_INFINITY : b.distanceKm
@@ -536,16 +599,12 @@ export async function queryPharmacies({
       total,
       error: null,
       fromCache: false,
+      mode: 'browse',
     }
 
     if (opts.page === 0) {
       cache = pharmacies
       hydrated = true
-      notify()
-    } else {
-      const byId = new Map(cache.map((p) => [p.pharmacyUuid || p.id, p]))
-      pharmacies.forEach((p) => byId.set(p.pharmacyUuid || p.id, p))
-      cache = Array.from(byId.values())
       notify()
     }
 
@@ -565,7 +624,7 @@ export async function queryPharmacies({
   }
 }
 
-export async function hydratePharmacies({ force = false, city = 'Kathmandu' } = {}) {
+export async function hydratePharmacies({ force = false, city = null } = {}) {
   if (!force && hydrated) return cache
   if (!force && hydratePromise) return hydratePromise
   if (!isSupabaseConfigured) {
@@ -767,6 +826,61 @@ export function mapsPharmacyDirectionsUrl(pharmacy) {
   const q = encodeURIComponent(pharmacy.fullAddress || pharmacy.address || pharmacy.name || '')
   if (!q) return null
   return `https://www.google.com/maps/search/?api=1&query=${q}`
+}
+
+const COUNT_TTL_MS = 60_000
+/** @type {Map<string, { at: number, total: number }>} */
+const countCache = new Map()
+
+function countCacheKey(opts) {
+  return [
+    opts.q || '',
+    opts.city || '',
+    opts.type || 'all',
+    (opts.pharmacyIds || []).join(','),
+  ].join('|')
+}
+
+/**
+ * Exact pharmacy count for discovery filters (head-only).
+ * Same filters as list queries — including usable-name gate.
+ */
+export async function countPharmacies(rawOpts = {}) {
+  const opts = {
+    q: String(rawOpts.q || '').trim(),
+    city: rawOpts.city || '',
+    type: rawOpts.type || 'all',
+    pharmacyIds: rawOpts.pharmacyIds || null,
+  }
+  const key = countCacheKey(opts)
+  const hit = countCache.get(key)
+  if (hit && Date.now() - hit.at < COUNT_TTL_MS) return hit.total
+
+  if (!isSupabaseConfigured) {
+    countCache.set(key, { at: Date.now(), total: 0 })
+    return 0
+  }
+
+  try {
+    const sb = requireSupabase()
+    const qb = applyPharmacyFilters(
+      sb.from(LIST_FROM).select('id', { count: 'exact', head: true }),
+      opts,
+    )
+    const { error, count } = await qb
+    if (error) throw error
+    const total = typeof count === 'number' ? count : 0
+    countCache.set(key, { at: Date.now(), total })
+    return total
+  } catch (err) {
+    console.warn('[pharmacies] countPharmacies failed', err?.message || err)
+    countCache.set(key, { at: Date.now(), total: 0 })
+    return 0
+  }
+}
+
+export function clearPharmacyCountCache() {
+  countCache.clear()
 }
 
 export { DAY_LABELS, DEFAULT_PAGE_SIZE as PHARMACIES_PAGE_SIZE, PHARMACY_TYPE_FILTERS }

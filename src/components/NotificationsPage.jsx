@@ -7,7 +7,7 @@ import { isPreviewPath } from '../lib/previewModules'
 import { useDemoPreview } from './DemoPreviewModal'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
-import { usePushBack } from '../features/pushNav'
+import { useOriginBack } from '../features/pushNav'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshNotificationsData } from '../features/sync/pageRefresh'
@@ -80,7 +80,7 @@ const typeIcon = {
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
-  const goHome = usePushBack('/')
+  const goBack = useOriginBack('/')
   const { currentBooking } = useBooking()
   const { notifications, unreadCount, markRead, markAllRead, clearNotification } = useNotifications()
   const { show: showDemoPreview } = useDemoPreview()
@@ -113,7 +113,7 @@ export default function NotificationsPage() {
     <div className="notifications-page page-push-in" ref={pageRef}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="notifications-header">
-        <button className="notifications-back" data-push-back type="button" onClick={goHome} aria-label="Back">
+        <button className="notifications-back" data-push-back type="button" onClick={goBack} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />

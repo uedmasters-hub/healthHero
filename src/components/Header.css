@@ -311,3 +311,79 @@
   color: var(--text-muted);
   font-size: var(--text-title-size);
 }
+
+.location-gps-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.location-gps-dot.is-pulse {
+  animation: locationGpsPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes locationGpsPulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.location.is-updating .location-name {
+  opacity: 0.72;
+}
+
+.location-refresh {
+  display: flex;
+  width: calc(100% - (var(--sheet-pad-x) * 2));
+  margin: 0 var(--sheet-pad-x) var(--space-2);
+  min-height: var(--touch-min);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.1));
+  border-radius: var(--radius-md);
+  background: transparent;
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.location-refresh:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.location-section {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--space-2);
+}
+
+.location-section-label {
+  margin: var(--space-2) var(--sheet-pad-x) var(--space-1);
+  font-size: var(--text-small-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.location-item-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.location-item-sub {
+  font-size: var(--text-small-size);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}

@@ -19,6 +19,7 @@ const TAB_ROOTS = new Set([
 /** Ordered matchers — first hit wins. */
 const PUSH_DETAIL_RULES = Object.freeze([
   (p) => p === '/profile' || p.startsWith('/profile/'),
+  (p) => p.startsWith('/settings/'),
   (p) => p.startsWith('/doctor/'),
   (p) => p.startsWith('/centers/'),
   (p) => p.startsWith('/pharmacy/'),

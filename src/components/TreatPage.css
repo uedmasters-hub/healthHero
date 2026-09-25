@@ -20,87 +20,8 @@
   transition: none !important;
 }
 
-.treat-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-5) var(--space-2);
-  background: var(--white);
+.treat-search-dock {
   flex-shrink: 0;
-  z-index: 2;
-  max-height: calc(var(--text-hero-size) + var(--text-body-size) + var(--space-8));
-  overflow: hidden;
-  opacity: var(--opacity-visible);
-  transform: translate3d(0, 0, 0);
-  transition:
-    max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.24s ease,
-    padding 0.36s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.treat-page.is-search .treat-header {
-  max-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  opacity: var(--opacity-hidden);
-  pointer-events: none;
-  transform: translate3d(0, -12px, 0);
-}
-
-.treat-header-left {
-  flex: 1;
-  min-width: 0;
-}
-
-.treat-title {
-  font-size: var(--text-hero-size);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  margin: 0 0 2px;
-  letter-spacing: -0.4px;
-}
-
-.treat-subtitle {
-  font-size: var(--text-body-size);
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.treat-header-actions {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.treat-header-btn {
-  width: var(--icon-btn-size);
-  height: var(--icon-btn-size);
-  min-width: var(--icon-btn-size);
-  min-height: var(--icon-btn-size);
-  border-radius: var(--icon-btn-radius);
-  border: var(--icon-btn-border);
-  background: var(--icon-surface-subtle);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--icon-color-default);
-  padding: 0;
-  transition: background var(--transition), color var(--transition), border-color var(--transition), opacity var(--transition);
-}
-
-.treat-header-btn svg {
-  width: var(--icon-lg);
-  height: var(--icon-lg);
-  stroke-width: var(--icon-stroke);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.treat-header-btn.is-active {
-  border-color: var(--primary);
-  background: var(--icon-surface-selected);
-  color: var(--icon-color-brand);
 }
 
 .treat-body {

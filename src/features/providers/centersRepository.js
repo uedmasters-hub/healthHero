@@ -1,11 +1,18 @@
 /**
  * Healthcare centers — live registry discovery + facility detail.
  * Browse uses paginated Supabase queries (no mock/seed payloads).
+ * Normalization lives in facilityModel — UI consumes Facility only.
  */
 import { requireSupabase, isSupabaseConfigured } from '../../lib/supabase'
-import { formatProviderAddress, formatPlaceParts } from '../geography/formatPlace'
+import { formatPlaceParts } from '../geography/formatPlace'
 import { normalizeProviderRow } from './repository'
-import { NEPAL_DEFAULT_COORDS, isAllNepalLocation } from '../../data/nepalGeography'
+import {
+  normalizeFacilityRow,
+  displayFacilityLevel,
+  facilityClassification,
+  shortHfCode,
+} from '../../lib/facilityModel'
+import { isAllNepalLocation } from '../../data/nepalGeography'
 
 const DEFAULT_PAGE_SIZE = 24
 const HYDRATE_WARM = 40
@@ -15,19 +22,19 @@ const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fri
 /** Prefer base table — public view omits lat/lng needed for distance. */
 const LIST_FROM = 'healthcare_centers'
 const LIST_SELECT = [
-  'id', 'name', 'type', 'hf_code', 'facility_level',
+  'id', 'name', 'display_name', 'registry_name', 'type', 'hf_code', 'facility_level',
   'address_line1', 'city', 'district', 'phone',
   'image_url', 'logo_url', 'rating_avg', 'rating_count',
   'verification_status', 'source_key', 'external_ref',
-  'latitude', 'longitude', 'is_active',
+  'latitude', 'longitude', 'is_active', 'client_payload',
 ].join(', ')
 
 const DETAIL_SELECT = [
-  'id', 'org_id', 'name', 'type', 'hf_code', 'facility_level',
+  'id', 'org_id', 'name', 'display_name', 'registry_name', 'type', 'hf_code', 'facility_level',
   'address_line1', 'address_line2', 'city', 'district', 'state', 'country', 'postal_code',
   'latitude', 'longitude', 'phone', 'email', 'website', 'logo_url', 'image_url',
   'rating_avg', 'rating_count', 'parent_id', 'branch_code', 'is_active',
-  'verification_status', 'verified_at', 'source_key', 'external_ref',
+  'verification_status', 'verified_at', 'source_key', 'external_ref', 'client_payload',
 ].join(', ')
 
 let cache = []
@@ -41,20 +48,6 @@ function escapeIlike(value) {
 
 function isUuid(value) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value || ''))
-}
-
-function formatFacilityKind(type, facilityLevel) {
-  const level = String(facilityLevel || '').trim()
-  if (level) {
-    if (/hospital/i.test(level)) return 'Hospital'
-    if (/clinic|health.?post|primary.?health|phc|ayurved/i.test(level)) return 'Clinic'
-    return level
-  }
-  const t = String(type || '').toLowerCase()
-  if (t.includes('hospital')) return 'Hospital'
-  if (t.includes('clinic')) return 'Clinic'
-  if (t) return t.charAt(0).toUpperCase() + t.slice(1)
-  return 'Facility'
 }
 
 function formatDistanceKm(km) {
@@ -76,55 +69,18 @@ export function haversineKm(lat1, lon1, lat2, lon2) {
 }
 
 function normalizeRow(row, { origin } = {}) {
-  const city = row.city || ''
-  const district = row.district || ''
-  const lat = row.latitude != null ? Number(row.latitude) : null
-  const lng = row.longitude != null ? Number(row.longitude) : null
-  const originLat = origin?.latitude ?? NEPAL_DEFAULT_COORDS.latitude
-  const originLng = origin?.longitude ?? NEPAL_DEFAULT_COORDS.longitude
-  const distanceKm = (lat != null && lng != null)
-    ? haversineKm(originLat, originLng, lat, lng)
-    : null
-  const ratingRaw = row.rating_avg != null ? Number(row.rating_avg) : null
-  const rating = ratingRaw != null && ratingRaw > 0 ? ratingRaw : null
-
-  return {
-    id: row.id,
-    providerUuid: row.id,
-    hfCode: row.hf_code || null,
-    name: row.name,
-    type: formatFacilityKind(row.type, row.facility_level),
-    facilityLevel: row.facility_level || null,
-    address: formatProviderAddress({
-      addressLine1: row.address_line1,
-      city,
-      district,
-    }) || formatPlaceParts(city, district),
-    city: formatPlaceParts(city) || formatPlaceParts(district),
-    district: formatPlaceParts(district) || formatPlaceParts(city),
-    phone: row.phone || '',
-    image: row.image_url || row.logo_url || '',
-    rating,
-    ratingCount: row.rating_count != null ? Number(row.rating_count) : 0,
-    verificationStatus: row.verification_status || null,
-    isVerified: row.verification_status === 'verified',
-    sourceKey: row.source_key,
-    externalRef: row.external_ref,
-    latitude: lat,
-    longitude: lng,
-    distanceKm,
-    distance: formatDistanceKm(distanceKm),
-    departmentCount: 0,
-    serviceCount: 0,
-    openStatus: null,
-    openLabel: null,
-  }
+  return normalizeFacilityRow(row, {
+    origin,
+    defaultOrigin: null,
+    haversineKm,
+    formatDistanceKm,
+  })
 }
 
 function normalizeDetailRow(row) {
   const base = normalizeRow(row)
-  const city = row.city || ''
-  const district = row.district || ''
+  const city = base.city || ''
+  const district = base.district || ''
   const line1 = row.address_line1 || ''
   const line2 = row.address_line2 || ''
   const fullAddress = [
@@ -147,7 +103,7 @@ function normalizeDetailRow(row) {
     website: row.website || '',
     logoUrl: row.logo_url || '',
     imageUrl: row.image_url || '',
-    image: row.image_url || row.logo_url || '',
+    image: row.image_url || row.logo_url || base.image || '',
     verifiedAt: row.verified_at || null,
     parentId: row.parent_id || null,
     parentName: row.parent_center_name || null,
@@ -155,6 +111,9 @@ function normalizeDetailRow(row) {
     branchCode: row.branch_code || null,
     fullAddress: fullAddress || base.address,
     isActive: row.is_active !== false,
+    classification: base.classification || facilityClassification(row),
+    facilityLevel: base.facilityLevel || displayFacilityLevel(row.facility_level) || null,
+    shortHfCode: base.shortHfCode || shortHfCode(row.hf_code),
   }
 }
 
@@ -225,6 +184,8 @@ function applyCenterFilters(qb, opts) {
     const term = escapeIlike(opts.q)
     next = next.or([
       `name.ilike.%${term}%`,
+      `display_name.ilike.%${term}%`,
+      `registry_name.ilike.%${term}%`,
       `hf_code.ilike.%${term}%`,
       `city.ilike.%${term}%`,
       `district.ilike.%${term}%`,
@@ -257,7 +218,76 @@ function queryCacheKey(opts) {
     opts.sort || 'name',
     opts.page || 0,
     opts.pageSize || DEFAULT_PAGE_SIZE,
+    opts.latitude ?? '',
+    opts.longitude ?? '',
+    opts.radiusKm ?? '',
   ].join('|')
+}
+
+function hasOrigin(origin) {
+  return origin
+    && Number.isFinite(Number(origin.latitude))
+    && Number.isFinite(Number(origin.longitude))
+}
+
+async function queryCentersNearby({
+  q,
+  page,
+  pageSize,
+  origin,
+  radiusKm,
+}) {
+  const sb = requireSupabase()
+  const lat = Number(origin.latitude)
+  const lng = Number(origin.longitude)
+  const radius = Math.min(100, Math.max(10, Number(radiusKm) || 20))
+  const offset = page * pageSize
+
+  const [{ data, error }, countRes] = await Promise.all([
+    sb.rpc('nearby_healthcare_centers', {
+      p_lat: lat,
+      p_lng: lng,
+      p_radius_km: radius,
+      p_q: q || null,
+      p_limit: pageSize,
+      p_offset: offset,
+    }),
+    sb.rpc('count_nearby_healthcare_centers', {
+      p_lat: lat,
+      p_lng: lng,
+      p_radius_km: radius,
+      p_q: q || null,
+    }),
+  ])
+  if (error) throw error
+
+  const originPoint = { latitude: lat, longitude: lng }
+  let centers = (data || []).map((row) => {
+    const normalized = normalizeRow(row, { origin: originPoint })
+    if (row.distance_km != null && Number.isFinite(Number(row.distance_km))) {
+      const distanceKm = Number(row.distance_km)
+      return {
+        ...normalized,
+        distanceKm,
+        distance: formatDistanceKm(distanceKm),
+      }
+    }
+    return normalized
+  })
+
+  centers = await enrichCentersPage(centers)
+  const total = typeof countRes.data === 'number' ? countRes.data : Number(countRes.data) || centers.length
+  return {
+    centers,
+    page,
+    pageSize,
+    hasMore: (page + 1) * pageSize < total,
+    total,
+    error: null,
+    fromCache: false,
+    radiusKm: radius,
+    mode: 'nearby',
+  }
 }
 
 async function enrichCentersPage(centers) {
@@ -343,18 +373,23 @@ export function clearCentersQueryCache() {
 export async function queryCenters({
   q = '',
   city = null,
-  sort = 'name',
+  sort = 'nearest',
   page = 0,
   pageSize = DEFAULT_PAGE_SIZE,
   force = false,
   origin = null,
+  radiusKm = 20,
+  useRadius = true,
 } = {}) {
   const opts = {
     q: String(q || '').trim(),
     city: isAllNepalLocation(city) ? null : city,
-    sort: sort || 'name',
+    sort: sort || 'nearest',
     page: Math.max(0, Number(page) || 0),
     pageSize: Math.min(60, Math.max(8, Number(pageSize) || DEFAULT_PAGE_SIZE)),
+    latitude: hasOrigin(origin) ? Number(origin.latitude) : null,
+    longitude: hasOrigin(origin) ? Number(origin.longitude) : null,
+    radiusKm: Number(radiusKm) || 20,
   }
   const key = queryCacheKey(opts)
   const hit = queryCache.get(key)
@@ -363,7 +398,7 @@ export async function queryCenters({
   }
 
   if (!isSupabaseConfigured) {
-    const result = {
+    return {
       centers: [],
       page: opts.page,
       pageSize: opts.pageSize,
@@ -372,10 +407,30 @@ export async function queryCenters({
       error: 'Supabase is not configured',
       fromCache: false,
     }
-    return result
   }
 
   try {
+    // GPS / selected coords → server-side radius filter (source of truth).
+    if (useRadius && hasOrigin(origin) && !isAllNepalLocation(city)) {
+      const nearby = await queryCentersNearby({
+        q: opts.q,
+        page: opts.page,
+        pageSize: opts.pageSize,
+        origin,
+        radiusKm: opts.radiusKm,
+      })
+      if (opts.page === 0) {
+        cache = nearby.centers
+        hydrated = true
+      } else {
+        const byId = new Map(cache.map((c) => [c.providerUuid || c.id, c]))
+        nearby.centers.forEach((c) => byId.set(c.providerUuid || c.id, c))
+        cache = Array.from(byId.values())
+      }
+      queryCache.set(key, { at: Date.now(), result: nearby })
+      return nearby
+    }
+
     const sb = requireSupabase()
     const from = opts.page * opts.pageSize
     const to = from + opts.pageSize - 1
@@ -383,13 +438,13 @@ export async function queryCenters({
       sb.from(LIST_FROM).select(LIST_SELECT, { count: 'exact' }),
       opts,
     )
-    qb = applyCenterSort(qb, opts.sort).range(from, to)
+    qb = applyCenterSort(qb, opts.sort === 'nearest' ? 'name' : opts.sort).range(from, to)
     const { data, error, count } = await qb
     if (error) throw error
 
-    const originPoint = origin || NEPAL_DEFAULT_COORDS
-    let centers = (data || []).map((row) => normalizeRow(row, { origin: originPoint }))
-    if (opts.sort === 'nearest') {
+    const originPoint = hasOrigin(origin) ? origin : null
+    let centers = (data || []).map((row) => normalizeRow(row, { origin: originPoint || undefined }))
+    if (opts.sort === 'nearest' && originPoint) {
       centers = centers
         .slice()
         .sort((a, b) => {
@@ -410,9 +465,9 @@ export async function queryCenters({
       total,
       error: null,
       fromCache: false,
+      mode: 'browse',
     }
 
-    // Warm in-memory cache with latest page for getCenterById / home.
     if (opts.page === 0) {
       cache = centers
       hydrated = true
@@ -439,7 +494,7 @@ export async function queryCenters({
 }
 
 /** Warm a nearby window for Home / sync (does not replace live list pagination). */
-export async function hydrateCenters({ force = false, city = 'Kathmandu' } = {}) {
+export async function hydrateCenters({ force = false, city = null } = {}) {
   if ((hydrated && !force) || (!force && hydratePromise)) {
     return hydratePromise || cache
   }

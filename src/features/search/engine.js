@@ -26,11 +26,13 @@ function doctorHit(doc) {
 }
 
 function pharmacyHit(row) {
+  const location = row.locationLabel || row.city || row.district || row.place || row.area
+  const label = row.name || (row.shortLicense ? `#${row.shortLicense}` : 'Pharmacy')
   return {
     type: 'pharmacy',
     id: row.id,
-    label: row.name,
-    meta: [row.city || row.district || row.place, 'Pharmacy'].filter(Boolean).join(' · '),
+    label,
+    meta: [location, row.pharmacyType].filter(Boolean).join(' · ') || 'Pharmacy',
     kindRank: 2,
   }
 }
@@ -40,7 +42,9 @@ function centerHit(row) {
     type: 'center',
     id: row.id || row.hfCode || row.sourceKey,
     label: row.name,
-    meta: [row.typeLabel || row.type, row.city || row.district].filter(Boolean).join(' · '),
+    meta: [row.classification || row.typeLabel || row.type, row.locationLabel || row.city || row.district]
+      .filter(Boolean)
+      .join(' · '),
     kindRank: 3,
   }
 }

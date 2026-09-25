@@ -1,24 +1,24 @@
 /**
- * Large iOS-style tab page header — Treat / Centers / Settings language.
- * Sticky outside the scroll region; circular action slots on the right.
+ * Large iOS-style tab page header — Pharmacy reference.
+ * Sticky outside the scroll region; optional leading control + action slots.
  */
 export default function TabPageHeader({
   title,
-  subtitle,
+  leading = null,
   actions = null,
   className = '',
 }) {
   return (
     <header className={`tab-page-header ${className}`.trim()}>
+      {leading}
       <div className="tab-page-header__left">
         <h1 className="tab-page-header__title">{title}</h1>
-        {subtitle ? (
-          <p className="tab-page-header__subtitle">{subtitle}</p>
-        ) : null}
       </div>
       {actions ? (
         <div className="tab-page-header__actions">{actions}</div>
-      ) : null}
+      ) : (
+        <span className="tab-page-header__actions-spacer" aria-hidden="true" />
+      )}
     </header>
   )
 }

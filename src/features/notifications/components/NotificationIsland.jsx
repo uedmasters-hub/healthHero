@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   emitBellLand,
   getIslandSnapshot,
@@ -11,6 +11,7 @@ import {
   subscribeIslandStore,
 } from '../island'
 import { PRESENTATION_MODE } from '../presentation'
+import { flowState } from '../../../lib/careFlow'
 import './NotificationIsland.css'
 
 const BELL_VISIBLE = '.header-actions__bell .notif-btn__hit'
@@ -89,6 +90,7 @@ function TypeGlyph({ type }) {
  */
 export default function NotificationIsland() {
   const navigate = useNavigate()
+  const location = useLocation()
   const snapshot = useSyncExternalStore(subscribeIslandStore, getIslandSnapshot, getIslandSnapshot)
   const mode = snapshot.presentationMode
 
@@ -324,8 +326,13 @@ export default function NotificationIsland() {
     busyRef.current = false
     setItem(null)
     setPhase('idle')
-    navigate('/notifications')
-  }, [phase, navigate])
+    navigate('/notifications', {
+      state: flowState(location, {
+        origin: 'island',
+        returnTo: location.pathname || '/',
+      }),
+    })
+  }, [phase, navigate, location])
 
   const onPointerDown = (e) => {
     if (phase === 'absorb' || phase === 'dismiss' || phase === 'toast-exit') return

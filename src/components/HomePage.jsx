@@ -10,6 +10,7 @@ import TopDoctors from './TopDoctors'
 import HealthInsights from './HealthInsights'
 import AppFooter from './AppFooter'
 import { HeaderSearchButton } from './home/SharedSearchIcon'
+import CollapsingSearchDock from './home/CollapsingSearchDock'
 import { useTransition } from './PageTransition'
 import { useSharedHero } from './SharedHero'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
@@ -46,7 +47,13 @@ export default function HomePage() {
     enabled: isFront && !searchActive && !freezeHome,
   })
 
-  const headerSearchVisible = useSearchScrollCompact({
+  const {
+    progress,
+    fieldStyle,
+    expandedHeight,
+    fieldInert,
+    iconInteractive,
+  } = useSearchScrollCompact({
     stageRef,
     searchRef: searchBarRef,
     enabled: isFront && !searchActive,
@@ -94,7 +101,8 @@ export default function HomePage() {
           <Header
             endAccessory={(
               <HeaderSearchButton
-                visible={headerSearchVisible}
+                progress={searchActive ? 0 : progress}
+                interactive={searchActive ? false : iconInteractive}
                 onClick={openSearch}
               />
             )}
@@ -103,8 +111,14 @@ export default function HomePage() {
       </div>
 
       <div className="home-body">
-        {/* Single shared SearchBar — expands in place; Cancel sits outside the field */}
-        <div className="home-search-dock">
+        <CollapsingSearchDock
+          className="home-search-dock"
+          progress={searchActive ? 0 : progress}
+          fieldStyle={searchActive ? null : fieldStyle}
+          expandedHeight={expandedHeight}
+          locked={searchActive}
+          inert={fieldInert && !searchActive}
+        >
           <SearchBar
             active={searchActive}
             mode="expandable"
@@ -118,7 +132,7 @@ export default function HomePage() {
             idlePlaceholder={searchPlaceholder}
             activePlaceholder={searchPlaceholder}
           />
-        </div>
+        </CollapsingSearchDock>
 
         <div className="home-main">
           <div className="home-stage" ref={stageRef}>

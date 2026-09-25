@@ -4,94 +4,36 @@ import { queryProviders, subscribeProviders, fetchDoctorFilterFacets, peekDoctor
 import { ALL_SPECIALISATIONS, canonicalSpecialty, loadExploreListState, saveExploreListState } from '../data/specialisations'
 import { withBookingEntry } from '../lib/careFlow'
 import { getViewedDoctorIds } from '../lib/recentDoctors'
-import { NEPAL_LOCATION_OPTIONS, NEPAL_DEFAULT_LOCATION, ALL_NEPAL_LOCATION, detectNepalCityFromDevice } from '../data/nepalGeography'
+import { NEPAL_LOCATION_OPTIONS, ALL_NEPAL_LOCATION } from '../data/nepalGeography'
+import { useAppLocation } from '../features/location'
+import ExpandRadiusEmpty from './ExpandRadiusEmpty'
+import './ExpandRadiusEmpty.css'
 import { useAppSheet } from './PageTransition'
 import AppBottomSheet from './AppBottomSheet'
-import SearchBar from './SearchBar'
-import DoctorCard from './DoctorCard'
-import { BookingReveal } from './BookingReveal'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
+import {
+  DirectoryShell,
+  DoctorEntityCard,
+  EntityCardSkeletonStack,
+} from './directory'
 import './SelectProvider.css'
+import './directory/DirectoryShell.css'
 
 const locations = NEPAL_LOCATION_OPTIONS
 const availabilities = ['All', 'Today', 'Tomorrow', 'This Week']
 const PAGE_SIZE = 24
 
 const SORT_OPTIONS = [
+  { id: 'nearest', label: 'Nearest', sort: 'nearest' },
   { id: 'recommended', label: 'Recommended', sort: 'name' },
   { id: 'rating', label: 'Highest Rated', sort: 'rating' },
   { id: 'fee', label: 'Lowest Fee', sort: 'fee' },
-  { id: 'nearest', label: 'Nearest', sort: 'name' },
   { id: 'available', label: 'Earliest Available', sort: 'name' },
 ]
-
-function formatResultsHeading({ total, specialty, location }) {
-  if (specialty) {
-    const label = Number(total) === 1 || /s$/i.test(specialty) ? specialty : `${specialty}s`
-    if (location && location !== ALL_NEPAL_LOCATION) return `${label} near ${location}`
-    if (location === ALL_NEPAL_LOCATION) return `${label} across Nepal`
-    return label
-  }
-  if (location && location !== ALL_NEPAL_LOCATION) return `Doctors near ${location}`
-  if (location === ALL_NEPAL_LOCATION) return 'Doctors across Nepal'
-  return 'Doctors'
-}
-
-function formatResultsCount({ shown, total }) {
-  const shownLabel = Number(shown || 0).toLocaleString('en-NP')
-  const totalLabel = Number(total || 0).toLocaleString('en-NP')
-  return `Showing ${shownLabel} of ${totalLabel}`
-}
 
 function formatFacetCount(value) {
   if (value == null || Number.isNaN(Number(value))) return null
   return Number(value).toLocaleString('en-NP')
-}
-
-function ChipX() {
-  return (
-    <svg className="active-filter-x" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  )
-}
-
-function ListSkeleton() {
-  return (
-    <div className="doctor-list-skel" aria-hidden="true">
-      <div className="doctor-list-skel-top">
-        <div className="doctor-list-skel-photo" />
-        <div className="doctor-list-skel-copy">
-          <div className="doctor-list-skel-line wide" />
-          <div className="doctor-list-skel-line mid" />
-          <div className="doctor-list-skel-line short" />
-        </div>
-      </div>
-      <div className="doctor-list-skel-details">
-        <div className="doctor-list-skel-line long" />
-        <div className="doctor-list-skel-tags">
-          <div className="doctor-list-skel-tag" />
-          <div className="doctor-list-skel-tag" />
-        </div>
-        <div className="doctor-list-skel-line avail" />
-      </div>
-      <div className="doctor-list-skel-footer">
-        <div className="doctor-list-skel-line fee" />
-        <div className="doctor-list-skel-btn" />
-      </div>
-    </div>
-  )
-}
-
-function ListSkeletonStack({ count = 3 }) {
-  return (
-    <div className="doctors-list doctors-list--skel" aria-hidden="true">
-      {Array.from({ length: count }, (_, i) => (
-        <ListSkeleton key={i} />
-      ))}
-    </div>
-  )
 }
 
 function useDebouncedValue(value, delay = 280) {
@@ -103,6 +45,9 @@ function useDebouncedValue(value, delay = 280) {
   return debounced
 }
 
+/**
+ * Doctor directory — shared DirectoryShell chrome + live Supabase providers.
+ */
 export default function DoctorList({
   lockedSpecialty = null,
   origin = 'find-doctor',
@@ -111,6 +56,11 @@ export default function DoctorList({
   dataset,
   scrollRootRef,
   onBookNow,
+  title = null,
+  onBack = null,
+  showBack = true,
+  headerExtra = null,
+  className = '',
 }) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -118,20 +68,27 @@ export default function DoctorList({
   const preferredVisitType = location.state?.preferredVisitType
   const specialty = lockedSpecialty ? canonicalSpecialty(lockedSpecialty) : null
   const saved = persist && specialty ? loadExploreListState(specialty) : null
-  const embedded = origin === 'explore'
 
   const [search, setSearch] = useState(saved?.search ?? '')
+  const {
+    locality,
+    origin: locationOrigin,
+    radiusKm,
+    ready: locationReady,
+    nextExpandRadiusKm,
+    expandRadius,
+    selectPlaceByName,
+  } = useAppLocation()
   const debouncedSearch = useDebouncedValue(search, 280)
   const [activeFilter, setActiveFilter] = useState(null)
   const { isPresented, isClosing, show, hide } = useAppSheet()
   const [selectedSpecialty, setSelectedSpecialty] = useState(specialty || saved?.selectedSpecialty || 'All')
-  const [selectedLocation, setSelectedLocation] = useState(
-    saved?.selectedLocation && saved.selectedLocation !== 'All'
-      ? saved.selectedLocation
-      : NEPAL_DEFAULT_LOCATION,
+  const [browseNationwide, setBrowseNationwide] = useState(
+    saved?.selectedLocation === ALL_NEPAL_LOCATION || saved?.selectedLocation === 'All',
   )
+  const selectedLocation = browseNationwide ? ALL_NEPAL_LOCATION : (locality || 'Your location')
   const [selectedAvailability, setSelectedAvailability] = useState(saved?.selectedAvailability || 'All')
-  const [sortBy, setSortBy] = useState(saved?.sortBy || 'recommended')
+  const [sortBy, setSortBy] = useState(saved?.sortBy || 'nearest')
   const [viewedIds, setViewedIds] = useState(() => getViewedDoctorIds())
   const [facetCounts, setFacetCounts] = useState({})
   const facetRequestRef = useRef(0)
@@ -143,10 +100,12 @@ export default function DoctorList({
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const requestIdRef = useRef(0)
-  const gpsTriedRef = useRef(false)
+  const internalScrollRef = useRef(null)
+  const scrollRef = scrollRootRef || internalScrollRef
 
   const sortMeta = SORT_OPTIONS.find((opt) => opt.id === sortBy) || SORT_OPTIONS[0]
   const activeSpecialty = specialty || (selectedSpecialty !== 'All' ? selectedSpecialty : null)
+  const pageTitle = title || specialty || 'Find Doctor'
 
   useEffect(() => {
     if (specialty) setSelectedSpecialty(specialty)
@@ -156,21 +115,6 @@ export default function DoctorList({
     setViewedIds(getViewedDoctorIds())
   }, [location.key])
 
-  // Nearby-first: detect device city once; fall back stays Kathmandu.
-  useEffect(() => {
-    if (gpsTriedRef.current) return undefined
-    if (saved?.selectedLocation && saved.selectedLocation !== 'All') return undefined
-    gpsTriedRef.current = true
-    let cancelled = false
-    detectNepalCityFromDevice().then((city) => {
-      if (cancelled || !city) return
-      setSelectedLocation((prev) => (
-        prev === NEPAL_DEFAULT_LOCATION || prev === 'All' ? city : prev
-      ))
-    })
-    return () => { cancelled = true }
-  }, [saved?.selectedLocation])
-
   useEffect(() => {
     if (!persist || !specialty) return undefined
     return () => {
@@ -179,14 +123,21 @@ export default function DoctorList({
         selectedLocation,
         selectedAvailability,
         sortBy,
-        scrollY: scrollRootRef?.current?.scrollTop ?? 0,
+        scrollY: scrollRef?.current?.scrollTop ?? 0,
       })
     }
-  }, [persist, specialty, search, selectedLocation, selectedAvailability, sortBy, scrollRootRef])
+  }, [persist, specialty, search, selectedLocation, selectedAvailability, sortBy, scrollRef])
 
-  // Live registry query — resets when filters/search change.
   useEffect(() => {
     const reqId = ++requestIdRef.current
+    if (!browseNationwide && (!locationReady || !locationOrigin)) {
+      setDoctors([])
+      setHasMore(false)
+      setTotalCount(0)
+      setLoading(false)
+      return undefined
+    }
+
     setLoading(true)
     setPage(0)
     setHasMore(false)
@@ -194,10 +145,13 @@ export default function DoctorList({
     queryProviders({
       specialty: activeSpecialty,
       q: debouncedSearch,
-      city: selectedLocation,
-      sort: sortMeta.sort,
+      city: browseNationwide ? ALL_NEPAL_LOCATION : locality,
+      sort: sortMeta.sort === 'name' ? 'name' : 'nearest',
       page: 0,
       pageSize: PAGE_SIZE,
+      origin: browseNationwide ? null : locationOrigin,
+      radiusKm,
+      useRadius: !browseNationwide,
     }).then((result) => {
       if (reqId !== requestIdRef.current) return
       setDoctors(result.doctors)
@@ -211,14 +165,21 @@ export default function DoctorList({
       setTotalCount(0)
       setLoading(false)
     })
-  }, [activeSpecialty, debouncedSearch, selectedLocation, sortMeta.sort, dataset])
+    return undefined
+  }, [
+    activeSpecialty,
+    debouncedSearch,
+    locality,
+    browseNationwide,
+    sortMeta.sort,
+    dataset,
+    locationReady,
+    locationOrigin,
+    radiusKm,
+  ])
 
-  // Keep list cards in sync if featured hydrate merges overlapping rows.
-  useEffect(() => subscribeProviders(() => {
-    /* indexed rows already updated; leave current page as-is */
-  }), [])
+  useEffect(() => subscribeProviders(() => {}), [])
 
-  // Live facet counts — skeleton-first, cache-aware, no layout shift.
   useEffect(() => {
     if (!isPresented || !activeFilter || activeFilter === 'Sort') {
       return undefined
@@ -249,10 +210,7 @@ export default function DoctorList({
     }).then((counts) => {
       if (cancelled || reqId !== facetRequestRef.current) return
       setFacetCounts(counts || {})
-    }).catch(() => {
-      if (cancelled || reqId !== facetRequestRef.current) return
-      /* keep whatever partials arrived */
-    })
+    }).catch(() => {})
 
     return () => { cancelled = true }
   }, [
@@ -271,10 +229,15 @@ export default function DoctorList({
     queryProviders({
       specialty: activeSpecialty,
       q: debouncedSearch,
-      city: selectedLocation,
-      sort: sortMeta.sort,
+      city: browseNationwide ? ALL_NEPAL_LOCATION : locality,
+      sort: sortMeta.sort === 'name' || sortMeta.sort === 'rating' || sortMeta.sort === 'fee'
+        ? sortMeta.sort
+        : 'nearest',
       page: nextPage,
       pageSize: PAGE_SIZE,
+      origin: browseNationwide ? null : locationOrigin,
+      radiusKm,
+      useRadius: !browseNationwide,
     }).then((result) => {
       setDoctors((prev) => {
         const seen = new Set(prev.map((d) => String(d.providerUuid || d.id)))
@@ -298,55 +261,6 @@ export default function DoctorList({
     return doctors
   }, [doctors, selectedAvailability])
 
-  const shownCount = filteredDoctors.length
-  const sortLabel = sortMeta.label
-  const listReady = !loading
-  // Find Doctor already has a page title — skip the redundant location heading.
-  const showResultsHeading = Boolean(specialty)
-  const resultsHeading = showResultsHeading
-    ? formatResultsHeading({
-      total: totalCount,
-      specialty: activeSpecialty,
-      location: selectedLocation,
-    })
-    : ''
-  const resultsCount = formatResultsCount({
-    shown: shownCount,
-    total: totalCount,
-  })
-
-  const activeChips = useMemo(() => {
-    const chips = []
-    const query = search.trim()
-    if (query) {
-      chips.push({ id: 'search', label: `“${query}”`, clear: () => setSearch('') })
-    }
-    if (selectedLocation && selectedLocation !== NEPAL_DEFAULT_LOCATION && selectedLocation !== ALL_NEPAL_LOCATION) {
-      chips.push({ id: 'location', label: selectedLocation, clear: () => setSelectedLocation(NEPAL_DEFAULT_LOCATION) })
-    }
-    if (selectedLocation === ALL_NEPAL_LOCATION) {
-      chips.push({ id: 'location', label: ALL_NEPAL_LOCATION, clear: () => setSelectedLocation(NEPAL_DEFAULT_LOCATION) })
-    }
-    if (!specialty && selectedSpecialty !== 'All') {
-      chips.push({ id: 'specialty', label: selectedSpecialty, clear: () => setSelectedSpecialty('All') })
-    }
-    if (selectedAvailability !== 'All') {
-      chips.push({ id: 'availability', label: selectedAvailability, clear: () => setSelectedAvailability('All') })
-    }
-    if (sortBy !== 'recommended') {
-      chips.push({ id: 'sort', label: sortLabel, clear: () => setSortBy('recommended') })
-    }
-    return chips
-  }, [search, selectedLocation, selectedSpecialty, selectedAvailability, sortBy, specialty, sortLabel])
-
-  const clearAll = () => {
-    setSearch('')
-    setSelectedLocation(NEPAL_DEFAULT_LOCATION)
-    if (!specialty) setSelectedSpecialty('All')
-    setSelectedAvailability('All')
-    setSortBy('recommended')
-  }
-
   const persistListState = () => {
     if (!persist || !specialty) return
     saveExploreListState(specialty, {
@@ -354,7 +268,7 @@ export default function DoctorList({
       selectedLocation,
       selectedAvailability,
       sortBy,
-      scrollY: scrollRootRef?.current?.scrollTop ?? 0,
+      scrollY: scrollRef?.current?.scrollTop ?? 0,
     })
   }
 
@@ -386,6 +300,8 @@ export default function DoctorList({
     })
   }
 
+  const sortActive = sortBy !== 'nearest'
+
   const renderFilterModal = () => {
     if (!isPresented || !activeFilter) return null
 
@@ -398,7 +314,14 @@ export default function DoctorList({
     if (activeFilter === 'Location') {
       options = locations
       selected = selectedLocation
-      onSelect = setSelectedLocation
+      onSelect = (city) => {
+        if (city === ALL_NEPAL_LOCATION || city === 'All') {
+          setBrowseNationwide(true)
+        } else {
+          setBrowseNationwide(false)
+          selectPlaceByName(city)
+        }
+      }
     } else if (activeFilter === 'Specialties') {
       options = ['All', ...ALL_SPECIALISATIONS.map((s) => s.name)]
       selected = selectedSpecialty
@@ -413,7 +336,19 @@ export default function DoctorList({
       onSelect = (opt) => setSortBy(opt.id)
       optionKey = (opt) => opt.id
       optionLabel = (opt) => opt.label
+    } else if (activeFilter === 'Filter') {
+      // Combined filter sheet: jump targets
+      options = [
+        { id: 'Location', label: `Location · ${selectedLocation}` },
+        !specialty ? { id: 'Specialties', label: `Specialty · ${selectedSpecialty}` } : null,
+        { id: 'Availability', label: `Availability · ${selectedAvailability}` },
+      ].filter(Boolean)
+      onSelect = (opt) => setActiveFilter(opt.id)
+      optionKey = (opt) => opt.id
+      optionLabel = (opt) => opt.label
     }
+
+    const isCombined = activeFilter === 'Filter'
 
     return (
       <AppBottomSheet
@@ -424,7 +359,7 @@ export default function DoctorList({
         sheetClassName="filter-sheet"
       >
         <div className="ds-sheet-header">
-          <h3 id="filter-sheet-title">{activeFilter}</h3>
+          <h3 id="filter-sheet-title">{activeFilter === 'Filter' ? 'Filters' : activeFilter}</h3>
           <button type="button" className="ds-sheet-close" onClick={closeFilter} aria-label="Close">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -436,7 +371,7 @@ export default function DoctorList({
           {options.map((opt) => {
             const key = optionKey(opt)
             const isActive = selected === key || selected === opt
-            const showCount = activeFilter !== 'Sort'
+            const showCount = activeFilter !== 'Sort' && activeFilter !== 'Filter'
             const countValue = facetCounts[key] ?? facetCounts[opt]
             const countReady = showCount && countValue != null && !Number.isNaN(Number(countValue))
             const countLabel = countReady ? formatFacetCount(countValue) : null
@@ -444,8 +379,15 @@ export default function DoctorList({
               <button
                 type="button"
                 key={key}
-                className={`filter-option ${isActive ? 'active' : ''}`}
-                onClick={() => { onSelect(opt); closeFilter() }}
+                className={`filter-option ${!isCombined && isActive ? 'active' : ''}`}
+                onClick={() => {
+                  if (isCombined) {
+                    onSelect(opt)
+                    return
+                  }
+                  onSelect(opt)
+                  closeFilter()
+                }}
               >
                 <div className="filter-option-circle" />
                 <span className="filter-option-label">{optionLabel(opt)}</span>
@@ -453,7 +395,6 @@ export default function DoctorList({
                   <span
                     className={`filter-option-count-slot${countReady ? ' is-loaded' : ' is-loading'}`}
                     aria-busy={!countReady}
-                    aria-label={countReady ? `${countLabel} doctors` : undefined}
                   >
                     <span className="filter-option-count-skel" aria-hidden="true" />
                     <span className="filter-option-count">
@@ -471,149 +412,99 @@ export default function DoctorList({
 
   const emptySuggestions = [
     search.trim() ? { id: 'search', label: 'Clear search', run: () => setSearch('') } : null,
+    !browseNationwide && nextExpandRadiusKm != null
+      ? { id: 'expand', label: `Expand to ${nextExpandRadiusKm} km`, run: () => expandRadius() }
+      : null,
     selectedLocation !== ALL_NEPAL_LOCATION
-      ? { id: 'cities', label: 'Search all of Nepal', run: () => setSelectedLocation(ALL_NEPAL_LOCATION) }
-      : { id: 'ktm', label: 'Near Kathmandu', run: () => setSelectedLocation(NEPAL_DEFAULT_LOCATION) },
+      ? { id: 'cities', label: 'Search all of Nepal', run: () => setBrowseNationwide(true) }
+      : { id: 'nearby', label: 'Back to nearby', run: () => setBrowseNationwide(false) },
     !specialty && selectedSpecialty !== 'All' ? { id: 'specs', label: 'Show all specialties', run: () => setSelectedSpecialty('All') } : null,
     selectedAvailability !== 'All' ? { id: 'avail', label: 'Any availability', run: () => setSelectedAvailability('All') } : null,
-    sortBy !== 'recommended' ? { id: 'sort', label: 'Reset sort', run: () => setSortBy('recommended') } : null,
   ].filter(Boolean)
 
   return (
-    <div className={`select-provider${embedded ? ' select-provider--embedded' : ''}`}>
-      <div className="provider-search">
-        <SearchBar
-          mode="inline"
-          scope="doctors"
-          placeholder="Name, city or degree"
-          query={search}
-          onQueryChange={setSearch}
-        />
-      </div>
-
-      <div className="filter-chips" role="toolbar" aria-label="Doctor filters">
-        <button type="button" className="filter-chip active" onClick={() => openFilter('Location')}>
-          {selectedLocation || NEPAL_DEFAULT_LOCATION}
-          <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        {!specialty ? (
-          <button type="button" className={`filter-chip ${selectedSpecialty !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Specialties')}>
-            Specialties
-            <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-        ) : null}
-        <button type="button" className={`filter-chip ${selectedAvailability !== 'All' ? 'active' : ''}`} onClick={() => openFilter('Availability')}>
-          Availability
-          <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        <button type="button" className={`filter-chip ${sortBy !== 'recommended' ? 'active' : ''}`} onClick={() => openFilter('Sort')}>
-          Sort
-          <svg className="filter-chip-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-      </div>
-
-      <div className={`results-meta${showResultsHeading ? '' : ' is-count-only'}`} aria-live="polite">
-        {listReady ? (
-          <>
-            {showResultsHeading ? <h2 className="results-meta-title">{resultsHeading}</h2> : null}
-            <p className="results-meta-count">{resultsCount}</p>
-          </>
-        ) : (
-          <div className="results-meta-skel-stack" aria-hidden="true">
-            {showResultsHeading ? <span className="results-meta-skel results-meta-skel--title" /> : null}
-            <span className="results-meta-skel results-meta-skel--count" />
-          </div>
-        )}
-      </div>
-
-      <div className={`active-filters${activeChips.length ? '' : ' is-empty'}`} aria-hidden={activeChips.length === 0}>
-        {activeChips.length > 0 ? (
-          <>
-            <div className="active-filters-chips">
-              {activeChips.map((chip) => (
-                <button
-                  type="button"
-                  key={chip.id}
-                  className="active-filter-chip"
-                  onClick={chip.clear}
-                  aria-label={`Remove ${chip.label}`}
-                >
-                  <span>{chip.label}</span>
-                  <ChipX />
+    <div className="doctor-directory" style={{ height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+      <DirectoryShell
+        title={pageTitle}
+        onBack={onBack || (() => navigate(-1))}
+        showBack={showBack}
+        searchScope="doctors"
+        searchPlaceholder="Search Doctor"
+        searchQuery={search}
+        onSearchChange={setSearch}
+        shown={filteredDoctors.length}
+        total={totalCount}
+        loading={loading}
+        onSort={() => openFilter('Sort')}
+        sortActive={sortActive}
+        scrollRef={scrollRef}
+        headerExtra={headerExtra}
+        className={className}
+      >
+        {loading ? (
+          <EntityCardSkeletonStack count={3} />
+        ) : filteredDoctors.length === 0 ? (
+          <div className="dir-shell__empty doctors-empty">
+            <div className="doctors-empty-icon" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <h3>No doctors match</h3>
+            <p>
+              {search.trim()
+                ? `Try a different name, degree, or city, or search without “${search.trim()}”.`
+                : specialty
+                  ? `No ${specialty} providers matched within ${radiusKm} km of ${selectedLocation}.`
+                  : `No providers matched within ${radiusKm} km of ${selectedLocation}.`}
+            </p>
+            {!browseNationwide && !search.trim() ? (
+              <ExpandRadiusEmpty
+                radiusKm={radiusKm}
+                nextRadiusKm={nextExpandRadiusKm}
+                locality={locality}
+                entityLabel="doctors"
+                onExpand={() => expandRadius()}
+              />
+            ) : null}
+            <div className="doctors-empty-suggestions">
+              {emptySuggestions.map((item) => (
+                <button type="button" key={item.id} onClick={item.run}>
+                  {item.label}
                 </button>
               ))}
             </div>
-            <button type="button" className="clear-all-filters" onClick={clearAll}>
-              Clear All
-            </button>
-          </>
-        ) : null}
-      </div>
-
-      <BookingReveal ready={listReady} skeleton={<ListSkeletonStack count={3} />}>
-        <div className="doctors-list">
-          {shownCount === 0 ? (
-            <div className="doctors-empty">
-              <div className="doctors-empty-icon" aria-hidden="true">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="7" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </div>
-              <h3>No doctors match</h3>
-              <p>
-                {search.trim()
-                  ? `Try a different name, degree, or city, or search without “${search.trim()}”.`
-                  : specialty
-                    ? `No ${specialty} providers matched near ${selectedLocation}. Try All Nepal or another city.`
-                    : `No providers matched near ${selectedLocation}. Try All Nepal or another city.`}
-              </p>
-              <div className="doctors-empty-suggestions">
-                {(emptySuggestions.length ? emptySuggestions : [{ id: 'reset', label: 'Clear all filters', run: clearAll }]).map((item) => (
-                  <button type="button" key={item.id} onClick={item.run}>
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <>
-              {filteredDoctors.map((doctor) => (
-                <div className="doctor-list-card" key={doctor.providerUuid || doctor.id}>
-                  <DoctorCard
-                    doctor={doctor}
-                    variant="list"
-                    origin={origin}
-                    returnTo={returnTo || (specialty ? `/explore/${encodeURIComponent(specialty)}` : location.pathname)}
-                    onBeforeNavigate={persistListState}
-                    onBookNow={() => handleBookNow(doctor)}
-                    recentlyViewed={viewedIds.includes(String(doctor.id)) || viewedIds.includes(Number(doctor.id))}
-                  />
-                </div>
-              ))}
-              {hasMore ? (
+          </div>
+        ) : (
+          <ul className="dir-shell__list">
+            {filteredDoctors.map((doctor) => (
+              <li key={doctor.providerUuid || doctor.id}>
+                <DoctorEntityCard
+                  doctor={doctor}
+                  origin={origin}
+                  returnTo={returnTo || (specialty ? `/explore/${encodeURIComponent(specialty)}` : location.pathname)}
+                  onBeforeNavigate={persistListState}
+                  onBookNow={() => handleBookNow(doctor)}
+                  recentlyViewed={viewedIds.includes(String(doctor.id)) || viewedIds.includes(Number(doctor.id))}
+                />
+              </li>
+            ))}
+            {hasMore ? (
+              <li>
                 <button
                   type="button"
-                  className="doctors-load-more"
+                  className="dir-shell__load-more"
                   onClick={loadMore}
                   disabled={loadingMore}
                 >
                   {loadingMore ? 'Loading…' : 'Load more doctors'}
                 </button>
-              ) : null}
-            </>
-          )}
-        </div>
-      </BookingReveal>
-
+              </li>
+            ) : null}
+          </ul>
+        )}
+      </DirectoryShell>
       {renderFilterModal()}
       {modal}
     </div>

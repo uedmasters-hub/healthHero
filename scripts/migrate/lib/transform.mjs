@@ -1,4 +1,8 @@
 import { createHash } from 'node:crypto'
+import {
+  cleanRegistryDisplayName,
+  titleCaseRegistryName,
+} from '../../../src/lib/registryText.js'
 
 /** Deterministic UUID from a seed string (idempotent upserts). */
 export function stableUuid(seed) {
@@ -38,7 +42,6 @@ export function splitPharmacyName(raw) {
       nameLocal: match[2].trim(),
     }
   }
-  // Broken trailing paren leftovers: "name नेपाली)"
   const broken = original.match(/^(.*?)\s+([\u0900-\u097F].*?)\)?\s*$/u)
   if (broken && /[\u0900-\u097F]/u.test(broken[2])) {
     return {
@@ -49,15 +52,24 @@ export function splitPharmacyName(raw) {
   return { name: original, nameLocal: null }
 }
 
-export function cleanFacilityName(name = '') {
-  return String(name || '')
-    .replace(/_+\s*/g, ' ')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
+/** Shared facility registry cleaner — same rules as src/lib/facilityModel. */
+export function cleanFacilityName(name = '', { district = null } = {}) {
+  const cleaned = cleanRegistryDisplayName(name, { district, stripPharmacyUnit: false })
+  return titleCaseRegistryName(cleaned) || cleaned
+}
+
+/** Pharmacy display cleaner — strips Pharmacy Unit + registry prefixes. */
+export function cleanPharmacyName(name = '', { district = null, place = null } = {}) {
+  const cleaned = cleanRegistryDisplayName(name, {
+    district,
+    place,
+    stripPharmacyUnit: true,
+  })
+  return titleCaseRegistryName(cleaned) || cleaned
 }
 
 export function normalizeFacilityLevel(level = '') {
   const raw = String(level || '').trim()
   if (!raw || raw === '--') return null
-  return raw.replace(/\?+/g, '').trim() || null
+  return raw.replace(/\?+/g, '').replace(/\(\s*\)/g, '').replace(/\s+/g, ' ').trim() || null
 }

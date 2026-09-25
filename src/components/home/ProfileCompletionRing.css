@@ -44,7 +44,7 @@
   stroke: var(--pcr-accent);
   stroke-linecap: round;
   transition:
-    stroke-dasharray 0.45s var(--ease-standard, ease),
+    stroke-dasharray 0.42s cubic-bezier(0.22, 1, 0.36, 1),
     stroke-width 0.22s var(--ease-standard, ease),
     stroke 0.22s var(--ease-standard, ease);
 }
@@ -52,6 +52,12 @@
 .profile-completion-ring.is-complete {
   --pcr-accent: color-mix(in srgb, var(--primary-700, var(--primary)) 78%, transparent);
   --pcr-accent-strong: var(--primary-700, var(--primary));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-completion-ring__progress {
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .profile-completion-ring__inner {

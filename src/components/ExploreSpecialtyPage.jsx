@@ -9,7 +9,6 @@ import { usePushBack } from '../features/pushNav'
 import DoctorList from './DoctorList'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
-import './BookingFlow.css'
 
 export default function ExploreSpecialtyPage() {
   const navigate = useNavigate()
@@ -22,12 +21,9 @@ export default function ExploreSpecialtyPage() {
   const goBack = usePushBack(() => {
     goBackToOrigin(navigate, location, { openSpecialisations, openTopDoctors })
   })
-  // Only refresh the doctor registry — never trigger a full home data refresh
-  // while Home is sitting under the push underlay.
   const onRefresh = useCallback(() => hydrateProviders({ force: true }), [])
   const ptr = usePullToRefresh(scrollRootRef, onRefresh)
 
-  // Defer scroll restore until after the push settles — avoids fighting the slide.
   useEffect(() => {
     const el = scrollRootRef.current
     const y = saved?.scrollY
@@ -41,28 +37,20 @@ export default function ExploreSpecialtyPage() {
   }, [specialty, saved?.scrollY])
 
   return (
-    <div className="booking-layout explore-layout" ref={scrollRootRef}>
+    <div className="page-push-in" style={{ height: '100%', minHeight: 0 }}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-      <div className="booking-header">
-        <button className="back-btn" data-push-back onClick={goBack} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="booking-header-title">{specialty}</h1>
-        <div className="booking-header-spacer" />
-      </div>
-      <div className="booking-content explore-content">
-        <DoctorList
-          lockedSpecialty={specialty}
-          origin="explore"
-          returnTo={`/explore/${encodeURIComponent(specialty)}`}
-          persist
-          dataset={`explore:${specialty}`}
-          scrollRootRef={scrollRootRef}
-        />
-      </div>
+      <DoctorList
+        lockedSpecialty={specialty}
+        origin="explore"
+        returnTo={`/explore/${encodeURIComponent(specialty)}`}
+        persist
+        dataset={`explore:${specialty}`}
+        scrollRootRef={scrollRootRef}
+        title={specialty}
+        onBack={goBack}
+        showBack
+        className="page-push-in"
+      />
     </div>
   )
 }

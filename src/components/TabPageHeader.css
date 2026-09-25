@@ -1,8 +1,8 @@
-/* Shared large-title tab chrome (Treat / Pharmacy / Centers language) */
+/* Shared large-title tab chrome — Pharmacy / Home reference */
 
 .tab-page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-5) var(--space-2);
@@ -20,23 +20,84 @@
   font-size: var(--text-hero-size);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
-  margin: 0 0 2px;
+  margin: 0;
   letter-spacing: -0.4px;
 }
 
-.tab-page-header__subtitle {
-  font-size: var(--text-body-size);
-  line-height: var(--text-body-line);
-  color: var(--text-secondary);
-  margin: 0;
+.tab-page-header__actions-spacer {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
 }
 
 .tab-page-header__actions {
+  --tph-avatar: 36px;
+  --tph-search: 36px;
+  --tph-gap: 8px;
+  --tph-slot: 44px;
+  position: relative;
   display: flex;
   flex-shrink: 0;
-  gap: var(--space-2);
+  align-items: center;
+  justify-content: flex-end;
+  width: var(--tph-slot);
+  height: var(--tph-slot);
+  min-height: var(--tph-slot);
+  overflow: visible;
+  line-height: 0;
 }
 
 .tab-page-header__actions .ds-icon-btn.is-subtle {
-  margin-top: 2px;
+  margin-top: 0;
+}
+
+/* Borderless Home-style search — absolute left of avatar */
+.tab-page-header__actions .header-search-btn {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--tph-slot) + var(--tph-gap));
+  z-index: 2;
+  margin: calc(var(--tph-search) / -2) 0 0 0;
+  width: var(--tph-search);
+  height: var(--tph-search);
+  min-width: var(--tph-search);
+  min-height: var(--tph-search);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: none;
+}
+
+.tab-page-header__actions .header-search-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tab-page-header__actions .profile-avatar,
+.tab-page-header__actions .tab-page-header__avatar {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  z-index: 3;
+  width: var(--tph-avatar);
+  height: var(--tph-avatar);
+  min-width: var(--tph-avatar);
+  min-height: var(--tph-avatar);
+  margin: calc(var(--tph-avatar) / -2) 0 0 0;
+  transform: scale(calc(44 / 36));
+  transform-origin: right center;
+}
+
+.tab-page-header__leading {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.tab-page-header__leading .dir-shell__icon-btn,
+.tab-page-header__leading .ds-icon-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
 }

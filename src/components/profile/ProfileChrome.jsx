@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import useStaggerReveal from '../useStaggerReveal'
-import { usePushBack } from '../../features/pushNav'
+import { useOriginBack } from '../../features/pushNav'
 import { BRAND_SUPPORT_EMAIL } from '../../lib/brand'
 import { usePullToRefresh } from '../../hooks/usePullToRefresh'
 import PullToRefreshIndicator from '../PullToRefreshIndicator'
@@ -20,7 +20,8 @@ export function dash(value) {
 
 export function ProfilePage({ title, onBack, action, children, dataset }) {
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({ dataset })
-  const defaultBack = usePushBack('/profile')
+  // Prefer real history / returnTo over a hardcoded Profile hub jump.
+  const defaultBack = useOriginBack('/profile')
   const goBack = onBack || defaultBack
   const pageRef = containerRef
   // Profile page itself scrolls (.user-profile-page)

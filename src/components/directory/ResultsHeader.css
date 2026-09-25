@@ -1,0 +1,62 @@
+.dir-results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 40px;
+  padding: var(--space-2) var(--content-padding);
+  border-bottom: var(--border-width) solid var(--border-subtle);
+  background: var(--white);
+  flex-shrink: 0;
+}
+
+.dir-results__count {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  line-height: 1.3;
+  color: var(--text-faint);
+  font-weight: var(--font-weight-medium);
+}
+
+.dir-results__count-skel {
+  display: block;
+  width: 110px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  background: var(--border);
+}
+
+.dir-results__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dir-results__icon-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.dir-results__icon-btn:hover {
+  background: var(--interact-hover-bg);
+}
+
+.dir-results__icon-btn:active {
+  background: var(--interact-pressed-bg);
+}
+
+.dir-results__icon-btn.is-active {
+  color: var(--primary-700);
+  background: var(--interact-selected-bg);
+}

@@ -5,12 +5,14 @@ import {
   mapsPharmacyDirectionsUrl,
 } from '../features/providers/pharmaciesRepository'
 import { formatPlaceParts } from '../features/geography/formatPlace'
+import { pharmacyAvatarName, pharmacyDisplayTitle } from '../lib/pharmacyModel'
 import GalleryLightbox from './GalleryLightbox'
 import EmptyState from './EmptyState'
 import { usePushBack } from '../features/pushNav'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { useDemoPreview } from './DemoPreviewModal'
+import Avatar from './directory/Avatar'
 import './PharmacyDetailPage.css'
 
 function PharmacySkeleton() {
@@ -121,8 +123,9 @@ export default function PharmacyDetailPage() {
   }, [pharmacy])
 
   const locationLabel = pharmacy
-    ? formatPlaceParts(pharmacy.place, pharmacy.city, pharmacy.district) || pharmacy.address
+    ? (pharmacy.locationLabel || formatPlaceParts(pharmacy.area || pharmacy.place, pharmacy.city, pharmacy.district) || pharmacy.address)
     : ''
+  const displayName = pharmacyDisplayTitle(pharmacy)
 
   if (status === 'loading') {
     return (
@@ -191,19 +194,25 @@ export default function PharmacyDetailPage() {
 
         <div className="pharm-detail-hero">
           <div className="pharm-detail-hero-media">
-            {pharmacy.image ? (
-              <img src={pharmacy.image} alt="" className="pharm-detail-hero-img" />
+            {pharmacy.image || pharmacy.logoUrl ? (
+              <img src={pharmacy.image || pharmacy.logoUrl} alt="" className="pharm-detail-hero-img" />
             ) : (
-              <div className="pharm-detail-hero-placeholder" aria-hidden="true" />
+              <div className="pharm-detail-hero-placeholder" aria-hidden="true">
+                <Avatar name={pharmacyAvatarName(pharmacy)} size={72} />
+              </div>
             )}
           </div>
           <div className="pharm-detail-hero-body">
             <div className="pharm-detail-chips">
               {pharmacy.isVerified ? <span className="pharm-detail-chip is-verified">Verified</span> : null}
+              {pharmacy.ddaVerifiedLabel && !pharmacy.isVerified ? (
+                <span className="pharm-detail-chip">{pharmacy.ddaVerifiedLabel}</span>
+              ) : null}
               {pharmacy.pharmacyType ? <span className="pharm-detail-chip">{pharmacy.pharmacyType}</span> : null}
               {pharmacy.delivers ? <span className="pharm-detail-chip">Delivery</span> : null}
+              {pharmacy.openLabel ? <span className="pharm-detail-chip">{pharmacy.openLabel}</span> : null}
             </div>
-            <h2 className="pharm-detail-name">{pharmacy.name}</h2>
+            <h2 className="pharm-detail-name">{displayName}</h2>
             {locationLabel ? <p className="pharm-detail-subtitle">{locationLabel}</p> : null}
             {todayHours ? (
               <p className="pharm-detail-today">

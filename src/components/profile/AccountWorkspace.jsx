@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useUser } from '../../user'
 import { InfoCard, InfoRow, NavGroup, NavRow, ProfileIcons, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
+import { flowState } from '../../lib/careFlow'
 
 export default function AccountWorkspace() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { profile, isDemo, logout } = useUser()
 
   const signOut = () => {
@@ -25,7 +27,16 @@ export default function AccountWorkspace() {
           <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <SectionHead title="Preferences" />
             <NavGroup>
-              <NavRow icon={ProfileIcons.message} label="Notifications" onClick={() => navigate('/notifications')} />
+              <NavRow
+                icon={ProfileIcons.message}
+                label="Notifications"
+                onClick={() => navigate('/notifications', {
+                  state: flowState(location, {
+                    origin: 'account',
+                    returnTo: location.state?.returnTo || '/profile/account',
+                  }),
+                })}
+              />
             </NavGroup>
           </RevealItem>
 

@@ -1,0 +1,65 @@
+.dir-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
+}
+
+.dir-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 1;
+  transition: opacity 160ms ease;
+}
+
+.dir-avatar.is-loading .dir-avatar__img {
+  opacity: 0;
+}
+
+.dir-avatar.is-ready .dir-avatar__img {
+  opacity: 1;
+}
+
+.dir-avatar__initials {
+  font-size: calc(var(--text-title-size) * 0.95);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  user-select: none;
+}
+
+.dir-avatar.is-loading .dir-avatar__initials {
+  opacity: 0;
+}
+
+.dir-avatar__shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    110deg,
+    color-mix(in srgb, var(--avatar-surface) 80%, white) 0%,
+    color-mix(in srgb, var(--avatar-surface) 40%, white) 45%,
+    color-mix(in srgb, var(--avatar-surface) 80%, white) 90%
+  );
+  background-size: 200% 100%;
+  animation: dir-avatar-shine 1.1s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes dir-avatar-shine {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dir-avatar__shine { animation: none; }
+  .dir-avatar__img { transition: none; }
+}

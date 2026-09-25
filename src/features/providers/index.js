@@ -35,4 +35,26 @@ export {
   fetchPharmacyPage,
   mapsPharmacyDirectionsUrl,
   clearPharmaciesQueryCache,
+  countPharmacies,
+  clearPharmacyCountCache,
 } from './pharmaciesRepository'
+export {
+  fetchPharmacyFilterFacets,
+  peekPharmacyFilterFacets,
+  clearPharmacyFilterFacetCache,
+} from './pharmacyFacetCounts'
+export {
+  displayPharmacyName,
+  cleanPharmacyDisplayName,
+  displayPranali,
+  extractEnglishPharmacyName,
+  isUsablePharmacyName,
+  normalizePharmacyRow,
+  normalizeRegNo,
+  pharmacyAvatarName,
+  pharmacyDisplayTitle,
+  resolvePharmacyDisplayName,
+  resolvePharmacyLocation,
+  shortRegNo,
+  PHARMACY_TYPE_FILTERS,
+} from '../../lib/pharmacyModel'

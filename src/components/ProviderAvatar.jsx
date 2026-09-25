@@ -1,10 +1,11 @@
 /**
  * Shared circular provider avatar — Home, Treat, Ready for Visit, Provider Chat.
  * Frame size/layout never changes with load state. Skeleton while resolving;
- * image content swaps to the catalog placeholder only after a genuine failure.
+ * falls back to lavender initials (never an empty circle).
  */
 import { useEffect, useRef, useState } from 'react'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
+import { initialsFromName } from '../user'
 import './ProviderAvatar.css'
 
 const CATALOG_PLACEHOLDER = '/img/doctors/new/doctor.png'
@@ -19,10 +20,12 @@ export default function ProviderAvatar({
   size = null,
   /** When true, failed loads retry the shared catalog placeholder before icons. */
   useCatalogFallback = true,
+  name = '',
 }) {
   const resolved = src || resolveProviderPhoto(doctor) || ''
   const doctorId = doctor?.id ?? doctor?.doctorId ?? ''
   const srcKey = `${resolved}|${doctorId}`
+  const initials = initialsFromName(name || doctor?.name || alt || '')
 
   const [status, setStatus] = useState(resolved ? 'loading' : 'empty')
   const [currentSrc, setCurrentSrc] = useState(resolved)
@@ -51,7 +54,6 @@ export default function ProviderAvatar({
   }
 
   const showImage = Boolean(currentSrc) && status !== 'error' && status !== 'empty'
-  // Only show icon/initials fallback after genuine failure — never during load.
   const showPlaceholder = status === 'error' || status === 'empty'
 
   const style = size
@@ -64,7 +66,7 @@ export default function ProviderAvatar({
         'provider-avatar',
         status === 'loading' ? 'is-loading' : '',
         status === 'ready' ? 'is-ready' : '',
-        showPlaceholder ? 'is-placeholder' : '',
+        showPlaceholder ? 'is-placeholder is-initials' : '',
         className,
       ].filter(Boolean).join(' ')}
       style={style}
@@ -82,9 +84,9 @@ export default function ProviderAvatar({
           onError={handleError}
         />
       ) : null}
-      {showPlaceholder && placeholder ? (
+      {showPlaceholder ? (
         <span className="provider-avatar__fallback">
-          {placeholder}
+          {placeholder || initials}
         </span>
       ) : null}
     </span>

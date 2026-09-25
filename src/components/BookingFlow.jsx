@@ -80,8 +80,8 @@ export default function BookingFlow({ children }) {
 
   return (
     <BookingFlowContext.Provider value={ctx}>
-      <div className={`booking-layout ${showSuccess ? 'is-success' : ''} page-push-in`}>
-        {!showSuccess && (
+      <div className={`booking-layout ${showSuccess ? 'is-success' : ''} ${currentStep === 0 && !showSuccess ? 'is-directory' : ''} page-push-in`}>
+        {!showSuccess && currentStep > 0 && (
           <>
             <div className="booking-header">
               <button className="back-btn" type="button" data-push-back onClick={goBack} aria-label="Back">
@@ -103,7 +103,7 @@ export default function BookingFlow({ children }) {
             </div>
           </>
         )}
-        <div className="booking-content">
+        <div className={`booking-content${currentStep === 0 && !showSuccess ? ' is-directory' : ''}`}>
           {children}
         </div>
       </div>

@@ -1,0 +1,50 @@
+/*
+  Large-header search dock — scroll-collapse shell.
+  Height / opacity / translate are driven by useSearchScrollCompact (inline).
+  Header height stays independent; this only releases the dock’s own space.
+*/
+
+.large-header-search-dock {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 4;
+  background: var(--white);
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  will-change: max-height, opacity, transform;
+  transform-origin: top center;
+}
+
+.large-header-search-dock.is-locked {
+  max-height: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  overflow: visible;
+  pointer-events: auto !important;
+}
+
+.large-header-search-dock.is-collapsed {
+  /* Space fully released — avoid residual hit-testing / focus */
+  min-height: 0;
+}
+
+.large-header-search-dock__inner {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .large-header-search-dock {
+    will-change: auto;
+  }
+}
