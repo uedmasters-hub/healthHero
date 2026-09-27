@@ -10,10 +10,26 @@ function SortIcon() {
   )
 }
 
-export function formatShowingCount(shown, total) {
+export function formatShowingCount(shown, total, suffix = '') {
   const shownLabel = Number(shown || 0).toLocaleString('en-NP')
   const totalLabel = Number(total || 0).toLocaleString('en-NP')
-  return `Showing ${shownLabel} of ${totalLabel}`
+  const tail = suffix ? ` ${suffix}` : ''
+  return `Showing ${shownLabel} of ${totalLabel}${tail}`
+}
+
+export function ResultsSortButton({ onSort, sortActive = false }) {
+  if (typeof onSort !== 'function') return null
+  return (
+    <button
+      type="button"
+      className={`dir-results__icon-btn${sortActive ? ' is-active' : ''}`}
+      onClick={onSort}
+      aria-label="Sort"
+      aria-pressed={sortActive}
+    >
+      <SortIcon />
+    </button>
+  )
 }
 
 /**
@@ -22,6 +38,7 @@ export function formatShowingCount(shown, total) {
 export default function ResultsHeader({
   shown = 0,
   total = 0,
+  suffix = '',
   loading = false,
   onSort,
   sortActive = false,
@@ -32,19 +49,11 @@ export default function ResultsHeader({
       {loading ? (
         <span className="dir-results__count-skel shimmer" aria-hidden="true" />
       ) : (
-        <p className="dir-results__count">{formatShowingCount(shown, total)}</p>
+        <p className="dir-results__count">{formatShowingCount(shown, total, suffix)}</p>
       )}
       {typeof onSort === 'function' ? (
         <div className="dir-results__actions" role="toolbar" aria-label="Sort">
-          <button
-            type="button"
-            className={`dir-results__icon-btn${sortActive ? ' is-active' : ''}`}
-            onClick={onSort}
-            aria-label="Sort"
-            aria-pressed={sortActive}
-          >
-            <SortIcon />
-          </button>
+          <ResultsSortButton onSort={onSort} sortActive={sortActive} />
         </div>
       ) : null}
     </div>

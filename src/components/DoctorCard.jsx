@@ -8,6 +8,7 @@ import { presentBookingCard } from '../booking'
 import { pickDoctorCredentials, subscribeProviders } from '../features/providers'
 import { formatPlaceParts } from '../features/geography/formatPlace'
 import ProviderAvatar from './ProviderAvatar'
+import { beginReadiness, isVideoEntry } from '../features/videoConsult/lock'
 import './DoctorCard.css'
 
 function displayName(name) {
@@ -79,21 +80,31 @@ export default function DoctorCard({
     address,
   }
 
-  const sharedState = () => flowState(location, { origin, preferredVisitType, returnTo, restore })
+  const videoEntry = isVideoEntry(location.state)
+  const sharedState = () => flowState(location, {
+    origin,
+    preferredVisitType: videoEntry ? 'Video Consultation' : preferredVisitType,
+    ...(videoEntry ? { videoLock: true, visitType: 'Video Consultation' } : {}),
+    returnTo,
+    restore,
+  })
 
   const handleClick = (e) => {
     if (isBooking || disableNavigate) return
     if (isIdentity) {
       guard(doctorForNav, ({ forSomeoneElse }) => {
         if (forSomeoneElse) {
-          navigate('/booking/slot', {
-            state: flowState(sharedState(), {
-              doctor: doctorForNav,
-              returnTo: origin === 'appointment' ? '/appointment' : (returnTo || location.pathname),
-              fromProfile: origin === 'appointment',
-              forSomeoneElse: true,
-            }),
+          const next = flowState(sharedState(), {
+            doctor: doctorForNav,
+            returnTo: origin === 'appointment' ? '/appointment' : (returnTo || location.pathname),
+            fromProfile: origin === 'appointment',
+            forSomeoneElse: true,
           })
+          if (isVideoEntry(next)) {
+            beginReadiness(navigate, next)
+            return
+          }
+          navigate('/booking/slot', { state: next })
           return
         }
         if (doctorForNav?.id) {
@@ -136,14 +147,17 @@ export default function DoctorCard({
     }
     if (doctorForNav?.id) {
       guard(doctorForNav, ({ forSomeoneElse }) => {
-        navigate('/booking/slot', {
-          state: flowState(sharedState(), {
-            doctor: doctorForNav,
-            returnTo: returnTo || `/doctor/${doctorForNav.id}`,
-            fromProfile: Boolean(returnTo && returnTo.startsWith('/doctor/')),
-            forSomeoneElse,
-          }),
+        const next = flowState(sharedState(), {
+          doctor: doctorForNav,
+          returnTo: returnTo || `/doctor/${doctorForNav.id}`,
+          fromProfile: Boolean(returnTo && returnTo.startsWith('/doctor/')),
+          forSomeoneElse,
         })
+        if (isVideoEntry(next)) {
+          beginReadiness(navigate, next)
+          return
+        }
+        navigate('/booking/slot', { state: next })
       })
       onAfterNavigate?.()
     }
@@ -237,7 +251,8 @@ export default function DoctorCard({
   }
 
   if (variant === 'list') {
-  const visitTypes = doctorForNav?.visitTypes || doctor?.visitTypes || []
+  const visitTypes = (doctorForNav?.visitTypes || doctor?.visitTypes || [])
+    .filter((type) => !videoEntry || /video/i.test(String(type)))
     return (
       <>
       <div className={`dc-card dc-card-list ${className}`} onClick={handleClick}>

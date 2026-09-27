@@ -1,0 +1,296 @@
+.radius-dial {
+  --radius-spring: cubic-bezier(0.22, 1.45, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 20.5rem);
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.radius-dial__orbit {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  touch-action: none;
+  overflow: visible;
+}
+
+.radius-dial__coverage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-sizing: border-box;
+  border: 1.5px solid color-mix(in srgb, var(--primary-400) 72%, var(--neutral-400));
+  border-radius: var(--radius-full);
+  transform: translate(-50%, -50%);
+  background: transparent;
+  pointer-events: none;
+}
+
+.radius-dial.is-spring .radius-dial__coverage {
+  transition:
+    width 0.62s var(--radius-spring),
+    height 0.62s var(--radius-spring);
+}
+
+.radius-dial.is-dragging .radius-dial__coverage {
+  transition: none;
+}
+
+.radius-dial.is-map .radius-dial__value,
+.radius-dial.is-map .radius-dial__count {
+  text-shadow:
+    0 0 10px var(--white),
+    0 0 3px var(--white);
+}
+
+.radius-dial.is-map .radius-dial__coverage {
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--white) 62%, transparent);
+}
+
+.radius-dial__handle {
+  position: absolute;
+  z-index: 2;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  margin: calc(var(--touch-min) / -2) 0 0 calc(var(--touch-min) / -2);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  padding: 0;
+  touch-action: none;
+  cursor: grab;
+}
+
+.radius-dial.is-spring .radius-dial__handle {
+  transition:
+    left 0.62s var(--radius-spring),
+    top 0.62s var(--radius-spring);
+}
+
+.radius-dial.is-dragging .radius-dial__handle {
+  cursor: grabbing;
+  transition: none;
+}
+
+.radius-dial.is-dragging .radius-dial__coverage {
+  transition: none;
+}
+
+.radius-dial__handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: var(--radius-full);
+  background: var(--primary-400);
+  box-shadow: 0 0 0 2px var(--neutral-0);
+}
+
+.radius-dial__handle:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 3px;
+}
+
+.radius-dial__center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: max-content;
+  max-width: 8.5rem;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  color: var(--primary-800);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+  text-align: center;
+}
+
+.radius-dial__value {
+  font-size: var(--text-heading-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  animation: radius-dial-count var(--duration-moderate) var(--ease-emphasized);
+}
+
+.radius-dial__count {
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--neutral-500);
+}
+
+.radius-stage {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  width: 100%;
+  min-height: 0;
+}
+
+.radius-flow {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+  animation: radius-fade var(--duration-slow) var(--ease-emphasized);
+}
+
+.radius-flow__copy,
+.radius-nepal__copy-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 22rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) 0;
+  text-align: center;
+}
+
+.radius-flow__title,
+.radius-nepal__copy {
+  margin: 0;
+  font-size: var(--text-body-lg-size);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  color: var(--primary-800);
+  text-wrap: balance;
+}
+
+.radius-flow__hint,
+.radius-nepal__hint {
+  margin: 0;
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.4;
+  color: var(--neutral-500);
+  text-wrap: balance;
+}
+
+.radius-flow__action {
+  min-height: var(--touch-min);
+  padding: 0 var(--space-6);
+  border: 1.5px solid var(--primary-600);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--primary-800);
+  font: inherit;
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    opacity var(--duration-moderate) var(--ease-emphasized),
+    transform var(--duration-moderate) var(--ease-emphasized),
+    visibility 0s linear var(--duration-moderate);
+}
+
+.radius-flow__action.is-shown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition:
+    opacity var(--duration-moderate) var(--ease-emphasized),
+    transform var(--duration-moderate) var(--ease-emphasized),
+    visibility 0s;
+}
+
+.radius-flow__action:hover {
+  background: color-mix(in srgb, var(--primary-400) 12%, transparent);
+}
+
+.radius-flow__action:active {
+  background: color-mix(in srgb, var(--primary-400) 22%, transparent);
+}
+
+.radius-flow__action:focus-visible {
+  outline: 2px solid var(--primary-600);
+  outline-offset: 3px;
+}
+
+.radius-nepal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  width: 100%;
+  min-height: 0;
+  padding: 0 var(--space-4);
+  text-align: center;
+  animation: radius-fade var(--duration-slow) var(--ease-emphasized);
+}
+
+.radius-nepal > .radius-flow__action:not(.is-shown) {
+  display: none;
+}
+
+.radius-nepal__dates {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--content-padding) 0;
+}
+
+.radius-reveal {
+  width: 100%;
+  animation: radius-fade var(--duration-moderate) var(--ease-emphasized);
+}
+
+.doctors-empty:has(.radius-dial) h3 {
+  color: var(--primary-800);
+  font-weight: var(--font-weight-semibold);
+}
+
+@keyframes radius-dial-count {
+  from {
+    opacity: 0.35;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes radius-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radius-dial.is-spring .radius-dial__coverage,
+  .radius-dial.is-spring .radius-dial__handle,
+  .radius-dial__value,
+  .radius-flow,
+  .radius-flow__action,
+  .radius-flow__action.is-shown,
+  .radius-nepal,
+  .radius-reveal,
+  .dir-shell__list.is-revealed {
+    transition: none;
+    animation: none;
+  }
+}

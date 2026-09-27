@@ -5,6 +5,7 @@ import { presentBookingCard } from '../../booking'
 import { pickDoctorCredentials } from '../../features/providers'
 import { formatPlaceParts } from '../../features/geography/formatPlace'
 import useDuplicateBookingGuard from '../../hooks/useDuplicateBookingGuard'
+import { beginReadiness, isVideoEntry } from '../../features/videoConsult/lock'
 import EntityCard from './EntityCard'
 
 function displayName(name) {
@@ -51,6 +52,7 @@ export default function DoctorEntityCard({
   const location = useLocation()
   const { guard, modal } = useDuplicateBookingGuard()
   const preferredVisitType = location.state?.preferredVisitType
+  const videoEntry = isVideoEntry(location.state)
 
   const presented = presentBookingCard({ doctor, serviceType: 'doctor_consultation' })
   const merged = presented?.doctor || doctor || {}
@@ -58,7 +60,8 @@ export default function DoctorEntityCard({
   const specialty = merged?.specialty || doctor?.specialty || 'Specialist'
   const creds = pickDoctorCredentials({ ...doctor, ...merged })
   const address = formatPlaceParts(merged?.address || doctor?.address || '')
-  const visitTypes = merged?.visitTypes || doctor?.visitTypes || []
+  const visitTypes = (merged?.visitTypes || doctor?.visitTypes || [])
+    .filter((type) => !videoEntry || /video/i.test(String(type)))
   const fee = merged?.fee ?? doctor?.fee
   const photo = presented?.photo || merged?.photo || doctor?.photo
 
@@ -88,7 +91,12 @@ export default function DoctorEntityCard({
     if (!doctorForNav?.id) return
     onBeforeNavigate?.()
     navigate(`/doctor/${doctorForNav.id}`, {
-      state: flowState(location, { origin, preferredVisitType, returnTo }),
+      state: flowState(location, {
+        origin,
+        preferredVisitType: videoEntry ? 'Video Consultation' : preferredVisitType,
+        ...(videoEntry ? { videoLock: true, visitType: 'Video Consultation' } : {}),
+        returnTo,
+      }),
     })
   }
 
@@ -99,15 +107,19 @@ export default function DoctorEntityCard({
       return
     }
     guard(doctorForNav, ({ forSomeoneElse }) => {
-      navigate('/booking/slot', {
-        state: flowState(location, {
-          doctor: doctorForNav,
-          origin,
-          returnTo: returnTo || `/doctor/${doctorForNav.id}`,
-          preferredVisitType,
-          forSomeoneElse,
-        }),
+      const next = flowState(location, {
+        doctor: doctorForNav,
+        origin,
+        returnTo: returnTo || `/doctor/${doctorForNav.id}`,
+        preferredVisitType: videoEntry ? 'Video Consultation' : preferredVisitType,
+        ...(videoEntry ? { videoLock: true, visitType: 'Video Consultation' } : {}),
+        forSomeoneElse,
       })
+      if (videoEntry) {
+        beginReadiness(navigate, next)
+        return
+      }
+      navigate('/booking/slot', { state: next })
     })
   }
 

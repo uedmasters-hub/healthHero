@@ -174,7 +174,7 @@ export default function RescheduleAppointment() {
 
         <h3 className="rsch-section-title">Select new date & time</h3>
         <WeeklySchedule
-          doctorId={doctor.id}
+          doctorId={doctor.providerUuid || doctor.id}
           visitType={visitType}
           onVisitTypeChange={setVisitType}
           visitTypeItems={visitTypeItems}

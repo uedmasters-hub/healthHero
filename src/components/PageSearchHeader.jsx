@@ -24,6 +24,8 @@ export default function PageSearchHeader({
   enabled = true,
   locked = false,
   showSearch = true,
+  trailing = null,
+  showAvatar = true,
   className = '',
   dockClassName = '',
 }) {
@@ -52,6 +54,7 @@ export default function PageSearchHeader({
   }, [scrollRef, searchBarRef])
 
   const shownProgress = locked || !showSearch ? 0 : progress
+  const showActions = Boolean(showSearch || showAvatar || trailing)
 
   return (
     <>
@@ -59,7 +62,7 @@ export default function PageSearchHeader({
         title={title}
         leading={leading}
         className={className}
-        actions={(
+        actions={showActions ? (
           <>
             {showSearch ? (
               <HeaderSearchButton
@@ -68,9 +71,10 @@ export default function PageSearchHeader({
                 onClick={focusSearch}
               />
             ) : null}
-            <ProfileAvatar className="tab-page-header__avatar" />
+            {trailing}
+            {showAvatar ? <ProfileAvatar className="tab-page-header__avatar" /> : null}
           </>
-        )}
+        ) : null}
       />
       {showSearch ? (
         <CollapsingSearchDock

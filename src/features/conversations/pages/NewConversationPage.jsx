@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { usePushBack } from '../../pushNav'
 import { useAuth } from '../../auth/hooks/useAuth'
-import { useBookingStore } from '../../../booking'
+import { resolveSmartRelay, useBookingStore } from '../../../booking'
 import {
   chatLaunchState,
   createSupportConversation,
@@ -222,7 +222,7 @@ export default function NewConversationPage() {
                   <span>
                     {booking.doctor?.specialty || 'Care'}
                     {' · '}
-                    {formatBookingStatusLabel(booking.status)}
+                    {resolveSmartRelay(booking)?.label || formatBookingStatusLabel(booking.status)}
                   </span>
                 </button>
               ))
@@ -258,7 +258,7 @@ export default function NewConversationPage() {
               <option value="">No linked booking</option>
               {linkableBookings.map((booking) => (
                 <option key={booking.id} value={booking.id}>
-                  {doctorDisplayName(booking)} — {formatBookingStatusLabel(booking.status)}
+                  {doctorDisplayName(booking)} — {resolveSmartRelay(booking)?.label || formatBookingStatusLabel(booking.status)}
                 </option>
               ))}
             </select>

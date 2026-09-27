@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import './App.css'
 import { BookingProvider } from './components/BookingContext'
@@ -62,6 +62,8 @@ import { SearchProvider } from './features/search'
 import { isHomePath } from './lib/careFlow'
 import { isSupabaseConfigured, supabaseConfigError } from './lib/supabase'
 import DesignSystemLayout from './design-system/DesignSystemLayout'
+import VideoConsultPage from './features/videoConsult/VideoConsultPage'
+import ReadinessPage from './features/videoConsult/ReadinessPage'
 import { FabProvider } from './features/fab'
 import { NotificationIsland, NotificationPresentationSync } from './features/notifications'
 import ChatInboxPage from './features/conversations/pages/ChatInboxPage'
@@ -72,6 +74,25 @@ import AgentInboxPage from './features/conversations/pages/AgentInboxPage'
 import AppScrimHost, { useAppScrim } from './components/AppScrim'
 import { SheetPortal } from './components/PageTransition'
 import { PushStack } from './features/pushNav'
+
+function VideoBookingEntry() {
+  const location = useLocation()
+  return (
+    <Navigate
+      to="/booking"
+      replace
+      state={{
+        ...(location.state || {}),
+        origin: location.state?.origin || 'services',
+        returnTo: location.state?.returnTo || '/',
+        entryReturnTo: location.state?.entryReturnTo || '/',
+        videoLock: true,
+        visitType: 'Video Consultation',
+        preferredVisitType: 'Video Consultation',
+      }}
+    />
+  )
+}
 
 function ExploreIndexRedirect() {
   const navigate = useNavigate()
@@ -167,6 +188,9 @@ function AppRoutes() {
             <Route path="/doctor/:id/reviews" element={<DoctorReviews />} />
             {/* Sibling steps (not nested Outlet) so PushStack can keep prior
                 booking screens mounted as underlays for mirrored pop. */}
+            <Route path="/video" element={<VideoBookingEntry />} />
+            <Route path="/video/readiness" element={<ReadinessPage />} />
+            <Route path="/video/join/:appointmentId" element={<VideoConsultPage />} />
             <Route path="/booking" element={<BookingFlow><SelectProvider /></BookingFlow>} />
             <Route path="/booking/slot" element={<BookingFlow><SelectSlot /></BookingFlow>} />
             <Route path="/booking/patient" element={<BookingFlow><SelectPatient /></BookingFlow>} />

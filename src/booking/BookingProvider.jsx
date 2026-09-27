@@ -105,7 +105,7 @@ export function BookingProvider({ children }) {
   }, [engine, hydrated])
 
   // Active booking is the focused record for management screens.
-  // Homepage carousel uses selectHomeCarousel separately (newest four).
+  // Homepage carousel uses selectHomeCarousel (journey priority, nearest upcoming first).
   const currentBooking = useMemo(() => {
     const active = selectActive(state)
     if (active) return toLegacyBooking(active)
@@ -160,6 +160,7 @@ export function BookingProvider({ children }) {
     activeBookingId: state.activeBookingId,
     focusBooking,
     saveDraft: (...args) => engine.saveDraft(...args),
+    reserveVideoAppointment: (...args) => engine.reserveVideoAppointment(...args),
     startPayment: (...args) => engine.startPayment(...args),
     confirmPaid: (...args) => {
       const record = engine.confirmPaid(...args)

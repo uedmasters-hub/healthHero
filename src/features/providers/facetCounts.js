@@ -26,12 +26,14 @@ function normalizeBase({
   city = null,
   q = '',
   availability = null,
+  videoOnly = false,
 } = {}) {
   return {
     specialty: specialty && specialty !== 'All' ? specialty : null,
     city: isNationwideLocation(city) ? null : city,
     q: String(q || '').trim(),
     availability: availability && availability !== 'All' ? availability : null,
+    videoOnly: Boolean(videoOnly),
   }
 }
 
@@ -42,11 +44,14 @@ function facetCacheKey(facet, base) {
     base.city || '',
     base.q || '',
     base.availability || '',
+    base.videoOnly ? 'video' : '',
   ].join('|')
 }
 
 function isoDate(date) {
-  return date.toISOString().slice(0, 10)
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
 }
 
 function availabilityWindow(option) {
@@ -82,17 +87,18 @@ async function mapPool(items, limit, worker) {
   return results
 }
 
-async function fetchDistinctSlotProviders(from, to) {
+async function fetchDistinctSlotProviders(from, to, { videoOnly = false } = {}) {
   if (!isSupabaseConfigured) return []
   try {
     const sb = requireSupabase()
-    const { data, error } = await sb
+    let qb = sb
       .from('available_slots')
       .select('provider_id')
       .eq('is_available', true)
       .gte('slot_date', from)
       .lte('slot_date', to)
-      .limit(4000)
+    if (videoOnly) qb = qb.eq('visit_type', 'video')
+    const { data, error } = await qb.limit(4000)
     if (error) throw error
     return [...new Set((data || []).map((row) => row.provider_id).filter(Boolean))]
   } catch (err) {
@@ -107,19 +113,21 @@ async function countAvailabilityOption(option, base) {
       specialty: base.specialty,
       city: base.city,
       q: base.q,
+      videoOnly: base.videoOnly,
     })
   }
 
   const window = availabilityWindow(option)
   if (!window) return 0
 
-  const ids = await fetchDistinctSlotProviders(window.from, window.to)
+  const ids = await fetchDistinctSlotProviders(window.from, window.to, { videoOnly: base.videoOnly })
   if (!ids.length) return 0
   return countProviders({
     specialty: base.specialty,
     city: base.city,
     q: base.q,
     ids,
+    videoOnly: base.videoOnly,
   })
 }
 
@@ -128,8 +136,8 @@ async function buildSpecialtyCounts(base, onPartial) {
   const counts = {}
   await mapPool(options, 6, async (name) => {
     const total = name === 'All'
-      ? await countProviders({ city: base.city, q: base.q })
-      : await countProviders({ specialty: name, city: base.city, q: base.q })
+      ? await countProviders({ city: base.city, q: base.q, videoOnly: base.videoOnly })
+      : await countProviders({ specialty: name, city: base.city, q: base.q, videoOnly: base.videoOnly })
     counts[name] = total || 0
     onPartial?.({ ...counts })
     return total
@@ -142,8 +150,8 @@ async function buildLocationCounts(base, onPartial) {
   const counts = {}
   await mapPool(options, 6, async (name) => {
     const total = (name === ALL_NEPAL_LOCATION || isNationwideLocation(name))
-      ? await countProviders({ specialty: base.specialty, q: base.q })
-      : await countProviders({ specialty: base.specialty, city: name, q: base.q })
+      ? await countProviders({ specialty: base.specialty, q: base.q, videoOnly: base.videoOnly })
+      : await countProviders({ specialty: base.specialty, city: name, q: base.q, videoOnly: base.videoOnly })
     counts[name] = total || 0
     onPartial?.({ ...counts })
     return total
@@ -166,6 +174,7 @@ async function buildAvailabilityCounts(base, onPartial) {
 export function peekDoctorFilterFacets(facet, context = {}) {
   if (facet === 'Sort') return null
   const base = normalizeBase(context)
+  if (base.videoOnly) return null
   const key = facetCacheKey(facet, base)
   const hit = facetCache.get(key)
   if (!hit || Date.now() - hit.at >= FACET_TTL_MS) return null
@@ -184,7 +193,7 @@ export async function fetchDoctorFilterFacets(facet, context = {}, opts = {}) {
   const base = normalizeBase(context)
   const key = facetCacheKey(facet, base)
   const hit = facetCache.get(key)
-  if (hit && Date.now() - hit.at < FACET_TTL_MS) {
+  if (!base.videoOnly && hit && Date.now() - hit.at < FACET_TTL_MS) {
     opts.onPartial?.({ ...hit.counts })
     return { ...hit.counts }
   }

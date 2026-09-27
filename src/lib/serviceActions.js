@@ -57,12 +57,14 @@ export function runServiceAction(name, { navigate, onCloseOverlays, onComingSoon
   }
 
   if (action.kind === 'discover') {
+    const video = action.visitType === VIDEO_CALL
     navigate('/booking', {
       state: {
         origin: 'services',
         returnTo: '/',
         entryReturnTo: '/',
-        ...(action.visitType ? { preferredVisitType: action.visitType } : {}),
+        ...(video ? { videoLock: true, visitType: VIDEO_CALL, preferredVisitType: VIDEO_CALL } : {}),
+        ...(action.visitType && !video ? { preferredVisitType: action.visitType } : {}),
       },
     })
     return

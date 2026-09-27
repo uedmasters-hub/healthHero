@@ -6,24 +6,34 @@ import DoctorCard from './DoctorCard'
 import { BookingReveal, DoctorHeroSkeleton, useBookingReveal } from './BookingReveal'
 import useNow from '../hooks/useNow'
 import { getSlotWindow } from '../lib/bookingPolicy'
-import { resolveVisitType } from '../lib/serviceActions'
+import { resolveVisitType, VIDEO_CALL } from '../lib/serviceActions'
 import { flowState } from '../lib/careFlow'
+import { clearVideoJourney, isVideoEntry, resolveBookingEntry, saveVideoJourney } from '../features/videoConsult/lock'
 import './SelectSlot.css'
 
 export default function SelectSlot() {
   const navigate = useNavigate()
   const location = useLocation()
   // Freeze entry state so this layer stays correct while mounted as a push underlay.
-  const [entry] = useState(() => location.state || {})
+  const [entry] = useState(() => {
+    const route = location.state || {}
+    if (route.doctor && !isVideoEntry(route)) {
+      clearVideoJourney()
+      return route
+    }
+    return resolveBookingEntry(route)
+  })
   const doctor = entry.doctor
   const origin = entry.origin
   const returnTo = entry.returnTo
   const now = useNow(15000)
 
   const [selectedDate, setSelectedDate] = useState(() => entry.date || makeDateValue())
-  const [visitType, setVisitType] = useState(() => resolveVisitType(
-    entry.visitType || entry.preferredVisitType,
-    entry.doctor?.visitTypes,
+  const videoLocked = isVideoEntry(entry)
+  const [visitType, setVisitType] = useState(() => (
+    videoLocked
+      ? VIDEO_CALL
+      : resolveVisitType(entry.visitType || entry.preferredVisitType, entry.doctor?.visitTypes)
   ))
   const [duration] = useState(entry.duration || '30 min')
   const [selectedTime, setSelectedTime] = useState(entry.time || null)
@@ -45,20 +55,20 @@ export default function SelectSlot() {
 
   const handleContinue = () => {
     if (!selectedTime || selectedWindow?.isPast) return
-    navigate('/booking/patient', {
-      state: flowState(entry, {
-        doctor,
-        date: selectedDate,
-        time: selectedTime,
-        visitType,
-        duration,
-        origin,
-        returnTo,
-        bookingMode: selectedWindow?.mode || 'standard',
-        preferredVisitType: entry.preferredVisitType || visitType,
-        forSomeoneElse: entry.forSomeoneElse,
-      }),
+    const next = flowState(entry, {
+      doctor,
+      date: selectedDate,
+      time: selectedTime,
+      visitType,
+      duration,
+      origin,
+      returnTo,
+      bookingMode: selectedWindow?.mode || 'standard',
+      preferredVisitType: entry.preferredVisitType || visitType,
+      forSomeoneElse: entry.forSomeoneElse,
     })
+    if (videoLocked) saveVideoJourney(next)
+    navigate('/booking/patient', { state: next })
   }
 
   if (!doctor) {
@@ -101,10 +111,11 @@ export default function SelectSlot() {
           </div>
 
           <WeeklySchedule
-            doctorId={doctor.id}
-            visitType={visitType}
-            onVisitTypeChange={setVisitType}
-            visitTypeItems={visitTypeItems}
+            doctorId={doctor.providerUuid || doctor.id}
+            visitType={videoLocked ? VIDEO_CALL : visitType}
+            onVisitTypeChange={videoLocked ? undefined : setVisitType}
+            visitTypeItems={videoLocked ? [] : visitTypeItems}
+            lockVisitType={videoLocked}
             selectedDate={selectedDate}
             onDateChange={(next) => { setSelectedDate(next); setSelectedTime(null) }}
             selectedTime={selectedTime}

@@ -3,12 +3,12 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getDoctorById, getDoctorList, getDoctorPhoto, fetchProviderById, queryProviders, subscribeProviders, pickDoctorCredentials } from '../features/providers'
 import { formatPlaceParts } from '../features/geography/formatPlace'
 import { getDoctorReviewSummary } from '../data/reviews'
-import { flowState, goBackToOrigin } from '../lib/careFlow'
+import { flowState } from '../lib/careFlow'
 import { getSlotWindow } from '../lib/bookingPolicy'
-import { resolveVisitType } from '../lib/serviceActions'
+import { resolveVisitType, VIDEO_CALL } from '../lib/serviceActions'
+import { beginReadiness, isVideoEntry, isVideoVisit } from '../features/videoConsult/lock'
 import { VISIT_TYPES, generateDates } from './DatePicker'
 import WeeklySchedule from './WeeklySchedule'
-import { useTransition } from './PageTransition'
 import { useSharedHero } from './SharedHero'
 import DoctorCard from './DoctorCard'
 import GalleryLightbox from './GalleryLightbox'
@@ -92,7 +92,6 @@ export default function DoctorProfile() {
   const navigate = useNavigate()
   const { id } = useParams()
   const location = useLocation()
-  const { openTopDoctors, openSpecialisations } = useTransition()
   const { guard, modal } = useDuplicateBookingGuard()
   const shared = useSharedHero()
   const origin = location.state?.origin
@@ -203,10 +202,10 @@ export default function DoctorProfile() {
     if (profileIdRef.current === id) return
     profileIdRef.current = id
     setSelectedTime(null)
-    setScheduleType(resolveVisitType(preferredVisitType, dbDoctor?.visitTypes))
+    setScheduleType(isVideoEntry(location.state) ? VIDEO_CALL : resolveVisitType(preferredVisitType, dbDoctor?.visitTypes))
     setSelectedDate(generateDates({ count: 7 })[0])
     pageRef.current?.scrollTo({ top: 0, behavior: 'auto' })
-  }, [id, preferredVisitType, dbDoctor?.visitTypes])
+  }, [id, preferredVisitType, dbDoctor?.visitTypes, location.state])
 
   useLayoutEffect(() => {
     if (!doctor) return
@@ -230,29 +229,45 @@ export default function DoctorProfile() {
 
   const goBack = usePushBack(() => {
     if (sharedFlow) shared.startClose()
-    goBackToOrigin(navigate, location, { openTopDoctors, openSpecialisations })
+    // Pop the real previous screen: Listing back to the list, Home back to Home.
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      navigate(-1)
+      return
+    }
+    const previous = location.state?.returnTo
+    const safe = typeof previous === 'string'
+      && previous
+      && previous !== location.pathname
+      && !previous.startsWith('/doctor/')
+      && !previous.startsWith('/booking/')
+    navigate(safe ? previous : '/')
   })
+
+  const videoLocked = isVideoEntry(location.state)
 
   const bookAppointment = () => {
     if (!doctor || !bookingDoctor || !selectedTime || selectedWindow?.isPast) return
     guard(bookingDoctor, ({ forSomeoneElse }) => {
-      // Slot already chosen on the profile — skip Choose Date & Time.
-      navigate('/booking/patient', {
-        state: flowState(location, {
-          doctor: bookingDoctor,
-          date: selectedDate,
-          time: selectedTime,
-          visitType: scheduleType,
-          duration: '30 min',
-          origin,
-          restore,
-          returnTo: `/doctor/${doctor.providerUuid || doctor.id}`,
-          fromProfile: true,
-          bookingMode: selectedWindow?.mode || 'standard',
-          preferredVisitType: preferredVisitType || scheduleType,
-          forSomeoneElse,
-        }),
+      const next = flowState(location, {
+        doctor: bookingDoctor,
+        date: selectedDate,
+        time: selectedTime,
+        visitType: videoLocked ? VIDEO_CALL : scheduleType,
+        duration: '30 min',
+        origin,
+        restore,
+        returnTo: `/doctor/${doctor.providerUuid || doctor.id}`,
+        fromProfile: true,
+        bookingMode: selectedWindow?.mode || 'standard',
+        preferredVisitType: videoLocked ? VIDEO_CALL : (preferredVisitType || scheduleType),
+        ...(videoLocked || isVideoVisit(scheduleType) ? { videoLock: true } : {}),
+        forSomeoneElse,
       })
+      if (videoLocked || isVideoVisit(scheduleType)) {
+        beginReadiness(navigate, next)
+        return
+      }
+      navigate('/booking/patient', { state: next })
     })
   }
 
@@ -398,9 +413,10 @@ export default function DoctorProfile() {
           <div className="profile-section">
             <WeeklySchedule
               title="Weekly Schedule"
-              doctorId={doctor.id}
-              visitType={scheduleType}
-              onVisitTypeChange={setScheduleType}
+              doctorId={doctor.providerUuid || doctor.id}
+              visitType={videoLocked ? VIDEO_CALL : scheduleType}
+              onVisitTypeChange={videoLocked ? undefined : setScheduleType}
+              lockVisitType={videoLocked}
               visitTypeItems={VISIT_TYPES.filter((item) => !doctor.visitTypes?.length || doctor.visitTypes.includes(item.id))}
               selectedDate={selectedDate}
               onDateChange={(next) => { setSelectedDate(next); setSelectedTime(null) }}

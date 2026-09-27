@@ -32,6 +32,8 @@ export function createNotification({
   timestamp,
   remoteId = null,
   readAt = null,
+  bookingId = null,
+  data = null,
 } = {}) {
   const ts = timestamp || new Date().toISOString()
   return {
@@ -47,6 +49,7 @@ export function createNotification({
     timestamp: ts,
     remoteId: remoteId || null,
     readAt: readAt || null,
+    bookingId: bookingId || data?.bookingId || null,
   }
 }
 

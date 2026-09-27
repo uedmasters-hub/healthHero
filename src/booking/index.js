@@ -68,6 +68,8 @@ export {
   getVisitBounds,
   desiredStatusForTime,
 } from './visitLifecycle'
+export { resolveSmartRelay } from './smartRelay'
+export { RELAY, relayFromFacts } from './relayStates'
 export {
   rpcAdvanceAppointment,
   rpcAdvanceMyAppointments,

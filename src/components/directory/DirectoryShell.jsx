@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import PageSearchHeader from '../PageSearchHeader'
-import ResultsHeader from './ResultsHeader'
+import ResultsHeader, { formatShowingCount } from './ResultsHeader'
 import './DirectoryShell.css'
 
 function BackIcon() {
@@ -30,12 +30,15 @@ export default function DirectoryShell({
   onSearchChange,
   shown = 0,
   total = 0,
+  countSuffix = '',
   loading = false,
   onSort,
   sortActive = false,
   scrollRef: externalScrollRef,
   className = '',
   headerExtra = null,
+  radiusMode = false,
+  bare = false,
   children,
   footer = null,
 }) {
@@ -43,6 +46,7 @@ export default function DirectoryShell({
   const scrollRef = externalScrollRef || internalScrollRef
   const searchBarRef = useRef(null)
 
+  const quietHeader = bare || radiusMode
   const leading = showBack ? (
     <div className="tab-page-header__leading">
       <button type="button" className="dir-shell__icon-btn" data-push-back onClick={onBack} aria-label="Back">
@@ -52,7 +56,7 @@ export default function DirectoryShell({
   ) : null
 
   return (
-    <div className={`dir-shell ${className}`.trim()}>
+    <div className={`dir-shell${radiusMode ? ' is-radius' : ''} ${className}`.trim()}>
       <PageSearchHeader
         title={title}
         leading={leading}
@@ -62,25 +66,36 @@ export default function DirectoryShell({
         placeholder={searchPlaceholder}
         query={searchQuery}
         onQueryChange={onSearchChange}
-        showSearch={showSearch}
+        showSearch={showSearch && !quietHeader}
+        showAvatar={!quietHeader}
+        className={quietHeader ? 'is-radius-chrome' : ''}
         dockClassName="dir-shell__search-dock"
       />
 
       {headerExtra}
 
-      <ResultsHeader
-        shown={shown}
-        total={total}
-        loading={loading}
-        onSort={onSort}
-        sortActive={sortActive}
-      />
+      {quietHeader ? null : (
+        <ResultsHeader
+          shown={shown}
+          total={total}
+          suffix={countSuffix}
+          loading={loading}
+          onSort={onSort}
+          sortActive={sortActive}
+        />
+      )}
 
       <div className="dir-shell__scroll" ref={scrollRef}>
         {children}
       </div>
 
-      {footer}
+      {radiusMode ? (
+        <footer className="dir-shell__radius-foot">
+          {loading ? null : (
+            <p className="dir-results__count">{formatShowingCount(shown, total, countSuffix)}</p>
+          )}
+        </footer>
+      ) : footer}
     </div>
   )
 }

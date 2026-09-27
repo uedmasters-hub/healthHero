@@ -28,6 +28,7 @@ import { formatMoney } from '../lib/paymentSession'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshAppointmentData } from '../features/sync/pageRefresh'
+import { resolveSmartRelay } from '../booking/smartRelay'
 import './AppointmentDetail.css'
 
 const checklistItems = [
@@ -100,6 +101,7 @@ export default function AppointmentDetail() {
   const bookingId = useRouteBookingId(location.state)
   const bookingFromStore = useBookingById(bookingId)
   const booking = bookingFromStore || currentBooking
+  const relay = resolveSmartRelay(booking)
 
   useEffect(() => {
     if (bookingId) focusBooking?.(bookingId)
@@ -393,6 +395,13 @@ export default function AppointmentDetail() {
           </svg>
           {formatCountdown(appointmentStart, now)}
         </div>
+
+        {relay ? (
+          <div className={`appointment-relay is-${relay.accent}`} role="status">
+            <span className="appointment-relay-label">{relay.label}</span>
+            <p className="appointment-relay-message">{relay.message}</p>
+          </div>
+        ) : null}
 
         {isLocked && (
           <div className="appointment-lock-banner">

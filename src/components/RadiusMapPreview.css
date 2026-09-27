@@ -1,0 +1,88 @@
+.radius-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  background: #e7eef2;
+}
+
+.radius-map.is-cover {
+  z-index: 6;
+}
+
+.radius-map__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.radius-map__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  will-change: transform;
+}
+
+.radius-map__layer.is-incoming {
+  opacity: 0;
+}
+
+.radius-map__layer.is-incoming.is-live {
+  opacity: 1;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.radius-map__tile {
+  position: absolute;
+  display: block;
+  width: 256px;
+  height: 256px;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.radius-map__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      var(--white) 0,
+      var(--white) calc(var(--space-10) + var(--space-6)),
+      transparent calc(var(--space-10) + var(--space-6) + 6.5rem)
+    ),
+    linear-gradient(
+      to top,
+      var(--white) 0,
+      var(--white) var(--space-10),
+      transparent calc(var(--space-10) + 5.5rem)
+    );
+}
+
+.radius-map__credit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--space-10) + var(--space-4));
+  margin: 0;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--neutral-500);
+  opacity: 0.85;
+  pointer-events: auto;
+}
+
+.radius-map__credit a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radius-map,
+  .radius-map__layer.is-incoming.is-live {
+    transition: none;
+  }
+}

@@ -51,7 +51,7 @@ export function useActiveBooking() {
   }, [bookings, activeBookingId])
 }
 
-/** Homepage carousel — future upcoming only (legacy view models). */
+/** Homepage carousel — journeys by priority (legacy view models). */
 export function useHomeCarousel(limit = HOME_CAROUSEL_LIMIT) {
   const { bookings, activeBookingId } = useBooking()
   return useMemo(

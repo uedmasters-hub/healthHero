@@ -11,7 +11,7 @@ import {
   visitSlotAvailability,
 } from '../lib/slotAvailability'
 import { BOOKING_HORIZON_DAYS, isSameDate } from './calendar/dates'
-import { fetchProviderAvailability } from '../features/providers'
+import { fetchProviderSchedule, subscribeAvailability } from '../features/providers'
 import useNow from '../hooks/useNow'
 import './WeeklySchedule.css'
 
@@ -36,19 +36,20 @@ export default function WeeklySchedule({
   onTimeChange,
   getMeta,
   className = '',
+  lockVisitType = false,
 }) {
   const periodDomId = useId()
   const now = useNow(15_000)
-  const [liveRows, setLiveRows] = useState(null)
+  const [schedule, setSchedule] = useState(null)
   const autoKeyRef = useRef('')
 
   const loadAvailability = useCallback(async () => {
     if (doctorId == null) {
-      setLiveRows([])
+      setSchedule({ slots: [], remote: true })
       return
     }
-    const rows = await fetchProviderAvailability(doctorId, { days: BOOKING_HORIZON_DAYS })
-    setLiveRows(rows)
+    const next = await fetchProviderSchedule(doctorId, { days: BOOKING_HORIZON_DAYS })
+    setSchedule(next)
   }, [doctorId])
 
   useEffect(() => {
@@ -63,12 +64,19 @@ export default function WeeklySchedule({
     const timer = window.setInterval(() => {
       if (document.visibilityState === 'visible') loadAvailability()
     }, REFRESH_MS)
+    const unsubscribe = subscribeAvailability(() => {
+      if (!cancelled) loadAvailability()
+    })
     return () => {
       cancelled = true
+      unsubscribe()
       document.removeEventListener('visibilitychange', onVis)
       window.clearInterval(timer)
     }
   }, [loadAvailability])
+
+  const liveRows = schedule?.slots ?? null
+  const hasRemoteSchedule = schedule?.remote === true
 
   const liveTimes = useMemo(() => {
     if (liveRows == null) return null
@@ -77,20 +85,19 @@ export default function WeeklySchedule({
       if (visitType && row.visitType && row.visitType !== visitType) return
       const key = row.date
       const list = byDate.get(key) || []
-      list.push(row.time)
+      if (!list.includes(row.time)) list.push(row.time)
       byDate.set(key, list)
     })
     return byDate
   }, [liveRows, visitType])
 
-  const hasRemoteSchedule = Boolean(liveRows && liveRows.length > 0)
-
   const scheduleSlots = useMemo(() => {
+    if (liveTimes == null) return []
     const { slots } = slotsForDate({
       liveTimes,
       hasRemoteSchedule,
       date: selectedDate,
-      fallbackSlots: FALLBACK_SCHEDULE_SLOTS,
+      fallbackSlots: [],
     })
     return slots
   }, [liveTimes, hasRemoteSchedule, selectedDate])
@@ -133,7 +140,7 @@ export default function WeeklySchedule({
       visitType,
       liveTimes,
       hasRemoteSchedule,
-      fallbackSlots: FALLBACK_SCHEDULE_SLOTS,
+      fallbackSlots: [],
       now,
     })
   }, [liveTimes, hasRemoteSchedule, doctorId, visitType, now])
@@ -146,7 +153,7 @@ export default function WeeklySchedule({
       visitType,
       liveTimes,
       hasRemoteSchedule,
-      fallbackSlots: FALLBACK_SCHEDULE_SLOTS,
+      fallbackSlots: [],
       now,
     })
     if (!earliest) return
@@ -156,7 +163,7 @@ export default function WeeklySchedule({
         doctorId,
         date: selectedDate,
         visitType,
-        slots: slotsForDate({ liveTimes, hasRemoteSchedule, date: selectedDate }).slots,
+        slots: slotsForDate({ liveTimes, hasRemoteSchedule, date: selectedDate, fallbackSlots: [] }).slots,
         now,
       })
       : []
@@ -194,6 +201,7 @@ export default function WeeklySchedule({
     visitType,
     liveTimes,
     hasRemoteSchedule,
+    fallbackSlots: [],
     now,
   }), [doctorId, visitType, liveTimes, hasRemoteSchedule, now])
 
@@ -201,12 +209,14 @@ export default function WeeklySchedule({
     <div className={`weekly-schedule ${className}`.trim()}>
       {title ? <div className="weekly-schedule-label">{title}</div> : null}
       <div className="weekly-schedule-body">
-        <ChipRow
-          variant="segmented"
-          items={visitTypeItems}
-          value={visitType}
-          onChange={onVisitTypeChange}
-        />
+        {lockVisitType ? null : (
+          <ChipRow
+            variant="segmented"
+            items={visitTypeItems}
+            value={visitType}
+            onChange={onVisitTypeChange}
+          />
+        )}
         <DatePicker
           selectedDate={selectedDate}
           onSelect={onDateChange}
@@ -217,7 +227,11 @@ export default function WeeklySchedule({
         />
         <div className="weekly-slot-periods">
           {visiblePeriods.length === 0 ? (
-            <p className="weekly-slot-empty">No open times on this day. Pick another available date.</p>
+            <p className="weekly-slot-empty" role="status">
+              {schedule == null
+                ? 'Availability is loading from the clinic schedule.'
+                : 'No open times for this visit. Choose another date, or this doctor is unavailable.'}
+            </p>
           ) : (
             visiblePeriods.map((period) => {
               const headingId = `${periodDomId}-${period.id}`

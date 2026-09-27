@@ -279,8 +279,8 @@ export default function TreatPage() {
                               : service.label)}
                         </div>
                       </div>
-                      <span className={`treat-history-badge is-${String(visit.historyTab || '').toLowerCase()}`}>
-                        {visit.historyTab}
+                      <span className={`treat-history-badge is-${visit.relayAccent || String(visit.historyTab || '').toLowerCase()}`}>
+                        {visit.relayLabel || visit.historyTab}
                       </span>
                     </div>
                     <div className="treat-history-condition">{visit.condition || service.label}</div>

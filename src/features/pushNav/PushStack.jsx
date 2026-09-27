@@ -494,18 +494,10 @@ export default function PushStack() {
 
   const ctx = useMemo(() => ({ beginPop, isPushRoute: isPush }), [beginPop, isPush])
 
-  if (!isPush && layers.length === 0) {
-    return (
-      <PushStackContext.Provider value={ctx}>
-        {outlet}
-      </PushStackContext.Provider>
-    )
-  }
-
   if (layers.length === 0) {
     return (
       <PushStackContext.Provider value={ctx}>
-        {null}
+        {outlet}
       </PushStackContext.Provider>
     )
   }
@@ -563,7 +555,7 @@ export default function PushStack() {
               style={style}
               aria-hidden={!isTop || exiting ? true : undefined}
             >
-              {layer.element}
+              {layer.element ?? (isTop && !exiting ? outlet : null)}
             </div>
           )
         })}

@@ -12,12 +12,14 @@ import {
 } from './constants'
 import {
   createBookingRecord,
+  createId,
   fromLegacyBooking,
   toLegacyBooking,
 } from './models'
 import { createLocalPersistence } from './persistence'
 import { createRepository, IMMUTABLE_APPOINTMENT_STATUSES } from './repository'
 import { mirrorAppointment } from '../features/sync/mirrors'
+import { refreshAppointmentFromRemote } from './appointmentSync'
 import { notificationService } from '../features/notifications'
 import {
   applyPaymentExpired,
@@ -33,6 +35,8 @@ import {
   selectResumePath,
 } from './selectors'
 import { ensureCarouselSeeds } from './seed'
+import { SERVICE_TYPE } from './serviceTypes'
+import { buildPatientReport, reconcileVisitOutcomes } from './visitOutcomes'
 import { DEMO_USER_ID } from '../user/constants'
 import {
   buildPaidBooking,
@@ -247,6 +251,39 @@ export function createBookingEngine({
         payload: { doctorId: record.doctor?.id },
       })
       if (makeActive) repo.setActive(saved.id)
+      return toLegacyBooking(saved)
+    },
+
+    /**
+     * Hold a video visit before any consultation room is created.
+     * Visit type is forced so this path cannot become an in-person booking.
+     */
+    reserveVideoAppointment(legacyPartial = {}) {
+      const id = legacyPartial.engineId || legacyPartial.id || createId('bk')
+      const record = createBookingRecord(withOwner({
+        ...fromLegacyBooking({
+          ...legacyPartial,
+          id,
+          visitType: 'Video Consultation',
+          serviceType: SERVICE_TYPE.VIRTUAL_CONSULTATION,
+          providerIcon: 'video',
+        }, {
+          id,
+          status: BOOKING_STATUS.UPCOMING,
+          serviceType: SERVICE_TYPE.VIRTUAL_CONSULTATION,
+        }),
+        status: BOOKING_STATUS.UPCOMING,
+        serviceType: SERVICE_TYPE.VIRTUAL_CONSULTATION,
+        visitType: 'Video Consultation',
+        providerIcon: 'video',
+        origin: legacyPartial.origin || 'video',
+      }))
+      const { record: saved } = repo.upsert(record, {
+        event: BOOKING_EVENT.CONFIRMED,
+        payload: { source: 'video_reservation' },
+      })
+      repo.setActive(saved.id)
+      queueAppointment(saved, ownerId())
       return toLegacyBooking(saved)
     },
 
@@ -465,7 +502,14 @@ export function createBookingEngine({
       }
 
       queueAppointment(record, ownerId())
-      return toLegacyBooking(record)
+      const confirmed = toLegacyBooking(record)
+      const confirmedVisit = confirmed?.visitType || confirmed?.schedule?.visitType || ''
+      if (/video|virtual/i.test(confirmedVisit)) {
+        import('../features/videoConsult/sessionApi.js')
+          .then((mod) => mod.provisionConfirmedVisit(confirmed))
+          .catch(() => {})
+      }
+      return confirmed
     },
 
     updateBooking(id, patch, event = BOOKING_EVENT.UPDATED) {
@@ -768,40 +812,39 @@ export function createBookingEngine({
       return toLegacyBooking(record)
     },
 
-    submitPatientVisitReport(id, report = {}) {
+    async submitPatientVisitReport(id, report = {}) {
       const current = repo.getById(id) || repo.getActive()
       if (!current) return null
-      const merged = {
-        ...(current.meta?.patientReport || {}),
-        ...report,
-        reportedAt: new Date().toISOString(),
-      }
+      const entry = buildPatientReport(report)
+      if (!entry.primaryOutcome) return null
+      const prior = Array.isArray(current.meta?.patientReports)
+        ? current.meta.patientReports
+        : []
+      const preserved = prior.length
+        ? prior
+        : (current.meta?.patientReport ? [current.meta.patientReport] : [])
       const next = {
         ...current,
         meta: {
           ...(current.meta || {}),
-          updatedAt: new Date().toISOString(),
           patientStatus: PATIENT_STATUS.REPORTED,
-          patientReport: merged,
+          patientReport: entry,
+          patientReports: [...preserved, entry],
+          patientReportPending: true,
         },
-        history: [
-          ...(current.history || []),
-          {
-            event: BOOKING_EVENT.PATIENT_VISIT_REPORTED,
-            at: new Date().toISOString(),
-            payload: { report },
-          },
-        ],
       }
-      const { record } = repo.upsert(next, {
+      const { rollback } = repo.upsert(next, {
         event: BOOKING_EVENT.PATIENT_VISIT_REPORTED,
-        payload: { report },
+        payload: { report: entry },
       })
-      queueAppointment(record, ownerId())
-      if (ownerId()) {
-        rpcSubmitPatientVisitReport(record.id, report).catch(() => {})
+      const remote = await rpcSubmitPatientVisitReport(current.id, entry)
+      if (remote?.deferred) return toLegacyBooking(repo.getById(current.id))
+      if (!remote?.ok) {
+        rollback()
+        return null
       }
-      return toLegacyBooking(record)
+      await refreshAppointmentFromRemote(api, current.id)
+      return toLegacyBooking(repo.getById(current.id))
     },
 
     /** Apply official provider completion (hydrate / provider app / admin). */
@@ -828,12 +871,20 @@ export function createBookingEngine({
         }
       }
       const nowIso = new Date().toISOString()
+      const patientReport = current.meta?.patientReport
+      const visitReconciliation = patientReport?.primaryOutcome || patientReport?.outcomes?.length
+        ? reconcileVisitOutcomes(patientReport, {
+          ...(current.meta?.providerOutcomes || {}),
+          ...outcomes,
+        })
+        : current.meta?.visitReconciliation || null
       next.meta = {
         ...(next.meta || {}),
         updatedAt: nowIso,
         providerStatus: PROVIDER_STATUS.COMPLETED,
         providerCompletedAt: nowIso,
         providerOutcomes: { ...(current.meta?.providerOutcomes || {}), ...outcomes },
+        visitReconciliation,
         nextCarePath: careFocus,
         reconciliationStatus: patientDone
           ? RECONCILIATION_STATUS.RECONCILED

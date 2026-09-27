@@ -4,7 +4,8 @@ import PrescriptionLightbox, { usePrescriptionLightbox } from './PrescriptionLig
 import { defaultPrescription } from '../data/prescription'
 import { useUser } from '../user'
 import { usePushBack } from '../features/pushNav'
-import { presentBookingCard, useBookingById, useRouteBookingId } from '../booking'
+import { presentBookingCard, resolveSmartRelay, useBookingById, useRouteBookingId } from '../booking'
+import { VISIT_OUTCOME_LABELS } from '../booking/visitOutcomes'
 import './PostVisitSummary.css'
 
 const defaultVisitData = {
@@ -48,8 +49,41 @@ function buildVisitFromBooking(booking, { records, prescriptions, profile }) {
   const labs = records?.labs || records?.labOrders || []
   const invoices = records?.invoices || []
   const notes = records?.notes || records?.consultationNotes || []
+  const report = booking.meta?.patientReport
+  const reconciliation = booking.meta?.visitReconciliation
+  const providerOutcomes = booking.meta?.providerOutcomes || {}
+  const primary = report?.primaryOutcome || (report?.outcomes || [])[0]
+  const officialKeys = reconciliation?.official?.length
+    ? reconciliation.official
+    : (primary ? [primary] : [])
   const careSummary = []
-  if (notes.length) {
+  officialKeys.forEach((id) => {
+    const label = VISIT_OUTCOME_LABELS[id]
+    if (label) careSummary.push(label)
+  })
+  const reportedDetails = reconciliation ? {} : (report?.details || {})
+  const providerMeds = Array.isArray(providerOutcomes.medications)
+    ? providerOutcomes.medications.filter(Boolean).join(', ')
+    : ''
+  const providerTests = Array.isArray(providerOutcomes.labs)
+    ? providerOutcomes.labs.filter(Boolean).join(', ')
+    : ''
+  if (reconciliation) {
+    if (providerMeds) careSummary.push(providerMeds)
+    if (providerTests) careSummary.push(providerTests)
+    if (providerOutcomes.referralTo) careSummary.push(`Referred to ${providerOutcomes.referralTo}`)
+    if (providerOutcomes.note) careSummary.push(providerOutcomes.note)
+    if (reconciliation.unresolved?.[0]) {
+      const yours = VISIT_OUTCOME_LABELS[reconciliation.unresolved[0]]
+      if (yours) careSummary.push(`Your report: ${yours}`)
+    }
+  } else {
+    if (reportedDetails.medications) careSummary.push(reportedDetails.medications)
+    if (reportedDetails.tests) careSummary.push(reportedDetails.tests)
+    if (reportedDetails.referral) careSummary.push(`Referred to ${reportedDetails.referral}`)
+    if (reportedDetails.note) careSummary.push(reportedDetails.note)
+  }
+  if (notes.length && !careSummary.length) {
     notes.slice(0, 4).forEach((n) => {
       const text = n.summary || n.assessment || n.plan || n.title
       if (text) careSummary.push(text)
@@ -65,12 +99,14 @@ function buildVisitFromBooking(booking, { records, prescriptions, profile }) {
     {
       icon: 'medications',
       label: 'Medications',
-      detail: meds.length ? `${meds.length} prescribed` : 'Pending updates',
+      detail: providerMeds || reportedDetails.medications
+        || (meds.length ? `${meds.length} prescribed` : 'Pending updates'),
     },
     {
       icon: 'tests',
       label: 'Tests & Lab Orders',
-      detail: labs.length ? `${labs.length} ordered` : reports.length ? `${reports.length} reports` : 'Pending updates',
+      detail: providerTests || reportedDetails.tests
+        || (labs.length ? `${labs.length} ordered` : reports.length ? `${reports.length} reports` : 'Pending updates'),
     },
     {
       icon: 'payment',
@@ -84,9 +120,17 @@ function buildVisitFromBooking(booking, { records, prescriptions, profile }) {
     {
       icon: 'prescription',
       label: 'Prescription',
-      detail: meds[0] ? 'Available' : '',
+      detail: providerMeds || reportedDetails.medications
+        || (meds[0] ? 'Available' : (officialKeys.includes('prescription') ? 'Reported' : '')),
     },
   ]
+  if (officialKeys.includes('referral')) {
+    resources.splice(2, 0, {
+      icon: 'tests',
+      label: 'Referral',
+      detail: providerOutcomes.referralTo || reportedDetails.referral || 'Reported',
+    })
+  }
 
   return {
     doctor: {
@@ -101,10 +145,17 @@ function buildVisitFromBooking(booking, { records, prescriptions, profile }) {
     time: presented.timeLabel || booking.time || '',
     address: doctor.clinic || doctor.address || profile?.address || '',
     careSummary,
-    followUp: {
-      date: 'As advised',
-      description: 'Follow-up guidance will appear here when your provider shares it.',
-    },
+    followUp: providerOutcomes.followUpDate || reportedDetails.followUp || officialKeys.includes('follow_up')
+      ? {
+        date: providerOutcomes.followUpDate || reportedDetails.followUp || 'Scheduled',
+        description: reconciliation
+          ? 'This follow-up comes from the clinic confirmation. Your original report stays on the visit.'
+          : 'From your temporary report until the clinic confirms the visit.',
+      }
+      : {
+        date: 'As advised',
+        description: 'Follow-up guidance will appear here when your provider shares it.',
+      },
     resources,
     reports,
     prescription: meds[0] || null,
@@ -120,8 +171,7 @@ export default function PostVisitSummary() {
   const booking = useBookingById(bookingId)
   const fromState = location.state?.visitData
   const careFocus = location.state?.careFocus || booking?.meta?.nextCarePath || null
-  const waitingProvider = booking?.status === 'completed_pending_provider'
-    || booking?.meta?.reconciliationStatus === 'awaiting_provider'
+  const relay = resolveSmartRelay(booking)
 
   const visitData = useMemo(() => {
     if (fromState && !bookingId) return fromState
@@ -203,18 +253,16 @@ export default function PostVisitSummary() {
           </div>
           <div className="postvisit-success-text">
             <div className="postvisit-success-title">
-              {waitingProvider
-                ? 'Waiting for provider confirmation'
-                : careFocus && careFocus !== 'post_visit_summary'
+              {relay?.label
+                || (careFocus && careFocus !== 'post_visit_summary'
                   ? `Next: ${String(careFocus).replace(/_/g, ' ')}`
-                  : 'Visit completed successfully'}
+                  : 'Visit completed successfully')}
             </div>
             <div className="postvisit-success-subtitle">
-              {waitingProvider
-                ? 'Official notes will appear here when your clinic confirms. You can still leave a temporary report from Home.'
-                : bookingId
+              {relay?.message
+                || (bookingId
                   ? 'Your temporary care hub is available for 24 hours.'
-                  : 'Your care plan has been updated.'}
+                  : 'Your care plan has been updated.')}
             </div>
           </div>
         </div>
@@ -287,7 +335,7 @@ export default function PostVisitSummary() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2">
               <polyline points="20 6 9 17 4 12" />
             </svg>
-            Completed
+            {relay?.label || 'Completed'}
           </div>
         </div>
 

@@ -11,9 +11,9 @@ import { EDIT_LOCK_MINUTES, getAppointmentStart, getBookingWindow } from '../lib
 import {
   VISIT_PHASE,
   getVisitBounds,
-  isHomeHeroPhase,
   resolveVisitPhase,
 } from './visitLifecycle'
+import { resolveSmartRelay } from './smartRelay'
 
 export function selectAll(state) {
   return state?.bookings || []
@@ -83,31 +83,84 @@ export function selectHomeSurface(state, now = new Date()) {
   )
 }
 
-/** Future Upcoming only — never past-time or hero phases. */
+/** 0 active journeys, 1 outcome still on Home. Archived care stays off the carousel. */
+function carouselJourneyBand(relay) {
+  if (!relay?.home) return -1
+  return relay.homeBand === 1 ? 1 : 0
+}
+
+function byNearestStart(a, b) {
+  const as = a.bounds.start?.getTime() ?? Number.POSITIVE_INFINITY
+  const bs = b.bounds.start?.getTime() ?? Number.POSITIVE_INFINITY
+  if (as !== bs) return as - bs
+  const urgency = {
+    [VISIT_PHASE.VISIT_CHECKIN]: 0,
+    [VISIT_PHASE.ACTIVE_VISIT]: 1,
+    [VISIT_PHASE.WAITING_PROVIDER]: 2,
+    [VISIT_PHASE.UPCOMING]: 3,
+  }
+  const ua = urgency[a.phase] ?? 9
+  const ub = urgency[b.phase] ?? 9
+  if (ua !== ub) return ua - ub
+  return recencyTs(b.record) - recencyTs(a.record)
+}
+
+function byRecentCompletion(a, b) {
+  const stamp = (row) => (
+    row.bounds.completedAt?.getTime()
+    || row.bounds.end?.getTime()
+    || row.bounds.start?.getTime()
+    || 0
+  )
+  const delta = stamp(b) - stamp(a)
+  if (delta !== 0) return delta
+  return recencyTs(b.record) - recencyTs(a.record)
+}
+
+/**
+ * Single Home / Treat journey carousel.
+ * Relevance is journey priority, not section order:
+ * nearest active/upcoming appointment, then later upcoming bookings,
+ * then the official outcome while it is still on Home.
+ * Completed, cancelled, and missed visits leave Home for Care Hub once their window ends.
+ * When the limit would hide every outcome card, the last slot stays one.
+ */
 export function selectHomeCarousel(state, limit = HOME_CAROUSEL_LIMIT, now = new Date()) {
   const t = now instanceof Date ? now : new Date(now)
-  const surface = selectHomeSurface(state, t)
-  const heroId = surface && isHomeHeroPhase(surface.phase) ? surface.record.id : null
+  const cap = Math.max(0, limit)
+  const visible = new Set([
+    ...HOME_VISIBLE_STATUSES,
+    BOOKING_STATUS.CANCELLED,
+    BOOKING_STATUS.NO_SHOW,
+  ])
 
-  const list = selectAll(state)
-    .filter((b) => HOME_VISIBLE_STATUSES.includes(b.status))
-    .filter((b) => resolveVisitPhase(b, t) === VISIT_PHASE.UPCOMING)
-    .filter((b) => b.id !== heroId)
-    .slice()
-    .sort((a, b) => {
-      const as = getVisitBounds(a).start?.getTime() || Number.POSITIVE_INFINITY
-      const bs = getVisitBounds(b).start?.getTime() || Number.POSITIVE_INFINITY
-      if (as !== bs) return as - bs
-      return recencyTs(b) - recencyTs(a)
+  const ranked = selectAll(state)
+    .filter((b) => visible.has(b.status))
+    .map((record) => {
+      const relay = resolveSmartRelay(record, t)
+      const phase = relay?.phase || resolveVisitPhase(record, t)
+      const bounds = getVisitBounds(record)
+      return {
+        record,
+        phase,
+        bounds,
+        band: carouselJourneyBand(relay),
+      }
     })
+    .filter((row) => row.band >= 0)
 
-  // When Home hero is an upcoming visit, include it first in the carousel.
-  if (surface?.phase === VISIT_PHASE.UPCOMING && surface.record) {
-    const rest = list.filter((b) => b.id !== surface.record.id)
-    return [surface.record, ...rest].slice(0, limit)
+  const active = ranked.filter((row) => row.band === 0).sort(byNearestStart)
+  const postVisit = ranked.filter((row) => row.band === 1).sort(byRecentCompletion)
+  const completed = ranked.filter((row) => row.band === 2).sort(byRecentCompletion)
+  const ordered = [...active, ...postVisit, ...completed]
+  if (ordered.length <= cap) return ordered.map((row) => row.record)
+
+  let picked = ordered.slice(0, cap)
+  const keptPostVisit = picked.some((row) => row.phase === VISIT_PHASE.POST_VISIT)
+  if (cap >= 2 && postVisit.length > 0 && !keptPostVisit) {
+    picked = [...picked.slice(0, cap - 1), postVisit[0]]
   }
-
-  return list.slice(0, limit)
+  return picked.map((row) => row.record)
 }
 
 export function selectUpcoming(state, now = new Date()) {
@@ -353,6 +406,7 @@ export function selectCareHistory(state, now = new Date()) {
     .map((record) => {
       const tab = careHistoryTabForRecord(record, now)
       if (!tab) return null
+      const relay = resolveSmartRelay(record, now)
       const legacy = toLegacyBooking(record)
       const service = getServiceMeta(resolveServiceType(legacy))
       const start = record.schedule?.date && record.schedule?.time
@@ -376,6 +430,8 @@ export function selectCareHistory(state, now = new Date()) {
         dateLabel: dateLabel + (legacy.time ? ` · ${legacy.time}` : ''),
         condition: service.label,
         categoryLabel: service.shortLabel,
+        relayLabel: relay?.label || null,
+        relayAccent: relay?.accent || null,
         displayName,
         visitType: legacy.visitType || 'In-Person',
         updatedAt: record.meta?.updatedAt || record.meta?.createdAt || 0,

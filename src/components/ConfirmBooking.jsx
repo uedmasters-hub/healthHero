@@ -19,6 +19,7 @@ import AppointmentMenuOptions from './AppointmentMenuOptions'
 import BookingInvoiceSheet from './BookingInvoiceSheet'
 import MedicalRecordsPicker, { AttachedRecordsSummary } from './MedicalRecordsPicker'
 import { usePushBack } from '../features/pushNav'
+import { readVideoJourney, videoEntryState } from '../features/videoConsult/lock'
 import './ConfirmBooking.css'
 
 export default function ConfirmBooking() {
@@ -46,7 +47,8 @@ export default function ConfirmBooking() {
   }, [routeBookingId, focusBooking])
 
   // Wizard draft fields live in route state until payment; after pay, store is SSOT.
-  const draft = isPaidView ? {} : (location.state || {})
+  const savedJourney = !isPaidView && !location.state?.doctor ? readVideoJourney() : null
+  const draft = isPaidView ? {} : { ...(savedJourney || {}), ...(location.state || {}) }
   const booking = bookingById || (isPaidView ? currentBooking : null)
   const doctor = isPaidView ? (booking?.doctor || draft.doctor) : (draft.doctor || booking?.doctor)
   const date = isPaidView ? (booking?.date || draft.date) : (draft.date || booking?.date)
@@ -141,6 +143,11 @@ export default function ConfirmBooking() {
 
   useEffect(() => {
     if (!doctor || !date || !time) {
+      const saved = readVideoJourney()
+      if (saved?.doctor) {
+        navigate('/booking/slot', { replace: true, state: videoEntryState(saved) })
+        return
+      }
       navigate('/booking')
       return
     }

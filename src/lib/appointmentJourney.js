@@ -13,6 +13,7 @@ import {
   VISIT_PHASE,
   resolveVisitPhase,
 } from '../booking/visitLifecycle'
+import { resolveSmartRelay } from '../booking/smartRelay'
 
 function sessionPathForPayment(booking) {
   try {
@@ -120,9 +121,37 @@ export function getAppointmentStage(booking) {
  * Active context for the current booking.
  * Time phase wins after visit start; prep/check-in apply only while Upcoming.
  */
+function asVideoJoin(booking, journey) {
+  const blob = `${booking?.visitType || ''} ${booking?.serviceType || ''}`
+  if (!/video|virtual/i.test(blob)) return journey
+  if (journey.phase && journey.phase !== VISIT_PHASE.UPCOMING) return journey
+  const id = booking?.engineId || booking?.id
+  if (!id) return journey
+  return { ...journey, path: `/video/join/${id}`, cta: 'Join Consultation' }
+}
+
 export function getAppointmentJourney(booking, now = new Date()) {
   const status = getAppointmentStatus(booking)
   const phase = resolveVisitPhase(booking, now)
+  const relay = resolveSmartRelay(booking, now)
+  if (relay) {
+    return {
+      status: status || APPOINTMENT_STATUS.BOOKED,
+      stage: relay.state,
+      phase: relay.phase,
+      path: relay.path,
+      badge: relay.label,
+      badgeTone: relay.accent,
+      cta: relay.actions.find((item) => !item.disabled)?.label || relay.label,
+      reportSubmitted: relay.state === 'report_submitted',
+      reportedAt: relay.reportedAt,
+      sectionLabel: relay.sectionLabel,
+      targetLayout: relay.homeBand === 0 ? 'hero' : 'appointment',
+      sourceLayout: 'appointment',
+      prompt: relay.message,
+      relay,
+    }
+  }
 
   if (phase === VISIT_PHASE.VISIT_CHECKIN) {
     return {
@@ -137,22 +166,6 @@ export function getAppointmentJourney(booking, now = new Date()) {
       targetLayout: 'hero',
       sourceLayout: 'appointment',
       prompt: 'Have you completed your visit?',
-    }
-  }
-
-  if (phase === VISIT_PHASE.WAITING_PROVIDER) {
-    return {
-      status: APPOINTMENT_STATUS.COMPLETED_PENDING_PROVIDER,
-      stage: APPOINTMENT_STAGE.WAITING_PROVIDER,
-      phase,
-      path: '/post-visit-report',
-      badge: 'Waiting for provider',
-      badgeTone: 'prepared',
-      cta: 'Report visit',
-      sectionLabel: 'Waiting for Provider Confirmation',
-      targetLayout: 'hero',
-      sourceLayout: 'appointment',
-      prompt: 'Waiting for your provider to confirm outcomes.',
     }
   }
 
@@ -230,7 +243,7 @@ export function getAppointmentJourney(booking, now = new Date()) {
         sourceLayout: 'appointment',
       }
     case APPOINTMENT_STAGE.READY:
-      return {
+      return asVideoJoin(booking, {
         status: APPOINTMENT_STATUS.CHECKED_IN,
         stage,
         phase,
@@ -241,9 +254,9 @@ export function getAppointmentJourney(booking, now = new Date()) {
         sectionLabel: 'Upcoming Appointment',
         targetLayout: 'hero',
         sourceLayout: 'appointment',
-      }
+      })
     case APPOINTMENT_STAGE.NEEDS_PREP:
-      return {
+      return asVideoJoin(booking, {
         status: APPOINTMENT_STATUS.BOOKED,
         stage,
         phase,
@@ -254,10 +267,10 @@ export function getAppointmentJourney(booking, now = new Date()) {
         sectionLabel: 'Upcoming Appointment',
         targetLayout: 'appointment',
         sourceLayout: 'appointment',
-      }
+      })
     case APPOINTMENT_STAGE.PREPARED:
     default:
-      return {
+      return asVideoJoin(booking, {
         status: status || APPOINTMENT_STATUS.BOOKED,
         stage: APPOINTMENT_STAGE.PREPARED,
         phase,
@@ -268,7 +281,7 @@ export function getAppointmentJourney(booking, now = new Date()) {
         sectionLabel: 'Upcoming Appointment',
         targetLayout: 'appointment',
         sourceLayout: 'appointment',
-      }
+      })
   }
 }
 

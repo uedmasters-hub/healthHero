@@ -225,18 +225,17 @@ export function SlotGrid({ slots, value, onChange, getMeta }) {
     <div className="cal-slot-grid">
       {slots.map((slot) => {
         const meta = getMeta?.(slot) || {}
-        const unavailable = Boolean(meta.disabled)
+        if (!slot || meta.disabled) return null
         return (
           <Chip
             key={slot}
             className={`cal-slot ${meta.quick ? 'is-quick' : ''}`}
             active={value === slot}
-            disabled={unavailable}
-            aria-label={unavailable ? `${slot}, unavailable` : slot}
+            aria-label={slot}
             onClick={() => onChange(slot)}
           >
             <span className="cal-slot-time">{slot}</span>
-            {meta.quick && !unavailable ? <span className="cal-slot-quick">Quick</span> : null}
+            {meta.quick ? <span className="cal-slot-quick">Quick</span> : null}
           </Chip>
         )
       })}
@@ -314,6 +313,7 @@ function CalendarBottomSheet({
       visitType: availabilityContext.visitType,
       liveTimes: availabilityContext.liveTimes,
       hasRemoteSchedule: availabilityContext.hasRemoteSchedule,
+      fallbackSlots: availabilityContext.fallbackSlots || [],
       now: availabilityContext.now || new Date(),
       minDate: rangeMin,
       maxDate: rangeMax,

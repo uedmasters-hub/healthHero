@@ -9,6 +9,7 @@ import { createBookingRecord, reviveBookingRecord, toLegacyBooking } from './mod
 import { resolveCatalogDoctor } from './presentBooking'
 import { getDoctorPhoto } from '../features/providers'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
+import { hasPatientReport, readPatientReport, remoteVisitSnapshotWins } from './visitOutcomes'
 
 function mapVisit(value) {
   const key = String(value || '').toLowerCase()
@@ -134,8 +135,7 @@ export function toAppointmentRow(record, userId) {
   if (record.meta?.patientStatus) row.patient_status = record.meta.patientStatus
   if (record.meta?.providerStatus) row.provider_status = record.meta.providerStatus
   if (record.meta?.reconciliationStatus) row.reconciliation_status = record.meta.reconciliationStatus
-  if (record.meta?.patientReport) row.patient_report = record.meta.patientReport
-  if (record.meta?.providerOutcomes) row.provider_outcomes = record.meta.providerOutcomes
+  // patient_report and provider_outcomes are written only by the visit RPCs.
   if (record.meta?.nextCarePath) row.next_care_path = record.meta.nextCarePath
   if (record.meta?.providerCompletedAt) row.provider_completed_at = record.meta.providerCompletedAt
   if (record.meta?.patientCompletedAt) row.patient_completed_at = record.meta.patientCompletedAt
@@ -184,6 +184,115 @@ export async function syncAppointmentRecord(record, userId) {
   }
 }
 
+const APPOINTMENT_SYNC_COLUMNS = 'id, client_id, status, client_payload, scheduled_date, scheduled_time, visit_type, updated_at, started_at, completed_at, post_visit_until, confirmation_snooze_until, checked_in_at, duration_minutes, patient_status, provider_status, reconciliation_status, patient_report, provider_outcomes, next_care_path, provider_completed_at, patient_completed_at'
+
+function rememberReport(history, report) {
+  const next = readPatientReport(report)
+  if (!next) return Array.isArray(history) ? history : []
+  const prior = Array.isArray(history) ? history : []
+  if (next.reportId && prior.some((item) => item?.reportId === next.reportId)) return prior
+  if (!next.reportId && prior.some((item) => item?.reportedAt === next.reportedAt && item?.primaryOutcome === next.primaryOutcome)) {
+    return prior
+  }
+  return [...prior, next]
+}
+
+/** Apply one Supabase appointment row onto the local booking. Returns true when something changed. */
+export function applyRemoteAppointment(engine, row) {
+  const clientId = row?.client_id
+  if (!clientId || !engine?.getById) return false
+  const existing = engine.getById(clientId)
+  if (!existing || typeof engine.restoreRecord !== 'function') return false
+
+  const remoteStatus = mapAppointmentStatus(row.status)
+  const decision = remoteVisitSnapshotWins(
+    {
+      status: existing.status,
+      remoteUpdatedAt: existing.meta?.remoteUpdatedAt,
+      patientReport: existing.meta?.patientReport,
+      providerStatus: existing.meta?.providerStatus,
+      reconciliationStatus: existing.meta?.reconciliationStatus,
+      reportPending: existing.meta?.patientReportPending === true,
+    },
+    {
+      status: remoteStatus,
+      updatedAt: row.updated_at,
+      patientReport: row.patient_report,
+      providerStatus: row.provider_status,
+      reconciliationStatus: row.reconciliation_status,
+    },
+  )
+  if (!decision.apply) {
+    if (row.id && !existing.meta?.remoteAppointmentId && typeof engine.updateBooking === 'function') {
+      engine.updateBooking(clientId, {
+        meta: { remoteAppointmentId: row.id },
+      })
+    }
+    return false
+  }
+
+  const remoteReport = readPatientReport(row.patient_report)
+  const patientReport = decision.keepLocalReport
+    ? existing.meta?.patientReport
+    : (remoteReport || null)
+  const providerArrived = row.provider_status === 'completed' && existing.meta?.providerStatus !== 'completed'
+
+  engine.restoreRecord({
+    ...existing,
+    status: remoteStatus || existing.status,
+    meta: {
+      ...(existing.meta || {}),
+      remoteAppointmentId: row.id,
+      remoteUpdatedAt: row.updated_at || existing.meta?.remoteUpdatedAt,
+      syncedFrom: 'appointments',
+      startedAt: row.started_at || existing.meta?.startedAt,
+      completedAt: row.completed_at || existing.meta?.completedAt,
+      postVisitUntil: row.post_visit_until || existing.meta?.postVisitUntil,
+      confirmationSnoozeUntil: row.confirmation_snooze_until || existing.meta?.confirmationSnoozeUntil,
+      visitReminderAt: row.confirmation_snooze_until || existing.meta?.visitReminderAt,
+      lifecycle: remoteStatus || existing.meta?.lifecycle,
+      patientStatus: row.patient_status || existing.meta?.patientStatus,
+      providerStatus: row.provider_status || existing.meta?.providerStatus,
+      reconciliationStatus: row.reconciliation_status || existing.meta?.reconciliationStatus,
+      patientReport,
+      patientReports: rememberReport(existing.meta?.patientReports, patientReport),
+      patientReportPending: decision.keepLocalReport,
+      providerOutcomes: row.provider_outcomes && Object.keys(row.provider_outcomes).length
+        ? row.provider_outcomes
+        : existing.meta?.providerOutcomes,
+      nextCarePath: row.next_care_path || existing.meta?.nextCarePath,
+      providerCompletedAt: row.provider_completed_at || existing.meta?.providerCompletedAt,
+      patientCompletedAt: row.patient_completed_at || existing.meta?.patientCompletedAt,
+      checkedInAt: row.checked_in_at || existing.meta?.checkedInAt,
+    },
+  })
+
+  if (providerArrived && typeof engine.applyProviderCompletion === 'function') {
+    engine.applyProviderCompletion(clientId, row.provider_outcomes || {})
+  }
+  return true
+}
+
+/** Reload one booking from Supabase after a visit report is saved. */
+export async function refreshAppointmentFromRemote(engine, clientId) {
+  if (!engine || !clientId || !isSupabaseConfigured) return { ok: false }
+  try {
+    const sb = requireSupabase()
+    const { data, error } = await sb
+      .from('appointments')
+      .select(APPOINTMENT_SYNC_COLUMNS)
+      .eq('client_id', String(clientId))
+      .maybeSingle()
+    if (error) throw error
+    if (!data) return { ok: false, reason: 'not_found' }
+    applyRemoteAppointment(engine, data)
+    const current = engine.getById(clientId)
+    return { ok: hasPatientReport(current?.meta?.patientReport) || Boolean(data.patient_report), booking: current }
+  } catch {
+    return { ok: false }
+  }
+}
+
 /** Pull remote appointments into the local AppointmentRepository (import + status merge). */
 export async function pullRemoteAppointments(engine, userId) {
   if (!isSupabaseConfigured || !userId || !engine) return { imported: 0, updated: 0 }
@@ -191,7 +300,7 @@ export async function pullRemoteAppointments(engine, userId) {
     const sb = requireSupabase()
     const { data, error } = await sb
       .from('appointments')
-      .select('id, client_id, status, client_payload, scheduled_date, scheduled_time, visit_type, updated_at, started_at, completed_at, post_visit_until, confirmation_snooze_until, checked_in_at, duration_minutes, patient_status, provider_status, reconciliation_status, patient_report, provider_outcomes, next_care_path, provider_completed_at, patient_completed_at')
+      .select(APPOINTMENT_SYNC_COLUMNS)
       .or(`user_id.eq.${userId},patient_id.eq.${userId}`)
     if (error) throw error
 
@@ -203,57 +312,7 @@ export async function pullRemoteAppointments(engine, userId) {
 
       const existing = engine.getById(clientId)
       if (existing) {
-        const remoteStatus = mapAppointmentStatus(row.status)
-        const remoteUpdated = new Date(row.updated_at || 0).getTime()
-        const localUpdated = new Date(existing.meta?.updatedAt || 0).getTime()
-        if (
-          remoteStatus
-          && remoteStatus !== existing.status
-          && remoteUpdated >= localUpdated
-          && typeof engine.restoreRecord === 'function'
-        ) {
-          engine.restoreRecord({
-            ...existing,
-            status: remoteStatus,
-            meta: {
-              ...(existing.meta || {}),
-              remoteAppointmentId: row.id,
-              syncedFrom: 'appointments',
-              updatedAt: row.updated_at || new Date().toISOString(),
-              startedAt: row.started_at || existing.meta?.startedAt,
-              completedAt: row.completed_at || existing.meta?.completedAt,
-              postVisitUntil: row.post_visit_until || existing.meta?.postVisitUntil,
-              confirmationSnoozeUntil: row.confirmation_snooze_until || existing.meta?.confirmationSnoozeUntil,
-              visitReminderAt: row.confirmation_snooze_until || existing.meta?.visitReminderAt,
-              lifecycle: remoteStatus || existing.meta?.lifecycle,
-              patientStatus: row.patient_status || existing.meta?.patientStatus,
-              providerStatus: row.provider_status || existing.meta?.providerStatus,
-              reconciliationStatus: row.reconciliation_status || existing.meta?.reconciliationStatus,
-              patientReport: row.patient_report || existing.meta?.patientReport,
-              providerOutcomes: row.provider_outcomes || existing.meta?.providerOutcomes,
-              nextCarePath: row.next_care_path || existing.meta?.nextCarePath,
-              providerCompletedAt: row.provider_completed_at || existing.meta?.providerCompletedAt,
-              patientCompletedAt: row.patient_completed_at || existing.meta?.patientCompletedAt,
-              checkedInAt: row.checked_in_at || existing.meta?.checkedInAt,
-            },
-          })
-          // Auto-reconcile when provider completed while patient was waiting.
-          if (
-            row.provider_status === 'completed'
-            && existing.meta?.providerStatus !== 'completed'
-            && typeof engine.applyProviderCompletion === 'function'
-          ) {
-            engine.applyProviderCompletion(clientId, row.provider_outcomes || {})
-          }
-          updated += 1
-        } else if (row.id && !existing.meta?.remoteAppointmentId && typeof engine.updateBooking === 'function') {
-          engine.updateBooking(clientId, {
-            meta: {
-              ...(existing.meta || {}),
-              remoteAppointmentId: row.id,
-            },
-          })
-        }
+        if (applyRemoteAppointment(engine, row)) updated += 1
         continue
       }
 

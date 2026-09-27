@@ -43,6 +43,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
   padding: var(--space-3) var(--content-padding) calc(88px + var(--frame-footer, 0px));
 }
 
@@ -53,6 +55,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+}
+
+.dir-shell__scroll-sentinel {
+  min-height: 1px;
+  list-style: none;
 }
 
 .dir-shell__load-more {
@@ -82,4 +89,159 @@
   text-align: center;
   gap: var(--space-3);
   padding: var(--space-8) var(--space-4);
+}
+
+.dir-shell.is-radius,
+.dir-shell.is-map-open {
+  position: relative;
+}
+
+.dir-shell.is-radius .dir-shell__scroll,
+.dir-shell.is-radius .dir-shell__radius-foot,
+.dir-shell.is-radius .radius-nepal__dates {
+  position: relative;
+  z-index: 1;
+}
+
+.dir-shell.is-map-open:not(.is-map-cover) .tab-page-header,
+.dir-shell.is-map-open:not(.is-map-cover) .dir-shell__radius-foot {
+  background: transparent;
+}
+
+.dir-shell.is-radius .dir-shell__scroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-4);
+  overflow: visible;
+}
+
+.dir-shell.is-radius .dir-resolve {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  align-self: stretch;
+  align-items: stretch;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.dir-shell.is-radius .dir-resolve__next {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+}
+
+.dir-shell.is-radius.is-nepal .dir-shell__scroll {
+  align-items: stretch;
+  justify-content: center;
+  padding-top: var(--space-4);
+}
+
+.dir-shell.is-radius.is-nepal .dir-shell__scroll:has(.dir-entity-stack) {
+  justify-content: flex-start;
+}
+
+.dir-shell__list.is-revealed {
+  animation: radius-fade var(--duration-moderate) var(--ease-emphasized);
+}
+
+.dir-shell.is-listing-enter .large-header-search-dock__inner,
+.dir-shell.is-listing-enter .tab-page-header__actions,
+.dir-shell.is-listing-enter .dir-results,
+.dir-shell.is-listing-enter .stepper,
+.dir-shell.is-listing-enter .dir-shell__list {
+  animation: dir-listing-arrive var(--duration-slow) var(--ease-emphasized) both;
+}
+
+.dir-resolve {
+  display: grid;
+  width: 100%;
+  align-items: start;
+}
+
+.dir-resolve.is-crossfade > .dir-resolve__hold,
+.dir-resolve.is-crossfade > .dir-resolve__next {
+  grid-area: 1 / 1;
+}
+
+.dir-resolve__hold.is-leaving {
+  z-index: 1;
+  pointer-events: none;
+  animation: dir-resolve-out var(--duration-moderate) var(--ease-standard) forwards;
+}
+
+.dir-shell.is-resolving .dir-resolve__next,
+.dir-shell.is-resolving .large-header-search-dock__inner,
+.dir-shell.is-resolving .tab-page-header__actions,
+.dir-shell.is-resolving .dir-results,
+.dir-shell.is-resolving .stepper,
+.dir-shell.is-resolving .dir-shell__radius-foot {
+  animation: dir-resolve-in var(--duration-moderate) var(--ease-standard) both;
+}
+
+.dir-shell.is-resolving .dir-resolve__next .radius-flow,
+.dir-shell.is-resolving .dir-resolve__next .radius-nepal,
+.dir-shell.is-resolving .dir-shell__list.is-revealed,
+.dir-shell.is-resolving .dir-shell__radius-foot .dir-results__count {
+  animation: none;
+}
+
+@keyframes dir-resolve-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dir-resolve-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes dir-listing-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes radius-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dir-shell__radius-foot {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 1.3em;
+  padding: var(--space-6) var(--content-padding) calc(var(--space-10) + var(--space-8) + var(--frame-footer, 0px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dir-shell.is-listing-enter .large-header-search-dock__inner,
+  .dir-shell.is-listing-enter .tab-page-header__actions,
+  .dir-shell.is-listing-enter .dir-results,
+  .dir-shell.is-listing-enter .stepper,
+  .dir-shell.is-listing-enter .dir-shell__list,
+  .dir-shell.is-resolving .dir-resolve__next,
+  .dir-shell.is-resolving .large-header-search-dock__inner,
+  .dir-shell.is-resolving .tab-page-header__actions,
+  .dir-shell.is-resolving .dir-results,
+  .dir-shell.is-resolving .stepper,
+  .dir-shell.is-resolving .dir-shell__radius-foot,
+  .dir-resolve__hold.is-leaving {
+    animation: none;
+  }
+}
+
+.tab-page-header.is-radius-chrome .tab-page-header__actions,
+.tab-page-header.is-radius-chrome .tab-page-header__actions-spacer {
+  display: none;
 }

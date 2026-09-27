@@ -48,6 +48,7 @@ export function enqueueOutbox(job) {
       next.type === 'appointment.lifecycle_advance'
       || next.type === 'appointment.complete'
       || next.type === 'appointment.lifecycle_snooze'
+      || next.type === 'appointment.patient_report'
     ) {
       return item.payload?.clientId !== next.payload?.clientId
         || item.payload?.toStatus !== next.payload?.toStatus

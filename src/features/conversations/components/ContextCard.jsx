@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatTicketId } from '../ticket'
 import { formatBookingStatusLabel } from '../bookingChat'
+import { resolveSmartRelay } from '../../../booking/smartRelay'
 import { CONVERSATION_KIND } from '../types'
 import { presentBookingCard } from '../../../booking'
 import ProviderAvatar from '../../../components/ProviderAvatar'
@@ -52,7 +53,8 @@ export default function ContextCard({ conversation, booking = null, compact = fa
     })
     : null
 
-  const statusLabel = formatBookingStatusLabel(
+  const relay = booking ? resolveSmartRelay(booking) : null
+  const statusLabel = relay?.label || formatBookingStatusLabel(
     booking?.status || meta.booking_status || conversation?.status,
   )
 

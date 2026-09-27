@@ -85,14 +85,15 @@ export async function rpcConfirmVisitYes(clientId) {
   }
 }
 
-export async function rpcSubmitPatientVisitReport(clientId, report) {
+export async function rpcSubmitPatientVisitReport(clientId, report, { enqueueOnFailure = true } = {}) {
   if (!clientId || !isSupabaseConfigured) return { ok: false, deferred: true }
+  const payload = {
+    clientId,
+    action: 'patient_report',
+    report,
+  }
   if (!isOnline()) {
-    enqueueLifecycle('appointment.patient_report', {
-      clientId,
-      action: 'patient_report',
-      report,
-    })
+    if (enqueueOnFailure) enqueueLifecycle('appointment.patient_report', payload)
     return { ok: false, deferred: true }
   }
   try {
@@ -102,14 +103,19 @@ export async function rpcSubmitPatientVisitReport(clientId, report) {
       p_report: report || {},
     })
     if (error) throw error
+    if (data && data.ok === false) {
+      return { ok: false, reason: data.reason || 'rejected' }
+    }
     return { ok: true, ...(data || {}) }
-  } catch {
-    enqueueLifecycle('appointment.patient_report', {
-      clientId,
-      action: 'patient_report',
-      report,
-    })
-    return { ok: false, deferred: true }
+  } catch (err) {
+    const message = String(err?.message || err)
+    const offline = !isOnline() || /fetch|network|Failed to fetch/i.test(message)
+    if (offline && enqueueOnFailure) {
+      enqueueLifecycle('appointment.patient_report', payload)
+      return { ok: false, deferred: true }
+    }
+    if (offline) return { ok: false, deferred: true }
+    return { ok: false, reason: message }
   }
 }
 

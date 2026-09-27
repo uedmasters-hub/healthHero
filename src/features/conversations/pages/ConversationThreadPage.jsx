@@ -22,6 +22,7 @@ import MessageBubble, { SystemEventRow } from '../components/MessageBubble'
 import ChatComposer from '../components/ChatComposer'
 import { formatTicketId } from '../ticket'
 import { formatBookingStatusLabel } from '../bookingChat'
+import { resolveSmartRelay } from '../../../booking/smartRelay'
 import '../Chat.css'
 
 const AGENT_FILTERS = [
@@ -172,7 +173,8 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
   const providerTitle = providerNameRaw.startsWith('Dr.') || providerNameRaw === 'Care provider'
     ? providerNameRaw
     : `Dr. ${providerNameRaw}`
-  const providerStatus = formatBookingStatusLabel(
+  const providerRelay = booking ? resolveSmartRelay(booking) : null
+  const providerStatus = providerRelay?.label || formatBookingStatusLabel(
     booking?.status || conversation?.metadata?.booking_status,
   )
   const providerSpecialty = conversation?.metadata?.specialty || booking?.doctor?.specialty || ''

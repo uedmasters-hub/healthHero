@@ -17,6 +17,7 @@ export function mapRemoteRow(row) {
     timestamp: row.created_at || new Date().toISOString(),
     // keep remote identity for mutations
     remoteId: row.id,
+    bookingId: row.data?.bookingId || null,
   })
 }
 
@@ -48,6 +49,7 @@ export async function upsertRemoteNotification(userId, notification) {
     data: {
       to: notification.to || null,
       type: notification.type || null,
+      bookingId: notification.bookingId || null,
     },
     status: notification.unread === false ? 'read' : 'sent',
     read_at: notification.unread === false ? (notification.readAt || new Date().toISOString()) : null,

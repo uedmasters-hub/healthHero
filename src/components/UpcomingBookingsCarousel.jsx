@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import {
@@ -11,11 +11,11 @@ import { BOOKING_STATUS } from '../booking/constants'
 import { buildAppointmentPreview } from '../lib/appointmentPreview'
 import {
   HOME_CAROUSEL_LIMIT,
-  getServiceCta,
   presentBookingCard,
   useHomeCarousel,
-  useHomeSurface,
 } from '../booking'
+import { BRAND_STORAGE } from '../lib/brand'
+import { nearestSnapIndex, slideMetrics, snapScrollLeft } from '../lib/carouselFocus'
 import useStaggerReveal from './useStaggerReveal'
 import RevealItem from './RevealItem'
 import { useSharedHero } from './SharedHero'
@@ -26,6 +26,42 @@ import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import AppointmentMenuOptions from './AppointmentMenuOptions'
 import './BookAppointment.css'
+
+function bookingKey(booking) {
+  return String(booking?.engineId || booking?.id || '')
+}
+
+function readCarouselView(origin) {
+  if (typeof sessionStorage === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(`${BRAND_STORAGE.homeCarouselView}:${origin}`)
+    return raw ? String(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function writeCarouselView(origin, id) {
+  if (typeof sessionStorage === 'undefined' || !id) return
+  try {
+    sessionStorage.setItem(`${BRAND_STORAGE.homeCarouselView}:${origin}`, String(id))
+  } catch {
+    /* ignore quota */
+  }
+}
+
+function trackInset(scroller) {
+  const row = scroller?.querySelector(':scope > .upcoming-track')
+  if (!row) return 0
+  const value = Number.parseFloat(getComputedStyle(row).paddingLeft)
+  return Number.isFinite(value) ? value : 0
+}
+
+function indexForSavedView(list, savedId) {
+  if (!savedId || !list?.length) return 0
+  const idx = list.findIndex((b) => bookingKey(b) === savedId)
+  return idx >= 0 ? idx : 0
+}
 
 function ServiceIcon({ type }) {
   if (type === 'pharmacy') {
@@ -104,15 +140,13 @@ function UpcomingBookingCard({
     photo,
     showRating,
     rating,
-    dateLabel,
-    timeLabel,
   } = presented
 
   const journey = getAppointmentJourney(booking)
+  const relay = journey.relay || null
   const phase = phaseOverride || journey.phase
-  const cta = getServiceCta(booking, journey.cta)
-  const badge = journey.badge || serviceMeta.shortLabel
-  const badgeTone = journey.badgeTone || journey.status || 'booked'
+  const badge = relay?.label || journey.badge || serviceMeta.shortLabel
+  const badgeTone = relay?.accent || journey.badgeTone || journey.status || 'booked'
   const bookingId = booking.engineId || booking.id
 
   const openBooking = () => {
@@ -258,10 +292,63 @@ function UpcomingBookingCard({
     navigate('/post-visit-report', { state: { bookingId, origin } })
   }
 
-  const isCheckin = phase === VISIT_PHASE.VISIT_CHECKIN
-  const isActiveVisit = phase === VISIT_PHASE.ACTIVE_VISIT
-  const isWaitingProvider = phase === VISIT_PHASE.WAITING_PROVIDER
-  const isPostVisit = phase === VISIT_PHASE.POST_VISIT
+  const onRelayAction = (action, e) => {
+    e.stopPropagation()
+    if (!action || action.disabled) return
+    if (action.id === 'yes') {
+      onYes(e)
+      return
+    }
+    if (action.id === 'not_yet') {
+      onNotYet(e)
+      return
+    }
+    if (action.id === 'more') {
+      openMore(e)
+      return
+    }
+    if (action.id === 'report') {
+      onReportVisit(e)
+      return
+    }
+    if (action.id === 'contact') {
+      adoptBooking?.(booking)
+      navigate('/appointment', { state: { bookingId, origin, focus: 'contact' } })
+      return
+    }
+    if (action.id === 'details' || action.id === 'care') {
+      adoptBooking?.(booking)
+      navigate('/post-visit-summary', {
+        state: { bookingId, origin, careFocus: action.careFocus || null },
+      })
+      return
+    }
+    if (action.id === 'reschedule') {
+      adoptBooking?.(booking)
+      navigate('/cancel-appointment', {
+        state: { bookingId, origin, branch: 'reschedule' },
+      })
+      return
+    }
+    if (action.id === 'book') {
+      navigate('/treat', { state: { origin } })
+      return
+    }
+    openBooking()
+  }
+
+  const context = relay?.context || 'Upcoming'
+  const chip = relay?.status || relay?.label || badge
+  const relayActions = (relay?.actions || []).filter((item) => !item.disabled).slice(0, 2)
+  const footerActions = relayActions.length > 0
+    ? relayActions
+    : [{ id: 'details', label: 'View details', tone: 'primary', ariaLabel: 'View details in Care Hub' }]
+  const isCheckin = relay?.state === 'check_in' || phase === VISIT_PHASE.VISIT_CHECKIN
+  const isActiveVisit = relay?.state === 'visit' || phase === VISIT_PHASE.ACTIVE_VISIT
+  const isWaitingProvider = relay?.state === 'waiting_provider' || relay?.state === 'report_submitted' || phase === VISIT_PHASE.WAITING_PROVIDER
+  const isPostVisit = phase === VISIT_PHASE.POST_VISIT || relay?.homeBand === 1
+  const isCareHistory = phase === VISIT_PHASE.CARE_HISTORY
+  const isCompletedJourney = Boolean(relay ? relay.homeBand === 1 : (isPostVisit || isCareHistory))
 
   return (
     <RevealItem
@@ -269,10 +356,12 @@ function UpcomingBookingCard({
         'upcoming-card',
         `is-${journey.status || 'booked'}`,
         active ? 'is-active' : 'is-adjacent',
+        relay?.accent ? `is-relay-${relay.accent}` : '',
         isCheckin ? 'is-visit-checkin' : '',
         isActiveVisit ? 'is-active-visit' : '',
         isWaitingProvider ? 'is-waiting-provider' : '',
         isPostVisit ? 'is-post-visit' : '',
+        isCompletedJourney ? 'is-completed-journey' : '',
       ].filter(Boolean).join(' ')}
       revealed={revealProps.revealed}
       cached={revealProps.cached}
@@ -280,13 +369,12 @@ function UpcomingBookingCard({
         revealProps.setRef?.(node)
         if (sharedSourceRef) sharedSourceRef.current = node
       }}
-      onClick={isCheckin || isActiveVisit || isWaitingProvider ? undefined : openBooking}
+      onClick={openBooking}
       onFocus={onActivate}
       role="group"
-      aria-label={`${isWaitingProvider ? 'Waiting for provider' : isActiveVisit ? 'Visit in progress' : serviceMeta.label}: ${title}`}
+      aria-label={`${context}. ${chip}: ${title}${subtitle ? `, ${subtitle}` : ''}`}
       tabIndex={0}
       onKeyDown={(e) => {
-        if (isCheckin || isActiveVisit || isWaitingProvider) return
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           openBooking()
@@ -294,19 +382,9 @@ function UpcomingBookingCard({
       }}
     >
       <div className="upcoming-card-inner">
-        <div className="upcoming-service-row">
-          <span className="upcoming-service-type">
-            {isCheckin
-              ? 'Visit check-in'
-              : isWaitingProvider
-                ? 'Waiting for provider'
-                : isActiveVisit
-                  ? 'Visit in progress'
-                  : isPostVisit
-                    ? 'Post visit'
-                    : serviceMeta.label}
-          </span>
-          <span className={`upcoming-badge is-${badgeTone}`}>{badge}</span>
+        <div className="upcoming-card-header">
+          <span className="upcoming-context">{context}</span>
+          <span className={`upcoming-badge upcoming-status is-${badgeTone}`}>{chip}</span>
         </div>
 
         <div className="upcoming-top">
@@ -324,7 +402,7 @@ function UpcomingBookingCard({
           <div className="upcoming-info">
             <div className="upcoming-name-row">
               <span className="upcoming-doctor-name">{title}</span>
-              {showRating && !isCheckin ? (
+              {showRating ? (
                 <span className="upcoming-rating">
                   <span className="upcoming-rating-star" aria-hidden="true">★</span>
                   {rating}
@@ -335,117 +413,27 @@ function UpcomingBookingCard({
           </div>
         </div>
 
-        {isCheckin ? (
-          <div className="upcoming-checkin-prompt" role="group" aria-label="Visit check-in">
-            <p className="upcoming-checkin-question" id={`checkin-q-${bookingId}`}>
-              {journey.prompt || 'Have you completed your visit?'}
-            </p>
-            <div className="upcoming-checkin-actions" role="group" aria-labelledby={`checkin-q-${bookingId}`}>
-              <button
-                type="button"
-                className="upcoming-checkin-yes"
-                onClick={onYes}
-                disabled={yesBusy}
-                aria-busy={yesBusy}
-                aria-label="Yes, visit is complete"
-              >
-                {yesBusy ? 'Checking…' : 'Yes'}
-              </button>
-              <button
-                type="button"
-                className="upcoming-checkin-not-yet"
-                onClick={onNotYet}
-                aria-label="Not yet — keep visit in progress"
-              >
-                Not yet
-              </button>
-            </div>
+        <div className="upcoming-checkin-actions" role="group" aria-label={`${chip} actions`}>
+            {footerActions.map((action) => {
+              const busy = action.id === 'yes' && yesBusy
+              const secondary = action.tone === 'secondary'
+              return (
+                <button
+                  key={action.id}
+                  type="button"
+                  className={secondary ? 'upcoming-checkin-not-yet' : 'upcoming-checkin-yes'}
+                  onClick={(e) => onRelayAction(action, e)}
+                  disabled={busy}
+                  aria-busy={busy || undefined}
+                  aria-label={action.ariaLabel || action.label}
+                  aria-haspopup={action.id === 'more' ? 'dialog' : undefined}
+                  aria-expanded={action.id === 'more' ? moreSheet.isPresented : undefined}
+                >
+                  {busy ? 'Checking…' : action.label}
+                </button>
+              )
+            })}
           </div>
-        ) : isWaitingProvider ? (
-          <div className="upcoming-checkin-prompt" role="group" aria-label="Waiting for provider confirmation">
-            <p className="upcoming-checkin-question" id={`wait-q-${bookingId}`}>
-              {journey.prompt || 'Waiting for your provider to confirm outcomes.'}
-            </p>
-            <div className="upcoming-checkin-actions" role="group" aria-labelledby={`wait-q-${bookingId}`}>
-              <button
-                type="button"
-                className="upcoming-checkin-yes"
-                onClick={onReportVisit}
-                aria-label="Report what happened after the visit"
-              >
-                Report visit
-              </button>
-              <button
-                type="button"
-                className="upcoming-checkin-not-yet"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  adoptBooking?.(booking)
-                  navigate('/appointment', { state: { bookingId, origin, focus: 'contact' } })
-                }}
-                aria-label="Contact clinic"
-              >
-                Contact clinic
-              </button>
-            </div>
-          </div>
-        ) : isActiveVisit ? (
-          <div className="upcoming-checkin-prompt" role="group" aria-label="Visit in progress">
-            <p className="upcoming-checkin-question" id={`active-q-${bookingId}`}>
-              {journey.prompt || 'Still with your care team?'}
-            </p>
-            <div className="upcoming-checkin-actions" role="group" aria-labelledby={`active-q-${bookingId}`}>
-              <button
-                type="button"
-                className="upcoming-checkin-yes"
-                onClick={onCompleteVisit}
-                aria-label="Complete visit"
-              >
-                Complete Visit
-              </button>
-              <button
-                type="button"
-                className="upcoming-checkin-not-yet"
-                onClick={openMore}
-                aria-haspopup="dialog"
-                aria-expanded={moreSheet.isPresented}
-                aria-label="More visit options"
-              >
-                More options
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="upcoming-schedule">
-              <div className="upcoming-detail">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <span>{dateLabel || '—'}</span>
-              </div>
-              <span className="upcoming-divider" aria-hidden="true" />
-              <div className="upcoming-detail">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <span>{timeLabel || '—'}</span>
-              </div>
-            </div>
-
-            <div className="upcoming-cta">
-              <span>{cta}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </div>
-          </>
-        )}
       </div>
 
       <AppBottomSheet
@@ -473,8 +461,9 @@ function UpcomingBookingCard({
 }
 
 /**
- * Shared Upcoming Bookings carousel — single store subscription via useHomeCarousel.
- * Home also surfaces Active Visit / Visit Check-in / Post Visit as a singular hero.
+ * Shared appointment journey carousel — single store via useHomeCarousel.
+ * Snap track ordered by journey priority: nearest upcoming, later upcoming,
+ * Post Visit, then remaining completed journeys.
  */
 export default function UpcomingBookingsCarousel({
   onSeeMore,
@@ -488,80 +477,131 @@ export default function UpcomingBookingsCarousel({
 }) {
   const navigate = useNavigate()
   const { hydrated } = useBooking()
-  const homeSurface = useHomeSurface()
   const allCarousel = useHomeCarousel(HOME_CAROUSEL_LIMIT)
-  const heroPhase = homeSurface?.phase
-  const heroBooking = homeSurface?.booking
-  const showHero = origin === 'home'
-    && heroBooking
-    && [
-      VISIT_PHASE.ACTIVE_VISIT,
-      VISIT_PHASE.VISIT_CHECKIN,
-      VISIT_PHASE.WAITING_PROVIDER,
-      VISIT_PHASE.POST_VISIT,
-    ].includes(heroPhase)
 
   const carousel = useMemo(() => {
-    let list = allCarousel
-    if (excludeBookingId) {
-      list = list.filter((b) => (b.engineId || b.id) !== excludeBookingId)
-    }
-    if (showHero) {
-      const heroId = heroBooking.engineId || heroBooking.id
-      list = list.filter((b) => (b.engineId || b.id) !== heroId)
-    }
-    return list
-  }, [allCarousel, excludeBookingId, showHero, heroBooking])
+    if (!excludeBookingId) return allCarousel
+    return allCarousel.filter((b) => bookingKey(b) !== excludeBookingId)
+  }, [allCarousel, excludeBookingId])
+
+  const carouselIds = useMemo(
+    () => carousel.map((b) => bookingKey(b)).filter(Boolean).join('|'),
+    [carousel],
+  )
 
   const trackRef = useRef(null)
   const slideNodes = useRef([])
   const sharedSourceRefs = useRef([])
-  const heroSourceRef = useRef(null)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const pointerDownRef = useRef(false)
+  const activeIndexRef = useRef(indexForSavedView(carousel, readCarouselView(origin)))
+  const kickScrollSyncRef = useRef(() => {})
+  const [activeIndex, setActiveIndex] = useState(activeIndexRef.current)
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    namespace: `upcoming-carousel:${origin}:${carousel?.length || 0}:${showHero ? heroPhase : 'none'}`,
+    namespace: `upcoming-carousel:${origin}:${carousel?.length || 0}`,
   })
 
-  const syncActiveFromScroll = useCallback(() => {
+  const publishActiveFromScroll = useCallback(() => {
     const track = trackRef.current
     if (!track || !carousel.length) return
-    const center = track.scrollLeft + track.clientWidth / 2
-    let best = 0
-    let bestDist = Infinity
-    slideNodes.current.forEach((node, index) => {
-      if (!node) return
-      const mid = node.offsetLeft + node.offsetWidth / 2
-      const dist = Math.abs(mid - center)
-      if (dist < bestDist) {
-        bestDist = dist
-        best = index
-      }
-    })
-    setActiveIndex(best)
+    const slides = slideNodes.current.map((node) => slideMetrics(node))
+    const next = nearestSnapIndex(slides, track.scrollLeft + trackInset(track))
+    if (next === activeIndexRef.current) return
+    activeIndexRef.current = next
+    setActiveIndex(next)
   }, [carousel.length])
 
   useEffect(() => {
     const track = trackRef.current
-    if (!track) return undefined
-    syncActiveFromScroll()
-    const onScroll = () => syncActiveFromScroll()
-    track.addEventListener('scroll', onScroll, { passive: true })
-    return () => track.removeEventListener('scroll', onScroll)
-  }, [syncActiveFromScroll, carousel.length])
+    if (!hydrated || !track) return undefined
+    let frame = 0
+    let stopped = false
+    let idleTimer = 0
+    const scrollingRef = { current: false }
+
+    const step = () => {
+      frame = 0
+      if (stopped) return
+      publishActiveFromScroll()
+      if (pointerDownRef.current || scrollingRef.current) {
+        frame = window.requestAnimationFrame(step)
+      }
+    }
+
+    const arm = () => {
+      scrollingRef.current = true
+      if (!frame) frame = window.requestAnimationFrame(step)
+      window.clearTimeout(idleTimer)
+      idleTimer = window.setTimeout(() => {
+        scrollingRef.current = false
+        publishActiveFromScroll()
+      }, 120)
+    }
+
+    kickScrollSyncRef.current = arm
+
+    const onDown = () => {
+      pointerDownRef.current = true
+      if (!frame) frame = window.requestAnimationFrame(step)
+    }
+    const onUp = () => {
+      pointerDownRef.current = false
+      publishActiveFromScroll()
+    }
+
+    publishActiveFromScroll()
+    track.addEventListener('scroll', arm, { passive: true })
+    track.addEventListener('scrollend', publishActiveFromScroll)
+    track.addEventListener('pointerdown', onDown)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+    return () => {
+      stopped = true
+      kickScrollSyncRef.current = () => {}
+      window.clearTimeout(idleTimer)
+      if (frame) window.cancelAnimationFrame(frame)
+      track.removeEventListener('scroll', arm)
+      track.removeEventListener('scrollend', publishActiveFromScroll)
+      track.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+    }
+  }, [publishActiveFromScroll, carousel.length, hydrated])
+
+  // Park the saved card on the page inset. Scroll position then owns the active index.
+  useLayoutEffect(() => {
+    if (!hydrated || !carousel.length) {
+      if (!carousel.length) {
+        activeIndexRef.current = 0
+        setActiveIndex(0)
+      }
+      return
+    }
+    const nextIndex = indexForSavedView(carousel, readCarouselView(origin))
+    const track = trackRef.current
+    const node = slideNodes.current[nextIndex]
+    if (track && node) {
+      track.scrollLeft = snapScrollLeft(node.offsetLeft, trackInset(track))
+    }
+    if (activeIndexRef.current !== nextIndex) {
+      activeIndexRef.current = nextIndex
+      setActiveIndex(nextIndex)
+    }
+    // Intentionally keyed on carouselIds so swipe position isn't reset on unrelated re-renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- carousel list identity via carouselIds
+  }, [carouselIds, origin, hydrated])
 
   useEffect(() => {
-    setActiveIndex(0)
-    const track = trackRef.current
-    if (track) track.scrollTo({ left: 0, behavior: 'smooth' })
-  }, [carousel.map((b) => b?.engineId || b?.id).join('|')])
+    const id = bookingKey(carousel[activeIndex])
+    if (id) writeCarouselView(origin, id)
+  }, [activeIndex, carousel, origin])
 
   const scrollToIndex = (index) => {
     const node = slideNodes.current[index]
     const track = trackRef.current
     if (!node || !track) return
-    const left = node.offsetLeft - (track.clientWidth - node.offsetWidth) / 2
-    track.scrollTo({ left: Math.max(0, left), behavior: 'smooth' })
-    setActiveIndex(index)
+    const left = snapScrollLeft(node.offsetLeft, trackInset(track))
+    track.scrollTo({ left, behavior: 'smooth' })
+    kickScrollSyncRef.current()
   }
 
   const handleSeeMore = () => {
@@ -572,8 +612,9 @@ export default function UpcomingBookingsCarousel({
     navigate('/treat', { state: { focus: 'bookings', origin: 'home-carousel' } })
   }
 
-  const sectionLabel = showHero
-    ? (getAppointmentJourney(heroBooking).sectionLabel || 'Upcoming Bookings')
+  const activeBooking = carousel[activeIndex] || carousel[0] || null
+  const sectionLabel = activeBooking
+    ? (getAppointmentJourney(activeBooking).sectionLabel || 'Upcoming Bookings')
     : 'Upcoming Bookings'
 
   if (!hydrated) {
@@ -584,14 +625,14 @@ export default function UpcomingBookingsCarousel({
             <h3 className="upcoming-label">Upcoming Bookings</h3>
           </div>
         ) : null}
-        <div className="upcoming-carousel-skel">
+        <div className="upcoming-carousel-skel" aria-hidden="true">
           <div className="upcoming-skel-card shimmer" />
         </div>
       </div>
     )
   }
 
-  if (!showHero && !allCarousel.length) {
+  if (!carousel.length) {
     if (!emptyFallback) {
       return (
         <div className={`book-appointment ${className}`.trim()}>
@@ -600,7 +641,7 @@ export default function UpcomingBookingsCarousel({
               <h3 className="upcoming-label">Upcoming Bookings</h3>
             </div>
           ) : null}
-          <p className="upcoming-empty">No upcoming bookings yet.</p>
+          <p className="upcoming-empty" role="status">No upcoming bookings yet.</p>
         </div>
       )
     }
@@ -621,7 +662,7 @@ export default function UpcomingBookingsCarousel({
                 },
               })}
             >
-              <svg className="book-now-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg className="book-now-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
                 <path d="M8 3.5v3.2M16 3.5v3.2M3.5 10h17" />
               </svg>
@@ -637,8 +678,8 @@ export default function UpcomingBookingsCarousel({
     <div className={`book-appointment has-carousel ${className}`.trim()}>
       {!hideHeader ? (
         <div className="upcoming-header">
-          <h3 className="upcoming-label">{sectionLabel}</h3>
-          {!hideSeeMore && (carousel.length > 0 || showHero) ? (
+          <h3 className="upcoming-label" id={`journey-carousel-label-${origin}`}>{sectionLabel}</h3>
+          {!hideSeeMore ? (
             <button type="button" className="upcoming-see-more" onClick={handleSeeMore}>
               {seeMoreLabel}
             </button>
@@ -646,82 +687,68 @@ export default function UpcomingBookingsCarousel({
         </div>
       ) : null}
 
-      {showHero ? (
-        <div className="upcoming-hero-slot">
-          <UpcomingBookingCard
-            booking={heroBooking}
-            active
-            phaseOverride={heroPhase}
-            origin={origin}
-            sharedSourceRef={heroSourceRef}
-            revealProps={{
-              revealed: isRevealed(0),
-              cached: isCached,
-              setRef: setItemRef(0),
-            }}
-          />
-        </div>
-      ) : null}
-
-      {carousel.length ? (
-        <>
-          {showHero ? (
-            <div className="upcoming-header upcoming-header-secondary">
-              <h3 className="upcoming-label">Upcoming Bookings</h3>
-            </div>
-          ) : null}
-          <div
-            className={`upcoming-carousel${carousel.length === 1 ? ' is-single' : ''}`}
-            ref={trackRef}
-          >
-            <div className="upcoming-track">
-              {carousel.map((booking, index) => {
-                const id = booking.engineId || booking.id
-                if (!sharedSourceRefs.current[index]) {
-                  sharedSourceRefs.current[index] = { current: null }
-                }
-                return (
-                  <div
-                    key={id}
-                    className="upcoming-slide"
-                    ref={(node) => {
-                      slideNodes.current[index] = node
-                    }}
-                  >
-                    <UpcomingBookingCard
-                      booking={booking}
-                      active={activeIndex === index}
-                      onActivate={() => setActiveIndex(index)}
-                      origin={origin}
-                      sharedSourceRef={sharedSourceRefs.current[index]}
-                      revealProps={{
-                        revealed: isRevealed(showHero ? index + 1 : index),
-                        cached: isCached,
-                        setRef: setItemRef(showHero ? index + 1 : index),
-                      }}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-          {carousel.length > 1 ? (
-            <div className="upcoming-dots" role="tablist" aria-label="Booking pages">
-              {carousel.map((booking, index) => (
-                <button
-                  key={booking.engineId || booking.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeIndex === index}
-                  className={`upcoming-dot ${activeIndex === index ? 'is-active' : ''}`}
-                  onClick={() => scrollToIndex(index)}
+      <div
+        className={`upcoming-carousel${carousel.length === 1 ? ' is-single' : ''}`}
+        ref={trackRef}
+        role="region"
+        aria-roledescription="carousel"
+        aria-labelledby={hideHeader ? undefined : `journey-carousel-label-${origin}`}
+        aria-label={hideHeader ? sectionLabel : undefined}
+      >
+        <div className="upcoming-track">
+          {carousel.map((booking, index) => {
+            const id = bookingKey(booking)
+            if (!sharedSourceRefs.current[index]) {
+              sharedSourceRefs.current[index] = { current: null }
+            }
+            const isActive = activeIndex === index
+            return (
+              <div
+                key={id}
+                className="upcoming-slide"
+                ref={(node) => {
+                  slideNodes.current[index] = node
+                }}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${index + 1} of ${carousel.length}`}
+              >
+                <UpcomingBookingCard
+                  booking={booking}
+                  active={isActive}
+                  onActivate={() => scrollToIndex(index)}
+                  origin={origin}
+                  sharedSourceRef={sharedSourceRefs.current[index]}
+                  revealProps={{
+                    revealed: isRevealed(index),
+                    cached: isCached,
+                    setRef: setItemRef(index),
+                  }}
                 />
-              ))}
-            </div>
-          ) : null}
-        </>
-      ) : showHero ? (
-        <p className="upcoming-empty">Your next visit will appear here when scheduled.</p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {carousel.length > 1 ? (
+        <div className="upcoming-dots" role="tablist" aria-label="Appointment journey pages">
+          {carousel.map((booking, index) => {
+            const label = getAppointmentJourney(booking).sectionLabel || `Booking ${index + 1}`
+            return (
+              <button
+                key={bookingKey(booking)}
+                type="button"
+                role="tab"
+                aria-label={label}
+                aria-selected={activeIndex === index}
+                tabIndex={activeIndex === index ? 0 : -1}
+                className={`upcoming-dot ${activeIndex === index ? 'is-active' : ''}`}
+                onClick={() => scrollToIndex(index)}
+              />
+            )
+          })}
+        </div>
       ) : null}
     </div>
   )

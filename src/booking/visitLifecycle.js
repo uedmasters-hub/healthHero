@@ -203,6 +203,9 @@ export function resolveVisitPhase(record, now = new Date()) {
   }
 
   if (status === BOOKING_STATUS.COMPLETED_PENDING_PROVIDER) {
+    const providerDone = record.meta?.providerStatus === 'completed'
+      || record.meta?.reconciliationStatus === 'reconciled'
+    if (providerDone) return VISIT_PHASE.POST_VISIT
     return VISIT_PHASE.WAITING_PROVIDER
   }
 

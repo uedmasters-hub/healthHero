@@ -8,13 +8,6 @@ import {
   toIsoDate,
 } from '../components/calendar/dates'
 
-function availabilityDateKey(date) {
-  if (!date) return ''
-  const d = date.full instanceof Date ? date.full : date
-  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return String(date)
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-}
-
 /** Local YYYY-MM-DD — matches Postgres `slot_date` and avoids UTC drift. */
 export function localIsoDate(date) {
   return toIsoDate(date) || ''
@@ -37,16 +30,6 @@ export const SLOT_PERIODS = [
   { id: 'evening', label: 'Evening' },
 ]
 
-function fingerprint(value) {
-  let hash = 2166136261
-  const text = String(value)
-  for (let i = 0; i < text.length; i += 1) {
-    hash ^= text.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  return hash >>> 0
-}
-
 export function slotPeriodId(slot) {
   const { hours } = parseClock(slot)
   if (hours <= 12) return 'morning'
@@ -63,39 +46,41 @@ export function groupSlotsByPeriod(slots = []) {
     .filter((period) => period.slots.length > 0)
 }
 
-function visitMode(visitType) {
-  return /video/i.test(visitType) ? 'video' : 'inperson'
-}
-
-/** Close 3 disjoint slots per mode so In-Person and Video never share the same gaps. */
-function closedSlotsForMode(slots, seed, mode) {
-  if (!slots.length) return new Set()
-  const offset = seed % slots.length
-  const phase = mode === 'video' ? 1 : 0
-  const closed = new Set()
-  for (let i = 0; i < Math.min(3, slots.length); i += 1) {
-    closed.add(slots[(offset + phase + i * 3) % slots.length])
+/**
+ * Clock instant for a clinic slot. Accepts `09:00:00` or `9:00 AM`.
+ * Slot clocks are clinic-local and match `available_slots.start_time`.
+ */
+export function slotInstant(dateIso, timeValue) {
+  if (!dateIso || !timeValue) return null
+  const day = new Date(`${dateIso}T00:00:00`)
+  if (Number.isNaN(day.getTime())) return null
+  const text = String(timeValue).trim()
+  if (/[ap]m/i.test(text)) {
+    const { hours, minutes } = parseClock(text)
+    day.setHours(hours || 0, minutes || 0, 0, 0)
+    return day
   }
-  return closed
+  const [hStr, mStr] = text.split(':')
+  day.setHours(Number(hStr) || 0, Number(mStr) || 0, 0, 0)
+  return day
 }
 
+export function isFutureSlotInstant(dateIso, timeValue, now = new Date()) {
+  const at = slotInstant(dateIso, timeValue)
+  return Boolean(at && at.getTime() > now.getTime())
+}
+
+/** Every Supabase slot that is still available stays open. Past times are dropped later. */
 export function visitSlotAvailability({
-  doctorId,
-  date,
-  visitType,
   slots = [],
 } = {}) {
-  if (doctorId == null || !slots.length) return new Set(slots)
-  const mode = visitMode(visitType)
-  const seed = fingerprint(`${doctorId}|${availabilityDateKey(date)}`)
-  const closed = closedSlotsForMode(slots, seed, mode)
-  return new Set(slots.filter((slot) => !closed.has(slot)))
+  return new Set(slots)
 }
 
 /**
  * Resolve candidate times for a date.
  * When live availability exists, only listed days are bookable; missing days are empty.
- * When live map is empty/null, fall back to the demo weekly template.
+ * A remote schedule never invents times. The demo template is only for offline mode.
  */
 export function slotsForDate({
   liveTimes,

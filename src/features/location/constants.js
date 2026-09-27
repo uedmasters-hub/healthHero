@@ -4,9 +4,10 @@
  */
 
 export const DEFAULT_SEARCH_RADIUS_KM = 20
-export const MIN_SEARCH_RADIUS_KM = 10
+export const MIN_SEARCH_RADIUS_KM = 5
 export const MAX_SEARCH_RADIUS_KM = 100
 export const RADIUS_STEP_KM = 10
+export const RADIUS_STEPS_KM = Object.freeze([5, 10, 20, 50, 100])
 
 export const LOCATION_CACHE_KEY = 'emedicalls.location.v1'
 export const LOCATION_RECENTS_MAX = 8

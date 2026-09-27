@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useNotifications } from './NotificationContext'
 import { useBooking } from './BookingContext'
-import { resolveAppointmentPath } from '../lib/appointmentJourney'
+import { resolveSmartRelay } from '../booking/smartRelay'
 import { isPreviewPath } from '../lib/previewModules'
 import { useDemoPreview } from './DemoPreviewModal'
 import useStaggerReveal from './useStaggerReveal'
@@ -81,7 +81,7 @@ const typeIcon = {
 export default function NotificationsPage() {
   const navigate = useNavigate()
   const goBack = useOriginBack('/')
-  const { currentBooking } = useBooking()
+  const { bookings } = useBooking()
   const { notifications, unreadCount, markRead, markAllRead, clearNotification } = useNotifications()
   const { show: showDemoPreview } = useDemoPreview()
   const { containerRef, setItemRef, isRevealed, isCached } = useStaggerReveal({
@@ -103,7 +103,15 @@ export default function NotificationsPage() {
       return
     }
     if (item.type === 'appointment' || item.type === 'booking') {
-      navigate(currentBooking ? resolveAppointmentPath(currentBooking) : item.to)
+      const linked = item.bookingId
+        ? bookings.find((row) => row.id === item.bookingId || row.clientId === item.bookingId)
+        : null
+      const relay = linked ? resolveSmartRelay(linked) : null
+      if (relay?.bookingId) {
+        navigate(relay.path || item.to || '/', { state: { bookingId: relay.bookingId } })
+        return
+      }
+      if (item.to) navigate(item.to)
       return
     }
     navigate(item.to)
@@ -141,7 +149,12 @@ export default function NotificationsPage() {
         </div>
       ) : (
         <div className="notifications-list" ref={containerRef}>
-          {notifications.map((item, i) => (
+          {notifications.map((item, i) => {
+            const linked = item.bookingId
+              ? bookings.find((row) => row.id === item.bookingId || row.clientId === item.bookingId)
+              : null
+            const relay = linked ? resolveSmartRelay(linked) : null
+            return (
             <RevealItem
               as="div"
               key={item.id}
@@ -163,7 +176,8 @@ export default function NotificationsPage() {
                     <h2>{item.title}</h2>
                     <span>{item.time}</span>
                   </div>
-                  <p>{item.body}</p>
+                  <p>{relay?.message || item.body}</p>
+                  {relay ? <span className={`relay-chip is-${relay.accent}`}>{relay.label}</span> : null}
                 </div>
                 {item.unread && <span className="notification-unread-dot" />}
               </button>
@@ -178,7 +192,8 @@ export default function NotificationsPage() {
                 </svg>
               </button>
             </RevealItem>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>

@@ -8,6 +8,65 @@
   flex-direction: column;
 }
 
+.appointment-relay {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0 var(--content-padding) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg, 16px);
+  background: var(--neutral-100);
+  color: var(--neutral-900);
+}
+
+.appointment-relay-label {
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+}
+
+.appointment-relay-message {
+  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+}
+
+.appointment-relay.is-waiting,
+.appointment-relay.is-missed {
+  background: var(--warning-500);
+  color: var(--warning-900);
+}
+
+.appointment-relay.is-reported,
+.appointment-relay.is-prescription,
+.appointment-relay.is-confirmed {
+  background: var(--success-300);
+  color: var(--success-900);
+}
+
+.appointment-relay.is-tests,
+.appointment-relay.is-follow {
+  background: var(--secondary-500);
+  color: var(--secondary-900);
+}
+
+.appointment-relay.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+}
+
+.appointment-relay.is-cancelled {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+.appointment-relay.is-checkin,
+.appointment-relay.is-visit,
+.appointment-relay.is-upcoming {
+  background: var(--primary-200);
+  color: var(--primary-950);
+}
+
 .appointment-header-bar {
   display: flex;
   align-items: center;

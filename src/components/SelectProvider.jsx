@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { withBookingEntry } from '../lib/careFlow'
+import { beginReadiness, isVideoEntry } from '../features/videoConsult/lock'
 import { useBookingFlow } from './BookingFlow'
 import { usePushBack } from '../features/pushNav'
 import DoctorList from './DoctorList'
@@ -32,15 +33,18 @@ export default function SelectProvider() {
       showBack
       headerExtra={stepper}
       onBookNow={(doctor, extras) => {
-        navigate('/booking/slot', {
-          state: withBookingEntry(location, {
-            doctor,
-            origin: 'find-doctor',
-            returnTo: '/booking',
-            preferredVisitType,
-            forSomeoneElse: extras?.forSomeoneElse,
-          }),
+        const next = withBookingEntry(location, {
+          doctor,
+          origin: 'find-doctor',
+          returnTo: '/booking',
+          preferredVisitType,
+          forSomeoneElse: extras?.forSomeoneElse,
         })
+        if (isVideoEntry(next)) {
+          beginReadiness(navigate, next)
+          return
+        }
+        navigate('/booking/slot', { state: next })
       }}
     />
   )

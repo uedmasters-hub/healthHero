@@ -18,7 +18,7 @@ export const SERVICE_TYPE_META = Object.freeze({
   [SERVICE_TYPE.VIRTUAL_CONSULTATION]: {
     label: 'Video Consultation',
     shortLabel: 'Video Consult',
-    cta: 'Join Video Consultation',
+    cta: 'Join Consultation',
     icon: 'video',
   },
   [SERVICE_TYPE.PHARMACY_DELIVERY]: {

@@ -249,6 +249,14 @@
   --featured-ink-soft: color-mix(in srgb, var(--neutral-0) 58%, transparent);
   --featured-glass: color-mix(in srgb, var(--neutral-0) 18%, transparent);
   --featured-glass-border: color-mix(in srgb, var(--neutral-0) 28%, transparent);
+  /* Same featured gradient, washed back for completed carousel journeys */
+  --featured-completed-start: color-mix(in srgb, var(--featured-gradient-start) 20%, var(--neutral-0));
+  --featured-completed-mid: color-mix(in srgb, var(--featured-gradient-mid) 12%, var(--primary-200));
+  --featured-completed-end: color-mix(in srgb, var(--featured-gradient-end) 10%, var(--neutral-0));
+  --featured-completed-ink: var(--text-primary);
+  --featured-completed-ink-muted: var(--text-secondary);
+  --featured-completed-glass: color-mix(in srgb, var(--primary-300) 78%, var(--neutral-0));
+  --featured-completed-glass-border: color-mix(in srgb, var(--primary-800) 16%, transparent);
 
   /* Avatar — very light lavender identity chip */
   --avatar-surface: color-mix(in srgb, var(--primary-300) 42%, var(--primary-200));
@@ -1352,6 +1360,88 @@ select:is(:focus, :focus-visible, :active) {
 .ds-icon-well.is-muted {
   background: var(--icon-surface-muted);
   color: var(--icon-color-muted);
+}
+
+.upcoming-badge.is-upcoming,
+.upcoming-badge.is-visit,
+.treat-history-badge.is-upcoming,
+.treat-history-badge.is-visit,
+.relay-chip.is-upcoming,
+.relay-chip.is-visit {
+  background: var(--featured-glass);
+  color: var(--featured-ink);
+  border: 1px solid var(--featured-glass-border);
+}
+
+.upcoming-badge.is-checkin,
+.treat-history-badge.is-checkin,
+.relay-chip.is-checkin {
+  background: var(--badge-ready-bg);
+  color: var(--badge-ready-fg);
+  border: 1px solid var(--badge-ready-border);
+}
+
+.upcoming-badge.is-waiting,
+.upcoming-badge.is-missed,
+.treat-history-badge.is-waiting,
+.treat-history-badge.is-missed,
+.relay-chip.is-waiting,
+.relay-chip.is-missed {
+  background: var(--warning-500);
+  color: var(--warning-900);
+  border: 1px solid transparent;
+}
+
+.upcoming-badge.is-reported,
+.upcoming-badge.is-prescription,
+.upcoming-badge.is-confirmed,
+.treat-history-badge.is-reported,
+.treat-history-badge.is-prescription,
+.treat-history-badge.is-confirmed,
+.relay-chip.is-reported,
+.relay-chip.is-prescription,
+.relay-chip.is-confirmed {
+  background: var(--success-300);
+  color: var(--success-900);
+  border: 1px solid transparent;
+}
+
+.upcoming-badge.is-tests,
+.upcoming-badge.is-follow,
+.treat-history-badge.is-tests,
+.treat-history-badge.is-follow,
+.relay-chip.is-tests,
+.relay-chip.is-follow {
+  background: var(--secondary-500);
+  color: var(--secondary-900);
+  border: 1px solid transparent;
+}
+
+.upcoming-badge.is-referral,
+.treat-history-badge.is-referral,
+.relay-chip.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+  border: 1px solid transparent;
+}
+
+.upcoming-badge.is-cancelled,
+.treat-history-badge.is-cancelled,
+.relay-chip.is-cancelled {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+  border: 1px solid transparent;
+}
+
+.relay-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,21 +1,16 @@
-import { useMemo } from 'react'
 import RevealItem from './RevealItem'
 import { ProfilePage, SectionHead } from './profile/ProfileChrome'
 import {
   useAppLocation,
-  MIN_SEARCH_RADIUS_KM,
   MAX_SEARCH_RADIUS_KM,
   DEFAULT_SEARCH_RADIUS_KM,
+  RADIUS_STEPS_KM,
 } from '../features/location'
 import './SettingsPage.css'
 
 export default function SearchRadiusSettingsPage() {
   const { radiusKm, setRadiusKm, locality } = useAppLocation()
-  const marks = useMemo(() => {
-    const values = []
-    for (let n = MIN_SEARCH_RADIUS_KM; n <= MAX_SEARCH_RADIUS_KM; n += 10) values.push(n)
-    return values
-  }, [])
+  const marks = RADIUS_STEPS_KM
 
   return (
     <ProfilePage title="Search radius" dataset="settings-radius">
@@ -35,11 +30,19 @@ export default function SearchRadiusSettingsPage() {
               <input
                 className="settings-radius-slider"
                 type="range"
-                min={MIN_SEARCH_RADIUS_KM}
+                min={marks[0]}
                 max={MAX_SEARCH_RADIUS_KM}
-                step={10}
-                value={radiusKm}
-                onChange={(e) => setRadiusKm(Number(e.target.value))}
+                step={5}
+                value={marks.reduce((best, n) => (
+                  Math.abs(n - radiusKm) < Math.abs(best - radiusKm) ? n : best
+                ))}
+                onChange={(e) => {
+                  const raw = Number(e.target.value)
+                  const next = marks.reduce((best, n) => (
+                    Math.abs(n - raw) < Math.abs(best - raw) ? n : best
+                  ))
+                  setRadiusKm(next)
+                }}
                 aria-label="Search radius in kilometers"
               />
               <div className="settings-radius-marks" aria-hidden="true">

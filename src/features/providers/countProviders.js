@@ -5,6 +5,7 @@
 import { requireSupabase, isSupabaseConfigured } from '../../lib/supabase'
 import { specialtyOrClause } from './specialtyMatch'
 import { getDoctorList } from './repository'
+import { videoDoctorsWithSlots } from '../videoConsult/catalog'
 
 const COUNT_TTL_MS = 60_000
 /** @type {Map<string, { at: number, total: number }>} */
@@ -32,6 +33,7 @@ function normalizeOpts({
   city = null,
   district = null,
   ids = null,
+  videoOnly = false,
 } = {}) {
   const idList = Array.isArray(ids)
     ? [...new Set(ids.map((id) => String(id)).filter(Boolean))]
@@ -42,6 +44,7 @@ function normalizeOpts({
     city: isNationwideLocation(city) ? null : city,
     district: isNationwideLocation(district) ? null : district,
     ids: idList?.length ? idList : null,
+    videoOnly: Boolean(videoOnly),
   }
 }
 
@@ -52,6 +55,7 @@ function countCacheKey(opts) {
     opts.city || '',
     opts.district || '',
     opts.ids ? opts.ids.slice().sort().join(',') : '',
+    opts.videoOnly ? 'video' : '',
   ].join('|')
 }
 
@@ -115,6 +119,9 @@ function filterLocalList(opts) {
       || String(d.address || '').toLowerCase().includes(place)
     ))
   }
+  if (opts.videoOnly) {
+    list = videoDoctorsWithSlots(list).map((row) => row.doctor)
+  }
   return list
 }
 
@@ -130,7 +137,7 @@ export async function countProviders(rawOpts = {}) {
   const opts = normalizeOpts(rawOpts)
   const key = countCacheKey(opts)
   const hit = countCache.get(key)
-  if (hit && Date.now() - hit.at < COUNT_TTL_MS) return hit.total
+  if (!opts.videoOnly && hit && Date.now() - hit.at < COUNT_TTL_MS) return hit.total
 
   if (!isSupabaseConfigured) {
     const total = filterLocalCount(opts)
@@ -151,8 +158,9 @@ export async function countProviders(rawOpts = {}) {
       return total
     }
 
+    const searchView = opts.videoOnly ? 'v_video_provider_search' : 'v_provider_search'
     let qb = applyCountFilters(
-      sb.from('v_provider_search').select('id', { count: 'exact', head: true }),
+      sb.from(searchView).select('id', { count: 'exact', head: true }),
       opts,
     )
     if (opts.ids?.length) qb = qb.in('id', opts.ids)
@@ -164,6 +172,7 @@ export async function countProviders(rawOpts = {}) {
     return total
   } catch (err) {
     console.warn('[providers] countProviders failed', err?.message || err)
+    if (opts.videoOnly && isSupabaseConfigured) return 0
     const total = filterLocalCount(opts)
     countCache.set(key, { at: Date.now(), total })
     return total

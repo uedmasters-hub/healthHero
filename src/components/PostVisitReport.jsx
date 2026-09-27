@@ -1,68 +1,76 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import { usePushBack } from '../features/pushNav'
+import { toLegacyBooking } from '../booking/models'
+import { presentBookingCard } from '../booking/presentBooking'
+import {
+  VISIT_OUTCOMES,
+  bookingIdentity,
+  buildPatientReport,
+  findScheduledFollowUp,
+} from '../booking/visitOutcomes'
 import './CancelCheckIn.css'
-
-const REPORT_OPTIONS = [
-  { id: 'felt_better', label: 'I felt better / visit went well' },
-  { id: 'prescription', label: 'I received a prescription' },
-  { id: 'tests', label: 'Tests or labs were ordered' },
-  { id: 'referral', label: 'I was referred to another specialist' },
-  { id: 'follow_up', label: 'A follow-up was scheduled' },
-  { id: 'other', label: 'Something else happened' },
-]
+import './PostVisitReport.css'
 
 /**
- * Temporary patient report while waiting for provider confirmation.
- * Official provider outcomes reconcile over this when they arrive.
+ * One primary outcome for this visit. The original submission stays
+ * as a temporary record until the clinic confirms the official outcome.
  */
 export default function PostVisitReport() {
   const navigate = useNavigate()
   const location = useLocation()
   const {
+    bookings,
     currentBooking,
     focusBooking,
     submitPatientVisitReport,
   } = useBooking()
   const bookingId = location.state?.bookingId
-  const [selected, setSelected] = useState([])
-  const [note, setNote] = useState('')
+  const [selected, setSelected] = useState(null)
+  const [details, setDetails] = useState({
+    medications: '',
+    tests: '',
+    referral: '',
+    followUp: '',
+    note: '',
+  })
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const savingRef = useRef(false)
+  const optionRefs = useRef([])
 
   useEffect(() => {
     if (bookingId) focusBooking?.(bookingId)
   }, [bookingId, focusBooking])
 
   const goBack = usePushBack(() => navigate(-1))
+  const followUpRecord = findScheduledFollowUp(bookings || [], currentBooking)
+  const followUpCard = followUpRecord ? presentBookingCard(toLegacyBooking(followUpRecord)) : null
 
   if (!currentBooking && !bookingId) {
     return null
   }
 
-  const toggle = (id) => {
-    setSelected((prev) => (
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    ))
+  const setDetail = (key, value) => {
+    setError('')
+    setDetails((prev) => ({ ...prev, [key]: value }))
   }
 
-  const submit = async () => {
-    if (saving) return
-    if (!selected.length && !note.trim()) {
-      setError('Select at least one outcome or add a short note.')
-      return
-    }
+  const submitOutcome = async (outcomeId) => {
+    if (savingRef.current || !outcomeId) return
+    const report = buildPatientReport({
+      primaryOutcome: outcomeId,
+      details,
+      followUpBookingId: outcomeId === 'follow_up' ? bookingIdentity(followUpRecord) : null,
+    })
+    if (!report.primaryOutcome) return
+    savingRef.current = true
     setSaving(true)
     setError('')
     try {
-      const report = {
-        outcomes: selected,
-        note: note.trim() || null,
-        temporary: true,
-      }
-      const result = submitPatientVisitReport?.(
+      const result = await submitPatientVisitReport?.(
         currentBooking?.engineId || currentBooking?.id || bookingId,
         report,
       )
@@ -72,9 +80,31 @@ export default function PostVisitReport() {
       }
       setSaved(true)
     } finally {
+      savingRef.current = false
       setSaving(false)
     }
   }
+
+  const choose = (id, index) => {
+    setError('')
+    setSelected(id)
+    optionRefs.current[index]?.focus()
+    if (id === 'felt_better') submitOutcome('felt_better')
+  }
+
+  const onGroupKeyDown = (event) => {
+    if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(event.key)) return
+    event.preventDefault()
+    const delta = event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? -1 : 1
+    const current = VISIT_OUTCOMES.findIndex((item) => item.id === selected)
+    const next = current < 0
+      ? (delta > 0 ? 0 : VISIT_OUTCOMES.length - 1)
+      : (current + delta + VISIT_OUTCOMES.length) % VISIT_OUTCOMES.length
+    choose(VISIT_OUTCOMES[next].id, next)
+  }
+
+  const needsSaveStep = Boolean(selected && selected !== 'felt_better')
+  const canSave = needsSaveStep && !saving
 
   if (saved) {
     return (
@@ -93,7 +123,7 @@ export default function PostVisitReport() {
           <div className="ccancel-confirmed-banner" role="status">
             <div className="ccancel-confirmed-title">Thanks for the update</div>
             <p className="ccancel-confirmed-text">
-              This is a temporary patient report. When your provider confirms the visit, official outcomes replace or merge with this note automatically.
+              This stays as your temporary record. When the clinic confirms the visit, your care hub updates from their official outcome.
             </p>
           </div>
         </div>
@@ -120,60 +150,113 @@ export default function PostVisitReport() {
       </div>
 
       <div className="ccancel-body">
-        <p className="ccancel-info-banner-text">
-          Your provider has not confirmed outcomes yet. Share a temporary summary — it stays provisional until the clinic updates Supabase.
-        </p>
-
-        <div className="ccancel-reasons" role="group" aria-label="What happened after the visit">
-          {REPORT_OPTIONS.map((opt) => {
-            const on = selected.includes(opt.id)
-            return (
-              <button
-                type="button"
-                key={opt.id}
-                className={`ccancel-reason-item${on ? ' is-selected' : ''}`}
-                onClick={() => toggle(opt.id)}
-                aria-pressed={on}
-              >
-                <span className="ccancel-reason-text">{opt.label}</span>
-                <span className={`ccancel-radio${on ? ' selected' : ''}`} aria-hidden="true">
-                  {on ? <span className="ccancel-radio-inner" /> : null}
-                </span>
-              </button>
-            )
-          })}
+        <div className="report-lead">
+          <h2 id="report-outcomes-label">What best describes your visit?</h2>
+          <p id="report-outcomes-hint">We'll save this as a temporary record until the clinic confirms the visit.</p>
         </div>
 
-        <label className="ccancel-note-label" htmlFor="patient-report-note">
-          Add details (optional)
-        </label>
-        <textarea
-          id="patient-report-note"
-          className="ccancel-note"
-          rows={3}
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Medications, tests, or anything else to remember"
-        />
+        <ul
+          className="report-outcomes"
+          role="radiogroup"
+          aria-labelledby="report-outcomes-label"
+          aria-describedby="report-outcomes-hint"
+          onKeyDown={onGroupKeyDown}
+        >
+          {VISIT_OUTCOMES.map((opt, index) => {
+            const on = selected === opt.id
+            const detailId = `report-detail-${opt.id}`
+            const showFollowUpBooking = on && opt.id === 'follow_up' && followUpCard
+            return (
+              <li key={opt.id} className={`report-option${on ? ' is-selected' : ''}`}>
+                <button
+                  type="button"
+                  ref={(node) => { optionRefs.current[index] = node }}
+                  className="report-option-btn"
+                  role="radio"
+                  aria-checked={on}
+                  tabIndex={selected ? (on ? 0 : -1) : (index === 0 ? 0 : -1)}
+                  aria-controls={opt.detailKey ? detailId : undefined}
+                  onClick={() => choose(opt.id, index)}
+                >
+                  <span className="report-option-text">{opt.label}</span>
+                  <span className="report-radio" aria-hidden="true">
+                    {on ? <span className="report-radio-dot" /> : null}
+                  </span>
+                </button>
+                {opt.detailKey ? (
+                  <div className={`report-detail${on ? ' is-open' : ''}`} id={detailId}>
+                    <div className="report-detail-inner" inert={!on}>
+                      {showFollowUpBooking ? (
+                        <div className="report-booking" role="status">
+                          <p className="report-booking-kicker">Scheduled follow-up</p>
+                          <p className="report-booking-title">
+                            {followUpCard.doctor?.name ? `Dr. ${String(followUpCard.doctor.name).replace(/^Dr\.?\s*/i, '')}` : 'Your follow-up'}
+                          </p>
+                          <p className="report-booking-meta">
+                            {[followUpCard.dateLabel, followUpCard.timeLabel].filter(Boolean).join(' · ') || 'Already on your bookings'}
+                          </p>
+                        </div>
+                      ) : (
+                        <label className="report-detail-field" htmlFor={`${detailId}-input`}>
+                          <span>
+                            {opt.detailLabel}
+                            {' '}
+                            <span className="report-optional">(optional)</span>
+                          </span>
+                          {opt.multiline ? (
+                            <textarea
+                              id={`${detailId}-input`}
+                              rows={3}
+                              value={details[opt.detailKey]}
+                              onChange={(event) => setDetail(opt.detailKey, event.target.value)}
+                              placeholder={opt.detailPlaceholder}
+                            />
+                          ) : (
+                            <input
+                              id={`${detailId}-input`}
+                              type="text"
+                              value={details[opt.detailKey]}
+                              onChange={(event) => setDetail(opt.detailKey, event.target.value)}
+                              placeholder={opt.detailPlaceholder}
+                              autoComplete="off"
+                            />
+                          )}
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
+              </li>
+            )
+          })}
+        </ul>
 
         {error ? (
-          <p className="ccancel-info-banner-text" role="alert" style={{ color: 'var(--danger, #b42318)' }}>
+          <p className="ccancel-form-error" role="alert">
             {error}
           </p>
         ) : null}
       </div>
 
-      <div className="ccancel-footer">
-        <button
-          type="button"
-          className="ccancel-confirm-btn"
-          disabled={saving}
-          aria-busy={saving}
-          onClick={submit}
-        >
-          {saving ? 'Saving…' : 'Save temporary report'}
-        </button>
-      </div>
+      {needsSaveStep || (selected === 'felt_better' && (saving || error)) ? (
+        <div className="ccancel-footer">
+          <p id="report-save-hint" className="ccancel-save-hint">
+            {selected === 'felt_better'
+              ? 'Saving your report.'
+              : 'Add any details you have, then save.'}
+          </p>
+          <button
+            type="button"
+            className="ccancel-confirm-btn"
+            aria-disabled={!canSave}
+            aria-busy={saving}
+            aria-describedby="report-save-hint"
+            onClick={() => submitOutcome(selected)}
+          >
+            {saving ? 'Saving…' : 'Save temporary report'}
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

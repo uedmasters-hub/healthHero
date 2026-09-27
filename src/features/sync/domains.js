@@ -8,6 +8,7 @@ import {
   rpcAdvanceAppointment,
   rpcConfirmVisitCompleted,
   rpcSnoozeVisitConfirmation,
+  rpcSubmitPatientVisitReport,
 } from '../../booking/lifecycleRpc'
 import {
   fetchRemoteNotifications,
@@ -66,6 +67,19 @@ export async function handleAppointmentComplete({ clientId }) {
 export async function handleAppointmentLifecycleSnooze({ clientId, until }) {
   if (!clientId) return { ok: false, deferred: true }
   return rpcSnoozeVisitConfirmation(clientId, until)
+}
+
+export async function handlePatientVisitReport({ clientId, report }) {
+  if (!clientId) return { ok: false, deferred: true }
+  const result = await rpcSubmitPatientVisitReport(clientId, report, { enqueueOnFailure: false })
+  if (result?.deferred) return result
+  if (result?.ok) {
+    const { getBookingEngine } = await import('../../booking/engine')
+    const { refreshAppointmentFromRemote } = await import('../../booking/appointmentSync')
+    const engine = getBookingEngine()
+    await refreshAppointmentFromRemote(engine, clientId)
+  }
+  return result
 }
 
 /**
@@ -138,6 +152,8 @@ export async function runOutboxJob(job) {
       return handleAppointmentComplete(job.payload || {})
     case 'appointment.lifecycle_snooze':
       return handleAppointmentLifecycleSnooze(job.payload || {})
+    case 'appointment.patient_report':
+      return handlePatientVisitReport(job.payload || {})
     case 'notifications.pull':
       return handleNotificationsPull(job.payload || {})
     case 'notifications.upsert':

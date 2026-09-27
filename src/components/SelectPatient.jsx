@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { flowState } from '../lib/careFlow'
+import { isVideoEntry, resolveBookingEntry, saveVideoJourney } from '../features/videoConsult/lock'
 import { findDuplicateSelfBooking } from '../lib/duplicateBooking'
 import { ageFromDob, ageToDob, groupedPatients, isPatientProfileComplete } from '../lib/patients'
 import { indianMobile, useUser } from '../user'
@@ -122,7 +123,7 @@ export default function SelectPatient() {
   const { bookings } = useBooking()
   const { members: patients, addMember, completeSelf, googleBirthday } = useUser()
   // Freeze entry so this layer stays correct while mounted as a push underlay.
-  const [entry] = useState(() => location.state || {})
+  const [entry] = useState(() => resolveBookingEntry(location.state))
   const doctor = entry.doctor
   const selfPatient = patients.find((item) => item.relationship === 'Self' || item.id === 'self')
   const selfIncomplete = Boolean(selfPatient && !isPatientProfileComplete(selfPatient))
@@ -159,14 +160,14 @@ export default function SelectPatient() {
   const continueReady = selected && (showSelfEditor ? canSaveSelf : !selectedIncomplete)
 
   const goToReview = (patient, extra = {}) => {
-    navigate('/booking/confirm', {
-      state: flowState(entry, {
-        patient,
-        forSomeoneElse: patient?.relationship !== 'Self' ? true : entry.forSomeoneElse,
-        fromConfirm: undefined,
-        ...extra,
-      }),
+    const next = flowState(entry, {
+      patient,
+      forSomeoneElse: patient?.relationship !== 'Self' ? true : entry.forSomeoneElse,
+      fromConfirm: undefined,
+      ...extra,
     })
+    if (isVideoEntry(next)) saveVideoJourney(next)
+    navigate('/booking/confirm', { state: next })
   }
 
   const persistSelf = () => {

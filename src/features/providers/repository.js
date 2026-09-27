@@ -11,6 +11,9 @@ import { requireSupabase, isSupabaseConfigured } from '../../lib/supabase'
 import { fetchAllPages } from './fetchPages'
 import { inferSpecialtyFromDegree, specialtyOrClause } from './specialtyMatch'
 import { formatProviderAddress, formatPlaceParts } from '../geography/formatPlace'
+import { isFutureSlotInstant, localIsoDate } from '../../lib/slotAvailability'
+import { availabilityWindow, slotVisitMode } from '../../lib/availabilityWindow'
+import { videoDoctorsWithSlots } from '../videoConsult/catalog'
 
 const FEATURED_CAP = 48
 const DEFAULT_PAGE_SIZE = 24
@@ -257,6 +260,61 @@ export function resolveProviderUuid(doctorOrId) {
   return null
 }
 
+function rememberQuery(key, result, { videoOnly = false } = {}) {
+  if (videoOnly) return result
+  queryCache.set(key, { at: Date.now(), result })
+  return result
+}
+
+function emptyProviderPage(opts, error = null) {
+  return {
+    doctors: [],
+    page: opts.page,
+    pageSize: opts.pageSize,
+    hasMore: false,
+    total: 0,
+    fromCache: false,
+    ...(error ? { error } : {}),
+  }
+}
+
+async function providerIdsWithBookableSlots(sb, {
+  visitMode = null,
+  from,
+  until,
+  now = new Date(),
+} = {}) {
+  let query = sb
+    .from('available_slots')
+    .select('provider_id, slot_date, start_time, visit_type')
+    .eq('is_available', true)
+    .gte('slot_date', from)
+    .lte('slot_date', until)
+    .limit(8000)
+  if (visitMode) query = query.eq('visit_type', visitMode)
+  const { data, error } = await query
+  if (error) throw error
+  const ids = []
+  const seen = new Set()
+  for (const row of data || []) {
+    if (!row.provider_id || seen.has(row.provider_id)) continue
+    if (!isFutureSlotInstant(row.slot_date, row.start_time, now)) continue
+    seen.add(row.provider_id)
+    ids.push(row.provider_id)
+  }
+  return ids
+}
+
+async function providerIdsWithFutureVideo(sb, now = new Date()) {
+  const window = availabilityWindow('All', now)
+  return providerIdsWithBookableSlots(sb, { visitMode: 'video', ...window, now })
+}
+
+function keepBookableDoctors(doctors, ids) {
+  const allowed = new Set(ids)
+  return doctors.filter((doctor) => allowed.has(doctor.providerUuid) || allowed.has(doctor.id))
+}
+
 function queryCacheKey(opts) {
   return [
     opts.specialty || '',
@@ -269,6 +327,10 @@ function queryCacheKey(opts) {
     opts.latitude ?? '',
     opts.longitude ?? '',
     opts.radiusKm ?? '',
+    opts.videoOnly ? 'video' : '',
+    opts.bookableOnly ? 'bookable' : '',
+    opts.visitType || '',
+    opts.availability || '',
   ].join('|')
 }
 
@@ -345,6 +407,10 @@ export async function queryProviders({
   origin = null,
   radiusKm = 20,
   useRadius = true,
+  videoOnly = false,
+  bookableOnly = false,
+  visitType = null,
+  availability = 'All',
 } = {}) {
   const opts = {
     specialty: specialty || null,
@@ -357,10 +423,14 @@ export async function queryProviders({
     latitude: hasOrigin(origin) ? Number(origin.latitude) : null,
     longitude: hasOrigin(origin) ? Number(origin.longitude) : null,
     radiusKm: Number(radiusKm) || 20,
+    videoOnly: Boolean(videoOnly),
+    bookableOnly: Boolean(bookableOnly),
+    visitType: visitType || (videoOnly ? 'Video Consultation' : null),
+    availability: availability || 'All',
   }
   const key = queryCacheKey(opts)
   const hit = queryCache.get(key)
-  if (!force && hit && Date.now() - hit.at < QUERY_TTL_MS) {
+  if (!opts.videoOnly && !force && hit && Date.now() - hit.at < QUERY_TTL_MS) {
     return { ...hit.result, fromCache: true }
   }
 
@@ -375,12 +445,23 @@ export async function queryProviders({
       total: local.length,
       fromCache: false,
     }
-    queryCache.set(key, { at: Date.now(), result })
-    return result
+    return rememberQuery(key, result, opts)
   }
 
   try {
     const sb = requireSupabase()
+    let bookableIds = null
+    if (opts.bookableOnly) {
+      const window = availabilityWindow(opts.availability)
+      bookableIds = await providerIdsWithBookableSlots(sb, {
+        visitMode: slotVisitMode(opts.visitType),
+        from: window.from,
+        until: window.until,
+      })
+    }
+    const onlyBookable = (doctors) => (
+      bookableIds ? keepBookableDoctors(doctors, bookableIds) : doctors
+    )
 
     if (
       useRadius
@@ -389,7 +470,7 @@ export async function queryProviders({
     ) {
       const lat = Number(origin.latitude)
       const lng = Number(origin.longitude)
-      const radius = Math.min(100, Math.max(10, opts.radiusKm))
+      const radius = Math.min(100, Math.max(5, opts.radiusKm))
       const offset = opts.page * opts.pageSize
       const [{ data, error }, countRes] = await Promise.all([
         sb.rpc('nearby_providers', {
@@ -400,6 +481,7 @@ export async function queryProviders({
           p_specialty: opts.specialty || null,
           p_limit: opts.pageSize,
           p_offset: offset,
+          ...(opts.videoOnly ? { p_video_only: true } : {}),
         }),
         sb.rpc('count_nearby_providers', {
           p_lat: lat,
@@ -407,6 +489,7 @@ export async function queryProviders({
           p_radius_km: radius,
           p_q: opts.q || null,
           p_specialty: opts.specialty || null,
+          ...(opts.videoOnly ? { p_video_only: true } : {}),
         }),
       ])
       // Never abort into empty local fallback on RPC errors/timeouts —
@@ -417,7 +500,7 @@ export async function queryProviders({
           : Number(countRes.data) || (data || []).length
 
         if (totalNearby > 0) {
-          const doctors = (data || []).map((row) => normalizeProviderRow(row))
+          const doctors = onlyBookable((data || []).map((row) => normalizeProviderRow(row)))
           indexMany(doctors)
           const result = {
             doctors: doctors.map(toListCard),
@@ -429,7 +512,7 @@ export async function queryProviders({
             radiusKm: radius,
             mode: 'nearby',
           }
-          queryCache.set(key, { at: Date.now(), result })
+          rememberQuery(key, result, opts)
           notify()
           return result
         }
@@ -444,8 +527,9 @@ export async function queryProviders({
 
     const from = opts.page * opts.pageSize
     const to = from + opts.pageSize - 1
+    const searchView = opts.videoOnly ? 'v_video_provider_search' : 'v_provider_search'
     let qb = applyProviderFilters(
-      sb.from('v_provider_search').select(PROVIDER_SELECT, { count: 'exact' }),
+      sb.from(searchView).select(PROVIDER_SELECT, { count: 'exact' }),
       opts,
     )
     qb = applySort(qb, opts.sort === 'nearest' ? 'name' : opts.sort).range(from, to)
@@ -454,7 +538,7 @@ export async function queryProviders({
 
     const rows = data || []
     const total = typeof count === 'number' ? count : rows.length
-    const doctors = rows.map((row) => normalizeProviderRow(row))
+    const doctors = onlyBookable(rows.map((row) => normalizeProviderRow(row)))
     indexMany(doctors)
 
     const loadedThrough = from + doctors.length
@@ -467,11 +551,53 @@ export async function queryProviders({
       fromCache: false,
       mode: 'browse',
     }
-    queryCache.set(key, { at: Date.now(), result })
+    rememberQuery(key, result, opts)
     notify()
     return result
   } catch (err) {
     console.warn('[providers] queryProviders failed', err?.message || err)
+    if (opts.videoOnly && isSupabaseConfigured) {
+      try {
+        const ids = await providerIdsWithFutureVideo(requireSupabase())
+        if (!ids.length) return emptyProviderPage(opts, err?.message || 'Failed to load doctors')
+        const sb = requireSupabase()
+        const chunks = []
+        for (let i = 0; i < ids.length; i += 80) chunks.push(ids.slice(i, i + 80))
+        const pages = await Promise.all(chunks.map(async (chunk) => {
+          const { data, error: pageError } = await applySort(
+            applyProviderFilters(
+              sb.from('v_provider_search').select(PROVIDER_SELECT).in('id', chunk),
+              opts,
+            ),
+            opts.sort === 'nearest' ? 'name' : opts.sort,
+          )
+          if (pageError) throw pageError
+          return data || []
+        }))
+        const doctors = pages.flat().map((row) => normalizeProviderRow(row))
+        if (opts.sort === 'rating') doctors.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        else if (opts.sort === 'fee') doctors.sort((a, b) => (a.fee ?? 9999) - (b.fee ?? 9999))
+        else doctors.sort((a, b) => String(a.name).localeCompare(String(b.name)))
+        indexMany(doctors)
+        const from = opts.page * opts.pageSize
+        const slice = doctors.slice(from, from + opts.pageSize)
+        return {
+          doctors: slice.map(toListCard),
+          page: opts.page,
+          pageSize: opts.pageSize,
+          hasMore: from + slice.length < doctors.length,
+          total: doctors.length,
+          fromCache: false,
+          mode: 'slots',
+        }
+      } catch (slotErr) {
+        console.warn('[providers] video slot listing failed', slotErr?.message || slotErr)
+        return emptyProviderPage(opts, slotErr?.message || err?.message || 'Failed to load doctors')
+      }
+    }
+    if (opts.bookableOnly && isSupabaseConfigured) {
+      return emptyProviderPage(opts, err?.message || 'Failed to load availability')
+    }
     const local = filterLocal(opts)
     return {
       doctors: local.slice(opts.page * opts.pageSize, (opts.page + 1) * opts.pageSize),
@@ -512,6 +638,9 @@ function filterLocal(opts) {
       || String(d.district || '').toLowerCase().includes(place)
       || String(d.address || '').toLowerCase().includes(place)
     ))
+  }
+  if (opts.videoOnly) {
+    list = videoDoctorsWithSlots(list).map((row) => row.doctor)
   }
   if (opts.sort === 'rating') list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0))
   else if (opts.sort === 'fee') list = [...list].sort((a, b) => (a.fee ?? 9999) - (b.fee ?? 9999))
@@ -626,34 +755,69 @@ export function clearProviderQueryCache() {
   queryCache.clear()
 }
 
-export async function fetchProviderAvailability(doctorOrId, { days = 60 } = {}) {
+/** Refetch listings and schedules when `available_slots` changes. */
+export function subscribeAvailability(onChange) {
+  if (!isSupabaseConfigured || typeof onChange !== 'function') return () => {}
+  const sb = requireSupabase()
+  const channel = sb
+    .channel(`available-slots:${Date.now().toString(36)}`)
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'available_slots' },
+      () => {
+        clearProviderQueryCache()
+        onChange()
+      },
+    )
+    .subscribe()
+  return () => {
+    sb.removeChannel(channel)
+  }
+}
+
+/**
+ * Live `available_slots` for one doctor.
+ * `remote: true` means Supabase answered, including an empty schedule.
+ * An empty list means there is nothing to book. Callers must not invent slots.
+ */
+export async function fetchProviderSchedule(doctorOrId, { days = 60 } = {}) {
   const providerId = resolveProviderUuid(doctorOrId)
-  if (!providerId || !isSupabaseConfigured) return []
+  if (!isSupabaseConfigured) return { slots: [], remote: false }
+  if (!providerId) return { slots: [], remote: true }
   try {
     const sb = requireSupabase()
-    const until = new Date()
+    const now = new Date()
+    const until = new Date(now)
     until.setDate(until.getDate() + days)
     const { data, error } = await sb
       .from('available_slots')
       .select('id, slot_date, start_time, end_time, visit_type, is_available')
       .eq('provider_id', providerId)
       .eq('is_available', true)
-      .gte('slot_date', new Date().toISOString().slice(0, 10))
-      .lte('slot_date', until.toISOString().slice(0, 10))
+      .gte('slot_date', localIsoDate(now))
+      .lte('slot_date', localIsoDate(until))
       .order('slot_date')
       .order('start_time')
     if (error) throw error
-    return (data || []).map((slot) => ({
-      slotId: slot.id,
-      date: slot.slot_date,
-      time: formatSlotTime(slot.start_time),
-      endTime: formatSlotTime(slot.end_time),
-      visitType: slot.visit_type === 'video' ? 'Video Consultation' : 'In-Person',
-    }))
+    const slots = (data || [])
+      .map((slot) => ({
+        slotId: slot.id,
+        date: slot.slot_date,
+        time: formatSlotTime(slot.start_time),
+        endTime: formatSlotTime(slot.end_time),
+        visitType: slot.visit_type === 'video' ? 'Video Consultation' : 'In-Person',
+      }))
+      .filter((slot) => isFutureSlotInstant(slot.date, slot.time, now))
+    return { slots, remote: true }
   } catch (err) {
     console.warn('[providers] availability fetch failed', err?.message || err)
-    return []
+    return { slots: [], remote: true }
   }
+}
+
+export async function fetchProviderAvailability(doctorOrId, options) {
+  const { slots } = await fetchProviderSchedule(doctorOrId, options)
+  return slots
 }
 
 function formatSlotTime(value) {

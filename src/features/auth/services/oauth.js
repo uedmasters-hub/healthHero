@@ -20,7 +20,7 @@ const GOOGLE_OAUTH_SCOPES = [
   'https://www.googleapis.com/auth/user.birthday.read',
 ].join(' ')
 
-async function startOAuth(provider, { redirectTo = AUTH_CONFIRM_PATH } = {}) {
+async function startOAuth(provider, { redirectTo = AUTH_CONFIRM_PATH, extraScopes = [] } = {}) {
   const safeRedirect = authRedirectTo(redirectTo)
 
   // Hard fail in the client if a protected host ever slipped through —
@@ -38,7 +38,8 @@ async function startOAuth(provider, { redirectTo = AUTH_CONFIRM_PATH } = {}) {
   }
 
   if (provider === 'google') {
-    options.scopes = GOOGLE_OAUTH_SCOPES
+    const scopes = [GOOGLE_OAUTH_SCOPES, ...extraScopes].filter(Boolean).join(' ')
+    options.scopes = scopes
     options.queryParams = {
       // Keep consent on Google's domain; avoid intermediate hosted UIs.
       access_type: 'offline',
@@ -80,8 +81,13 @@ async function startOAuth(provider, { redirectTo = AUTH_CONFIRM_PATH } = {}) {
   return { ok: true, url: authorizeUrl || null, redirectTo: safeRedirect }
 }
 
-export function signInWithGoogle() {
-  return startOAuth(OAUTH_PROVIDERS.google)
+export function signInWithGoogle(extraScopes = []) {
+  return startOAuth(OAUTH_PROVIDERS.google, { extraScopes })
+}
+
+/** Extra calendar consent used only when the capability engine needs it. */
+export function confirmConsultationAccess() {
+  return signInWithGoogle(['https://www.googleapis.com/auth/calendar.events'])
 }
 
 /**

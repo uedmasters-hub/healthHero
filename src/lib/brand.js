@@ -45,4 +45,5 @@ export const BRAND_STORAGE = Object.freeze({
   notificationsLegacy: 'hh_notifications',
   notificationsSeed: 'emedicalls_notifications_seeded_v2',
   notificationsSeedLegacy: 'hh_notifications_seeded_v2',
+  homeCarouselView: 'emedicalls:home-carousel-view.v1',
 })

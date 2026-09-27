@@ -11,9 +11,11 @@ export {
   getCityList,
   resolveProviderUuid,
   fetchProviderAvailability,
+  fetchProviderSchedule,
   fetchProviderById,
   isProvidersHydrated,
   clearProviderQueryCache,
+  subscribeAvailability,
   normalizeProviderRow,
 } from './repository'
 export { formatDoctorCredentials, normalizeNmcNumber, pickDoctorCredentials, resolveLiveProvider } from './credentials'
