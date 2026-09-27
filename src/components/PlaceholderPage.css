@@ -1,7 +1,0 @@
-.placeholder-page {
-  background: var(--bg);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}

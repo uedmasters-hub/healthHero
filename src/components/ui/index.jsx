@@ -344,12 +344,12 @@ export function Switch({ checked, onChange, label, className = '', ...rest }) {
 }
 
 /* ── Section head ─────────────────────────────────────────────────────── */
-export function SectionHead({ title, eyebrow, sub, action = null, as: As = 'h2', className = '', id }) {
+export function SectionHead({ title, eyebrow, sub, action = null, group = false, as: As = 'h2', className = '', id }) {
   return (
-    <div className={cx('ds-section-head', className)}>
+    <div className={cx('ds-section-head', group && 'is-group', className)}>
       <div>
         {eyebrow ? <p className="ds-overline">{eyebrow}</p> : null}
-        <As className="ds-section-head__title" id={id}>{title}</As>
+        <As className={group ? 'ds-section-title' : 'ds-section-head__title'} id={id}>{title}</As>
         {sub ? <p className="ds-section-head__sub">{sub}</p> : null}
       </div>
       {action ? <div className="ds-section-head__action">{action}</div> : null}
@@ -396,6 +396,55 @@ export function ListRow({
         </span>
       ) : null}
     </As>
+  )
+}
+
+/* ── Sheet header — title + close, shared by every bottom sheet ────────── */
+export function SheetHeader({ title, titleId, onClose, closeLabel = 'Close', closeIcon = null, as: As = 'h3', className = '', children }) {
+  return (
+    <div className={cx('ds-sheet-header', className)}>
+      <As className="ds-sheet-title" id={titleId}>{title}</As>
+      {children}
+      {onClose ? (
+        <button type="button" className="ds-sheet-close" onClick={onClose} aria-label={closeLabel}>
+          {closeIcon || <Icon.Close />}
+        </button>
+      ) : null}
+    </div>
+  )
+}
+
+/* ── Form group — label above any control (input, chips, custom) ───────── */
+export function FormGroup({ label, htmlFor, as, hint, className = '', children }) {
+  const As = as || (htmlFor ? 'div' : 'label')
+  return (
+    <As className={cx('ds-form-group', className)}>
+      {label ? (
+        As === 'label'
+          ? <span className="ds-field-label">{label}</span>
+          : <label className="ds-field-label" htmlFor={htmlFor}>{label}</label>
+      ) : null}
+      {children}
+      {hint ? <p className="ds-field-hint">{hint}</p> : null}
+    </As>
+  )
+}
+
+/* ── Progress ─────────────────────────────────────────────────────────── */
+export function Progress({ value = 0, thin = false, tone, label, className = '' }) {
+  const pct = Math.min(100, Math.max(0, Number(value) || 0))
+  return (
+    <span
+      className={cx('ds-progress', thin && 'is-thin', tone && `is-${tone}`, className)}
+      role={label ? 'progressbar' : undefined}
+      aria-label={label}
+      aria-valuenow={label ? pct : undefined}
+      aria-valuemin={label ? 0 : undefined}
+      aria-valuemax={label ? 100 : undefined}
+      aria-hidden={label ? undefined : true}
+    >
+      <span className="ds-progress__bar" style={{ width: `${pct}%` }} />
+    </span>
   )
 }
 

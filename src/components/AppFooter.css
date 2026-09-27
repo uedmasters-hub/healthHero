@@ -1,6 +1,6 @@
 .app-footer {
   background: var(--bg);
-  padding: var(--space-8) var(--content-padding) calc(var(--nav-height) + var(--frame-footer) + var(--space-6));
+  padding: var(--space-8) var(--content-padding) var(--tab-root-clearance);
   display: flex;
   flex-direction: column;
 }

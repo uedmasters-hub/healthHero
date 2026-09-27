@@ -5,7 +5,7 @@
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
-  background: #e7eef2;
+  background: var(--map-tile-bg);
 }
 
 .radius-map.is-cover {

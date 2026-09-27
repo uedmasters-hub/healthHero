@@ -16,26 +16,22 @@
 }
 
 .ptr-spinner {
-  width: 22px;
-  height: 22px;
+  width: var(--icon-md);
+  height: var(--icon-md);
   border-radius: var(--radius-full);
-  border: 2px solid var(--border, #e4e7ee);
-  border-top-color: var(--primary, #6c5ce7);
+  border: 2px solid var(--border-default);
+  border-top-color: var(--primary-950);
   box-sizing: border-box;
 }
 
 .ptr-indicator.is-refreshing .ptr-spinner {
-  animation: ptr-spin 0.7s linear infinite;
+  animation: ds-spin 0.7s linear infinite;
 }
 
 .ptr-label {
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-medium);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   letter-spacing: var(--letter-body);
   margin-bottom: var(--space-2);
-}
-
-@keyframes ptr-spin {
-  to { transform: rotate(360deg); }
 }

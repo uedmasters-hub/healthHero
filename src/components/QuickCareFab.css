@@ -9,7 +9,7 @@
 .quick-care {
   --qc-fab: 56px;
   --qc-gap: 16px;
-  --qc-nav-stack: calc(var(--nav-height) + var(--frame-footer));
+  --qc-nav-stack: var(--nav-stack);
   --qc-spring: cubic-bezier(0.22, 1, 0.36, 1);
 
   position: absolute;

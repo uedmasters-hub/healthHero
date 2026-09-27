@@ -6,6 +6,7 @@ import {
   DEFAULT_SEARCH_RADIUS_KM,
   RADIUS_STEPS_KM,
 } from '../features/location'
+import { Chip, ChipRow } from './ui'
 import './SettingsPage.css'
 
 export default function SearchRadiusSettingsPage() {
@@ -16,14 +17,14 @@ export default function SearchRadiusSettingsPage() {
     <ProfilePage title="Search radius" dataset="settings-radius">
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="user-profile-section" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+          <RevealItem revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
             <SectionHead title="Nearby discovery" />
-            <div className="settings-card settings-radius-card">
-              <p className="settings-radius-label">
+            <div className="ds-card is-padded settings-radius-card">
+              <p className="ds-body settings-radius-label">
                 Within <strong>{radiusKm} km</strong>
                 {locality ? ` of ${locality}` : ''}
               </p>
-              <p className="settings-radius-hint">
+              <p className="ds-caption">
                 Used for doctors, pharmacies, healthcare centers, labs, home care, and ambulance.
                 Default {DEFAULT_SEARCH_RADIUS_KM} km — applies automatically to every selected location.
               </p>
@@ -45,18 +46,13 @@ export default function SearchRadiusSettingsPage() {
                 }}
                 aria-label="Search radius in kilometers"
               />
-              <div className="settings-radius-marks" aria-hidden="true">
+              <ChipRow label="Radius presets" className="settings-radius-marks">
                 {marks.map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    className={`settings-radius-mark ${n === radiusKm ? 'is-active' : ''}`}
-                    onClick={() => setRadiusKm(n)}
-                  >
-                    {n}
-                  </button>
+                  <Chip key={n} size="sm" soft selected={n === radiusKm} onClick={() => setRadiusKm(n)}>
+                    {n} km
+                  </Chip>
                 ))}
-              </div>
+              </ChipRow>
             </div>
           </RevealItem>
         </>

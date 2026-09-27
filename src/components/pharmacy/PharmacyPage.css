@@ -22,7 +22,7 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   background: var(--bg);
-  padding-bottom: calc(var(--nav-height) + var(--space-6) + var(--frame-footer));
+  padding-bottom: var(--tab-root-clearance);
 }
 
 .pharmacy-page__feed {

@@ -4,6 +4,7 @@ import { useCareHistory } from '../../booking'
 import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
+import { Button, Chip, ChipRow, List, ListRow } from '../ui'
 
 const FILTERS = [
   { key: 'all', label: 'All' },
@@ -40,39 +41,47 @@ export default function RecordsWorkspace() {
     <ProfilePage title="Health Memory" dataset="profile-records">
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="memory-intro" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
-            <p>A single timeline of labs, prescriptions, consult notes, and clinic visits — ready to attach when you book.</p>
+          <RevealItem className="ds-card is-padded" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+            <p className="ds-body">A single timeline of labs, prescriptions, consult notes, and clinic visits — ready to attach when you book.</p>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+          <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <SectionHead title="Timeline" action="Add report" onAction={() => setSheet({ mode: 'form', kind: 'reports', item: null })} />
-            <div className="memory-filters">
+            <ChipRow bleed label="Filter records">
               {FILTERS.map((item) => (
-                <button
-                  type="button"
+                <Chip
                   key={item.key}
-                  className={filter === item.key ? 'is-on' : ''}
+                  selected={filter === item.key}
                   onClick={() => setFilter(item.key)}
                 >
                   {item.label}
-                </button>
+                </Chip>
               ))}
-            </div>
+            </ChipRow>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
             {visible.length ? (
-              <ol className="memory-timeline">
+              <List as="ol" className="profile-timeline">
                 {visible.map((item) => (
-                  <li key={`${item.kind}-${item.id}`}>
-                    <button type="button" className="memory-event" onClick={() => openRecord(item)} disabled={item.kind === 'visit'}>
-                      <span className="memory-kind">{KIND_LABEL[item.kind] || item.kind}</span>
-                      <strong>{item.title}</strong>
-                      <span>{[displayHealthDate(item.date), item.meta].filter(Boolean).join(' · ')}</span>
-                    </button>
-                  </li>
+                  <ListRow
+                    as="li"
+                    key={`${item.kind}-${item.id}`}
+                    className={item.kind === 'visit' ? undefined : 'is-interactive'}
+                    role={item.kind === 'visit' ? undefined : 'button'}
+                    tabIndex={item.kind === 'visit' ? undefined : 0}
+                    onClick={item.kind === 'visit' ? undefined : () => openRecord(item)}
+                    onKeyDown={item.kind === 'visit' ? undefined : (event) => {
+                      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openRecord(item) }
+                    }}
+                    chevron={item.kind !== 'visit'}
+                    title={item.title}
+                    subtitle={[displayHealthDate(item.date), item.meta].filter(Boolean).join(' · ')}
+                  >
+                    <span className="ds-list-row__label profile-timeline__kind">{KIND_LABEL[item.kind] || item.kind}</span>
+                  </ListRow>
                 ))}
-              </ol>
+              </List>
             ) : (
               <GuidedEmpty
                 title={filter === 'all' ? 'Your health memory is empty' : 'Nothing in this filter yet'}
@@ -81,9 +90,7 @@ export default function RecordsWorkspace() {
                 onClick={() => setSheet({ mode: 'form', kind: 'reports', item: null })}
               />
             )}
-            <div className="memory-extra-actions">
-              <button type="button" className="profile-inline-link" onClick={() => setSheet({ mode: 'form', kind: 'prescriptions', item: null })}>Add prescription</button>
-            </div>
+            <Button variant="text" size="sm" className="profile-inline-action" onClick={() => setSheet({ mode: 'form', kind: 'prescriptions', item: null })}>Add prescription</Button>
           </RevealItem>
 
           <ProfileSheets sheet={sheet} setSheet={setSheet} />

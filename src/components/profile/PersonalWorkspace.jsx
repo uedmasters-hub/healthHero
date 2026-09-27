@@ -4,6 +4,7 @@ import { formatPlaceParts } from '../../features/geography/formatPlace'
 import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, InfoCard, InfoRow, MapThumb, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
+import { Badge, Button, List, ListRow } from '../ui'
 
 export default function PersonalWorkspace() {
   const { profile, addresses, emergencyContacts, health } = useUser()
@@ -23,7 +24,7 @@ export default function PersonalWorkspace() {
     <ProfilePage title="Personal" dataset="profile-personal">
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="user-profile-section" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+          <RevealItem revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
             <SectionHead title="Basic Details" action="Edit" onAction={() => setSheet({ mode: 'profile', scope: 'basic' })} />
             <InfoCard>
               <InfoRow label="Name" value={profile.name} />
@@ -38,19 +39,19 @@ export default function PersonalWorkspace() {
             </InfoCard>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+          <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <SectionHead title="Contact" action="Edit" onAction={() => setSheet({ mode: 'profile', scope: 'contact' })} />
             <InfoCard>
               <InfoRow
                 label="Phone"
                 value={formatPhone(profile.phone)}
-                extra={profile.phoneVerified ? <span className="profile-verified-tag">Verified</span> : null}
+                extra={profile.phoneVerified ? <Badge tone="success">Verified</Badge> : null}
                 emptyLabel="Add this detail"
               />
               <InfoRow
                 label="Email"
                 value={profile.email}
-                extra={profile.emailVerified ? <span className="profile-verified-tag">Verified</span> : null}
+                extra={profile.emailVerified ? <Badge tone="success">Verified</Badge> : null}
                 emptyLabel="Add this detail"
               />
               <InfoRow
@@ -62,29 +63,25 @@ export default function PersonalWorkspace() {
             </InfoCard>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
             <SectionHead
               title="Address"
               action="Manage"
               onAction={() => setSheet({ mode: 'form', kind: 'addresses', item: null })}
             />
             {addresses.length ? (
-              <div className="profile-address-list">
+              <List>
                 {addresses.map((item) => (
-                  <button
-                    type="button"
+                  <ListRow
                     key={item.id}
-                    className="profile-address-card"
                     onClick={() => setSheet({ mode: 'view', kind: 'addresses', item })}
-                  >
-                    <span>
-                      <strong>{item.label || 'Address'}</strong>
-                      <span>{formatPlaceParts(item.line, item.city)}</span>
-                    </span>
-                    <MapThumb seed={`${item.label}-${item.line}-${item.city}`} />
-                  </button>
+                    title={item.label || 'Address'}
+                    subtitle={formatPlaceParts(item.line, item.city)}
+                    chevron={false}
+                    trailing={<MapThumb seed={`${item.label}-${item.line}-${item.city}`} />}
+                  />
                 ))}
-              </div>
+              </List>
             ) : (
               <GuidedEmpty
                 title="Save a home or work address"
@@ -95,17 +92,17 @@ export default function PersonalWorkspace() {
             )}
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
+          <RevealItem revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
             <SectionHead title="Health Passport" action="Update" onAction={() => setSheet({ mode: 'profile', scope: 'passport' })} />
-            <InfoCard className="profile-passport-card">
+            <InfoCard>
               <InfoRow label="Blood Group" value={profile.bloodGroup} emptyLabel="Add blood group" />
               <InfoRow label="Allergies" value={allergySummary} emptyLabel="Add known allergies" />
               <InfoRow label="Emergency Info" value={emergencyInfo} emptyLabel="Add who we should call" />
             </InfoCard>
             {!allergies.length ? (
-              <button type="button" className="profile-inline-link" onClick={() => setSheet({ mode: 'form', kind: 'allergies', item: null })}>
+              <Button variant="text" size="sm" className="profile-inline-action" onClick={() => setSheet({ mode: 'form', kind: 'allergies', item: null })}>
                 Add allergy to your passport
-              </button>
+              </Button>
             ) : null}
           </RevealItem>
 

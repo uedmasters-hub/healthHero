@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { CARE_SUPPORT, ProfilePage } from './ProfileChrome'
+import { CARE_SUPPORT, NavGroup, NavRow, ProfileIcons, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
 
 export default function SupportWorkspace() {
@@ -9,43 +9,28 @@ export default function SupportWorkspace() {
     <ProfilePage title="Support" dataset="profile-support">
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="support-hero" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
-            <p>Care team</p>
-            <h2>We are here for booking, visits, and health records.</h2>
-            <span>Typically replies within a few hours · 8:00 AM – 10:00 PM IST</span>
+          <RevealItem className="ds-card profile-hero is-tinted" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+            <p className="ds-overline">Care team</p>
+            <h2 className="profile-hero__title">We are here for booking, visits, and health records.</h2>
+            <p className="profile-hero__copy">Typically replies within a few hours · 8:00 AM – 10:00 PM IST</p>
           </RevealItem>
 
-          <RevealItem className="support-actions" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
-            <button type="button" className="support-action" onClick={() => navigate('/chat')}>
-              <strong>Messages</strong>
-              <span>Open Conversation Center</span>
-            </button>
-            <a className="support-action" href={`mailto:${CARE_SUPPORT.email}?subject=eMedicalls%20support`}>
-              <strong>Email</strong>
-              <span>Write to {CARE_SUPPORT.email}</span>
-            </a>
-            <a className="support-action is-call" href={`tel:${CARE_SUPPORT.phone}`}>
-              <strong>Call support</strong>
-              <span>{CARE_SUPPORT.phoneLabel}</span>
-            </a>
+          <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+            <SectionHead title="Contact us" />
+            <NavGroup>
+              <NavRow icon={ProfileIcons.message} label="Messages" onClick={() => navigate('/chat')} />
+              <NavRow icon={ProfileIcons.email} label={`Email ${CARE_SUPPORT.email}`} href={`mailto:${CARE_SUPPORT.email}?subject=eMedicalls%20support`} />
+              <NavRow icon={ProfileIcons.call} label={`Call ${CARE_SUPPORT.phoneLabel}`} href={`tel:${CARE_SUPPORT.phone}`} />
+            </NavGroup>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
-            <h3 className="user-profile-section-title">Help</h3>
-            <div className="profile-nav-card">
-              <button type="button" className="profile-nav-row" onClick={() => navigate('/notifications')}>
-                <span className="profile-nav-label">Visit updates & alerts</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-              </button>
-              <button type="button" className="profile-nav-row" onClick={() => navigate('/profile/records')}>
-                <span className="profile-nav-label">Find a report or prescription</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-              </button>
-              <button type="button" className="profile-nav-row" onClick={() => navigate('/profile/account')}>
-                <span className="profile-nav-label">Privacy & account</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6" /></svg>
-              </button>
-            </div>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+            <SectionHead title="Help" />
+            <NavGroup>
+              <NavRow label="Visit updates & alerts" onClick={() => navigate('/notifications')} />
+              <NavRow label="Find a report or prescription" onClick={() => navigate('/profile/records')} />
+              <NavRow label="Privacy & account" onClick={() => navigate('/profile/account')} />
+            </NavGroup>
           </RevealItem>
         </>
       )}

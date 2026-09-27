@@ -55,7 +55,7 @@
   line-height: var(--text-display-line);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-tight);
-  color: var(--info);
+  color: var(--pp-headline);
 }
 
 .onboard-journey {
@@ -113,7 +113,7 @@
   line-height: var(--text-display-line);
   font-weight: var(--text-display-weight);
   letter-spacing: var(--letter-tight);
-  color: var(--info);
+  color: var(--pp-headline);
 }
 
 .onboard-body {

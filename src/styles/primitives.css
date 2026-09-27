@@ -650,6 +650,7 @@
 }
 .ds-chip-row::-webkit-scrollbar { display: none; }
 .ds-chip-row > * { scroll-snap-align: start; }
+.ds-chip-row.is-wrap { flex-wrap: wrap; overflow: visible; }
 .ds-chip-row.is-bleed {
   margin-inline: calc(var(--content-padding) * -1);
   padding-inline: var(--content-padding);
@@ -996,6 +997,10 @@ textarea.ds-field,
   flex-shrink: 0;
 }
 
+/* Group variant — caps label + text action above a grouped list */
+.ds-section-head.is-group { align-items: center; margin-bottom: var(--space-sm); }
+.ds-section-head.is-group .ds-section-title { margin: 0; }
+
 /* Caps group label (settings lists, profile groups) */
 .ds-section-title {
   font-size: var(--text-overline-size);
@@ -1011,6 +1016,9 @@ textarea.ds-field,
 .ds-list {
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   background: var(--card-bg);
   border: var(--card-border);
   border-radius: var(--card-radius);
@@ -1087,6 +1095,23 @@ a.ds-list-row:active,
 }
 
 .ds-list-row.is-danger .ds-list-row__title { color: var(--danger); }
+.ds-list-row.is-centered { justify-content: center; }
+.ds-list-row.is-centered .ds-list-row__body { flex: 0 1 auto; align-items: center; }
+
+/* Detail row — caption label above the value (profile, records) */
+.ds-list-row__label {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+.ds-list-row__title.is-placeholder {
+  color: var(--text-tertiary);
+  font-weight: var(--font-weight-regular);
+}
+.ds-list-row__title.is-wrap { white-space: normal; overflow-wrap: anywhere; }
+
+/* Stacked cards with the list gap (timeline, saved items) */
+.ds-card-stack { display: flex; flex-direction: column; gap: var(--space-sm); }
 
 /* ── Choice list — single-select rows with a radio (reasons, options) ─── */
 .ds-choice-list {
@@ -1489,6 +1514,7 @@ a.ds-list-row:active,
 
 /* ── Progress ─────────────────────────────────────────────────────────── */
 .ds-progress {
+  display: block;
   height: 0.5rem;
   width: 100%;
   overflow: hidden;
@@ -1497,9 +1523,42 @@ a.ds-list-row:active,
   border: var(--border-width) solid var(--border-default);
 }
 .ds-progress__bar {
+  display: block;
   height: 100%;
   border-radius: inherit;
   background: var(--primary-950);
   transition: width var(--duration-progress) var(--ease-standard);
 }
 .ds-progress.is-wellness .ds-progress__bar { background: var(--color-wellness); }
+.ds-progress.is-thin { height: 0.25rem; border: none; background: var(--border-default); }
+.ds-progress.is-brand .ds-progress__bar { background: var(--primary-600); }
+
+/* ── Form layout — label + control groups inside sheets and pages ─────── */
+.ds-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.ds-form-group { display: flex; flex-direction: column; min-width: 0; }
+.ds-form-group > .ds-field-label { margin-bottom: var(--space-1-5); }
+.ds-form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+  gap: var(--space-sm);
+}
+.ds-form-row.is-even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+/* Inline label that rules off the rest of the row ("Emergency contact ———") */
+.ds-rule-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-overline-size);
+  font-weight: var(--text-overline-weight);
+  letter-spacing: var(--text-overline-tracking);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.ds-rule-label::after {
+  content: '';
+  flex: 1;
+  height: var(--border-width);
+  background: var(--border-divider);
+}

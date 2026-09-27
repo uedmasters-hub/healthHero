@@ -8,7 +8,7 @@ import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshProfileData } from '../features/sync/pageRefresh'
 import { flowState } from '../lib/careFlow'
 import PageSearchHeader from './PageSearchHeader'
-import './PlaceholderPage.css'
+import { Badge, EmptyState, List, ListRow } from './ui'
 import './SettingsPage.css'
 
 const SETTINGS_ROWS = [
@@ -63,7 +63,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="placeholder-page settings-page">
+    <div className="settings-page">
       <PageSearchHeader
         title="Settings"
         scrollRef={scrollRef}
@@ -79,49 +79,40 @@ export default function SettingsPage() {
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
 
         {showProfile ? (
-          <RevealItem className="settings-account" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
-            <button type="button" className="settings-profile" onClick={() => openFromSettings(navigate, '/profile')}>
-              <span className="settings-avatar" aria-hidden="true">{profile?.initials || 'U'}</span>
-              <span className="settings-profile-copy">
-                <span className="settings-profile-name">{profile?.name}</span>
-                <span className="settings-profile-meta">{profile?.email}</span>
-                <span className="settings-profile-meta">{profile?.phone}</span>
-              </span>
-              {isDemo ? <span className="settings-pro">PRO</span> : null}
-            </button>
+          <RevealItem revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+            <List>
+              <ListRow
+                className="settings-profile"
+                onClick={() => openFromSettings(navigate, '/profile')}
+                icon={<span className="settings-avatar" aria-hidden="true">{profile?.initials || 'U'}</span>}
+                title={profile?.name}
+                subtitle={[profile?.email, profile?.phone].filter(Boolean).join(' · ')}
+                trailing={isDemo ? <Badge tone="solid" caps>PRO</Badge> : null}
+              />
+            </List>
           </RevealItem>
         ) : null}
 
         {visibleRows.length ? (
           <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
-            <div className="settings-card">
+            <List>
               {visibleRows.map((row) => (
-                <button
-                  key={row.id}
-                  type="button"
-                  className="settings-row"
-                  onClick={() => openFromSettings(navigate, row.path)}
-                >
-                  <span>{row.label}</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="9 6 15 12 9 18" />
-                  </svg>
-                </button>
+                <ListRow key={row.id} title={row.label} onClick={() => openFromSettings(navigate, row.path)} />
               ))}
-            </div>
+            </List>
           </RevealItem>
         ) : null}
 
         {showSignOut ? (
           <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
-            <button type="button" className="settings-signout" onClick={signOut}>
-              Sign out
-            </button>
+            <List>
+              <ListRow className="is-centered" danger chevron={false} title="Sign out" onClick={signOut} />
+            </List>
           </RevealItem>
         ) : null}
 
         {needle && !showProfile && !visibleRows.length && !showSignOut ? (
-          <p className="settings-empty">No matching settings.</p>
+          <EmptyState compact title="No matching settings" message="Try another word, like account or radius." />
         ) : null}
       </div>
     </div>

@@ -275,6 +275,11 @@
   --featured-completed-glass-border: color-mix(in srgb, var(--primary-800) 16%, transparent);
 
   /* Avatar — very light lavender identity chip */
+  /* Map thumbnails (saved addresses) + tile placeholder under live maps */
+  --map-land: color-mix(in srgb, var(--primary-300) 55%, var(--neutral-0));
+  --map-road: var(--neutral-0);
+  --map-road-minor: color-mix(in srgb, var(--neutral-0) 65%, var(--primary-300));
+  --map-tile-bg: #e7eef2;
   --avatar-surface: color-mix(in srgb, var(--primary-300) 42%, var(--primary-200));
   --avatar-ink: var(--primary-950);
 
@@ -604,6 +609,9 @@
   --frame-footer: 28px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --bottom-bar-pad: calc(var(--space-2-5) + max(var(--frame-footer), var(--safe-bottom)));
+  /* Scroll clearance for tab roots that sit above the fixed bottom nav */
+  --nav-stack: calc(var(--nav-height) + var(--frame-footer));
+  --tab-root-clearance: calc(var(--nav-stack) + var(--space-6));
   --app-flow-footer-pad-top: var(--space-3-5);
   --app-flow-footer-clearance: calc(
     var(--app-flow-footer-pad-top)
