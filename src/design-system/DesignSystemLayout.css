@@ -383,7 +383,7 @@
 .ds-showcase-btn-primary { background: var(--cta); color: var(--text-on-cta); }
 .ds-showcase-btn-primary:hover { background: var(--cta-hover); }
 .ds-showcase-btn-secondary {
-  background: var(--white); color: var(--text-primary);
+  background: var(--surface-2); color: var(--text-primary);
   border: var(--border-width) solid var(--border);
   box-shadow: var(--shadow-btn);
 }
@@ -404,7 +404,7 @@
   border-radius: var(--field-radius);
   min-height: var(--field-height);
   font-family: inherit; font-size: var(--font-size-body-s); color: var(--text-primary);
-  background: var(--white); width: 260px; transition: border-color var(--transition), background var(--transition);
+  background: var(--surface-2); width: 260px; transition: border-color var(--transition), background var(--transition);
 }
 .ds-showcase-input:hover { background: var(--state-hover); }
 .ds-showcase-input:focus {

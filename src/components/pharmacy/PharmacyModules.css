@@ -1,18 +1,11 @@
+/* Tip + support cards. Surface/states: .ds-card.is-interactive ·
+   icon: .ds-icon-well.is-tile · eyebrow: .ds-overline · CTA: .ds-link / .ds-btn */
 .pharmacy-tip,
 .pharmacy-support {
   display: block;
   width: calc(100% - var(--content-padding) * 2);
   margin: 0 var(--content-padding);
   padding: 0;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--card-bg);
-  box-shadow: none;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-  transition: var(--interact-transition);
 }
 
 .pharmacy-tip .reveal-body,
@@ -22,32 +15,7 @@
   gap: var(--space-3);
   width: 100%;
   box-sizing: border-box;
-  padding: var(--space-4);
-}
-
-.pharmacy-tip:hover,
-.pharmacy-support:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.pharmacy-tip:active,
-.pharmacy-support:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-}
-
-.pharmacy-tip__icon,
-.pharmacy-support__icon {
-  flex-shrink: 0;
-  width: var(--space-10);
-  height: var(--space-10);
-  border-radius: var(--radius-md);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--service-icon-bg, rgba(91, 95, 198, 0.1));
-  color: var(--primary);
+  padding: var(--card-padding);
 }
 
 .pharmacy-tip__copy,
@@ -59,49 +27,29 @@
   gap: var(--space-1);
 }
 
-.pharmacy-tip__eyebrow {
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-caps);
-}
-
 .pharmacy-tip__title,
 .pharmacy-support__title {
   font-size: var(--text-body-size);
-  line-height: var(--text-body-line);
+  line-height: var(--text-title-line);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: var(--letter-tight);
 }
 
 .pharmacy-tip__body,
 .pharmacy-support__body {
   font-size: var(--text-caption-size);
-  line-height: 1.4;
-  color: var(--text-secondary);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
 }
 
 .pharmacy-support__cta {
   margin-top: var(--space-1);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--primary);
 }
 
 .pharmacy-support__cta.is-pill {
   margin-top: 0;
   align-self: center;
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 var(--space-5);
-  border-radius: var(--radius-full);
-  background: var(--primary-700);
-  color: var(--white);
 }
 
 .pharmacy-support .reveal-body:has(.is-pill) {
@@ -110,6 +58,6 @@
 
 .pharmacy-support__chevron {
   align-self: center;
-  color: var(--text-muted);
+  color: var(--icon-color-muted);
   display: inline-flex;
 }

@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--white);
+  background: var(--bg);
   z-index: 200;
   overflow-y: auto;
   overflow-x: hidden;
@@ -34,7 +34,7 @@
   display: flex;
   align-items: center;
   padding: var(--space-4) var(--content-padding) var(--space-3);
-  background: var(--white);
+  background: var(--surface-2);
   border-bottom: var(--border-width) solid var(--border);
   position: sticky;
   top: 0;
@@ -118,7 +118,7 @@
 }
 
 .profile-info-card {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -164,7 +164,7 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-5);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
 }
@@ -228,7 +228,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1-5);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--primary);
   border: var(--border-width-emphasis) solid var(--primary);
   border-radius: var(--radius);
@@ -249,7 +249,7 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-5);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
 }
@@ -297,7 +297,7 @@
 }
 
 .skel-card {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;

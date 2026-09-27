@@ -1,18 +1,19 @@
 /* =============================================================================
-   SearchBar — immutable shell
-   One 52px field geometry everywhere. Modes only change internal chrome state
+   SearchBar — immutable shell (PocketPills PageSearchField)
+   One 48px pill geometry everywhere: white, hairline edge, 16px glyph.
+   Focus / listening only recolour the edge — never padding, width or border width. Modes only change internal chrome state
    (lang / mic / clear / dismiss visibility), never padding, width, or borders.
    ============================================================================= */
 
 .search-bar {
-  --search-field-height: 52px;
-  --search-field-pad-start: 18px;
-  --search-field-pad-end: 8px;
-  --search-lang-visual-h: 34px;
-  --search-dismiss-visual: 36px;
-  --search-cluster-gap: 6px;
-  --search-input-pad-end: 4px;
-  --search-status-h: 20px;
+  --search-field-height: var(--search-height);
+  --search-field-pad-start: var(--space-4);
+  --search-field-pad-end: var(--space-1);
+  --search-lang-visual-h: 1.875rem;
+  --search-dismiss-visual: var(--btn-height-sm);
+  --search-cluster-gap: var(--space-1);
+  --search-input-pad-end: var(--space-1);
+  --search-status-h: var(--space-5);
   --search-bar-pad-block-start: var(--space-2);
   --search-bar-pad-block-end: var(--space-3);
   --search-bar-pad-inline: var(--content-padding);
@@ -106,27 +107,23 @@
   width: var(--search-dismiss-visual);
   height: var(--search-dismiss-visual);
   border-radius: var(--radius-full);
-  background: var(--surface-muted);
-  border: var(--border-width) solid var(--border);
-  box-shadow: var(--shadow-xs);
-  color: var(--text-secondary);
-  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+  background: var(--surface-2);
+  border: var(--border-width) solid var(--border-default);
+  color: var(--icon-color-default);
+  transition: var(--interact-transition);
 }
 
 .search-dismiss-visual svg {
-  width: 14px;
-  height: 14px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
 }
 
-.search-dismiss:hover .search-dismiss-visual,
-.search-dismiss:focus-visible .search-dismiss-visual {
-  background: var(--white);
-  color: var(--text-primary);
-  border-color: var(--border-strong, var(--border));
+.search-dismiss:hover .search-dismiss-visual {
+  background: var(--state-hover);
 }
 
 .search-dismiss:active .search-dismiss-visual {
-  background: color-mix(in srgb, var(--surface-muted) 70%, var(--border));
+  background: var(--state-pressed);
 }
 
 .search-field-wrap {
@@ -146,8 +143,8 @@
   min-height: var(--search-field-height);
   max-height: var(--search-field-height);
   padding: 0 var(--search-field-pad-end) 0 var(--search-field-pad-start);
-  background: var(--surface-muted);
-  border-radius: var(--radius-full);
+  background: var(--field-bg);
+  border-radius: var(--search-radius);
   outline: none;
   box-shadow: none;
   box-sizing: border-box;
@@ -157,8 +154,9 @@
   flex: 1 1 auto;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
-  /* Immutable border — listening/focus never expand the shell */
-  border: var(--border-width) solid transparent;
+  /* Immutable border width — listening/focus only recolour it */
+  border: var(--border-width) solid var(--border-default);
+  transition: border-color var(--transition);
 }
 
 .search-field.is-listening,
@@ -168,16 +166,16 @@
 .search-field.is-listening:focus-within,
 .search-field.is-processing:focus-within {
   outline: none;
-  border-color: transparent;
+  border-color: var(--primary-600);
   box-shadow: none;
 }
 
 .search-field-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--text-secondary);
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  color: var(--text-tertiary);
   flex: 0 0 auto;
-  opacity: 0.9;
+  stroke-width: var(--icon-stroke);
 }
 
 /* Trailing cluster: lang + mic — fixed footprint inside the field */
@@ -230,12 +228,11 @@
   justify-content: center;
   flex: 0 0 auto;
   height: var(--search-lang-visual-h);
-  padding: 3px;
+  padding: var(--space-0-5);
   gap: 0;
   border-radius: var(--radius-full);
-  border: var(--border-width) solid var(--border);
-  background: var(--white);
-  box-shadow: var(--shadow-xs);
+  border: var(--border-width) solid var(--border-default);
+  background: var(--surface-2);
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -247,8 +244,8 @@
   border: none;
   background: transparent;
   margin: 0;
-  padding: 0 var(--space-3);
-  min-width: 2.25rem;
+  padding: 0 var(--space-2);
+  min-width: 2rem;
   height: 100%;
   display: inline-flex;
   align-items: center;
@@ -265,26 +262,25 @@
   align-items: center;
   justify-content: center;
   font-family: inherit;
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--text-micro-size);
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--letter-body);
   line-height: 1;
-  color: var(--primary);
+  color: var(--pp-headline);
   pointer-events: none;
   user-select: none;
 }
 
 .search-lang-btn.is-on {
-  background: var(--primary);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--primary) 28%, transparent);
+  background: var(--chip-selected-bg);
 }
 
 .search-lang-btn.is-on .search-lang-chip {
-  color: var(--white);
+  color: var(--chip-selected-fg);
 }
 
-.search-lang-btn:not(.is-on):hover .search-lang-chip {
-  color: var(--primary-700, var(--primary));
+.search-lang-btn:not(.is-on):hover {
+  background: var(--state-hover);
 }
 
 .search-field-mic-btn {
@@ -296,7 +292,7 @@
   border: none;
   border-radius: var(--radius-full);
   background: transparent;
-  color: var(--primary);
+  color: var(--pp-headline);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -342,63 +338,51 @@
 }
 
 .search-field-mic-btn:hover::before {
-  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  background: var(--state-hover);
 }
 
 .search-field-mic-btn:active::before {
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  background: var(--state-pressed);
 }
 
+/* Listening — PP: violet fill, white glyph, soft ring pulse */
 .search-field-mic-btn.is-listening::before,
 .search-field-mic-btn.is-processing::before {
-  background: color-mix(in srgb, var(--primary) 9%, var(--white));
-  box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 20%, transparent);
+  background: var(--pp-violet);
 }
 
 .search-field-mic-btn.is-listening::after,
 .search-field-mic-btn.is-processing::after {
-  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
-    0 0 10px color-mix(in srgb, var(--primary) 24%, transparent);
-  animation: search-mic-ring-pulse 1.85s ease-in-out infinite;
+  border-color: color-mix(in srgb, var(--pp-violet) 45%, transparent);
+  animation: search-mic-ring-pulse 1.85s var(--ease-standard) infinite;
 }
 
 .search-field-mic-btn.is-listening,
 .search-field-mic-btn.is-processing {
-  color: var(--primary);
+  color: var(--neutral-0);
 }
 
 .search-field-mic-btn.is-disabled,
 .search-field-mic-btn:disabled {
-  opacity: 0.38;
+  opacity: var(--opacity-disabled);
   cursor: not-allowed;
 }
 
 @keyframes search-mic-ring-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
-      0 0 8px color-mix(in srgb, var(--primary) 18%, transparent);
-  }
-  50% {
-    opacity: 0.68;
-    transform: translate(-50%, -50%) scale(1.06);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 6%, transparent),
-      0 0 14px color-mix(in srgb, var(--primary) 28%, transparent);
-  }
+  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+  50% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.3); }
 }
 
 .search-field-clear {
   position: relative;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  min-height: 22px;
+  width: var(--space-5-5);
+  height: var(--space-5-5);
+  min-width: var(--space-5-5);
+  min-height: var(--space-5-5);
   border: none;
   border-radius: var(--radius-full);
   background: transparent;
-  color: var(--text-faint);
+  color: var(--text-tertiary);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -433,8 +417,8 @@
 .search-field-clear svg {
   position: relative;
   z-index: 1;
-  width: 12px;
-  height: 12px;
+  width: var(--icon-xs);
+  height: var(--icon-xs);
 }
 
 .search-field-input-wrap {
@@ -456,13 +440,9 @@
 
 .search-field-clear-slot.is-reserved,
 .search-field-clear-slot.is-visible {
-  flex-basis: 22px;
-  width: 22px;
+  flex-basis: var(--space-5-5);
+  width: var(--space-5-5);
   overflow: visible;
-}
-
-.search-field-clear-slot.is-reserved:not(.is-visible) {
-  /* reserved — no jump when × appears */
 }
 
 .search-field-mic-spacer {
@@ -474,8 +454,8 @@
 .search-field-mic-glyph {
   position: relative;
   z-index: 1;
-  width: 20px;
-  height: 20px;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
   transform: scale(1);
   transform-origin: center;
   transition: transform var(--duration-normal) var(--ease-standard), opacity var(--duration-normal) var(--ease-standard);
@@ -506,14 +486,14 @@
   }
 }
 
-/* Reserved in-flow status layer — sits under the 52px field, never overlays suggestions */
+/* Reserved in-flow status layer — sits under the field, never overlays suggestions */
 .search-status-layer {
   display: grid;
   align-items: center;
   height: 0;
   min-height: 0;
   margin: 0;
-  padding: 0 18px 0 18px;
+  padding: 0 var(--space-4);
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
@@ -548,7 +528,8 @@
 }
 
 .search-status-layer.is-listening .search-status-text {
-  color: color-mix(in srgb, var(--primary) 78%, var(--text-secondary));
+  color: var(--pp-violet);
+  font-weight: var(--font-weight-medium);
 }
 
 .search-status-layer.is-error .search-status-text {
@@ -563,7 +544,7 @@
   max-width: 100%;
   border: none;
   background: transparent;
-  font-size: var(--text-title-size);
+  font-size: var(--text-body-size);
   font-weight: var(--font-weight-regular);
   color: var(--text-primary);
   outline: none;
@@ -586,7 +567,7 @@
 }
 
 .search-field-input::placeholder {
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

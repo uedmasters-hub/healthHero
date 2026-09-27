@@ -241,6 +241,15 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+/* Icon geometry — every stroke icon renders at the shared PP weight (1.7) and
+   round joins, whatever strokeWidth its markup carries. Child shapes that set
+   their own width (rings, dials, charts) keep it. Opt out with .keep-stroke. */
+svg[stroke='currentColor']:not(.keep-stroke) {
+  stroke-width: var(--icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* —— Typography roles ——
    One class per role; components compose these instead of restating sizes. */
 .ds-display {

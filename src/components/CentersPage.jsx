@@ -229,10 +229,10 @@ export default function CentersPage() {
           />
 
           <section className="pharmacy-nearby" aria-label="Top facilities" ref={facilitiesRef}>
-            <div className="section-header">
-              <h2 className="section-title">Top Facilities</h2>
-              <button type="button" className="view-all-link" onClick={() => focusFacilities(null)}>
-                See All
+            <div className="ds-section-head">
+              <h2 className="ds-section-head__title">Top Facilities</h2>
+              <button type="button" className="ds-link" onClick={() => focusFacilities(null)}>
+                View all
               </button>
             </div>
 

@@ -47,6 +47,45 @@ export const Icon = {
   Check: (p) => (
     <svg {...iconProps} {...p}><path d="M20 6 9 17l-5-5" /></svg>
   ),
+  Calendar: (p) => (
+    <svg {...iconProps} {...p}><rect x="3" y="4" width="18" height="18" rx="2.5" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
+  ),
+  Clock: (p) => (
+    <svg {...iconProps} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+  ),
+  User: (p) => (
+    <svg {...iconProps} {...p}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+  ),
+  Pin: (p) => (
+    <svg {...iconProps} {...p}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+  ),
+  Directions: (p) => (
+    <svg {...iconProps} {...p}><path d="M22 2 11 13" /><path d="m22 2-7 20-4-9-9-4 20-7z" /></svg>
+  ),
+  Phone: (p) => (
+    <svg {...iconProps} {...p}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+  ),
+  Card: (p) => (
+    <svg {...iconProps} {...p}><rect x="2" y="5" width="20" height="14" rx="2.5" /><path d="M2 10h20" /></svg>
+  ),
+  Video: (p) => (
+    <svg {...iconProps} {...p}><path d="m22 8-6 4 6 4V8z" /><rect x="2" y="6" width="14" height="12" rx="2.5" /></svg>
+  ),
+  Info: (p) => (
+    <svg {...iconProps} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 16v-4M12 8h.01" /></svg>
+  ),
+  Alert: (p) => (
+    <svg {...iconProps} {...p}><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /><path d="M12 9v4M12 17h.01" /></svg>
+  ),
+  Share: (p) => (
+    <svg {...iconProps} {...p}><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></svg>
+  ),
+  Download: (p) => (
+    <svg {...iconProps} {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5M12 15V3" /></svg>
+  ),
+  File: (p) => (
+    <svg {...iconProps} {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></svg>
+  ),
 }
 
 /* ── Button ───────────────────────────────────────────────────────────── */
@@ -379,6 +418,104 @@ export function SkeletonText({ lines = 2, className = '' }) {
         <Skeleton key={i} shape="text" width={i === lines - 1 && lines > 1 ? '62%' : '100%'} />
       ))}
     </span>
+  )
+}
+
+/* ── Info grid ────────────────────────────────────────────────────────── */
+export function InfoGrid({ single = false, className = '', children }) {
+  return <div className={cx('ds-info-grid', single && 'is-single', className)}>{children}</div>
+}
+
+export function InfoCell({ icon = null, label, value, className = '', children }) {
+  return (
+    <div className={cx('ds-info-cell', className)}>
+      {icon ? <span className="ds-icon-well" aria-hidden="true">{icon}</span> : null}
+      <div className="ds-info-cell__body">
+        <span className="ds-info-cell__label">{label}</span>
+        <span className="ds-info-cell__value">{value ?? children}</span>
+      </div>
+    </div>
+  )
+}
+
+/* ── Choice list (single select) ──────────────────────────────────────── */
+export function ChoiceList({ label, className = '', children }) {
+  return (
+    <div className={cx('ds-choice-list', className)} role="radiogroup" aria-label={label}>
+      {children}
+    </div>
+  )
+}
+
+export function Choice({ selected = false, title, subtitle, className = '', children, ...rest }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={selected}
+      className={cx('ds-choice', className)}
+      {...rest}
+    >
+      <span className="ds-choice__body">
+        {title != null ? <span className="ds-choice__title">{title}</span> : null}
+        {subtitle ? <span className="ds-choice__sub">{subtitle}</span> : null}
+        {children}
+      </span>
+      <span className="ds-radio" aria-hidden="true" />
+    </button>
+  )
+}
+
+/* ── Steps (numbered timeline) ────────────────────────────────────────── */
+export function Steps({ items, className = '' }) {
+  return (
+    <ol className={cx('ds-steps', className)}>
+      {items.map((item, i) => (
+        <li key={item.key || i} className={cx('ds-step', item.state && `is-${item.state}`)}>
+          <span className="ds-step__marker" aria-hidden="true">{item.marker ?? i + 1}</span>
+          <div>
+            <p className="ds-step__title">{item.title}</p>
+            {item.body ? <p className="ds-step__body">{item.body}</p> : null}
+          </div>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+/* ── Quick action (icon well + caption) ───────────────────────────────── */
+export function QuickAction({ icon, label, as: As = 'button', className = '', type, ...rest }) {
+  return (
+    <As type={As === 'button' ? type || 'button' : type} className={cx('ds-action', className)} {...rest}>
+      <span className="ds-icon-well" aria-hidden="true">{icon}</span>
+      <span>{label}</span>
+    </As>
+  )
+}
+
+/* ── Result hero (success / cancelled moments) ────────────────────────── */
+export function ResultHero({ tone = 'success', icon, title, message, className = '', children }) {
+  const glyph = icon || (tone === 'danger' ? <Icon.Close /> : <Icon.Check />)
+  return (
+    <div className={cx('ds-result', tone !== 'success' && `is-${tone}`, className)}>
+      <div className="ds-result__icon" aria-hidden="true">{glyph}</div>
+      {title ? <h2 className="ds-result__title">{title}</h2> : null}
+      {message ? <p className="ds-result__copy">{message}</p> : null}
+      {children}
+    </div>
+  )
+}
+
+/* ── Callout (inline notice) ──────────────────────────────────────────── */
+export function Callout({ tone, icon = null, title, children, className = '', role }) {
+  return (
+    <div className={cx('ds-callout', tone && `is-${tone}`, className)} role={role}>
+      {icon}
+      <div>
+        {title ? <span className="ds-callout__title">{title}</span> : null}
+        {children ? <span className="ds-callout__body">{children}</span> : null}
+      </div>
+    </div>
   )
 }
 

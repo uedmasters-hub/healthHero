@@ -30,7 +30,7 @@
 .insight-card {
   flex: 0 0 calc(100% / 1.55);
   min-width: 0;
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border-subtle);
   border-radius: var(--radius-card);
   padding: var(--card-padding);

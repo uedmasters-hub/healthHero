@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--white);
+  background: var(--bg);
   position: relative;
   z-index: 1;
 }
@@ -37,7 +37,7 @@
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding-bottom: 0;
-  background: var(--white);
+  background: var(--bg);
   opacity: var(--opacity-visible);
   transform: translate3d(0, 0, 0);
   transition: opacity var(--duration-moderate) var(--ease-standard), transform var(--duration-reveal) var(--ease-emphasized);
@@ -56,7 +56,7 @@
 
 .treat-carousel-section {
   padding: var(--space-2) 0 var(--space-3);
-  background: var(--white);
+  background: var(--surface-2);
   overflow: visible;
 }
 
@@ -89,7 +89,7 @@
 
 .treat-history-panel {
   margin: 0 var(--content-padding);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
   box-shadow: none;
@@ -150,7 +150,7 @@
   padding: var(--space-2) var(--space-3-5);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-2);
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);

@@ -13,7 +13,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: var(--white);
+  background: var(--bg);
   transform-origin: center 36%;
   will-change: transform, filter;
   backface-visibility: hidden;
@@ -35,7 +35,7 @@
 .push-stack__layer.is-top {
   z-index: 3;
   pointer-events: auto;
-  background: var(--white);
+  background: var(--surface-2);
   transform: none;
   filter: none;
   border-radius: 0;
@@ -189,33 +189,6 @@
   background: transparent;
 }
 
-.push-stack .user-profile-back-btn,
-.push-stack .profile-back-btn,
-.push-stack .back-btn,
-.push-stack .specialisations-back-btn,
-.push-stack .postvisit-back-btn,
-.push-stack .article-back-btn,
-.push-stack .notifications-back,
-.push-stack .reviews-back,
-.push-stack .notif-page-back,
-.push-stack [data-push-back] {
-  transform: translateZ(0);
-  transition: transform var(--duration-fast) var(--ease-sheet);
-}
-
-.push-stack .user-profile-back-btn:active,
-.push-stack .profile-back-btn:active,
-.push-stack .back-btn:active,
-.push-stack .specialisations-back-btn:active,
-.push-stack .postvisit-back-btn:active,
-.push-stack .article-back-btn:active,
-.push-stack .notifications-back:active,
-.push-stack .reviews-back:active,
-.push-stack .notif-page-back:active,
-.push-stack [data-push-back]:active {
-  transform: scale(0.96);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .push-stack.is-pushing > .push-stack__layer.is-enter,
   .push-stack.is-pushing > .push-stack__layer.is-under-active,
@@ -224,12 +197,5 @@
   .page-layer.is-push-popping-home .home-layer.is-behind,
   .page-layer.is-push-pushing-home .home-layer.is-behind.is-push-underlay {
     animation-duration: var(--duration-instant) !important;
-  }
-
-  .push-stack .user-profile-back-btn,
-  .push-stack .profile-back-btn,
-  .push-stack .back-btn,
-  .push-stack [data-push-back] {
-    transition: none;
   }
 }

@@ -1,6 +1,6 @@
 .dir-entity {
   width: 100%;
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border-subtle);
   border-radius: var(--radius-card);
   box-shadow: none;
@@ -311,7 +311,7 @@
 
 .dir-entity__action.is-outline {
   border: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--primary-900);
 }
 

@@ -369,6 +369,142 @@
   color: var(--text-tertiary);
 }
 
+/* Card header row — title left, badge / action right */
+.ds-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: 0 0 var(--space-lg);
+}
+
+.ds-card__head .ds-card__title { margin: 0; }
+.ds-card > .ds-card__title:first-child { margin: 0 0 var(--space-md); }
+
+.ds-card__section + .ds-card__section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: var(--border-width) solid var(--border-divider);
+}
+
+/* ── Info grid — label / value cells (dates, visit type, location) ───── */
+.ds-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg) var(--space-md);
+}
+
+.ds-info-grid.is-single { grid-template-columns: minmax(0, 1fr); }
+
+.ds-info-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2-5);
+  min-width: 0;
+}
+
+.ds-info-cell > .ds-icon-well { margin-top: var(--space-0-5); }
+
+.ds-info-cell__body { min-width: 0; }
+
+.ds-info-cell__label {
+  display: block;
+  margin: 0 0 var(--space-0-5);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-tertiary);
+}
+
+.ds-info-cell__value {
+  display: block;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+/* ── Result hero — success / cancelled confirmation moments ────────────── */
+.ds-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl) var(--space-lg) var(--space-xl);
+  text-align: center;
+}
+
+.ds-result__icon {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-full);
+  background: var(--color-success-subtle);
+  color: var(--success-900);
+  animation: popIn var(--duration-reveal) var(--ease-spring) both;
+}
+
+.ds-result__icon svg { width: 2rem; height: 2rem; stroke-width: 2; }
+.ds-result.is-danger .ds-result__icon { background: var(--color-danger-subtle); color: var(--color-danger); }
+.ds-result.is-info .ds-result__icon { background: var(--primary-300); color: var(--primary-950); }
+
+.ds-result__title {
+  margin: 0;
+  font-size: var(--text-display-size);
+  line-height: 1.2;
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.ds-result__copy {
+  margin: 0;
+  max-width: 20rem;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+/* ── Callout — inline notice (policy, fee, info banners) ───────────────── */
+.ds-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--card-radius-sm);
+  background: var(--primary-300);
+  color: var(--text-primary);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
+.ds-callout > svg,
+.ds-callout__icon {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  flex-shrink: 0;
+  margin-top: var(--space-0-5);
+  color: var(--primary-950);
+  stroke-width: var(--icon-stroke);
+}
+
+.ds-callout__title {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.ds-callout__body { display: block; color: var(--text-secondary); }
+.ds-callout.is-success { background: var(--color-success-subtle); }
+.ds-callout.is-success > svg { color: var(--success-900); }
+.ds-callout.is-warning { background: var(--warning-300); }
+.ds-callout.is-warning > svg { color: var(--warning-900); }
+.ds-callout.is-danger { background: var(--error-300); }
+.ds-callout.is-danger > svg { color: var(--color-danger); }
+.ds-callout.is-neutral { background: var(--surface-1); border: var(--card-border); }
+
 /*
   Interactive surface language (legacy names — same behaviour as Card).
   Hover = tint · pressed = deeper tint · selected = lavender + ink edge.
@@ -847,6 +983,138 @@ a.ds-list-row:active,
 
 .ds-list-row.is-danger .ds-list-row__title { color: var(--danger); }
 
+/* ── Choice list — single-select rows with a radio (reasons, options) ─── */
+.ds-choice-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+}
+
+.ds-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+  min-height: 3.25rem;
+  padding: var(--space-md) var(--card-padding);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--text-body-size);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.ds-choice + .ds-choice,
+.ds-choice-list > * + * > .ds-choice:first-child {
+  border-top: var(--border-width) solid var(--border-divider);
+}
+
+.ds-choice:hover { background: var(--state-hover); }
+.ds-choice:active { background: var(--state-pressed); }
+.ds-choice[aria-checked='true'],
+.ds-choice.is-selected { background: var(--primary-200); }
+
+.ds-choice__body { display: flex; flex-direction: column; gap: var(--space-0-5); min-width: 0; }
+.ds-choice__title { font-weight: var(--font-weight-medium); }
+.ds-choice__sub { font-size: var(--text-caption-size); line-height: var(--text-caption-line); color: var(--text-tertiary); }
+
+/* Radio glyph */
+.ds-radio {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: var(--radius-full);
+  border: var(--border-width-emphasis) solid var(--neutral-400);
+  background: var(--surface-2);
+  transition: border-color var(--transition);
+}
+
+.ds-radio::after {
+  content: '';
+  position: absolute;
+  inset: 0.1875rem;
+  border-radius: var(--radius-full);
+  background: var(--primary-950);
+  transform: scale(0);
+  transition: transform var(--duration-normal) var(--ease-emphasized);
+}
+
+[aria-checked='true'] > .ds-radio,
+.is-selected > .ds-radio,
+.ds-radio.is-on { border-color: var(--primary-950); }
+[aria-checked='true'] > .ds-radio::after,
+.is-selected > .ds-radio::after,
+.ds-radio.is-on::after { transform: scale(1); }
+
+/* ── Steps — numbered timeline (what's next, prepare checklist) ──────── */
+.ds-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: var(--space-md);
+  padding-bottom: var(--space-lg);
+}
+
+.ds-step:last-child { padding-bottom: 0; }
+
+.ds-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 1.75rem;
+  bottom: 0;
+  left: calc(0.875rem - 1px);
+  width: 2px;
+  background: var(--neutral-200);
+}
+
+.ds-step__marker {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  background: var(--neutral-200);
+  color: var(--text-secondary);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+}
+
+.ds-step.is-active .ds-step__marker,
+.ds-step.is-done .ds-step__marker { background: var(--primary-950); color: var(--neutral-0); }
+.ds-step.is-done:not(:last-child)::before { background: var(--primary-950); }
+
+.ds-step__title {
+  margin: var(--space-0-5) 0 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.ds-step__body {
+  margin: var(--space-0-5) 0 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
 /* ── Divider ──────────────────────────────────────────────────────────── */
 .ds-divider {
   height: 0;
@@ -975,6 +1243,74 @@ a.ds-list-row:active,
 
 .ds-app-bar .ds-btn--text { font-size: var(--text-label-size); }
 
+/* ── Pushed page shell — canvas scroll, sticky AppBar, body, sticky footer */
+.ds-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  background: var(--bg);
+}
+
+.ds-page > .ds-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+}
+
+.ds-page__body {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  padding: var(--space-4) var(--content-padding) var(--space-6);
+}
+
+/* Body under a position:fixed footer (StickyFooterCta) */
+.ds-page__body.has-fixed-footer { padding-bottom: calc(var(--sticky-footer-clearance) + var(--space-4)); }
+
+/* In-flow footer that sticks to the bottom of the scrolling page */
+.ds-page__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--app-flow-footer-pad-top) var(--content-padding) var(--bottom-bar-pad);
+  background: var(--surface-chrome);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: var(--border-width) solid var(--border-default);
+}
+
+.ds-page__lead {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+.ds-page__note {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.ds-page__error {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--danger);
+}
+
 /* Large page title (tab roots) — PP PageHeader: medium 26px brand ink */
 .ds-page-title {
   margin: 0;
@@ -1003,6 +1339,48 @@ a.ds-list-row:active,
 }
 .ds-kv__key { color: var(--text-tertiary); }
 .ds-kv__value { color: var(--text-primary); font-weight: var(--font-weight-medium); text-align: right; }
+.ds-kv__value.is-positive { color: var(--color-success); }
+.ds-kv__value.is-muted { color: var(--text-tertiary); font-weight: var(--font-weight-regular); }
+.ds-kv__value.is-struck { color: var(--text-tertiary); font-weight: var(--font-weight-regular); text-decoration: line-through; }
+.ds-kv.is-total {
+  padding-top: var(--space-md);
+  border-top: var(--border-width) solid var(--border-divider);
+  font-size: var(--text-body-size);
+}
+.ds-kv.is-total .ds-kv__key { color: var(--text-primary); font-weight: var(--font-weight-medium); }
+.ds-kv.is-total .ds-kv__value { color: var(--pp-headline); font-size: var(--font-size-body-m); }
+
+/* ── Quick actions row — icon well + caption (Directions / Calendar / Call) */
+.ds-action-row {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-sm);
+}
+
+.ds-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: var(--touch-min);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  border-radius: var(--card-radius-sm);
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.ds-action:hover { background: var(--state-hover); }
+.ds-action:active { background: var(--state-pressed); }
+.ds-action .ds-icon-well { width: var(--icon-well-size-lg); height: var(--icon-well-size-lg); }
+.ds-action .ds-icon-well svg { width: var(--icon-lg); height: var(--icon-lg); }
 
 /* ── Progress ─────────────────────────────────────────────────────────── */
 .ds-progress {

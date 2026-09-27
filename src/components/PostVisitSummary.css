@@ -1,5 +1,5 @@
 .postvisit-page {
-  background: var(--white);
+  background: var(--bg);
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   padding: var(--space-3) var(--content-padding);
-  background: var(--white);
+  background: var(--surface-2);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -88,7 +88,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,7 +109,7 @@
 
 /* Doctor Card */
 .postvisit-doctor-card {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
@@ -240,7 +240,7 @@
 
 /* Cards */
 .postvisit-card {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
@@ -411,7 +411,7 @@
   padding: var(--space-3-5);
   border-radius: var(--radius);
   border: var(--border-width-emphasis) solid var(--primary);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--primary);
   font-size: var(--text-body-lg-size);
   font-weight: var(--font-weight-medium);
@@ -426,7 +426,7 @@
 
 /* Support Card */
 .postvisit-support-card {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);

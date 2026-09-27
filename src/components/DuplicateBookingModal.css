@@ -12,7 +12,7 @@
 .dup-modal {
   width: 100%;
   max-width: 340px;
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-xl);
   padding: var(--space-6) var(--space-5) 18px;
   text-align: center;
@@ -54,7 +54,7 @@
 
 .dup-secondary {
   border: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--text-primary);
 }
 

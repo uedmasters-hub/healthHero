@@ -1,5 +1,5 @@
 .prepare-page {
-  background: var(--white);
+  background: var(--bg);
   height: 100%;
   overflow: hidden;
   display: flex;
@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-5) var(--content-padding) 0;
-  background: var(--white);
+  background: var(--surface-2);
   flex-shrink: 0;
 }
 
@@ -121,7 +121,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--text-muted);
   border: var(--border-width) solid var(--border);
   transition: var(--interact-transition);
@@ -144,7 +144,7 @@
 }
 
 .prepare-step.pending .prepare-step-icon {
-  background: var(--white);
+  background: var(--surface-2);
   border-color: var(--border);
   color: var(--text-muted);
 }

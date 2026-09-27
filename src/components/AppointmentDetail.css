@@ -1,5 +1,5 @@
 .appointment-page {
-  background: var(--white);
+  background: var(--bg);
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -71,7 +71,7 @@
   display: flex;
   align-items: center;
   padding: var(--space-4) var(--content-padding) var(--space-2);
-  background: var(--white);
+  background: var(--surface-2);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -164,7 +164,7 @@
   letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--urgent);
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-pill);
   padding: var(--space-1) var(--space-2);
 }
@@ -521,7 +521,7 @@
   padding: var(--space-3-5) var(--space-4);
   border: none;
   border-bottom: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -666,7 +666,7 @@
   font-size: var(--text-body-size);
   font-family: inherit;
   color: var(--text-primary);
-  background: var(--white);
+  background: var(--surface-2);
   resize: none;
   outline: none;
   box-shadow: none;
@@ -739,7 +739,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--success);
   display: flex;
   align-items: center;
@@ -771,7 +771,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   padding: var(--space-2-5);
 }
@@ -930,7 +930,7 @@
 
 .appointment-sheet {
   width: 100%;
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
   padding: var(--space-2) var(--space-5) var(--bottom-bar-pad);
   max-height: 72vh;

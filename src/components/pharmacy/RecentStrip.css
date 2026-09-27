@@ -1,6 +1,5 @@
 .recent-strip__header {
   padding: 0 var(--content-padding);
-  margin-bottom: var(--section-header-gap);
 }
 
 .recent-strip__scroll {
@@ -23,15 +22,6 @@
   scroll-snap-align: start;
   display: block;
   padding: 0;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--card-bg);
-  box-shadow: none;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-  transition: var(--interact-transition);
 }
 
 .recent-card .reveal-body {
@@ -44,23 +34,13 @@
   padding: var(--space-3);
 }
 
-.recent-card:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.recent-card:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-}
-
 .recent-card__thumb {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 72px;
   border-radius: var(--radius-md);
-  background: var(--active-bg, #f7f8fa);
+  background: var(--surface-1);
   overflow: hidden;
 }
 
@@ -83,6 +63,6 @@
 
 .recent-card__detail {
   font-size: var(--text-caption-size);
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   font-weight: var(--font-weight-medium);
 }

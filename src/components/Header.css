@@ -207,7 +207,7 @@
   width: var(--avatar-sm);
   height: var(--avatar-sm);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--accent-muted);
   display: flex;
   align-items: center;

@@ -16,7 +16,7 @@
 .demo-preview-modal {
   width: 100%;
   max-width: 320px;
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-xl);
   padding: var(--space-6) var(--space-5) var(--space-5);
   text-align: center;

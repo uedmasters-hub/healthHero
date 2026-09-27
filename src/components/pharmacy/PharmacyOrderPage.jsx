@@ -75,7 +75,7 @@ export default function PharmacyOrderPage() {
             <p className="shop-copy">Total {formatRupees(order.total_amount)} including delivery {formatRupees(order.delivery_fee)}</p>
             {detail.invoice ? (
               <section>
-                <h2 className="section-title">Invoice</h2>
+                <h2 className="ds-section-head__title">Invoice</h2>
                 <p className="shop-copy">{detail.invoice.invoice_number} · {detail.invoice.status} · {formatRupees(detail.invoice.total_amount)}</p>
               </section>
             ) : null}

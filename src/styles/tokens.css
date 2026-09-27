@@ -226,6 +226,14 @@
   --badge-pad-x: 0.625rem;
   --badge-font: var(--font-size-body-xxs);
 
+  /* Feature / promo island — PP lavender panel (the one expressive surface) */
+  --surface-feature: linear-gradient(
+    145deg,
+    var(--primary-200) 0%,
+    color-mix(in srgb, var(--primary-300) 60%, var(--primary-200)) 55%,
+    var(--primary-300) 100%
+  );
+
   /* Skeleton — PP `.pp-skeleton` lavender + white sheen */
   --skel-base: color-mix(in srgb, var(--primary-300) 55%, var(--neutral-0));
   --skel-sheen: color-mix(in srgb, var(--neutral-0) 62%, transparent);

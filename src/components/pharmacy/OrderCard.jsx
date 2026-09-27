@@ -12,7 +12,7 @@ export function OrderCard({ order, onClick, revealed = true, cached = false, ite
     <RevealItem
       as="button"
       type="button"
-      className="order-card"
+      className="order-card ds-card is-interactive"
       revealed={revealed}
       cached={cached}
       ref={itemRef}
@@ -48,11 +48,11 @@ export default function OrderList({
 
   return (
     <section className={`order-list ${className}`.trim()} aria-label={title}>
-      <div className="section-header order-list__header">
-        <h2 className="section-title">{title}</h2>
+      <div className="ds-section-head order-list__header">
+        <h2 className="ds-section-head__title">{title}</h2>
         {onViewAll ? (
-          <button type="button" className="view-all-link" onClick={onViewAll}>
-            View All &gt;
+          <button type="button" className="ds-link" onClick={onViewAll}>
+            View all
           </button>
         ) : null}
       </div>

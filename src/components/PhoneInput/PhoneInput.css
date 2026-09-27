@@ -27,7 +27,7 @@
   height: 44px;
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--surface-2);
   overflow: hidden;
   transition: border-color var(--duration-fast);
 }
@@ -213,7 +213,7 @@
 
 .phone-sheet-search:focus-within {
   border-color: var(--border-focus);
-  background: var(--white);
+  background: var(--surface-2);
 }
 
 .phone-sheet-search-icon {

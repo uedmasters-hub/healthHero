@@ -124,7 +124,7 @@
   min-height: var(--app-flow-cta-height);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-cta);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--danger);
   font-family: inherit;
   font-size: var(--text-title-size);

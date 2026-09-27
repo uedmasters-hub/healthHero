@@ -32,7 +32,7 @@
   justify-content: space-between;
   padding: var(--space-3) var(--content-padding);
   flex-shrink: 0;
-  background: var(--white);
+  background: var(--surface-2);
 }
 
 .confirm-success-header-spacer {
@@ -200,7 +200,7 @@
   letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--urgent);
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-pill);
   padding: var(--space-1) var(--space-2);
 }
@@ -273,7 +273,7 @@
   border-radius: var(--radius-lg);
   font-size: var(--text-body-size);
   color: var(--text-primary);
-  background: var(--white);
+  background: var(--surface-2);
   resize: none;
   font-family: inherit;
   margin-bottom: var(--space-5);
@@ -298,7 +298,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-6);
@@ -336,7 +336,7 @@
   width: 24px;
   height: 24px;
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-2);
   transition: transform var(--duration-normal) var(--ease-standard);
   box-shadow: var(--shadow-sm);
 }
@@ -391,7 +391,7 @@
   height: 28px;
   border-radius: var(--radius-full);
   border: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -494,7 +494,7 @@
 .confirm-bottom-bar {
   flex-shrink: 0;
   width: 100%;
-  background: var(--white);
+  background: var(--surface-2);
   border-top: var(--border-width) solid var(--border);
   padding: var(--app-flow-footer-pad-top) var(--content-padding) var(--bottom-bar-pad);
   z-index: 5;
@@ -1147,7 +1147,7 @@
 }
 
 .confirm-success-notes-card {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
@@ -1273,7 +1273,7 @@
   padding: var(--space-2-5) var(--space-4);
   border-radius: var(--radius-full);
   border: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
@@ -1333,7 +1333,7 @@
 
 /* Record Item */
 .record-item {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   transition: all var(--transition);
@@ -1491,7 +1491,7 @@
   border: 2px dashed var(--border);
   border-radius: var(--radius);
   text-align: center;
-  background: var(--white);
+  background: var(--surface-2);
 }
 
 .records-upload-icon {

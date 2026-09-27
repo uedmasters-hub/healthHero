@@ -68,7 +68,7 @@
   padding: var(--space-2-5) var(--space-3-5) var(--space-2-5) var(--space-3);
   border: 0;
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--text-primary);
   font: inherit;
   font-size: var(--text-label-size);

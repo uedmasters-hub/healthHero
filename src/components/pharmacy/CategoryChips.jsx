@@ -18,11 +18,11 @@ export default function CategoryChips({
   return (
     <section className={`category-chips ${className}`.trim()} aria-label={title}>
       {hideHeader ? null : (
-        <div className="section-header category-chips__header">
-          <h2 className="section-title">{title}</h2>
+        <div className="ds-section-head category-chips__header">
+          <h2 className="ds-section-head__title">{title}</h2>
         </div>
       )}
-      <div className="category-chips__scroll" ref={containerRef}>
+      <div className="category-chips__scroll ds-chip-row is-bleed" ref={containerRef}>
         {items.map((item, index) => {
           const selected = activeId != null && item.id === activeId
           return (
@@ -31,8 +31,8 @@ export default function CategoryChips({
               type="button"
               key={item.id}
               className={[
-                'category-chip',
-                variant === 'solid' ? 'is-solid' : '',
+                'ds-chip',
+                variant === 'solid' ? '' : 'ds-chip--soft',
                 selected ? 'is-active' : '',
               ].filter(Boolean).join(' ')}
               aria-pressed={selected}

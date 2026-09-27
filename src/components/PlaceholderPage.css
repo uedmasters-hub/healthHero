@@ -1,5 +1,5 @@
 .placeholder-page {
-  background: var(--white);
+  background: var(--bg);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@
 .placeholder-header {
   flex-shrink: 0;
   padding: var(--space-4) var(--content-padding) var(--space-3);
-  background: var(--white);
+  background: var(--surface-2);
 }
 
 .placeholder-title {

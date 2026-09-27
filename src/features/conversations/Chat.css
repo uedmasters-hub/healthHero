@@ -5,7 +5,7 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  background: var(--white);
+  background: var(--bg);
   min-height: 0;
 }
 
@@ -275,7 +275,7 @@
   margin-bottom: var(--space-3);
   border: var(--border-width) solid var(--primary-soft-strong, var(--primary-soft));
   border-radius: var(--radius-card);
-  background: var(--white);
+  background: var(--surface-2);
   text-align: left;
   cursor: pointer;
   font-family: inherit;
@@ -484,7 +484,7 @@
 .chat-context-action {
   border: none;
   border-radius: var(--radius-pill);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--primary);
   font-family: inherit;
   font-size: var(--text-caption-size);
@@ -562,7 +562,7 @@
 }
 
 .chat-bubble-row.is-theirs .chat-attachment-card {
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--primary);
 }
 
@@ -574,7 +574,7 @@
   /* SafeAreaInsets system: frame-footer (preview / native) + breathing space */
   padding-bottom: calc(var(--space-4) + max(var(--frame-footer), var(--safe-bottom)));
   border-top: 1px solid var(--border-subtle, var(--primary-soft));
-  background: var(--white);
+  background: var(--surface-2);
   flex-shrink: 0;
   transition: padding-bottom var(--duration-moderate) var(--ease-emphasized);
 }

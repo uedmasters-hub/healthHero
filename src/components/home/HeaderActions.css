@@ -43,7 +43,7 @@
   width: var(--ha-shell-full);
   height: var(--ha-slot);
   border-radius: var(--radius-full);
-  background: var(--white);
+  background: var(--surface-2);
   box-shadow: 0 0 0 1px #eeeff3;
   transform-origin: right center;
   pointer-events: none;

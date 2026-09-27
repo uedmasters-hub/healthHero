@@ -90,7 +90,7 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--card-padding);
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-lg);
   opacity: var(--opacity-visible);
   transition: opacity var(--duration-normal) var(--ease-standard);

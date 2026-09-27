@@ -2,7 +2,7 @@
 .auth-splash {
   position: absolute;
   inset: 0;
-  background: var(--white);
+  background: var(--surface-2);
   display: flex;
   flex-direction: column;
 }
@@ -200,7 +200,7 @@
 }
 
 .auth-otp-box.is-filled {
-  background: var(--white);
+  background: var(--surface-2);
   border-color: var(--primary-soft-strong, var(--primary));
   transform: scale(1.02);
 }
@@ -209,7 +209,7 @@
 .auth-otp-box:focus,
 .auth-otp-box:focus-visible {
   z-index: 1;
-  background: var(--white);
+  background: var(--surface-2);
   border-color: var(--border-focus, var(--primary));
   box-shadow: var(--shadow-focus, 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent));
   transform: scale(1.04);
@@ -408,7 +408,7 @@
 .auth-field input:focus,
 .auth-field input:focus-visible {
   outline: none;
-  background: var(--white);
+  background: var(--surface-2);
   border-color: var(--border-focus);
   box-shadow: var(--shadow-focus);
 }
@@ -560,7 +560,7 @@
   min-height: var(--app-flow-cta-height);
   border: var(--border-width) solid var(--primary-soft-strong);
   border-radius: var(--radius-cta);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--text-primary);
   font-family: inherit;
   font-size: var(--text-body-size);

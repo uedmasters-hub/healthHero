@@ -1,21 +1,21 @@
 /*
   Shared header search control — Home collapsed reference.
-  Borderless, 36×36 touch target, transparent surface.
+  Borderless, 36×36 visual (--btn-height-sm), transparent surface.
   Positioning is owned by the parent (.header-actions / .tab-page-header__actions).
 */
 
 .header-search-btn {
   box-sizing: border-box;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
+  width: var(--btn-height-sm);
+  height: var(--btn-height-sm);
+  min-width: var(--btn-height-sm);
+  min-height: var(--btn-height-sm);
   margin: 0;
   padding: 0;
   border: none;
   border-radius: var(--radius-full);
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--icon-color-default);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,9 +27,10 @@
 }
 
 .header-search-btn svg {
-  width: 22px;
-  height: 22px;
+  width: var(--icon-xl);
+  height: var(--icon-xl);
   display: block;
+  stroke-width: var(--icon-stroke);
 }
 
 .header-search-btn.is-scroll-driven {
@@ -54,8 +55,8 @@
 
 .header-search-btn.is-visible:focus-visible,
 .header-search-btn.is-scroll-driven.is-interactive:focus-visible {
-  outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 /*

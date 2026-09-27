@@ -39,6 +39,7 @@ import {
 import './pharmacy/PharmacyPage.css'
 import './Services.css'
 import './SelectProvider.css'
+import { Button, EmptyState, SectionHead } from './ui'
 
 const PREVIEW_ACTIONS = new Set(['refill', 'upload-rx', 'essentials', 'order-medicine', 'category', 'recent', 'orders', 'tip'])
 const NEARBY_PAGE_SIZE = 24
@@ -249,33 +250,34 @@ export default function PharmacyPage() {
           />
 
           <section className="pharmacy-nearby" aria-label="Nearby pharmacies">
-            <div className="pharmacy-nearby-head">
-              <div>
-                <h2 className="ds-section-title">{nearbyHeading}</h2>
-                {!loadingNearby && !nearbyError && locationReady ? (
-                  <p className="pharmacy-nearby-count">{countLabel} · {radiusKm} km</p>
-                ) : null}
-              </div>
-              <button type="button" className="pharmacy-nearby-viewall" onClick={openBrowse}>
-                View all
-              </button>
-            </div>
+            <SectionHead
+              title={nearbyHeading}
+              sub={!loadingNearby && !nearbyError && locationReady ? `${countLabel} · ${radiusKm} km` : null}
+              action={(
+                <button type="button" className="ds-link" onClick={openBrowse}>
+                  View all
+                </button>
+              )}
+            />
 
             {(loadingNearby || waitingForLocation) ? <EntityCardSkeletonStack count={3} /> : null}
 
             {!loadingNearby && !waitingForLocation && nearbyError ? (
-              <div className="pharmacy-nearby-empty">
-                <p>{nearbyError}</p>
-                <button type="button" className="pharmacy-nearby-retry" onClick={() => loadNearby({ page: 0 })}>
-                  Try again
-                </button>
-              </div>
+              <EmptyState
+                card
+                compact
+                title="Couldn’t load pharmacies"
+                message={nearbyError}
+                action={(
+                  <Button size="sm" onClick={() => loadNearby({ page: 0 })}>
+                    Try again
+                  </Button>
+                )}
+              />
             ) : null}
 
             {!loadingNearby && needsLocation ? (
-              <div className="pharmacy-nearby-empty">
-                <p>Set your location to see nearby pharmacies.</p>
-              </div>
+              <EmptyState card compact message="Set your location to see nearby pharmacies." />
             ) : null}
 
             {!loadingNearby && !nearbyError && locationReady && !pharmacies.length ? (
@@ -306,7 +308,7 @@ export default function PharmacyPage() {
             {!loadingNearby && !nearbyError && hasMore ? (
               <button
                 type="button"
-                className="pharmacy-nearby-more"
+                className="pharmacy-nearby-more ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
                 onClick={() => loadNearby({ page: page + 1, append: true })}
                 disabled={loadingMore}
               >

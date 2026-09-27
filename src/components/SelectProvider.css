@@ -26,7 +26,7 @@
   /* Break out of page pad so SearchBar owns the immutable horizontal inset */
   margin-inline: calc(var(--content-padding) * -1);
   margin-bottom: var(--space-3-5);
-  min-height: var(--search-field-height, 52px);
+  min-height: var(--search-height);
   width: auto;
   max-width: none;
   display: flex;
@@ -61,7 +61,7 @@
   padding: 0 var(--space-4);
   border-radius: var(--radius-full);
   border: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
   line-height: 1;
@@ -307,7 +307,7 @@
 
 .doctors-empty-suggestions button {
   border: var(--border-width) solid var(--border);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--text-primary);
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-3-5);
@@ -332,7 +332,7 @@
   padding: var(--space-3-5) var(--space-4);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
-  background: var(--white);
+  background: var(--surface-2);
   color: var(--primary);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
@@ -347,7 +347,7 @@
 
 /* Matches `.dc-card-list` proportions */
 .doctor-list-skel {
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);

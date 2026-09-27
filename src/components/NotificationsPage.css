@@ -2,7 +2,7 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  background: var(--white);
+  background: var(--bg);
   padding-bottom: 96px;
 }
 
@@ -10,7 +10,7 @@
   display: flex;
   align-items: center;
   padding: var(--space-4) var(--content-padding) var(--space-3);
-  background: var(--white);
+  background: var(--surface-2);
   border-bottom: var(--border-width) solid var(--border);
   position: sticky;
   top: 0;
@@ -80,7 +80,7 @@
   padding: var(--space-3-5);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius-card);
-  background: var(--white);
+  background: var(--surface-2);
   cursor: pointer;
   font-family: inherit;
   box-shadow: none;

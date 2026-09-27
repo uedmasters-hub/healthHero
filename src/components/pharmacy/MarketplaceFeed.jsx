@@ -315,7 +315,7 @@ export default function MarketplaceFeed({
         ) : null}
         {!loading && !error && products.length ? groups.map((group) => (
           <section className="shop-shelf" data-section={group.id} key={group.id}>
-            <h2 className="section-title">{group.label}</h2>
+            <h2 className="ds-section-head__title">{group.label}</h2>
             {group.products.length ? (
               <div className="shop-grid">
                 {group.products.map((product) => (

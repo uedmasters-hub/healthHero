@@ -13,17 +13,17 @@ export function PharmacyTipCard({ tip, onClick, className = '' }) {
     <RevealItem
       as="button"
       type="button"
-      className={`pharmacy-tip ${className}`.trim()}
+      className={`pharmacy-tip ds-card is-interactive ${className}`.trim()}
       revealed={isRevealed(0)}
       cached={isCached}
       ref={setItemRef(0)}
       onClick={onClick}
     >
-      <span className="pharmacy-tip__icon" aria-hidden="true">
+      <span className="pharmacy-tip__icon ds-icon-well is-tile is-lg" aria-hidden="true">
         <PharmacyIcon name="spark" size={20} />
       </span>
       <span className="pharmacy-tip__copy">
-        {tip.eyebrow ? <span className="pharmacy-tip__eyebrow">{tip.eyebrow}</span> : null}
+        {tip.eyebrow ? <span className="pharmacy-tip__eyebrow ds-overline">{tip.eyebrow}</span> : null}
         <span className="pharmacy-tip__title">{tip.title}</span>
         {tip.body ? <span className="pharmacy-tip__body">{tip.body}</span> : null}
       </span>
@@ -48,21 +48,21 @@ export function PharmacySupportCard({
     <RevealItem
       as="button"
       type="button"
-      className={`pharmacy-support ${className}`.trim()}
+      className={`pharmacy-support ds-card is-interactive ${className}`.trim()}
       revealed={isRevealed(0)}
       cached={isCached}
       ref={setItemRef(0)}
       onClick={onClick}
     >
-      <span className="pharmacy-support__icon" aria-hidden="true">
+      <span className="pharmacy-support__icon ds-icon-well is-tile is-lg" aria-hidden="true">
         <PharmacyIcon name={icon} size={22} />
       </span>
       <span className="pharmacy-support__copy">
         <span className="pharmacy-support__title">{title}</span>
         {body ? <span className="pharmacy-support__body">{body}</span> : null}
-        {ctaAs === 'button' ? null : <span className="pharmacy-support__cta">{cta}</span>}
+        {ctaAs === 'button' ? null : <span className="pharmacy-support__cta ds-link">{cta}</span>}
       </span>
-      {ctaAs === 'button' ? <span className="pharmacy-support__cta is-pill">{cta}</span> : null}
+      {ctaAs === 'button' ? <span className="pharmacy-support__cta is-pill ds-btn ds-btn--primary ds-btn--sm">{cta}</span> : null}
       {ctaAs === 'button' ? null : (
         <span className="pharmacy-support__chevron" aria-hidden="true">
           <PharmacyIcon name="chevron" />

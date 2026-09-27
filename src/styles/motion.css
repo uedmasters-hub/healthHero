@@ -35,6 +35,17 @@
   to { transform: translateY(0); }
 }
 
+@keyframes sheetDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+/* Legacy name for sheetDown (location sheet) */
+@keyframes slideDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
 @keyframes popIn {
   from { transform: scale(0.8); opacity: 0; }
   to { transform: scale(1); opacity: 1; }

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import { usePushBack } from '../features/pushNav'
-import './CancelCheckIn.css'
+import { AppBar, Button, Card, Choice, ChoiceList, InfoCell, InfoGrid, ResultHero } from './ui'
+import './CancelAppointment.css'
 
 const CANCEL_REASONS = [
   'Feeling better / no longer needed',
@@ -148,170 +149,122 @@ export default function CancelAppointment() {
 
   if (done && done.branch !== 'reschedule' && done.branch !== 'contact') {
     return (
-      <div className="ccancel-page">
-        <div className="ccancel-header-bar">
-          <button type="button" className="ccancel-back-btn" onClick={goBack} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="ccancel-header-title">{title}</h1>
-          <div className="ccancel-menu-btn" aria-hidden="true" />
-        </div>
-        <div className="ccancel-body">
-          <div className="ccancel-confirmed-banner" role="status">
-            <div className="ccancel-confirmed-title">
-              {done.branch === 'refund' ? 'Cancellation recorded' : 'Appointment cancelled'}
-            </div>
-            <p className="ccancel-confirmed-text">
-              {doctorName} was notified. The appointment slot was released.
-              {done.branch === 'refund'
-                ? ' Billing will review any eligible refund.'
-                : ''}
-            </p>
+      <div className="ds-page">
+        <AppBar title={title} onBack={goBack} />
+        <div className="ds-page__body">
+          <div role="status">
+            <ResultHero
+              tone="info"
+              title={done.branch === 'refund' ? 'Cancellation recorded' : 'Appointment cancelled'}
+              message={`${doctorName} was notified. The appointment slot was released.${done.branch === 'refund' ? ' Billing will review any eligible refund.' : ''}`}
+            />
           </div>
-          <div className="ccancel-next-card">
-            <div className="ccancel-next-label">Reason</div>
-            <div className="ccancel-next-detail">{done.reason}</div>
-          </div>
+          <Card padded>
+            <InfoGrid single>
+              <InfoCell label="Reason" value={done.reason} />
+            </InfoGrid>
+          </Card>
         </div>
-        <div className="ccancel-footer">
-          <button type="button" className="ccancel-confirm-btn" onClick={() => navigate('/', { replace: true })}>
+        <div className="ds-page__footer">
+          <Button size="lg" block onClick={() => navigate('/', { replace: true })}>
             Back to Home
-          </button>
+          </Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="ccancel-page">
-      <div className="ccancel-header-bar">
-        <button type="button" className="ccancel-back-btn" onClick={goBack} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="ccancel-header-title">{title}</h1>
-        <div className="ccancel-menu-btn" aria-hidden="true" />
-      </div>
+    <div className="ds-page">
+      <AppBar title={title} onBack={goBack} />
 
-      <div className="ccancel-body">
+      <div className="ds-page__body">
         {step === 'reason' ? (
           <>
-            <p className="ccancel-info-banner-text">
+            <p className="ds-page__lead">
               Tell us why you need to change this visit with {doctorName}. Your provider is notified and the slot is released when you confirm.
             </p>
-            <div className="ccancel-reasons" role="radiogroup" aria-label="Cancellation reason">
+            <ChoiceList label="Cancellation reason">
               {CANCEL_REASONS.map((reason) => (
-                <button
-                  type="button"
+                <Choice
                   key={reason}
-                  className={`ccancel-reason-item${selectedReason === reason ? ' is-selected' : ''}`}
+                  title={reason}
+                  selected={selectedReason === reason}
                   onClick={() => setSelectedReason(reason)}
-                  aria-pressed={selectedReason === reason}
-                >
-                  <span className="ccancel-reason-text">{reason}</span>
-                  <span className={`ccancel-radio${selectedReason === reason ? ' selected' : ''}`} aria-hidden="true">
-                    {selectedReason === reason ? <span className="ccancel-radio-inner" /> : null}
-                  </span>
-                </button>
+                />
               ))}
+            </ChoiceList>
+            <div>
+              <label className="ds-field-label" htmlFor="cancel-note">
+                Add a note (optional)
+              </label>
+              <textarea
+                id="cancel-note"
+                className="ds-field is-multiline"
+                rows={3}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Anything the clinic should know"
+              />
             </div>
-            <label className="ccancel-note-label" htmlFor="cancel-note">
-              Add a note (optional)
-            </label>
-            <textarea
-              id="cancel-note"
-              className="ccancel-note"
-              rows={3}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Anything the clinic should know"
-            />
           </>
         ) : null}
 
         {step === 'branch' ? (
-          <div className="ccancel-reasons" role="radiogroup" aria-label="Next step">
+          <ChoiceList label="Next step">
             {BRANCHES.map((item) => (
-              <button
-                type="button"
+              <Choice
                 key={item.id}
-                className={`ccancel-reason-item${branch === item.id ? ' is-selected' : ''}`}
+                title={item.label}
+                subtitle={item.detail}
+                selected={branch === item.id}
                 onClick={() => setBranch(item.id)}
-                aria-pressed={branch === item.id}
-              >
-                <span>
-                  <span className="ccancel-reason-text">{item.label}</span>
-                  <span className="ccancel-next-detail" style={{ display: 'block' }}>{item.detail}</span>
-                </span>
-                <span className={`ccancel-radio${branch === item.id ? ' selected' : ''}`} aria-hidden="true">
-                  {branch === item.id ? <span className="ccancel-radio-inner" /> : null}
-                </span>
-              </button>
+              />
             ))}
-          </div>
+          </ChoiceList>
         ) : null}
 
         {step === 'confirm' ? (
-          <div className="ccancel-next-card" role="region" aria-label="Confirm cancellation">
-            <div className="ccancel-next-label">Reason</div>
-            <div className="ccancel-next-detail">{selectedReason}</div>
-            <div className="ccancel-next-label" style={{ marginTop: 'var(--space-3)' }}>Action</div>
-            <div className="ccancel-next-detail">
-              {BRANCHES.find((b) => b.id === branch)?.label || branch}
-            </div>
-            {note.trim() ? (
-              <>
-                <div className="ccancel-next-label" style={{ marginTop: 'var(--space-3)' }}>Note</div>
-                <div className="ccancel-next-detail">{note.trim()}</div>
-              </>
-            ) : null}
-            <p className="ccancel-info-banner-text" style={{ marginTop: 'var(--space-4)' }}>
+          <Card padded role="region" aria-label="Confirm cancellation">
+            <InfoGrid single>
+              <InfoCell label="Reason" value={selectedReason} />
+              <InfoCell label="Action" value={BRANCHES.find((b) => b.id === branch)?.label || branch} />
+              {note.trim() ? <InfoCell label="Note" value={note.trim()} /> : null}
+            </InfoGrid>
+            <p className="ds-page__lead cancel-confirm-copy">
               This updates Supabase as the source of truth, writes an immutable audit event, notifies the provider, and releases the appointment slot.
             </p>
-          </div>
+          </Card>
         ) : null}
 
         {error ? (
-          <p className="ccancel-info-banner-text" role="alert" style={{ color: 'var(--danger, #b42318)' }}>
+          <p className="ds-page__error" role="alert">
             {error}
           </p>
         ) : null}
       </div>
 
-      <div className="ccancel-footer">
+      <div className="ds-page__footer">
         {step === 'reason' ? (
-          <button
-            type="button"
-            className="ccancel-confirm-btn"
-            onClick={() => setStep('branch')}
-          >
+          <Button size="lg" block onClick={() => setStep('branch')}>
             Continue
-          </button>
+          </Button>
         ) : null}
         {step === 'branch' ? (
-          <button
-            type="button"
-            className="ccancel-confirm-btn"
-            onClick={() => setStep('confirm')}
-          >
+          <Button size="lg" block onClick={() => setStep('confirm')}>
             Continue
-          </button>
+          </Button>
         ) : null}
         {step === 'confirm' ? (
-          <button
-            type="button"
-            className="ccancel-confirm-btn"
+          <Button
+            size="lg"
+            block
             disabled={submitting}
-            aria-busy={submitting}
+            loading={submitting}
             onClick={submit}
           >
             {submitting ? 'Saving…' : 'Confirm'}
-          </button>
+          </Button>
         ) : null}
       </div>
     </div>

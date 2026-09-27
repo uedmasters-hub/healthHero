@@ -2,7 +2,7 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  background: var(--white);
+  background: var(--bg);
   display: flex;
   flex-direction: column;
 }
@@ -30,53 +30,6 @@
   }
 }
 
-.booking-layout.is-success .booking-header {
-  padding-bottom: var(--space-3);
-  flex-shrink: 0;
-}
-
-.booking-header {
-  display: flex;
-  align-items: center;
-  padding: var(--space-4) var(--content-padding) 0;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  width: var(--touch-min);
-  height: var(--touch-min);
-  min-width: var(--touch-min);
-  min-height: var(--touch-min);
-  cursor: pointer;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  left: calc(var(--content-padding) - 10px);
-}
-
-.back-btn:hover {
-  opacity: var(--opacity-muted);
-}
-
-.booking-header-title {
-  flex: 1;
-  text-align: center;
-  font-size: var(--text-heading-size);
-  line-height: var(--text-heading-line);
-  font-weight: var(--text-heading-weight);
-  color: var(--text-primary);
-}
-
-.booking-header-spacer {
-  width: var(--touch-min);
-}
-
 /* Stepper */
 .stepper {
   display: flex;
@@ -87,18 +40,15 @@
 
 .stepper-step {
   flex: 1;
-  height: 3px;
-  border-radius: var(--radius-2xs);
-  background: var(--border);
-  transition: background var(--duration-moderate) var(--ease-standard);
+  height: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--neutral-200);
+  transition: background-color var(--duration-moderate) var(--ease-standard);
 }
 
-.stepper-step.active {
-  background: var(--cta);
-}
-
+.stepper-step.active,
 .stepper-step.completed {
-  background: var(--cta);
+  background: var(--pp-headline);
 }
 
 /* Page content */
@@ -149,7 +99,7 @@
   position: relative;
   z-index: 2;
   opacity: var(--opacity-visible);
-  background: var(--white);
+  background: var(--bg);
   transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
@@ -161,7 +111,7 @@
 }
 
 .booking-body {
-  background: var(--white);
+  background: var(--bg);
   opacity: var(--opacity-hidden);
   pointer-events: none;
 }
@@ -191,14 +141,14 @@
 }
 
 .booking-skel-line {
-  height: 12px;
-  border-radius: var(--radius-xs);
+  height: var(--space-3);
+  border-radius: var(--radius-full);
   margin-bottom: var(--space-2);
 }
 
 .booking-skel-line.is-name {
   width: 68%;
-  height: 16px;
+  height: var(--space-4);
   margin-bottom: var(--space-2);
 }
 
@@ -209,27 +159,27 @@
 
 .booking-skel-line.is-lead {
   width: 72%;
-  height: 14px;
-  margin: 0 0 18px;
+  height: var(--space-3-5);
+  margin: 0 0 var(--space-4);
 }
 
 .booking-skel-chip {
   display: inline-block;
-  width: 96px;
-  height: 22px;
-  border-radius: var(--radius-sm);
+  width: 6rem;
+  height: var(--badge-height);
+  border-radius: var(--radius-full);
 }
 
 .booking-skel-label {
-  width: 88px;
-  height: 12px;
-  border-radius: var(--radius-xs);
+  width: 5.5rem;
+  height: var(--space-3);
+  border-radius: var(--radius-full);
   margin: var(--space-2) 0 var(--space-3);
 }
 
 .booking-skel-strip {
-  height: 72px;
-  border-radius: var(--radius-lg);
+  height: 4.5rem;
+  border-radius: var(--card-radius-sm);
   margin-bottom: var(--space-6);
 }
 
@@ -246,16 +196,16 @@
 }
 
 .booking-skel-slot {
-  height: 44px;
-  border-radius: var(--radius);
+  height: var(--chip-height);
+  border-radius: var(--radius-full);
 }
 
 .booking-skel-card {
-  height: 72px;
-  border-radius: var(--radius-lg);
+  height: 4.5rem;
+  border-radius: var(--card-radius);
   margin-bottom: var(--space-2-5);
 }
 
 .booking-skel-card.is-tall {
-  height: 168px;
+  height: 10.5rem;
 }

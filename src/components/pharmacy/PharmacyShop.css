@@ -32,7 +32,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  background: var(--white);
+  background: var(--bg);
   padding-bottom: calc(var(--nav-height) + var(--frame-footer, 0px));
 }
 
@@ -43,7 +43,7 @@
   align-self: stretch;
   width: 100%;
   padding: 0;
-  background: var(--white);
+  background: var(--surface-2);
   overflow: visible;
 }
 
@@ -62,7 +62,7 @@
   column-gap: var(--card-gap);
   align-items: start;
   margin: 0 var(--content-padding) 0 0;
-  background: var(--white);
+  background: var(--surface-2);
   transition: grid-template-columns var(--duration-moderate) var(--ease-emphasized),column-gap var(--duration-moderate) var(--ease-emphasized);
 }
 
@@ -442,7 +442,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: var(--white);
+  background: var(--bg);
 }
 
 .shop-page__scroll {

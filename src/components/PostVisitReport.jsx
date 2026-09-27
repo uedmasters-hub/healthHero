@@ -10,7 +10,7 @@ import {
   buildPatientReport,
   findScheduledFollowUp,
 } from '../booking/visitOutcomes'
-import './CancelCheckIn.css'
+import { AppBar, Button, ResultHero } from './ui'
 import './PostVisitReport.css'
 
 /**
@@ -108,55 +108,37 @@ export default function PostVisitReport() {
 
   if (saved) {
     return (
-      <div className="ccancel-page">
-        <div className="ccancel-header-bar">
-          <button type="button" className="ccancel-back-btn" onClick={() => navigate('/', { replace: true })} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="ccancel-header-title">Report saved</h1>
-          <div className="ccancel-menu-btn" aria-hidden="true" />
-        </div>
-        <div className="ccancel-body">
-          <div className="ccancel-confirmed-banner" role="status">
-            <div className="ccancel-confirmed-title">Thanks for the update</div>
-            <p className="ccancel-confirmed-text">
-              This stays as your temporary record. When the clinic confirms the visit, your care hub updates from their official outcome.
-            </p>
+      <div className="ds-page">
+        <AppBar title="Report saved" onBack={() => navigate('/', { replace: true })} />
+        <div className="ds-page__body">
+          <div role="status">
+            <ResultHero
+              title="Thanks for the update"
+              message="This stays as your temporary record. When the clinic confirms the visit, your care hub updates from their official outcome."
+            />
           </div>
         </div>
-        <div className="ccancel-footer">
-          <button type="button" className="ccancel-confirm-btn" onClick={() => navigate('/', { replace: true })}>
+        <div className="ds-page__footer">
+          <Button size="lg" block onClick={() => navigate('/', { replace: true })}>
             Back to Home
-          </button>
+          </Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="ccancel-page">
-      <div className="ccancel-header-bar">
-        <button type="button" className="ccancel-back-btn" onClick={goBack} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="ccancel-header-title">Report visit</h1>
-        <div className="ccancel-menu-btn" aria-hidden="true" />
-      </div>
+    <div className="ds-page">
+      <AppBar title="Report visit" onBack={goBack} />
 
-      <div className="ccancel-body">
+      <div className="ds-page__body">
         <div className="report-lead">
           <h2 id="report-outcomes-label">What best describes your visit?</h2>
           <p id="report-outcomes-hint">We'll save this as a temporary record until the clinic confirms the visit.</p>
         </div>
 
         <ul
-          className="report-outcomes"
+          className="report-outcomes ds-choice-list"
           role="radiogroup"
           aria-labelledby="report-outcomes-label"
           aria-describedby="report-outcomes-hint"
@@ -171,23 +153,21 @@ export default function PostVisitReport() {
                 <button
                   type="button"
                   ref={(node) => { optionRefs.current[index] = node }}
-                  className="report-option-btn"
+                  className="report-option-btn ds-choice"
                   role="radio"
                   aria-checked={on}
                   tabIndex={selected ? (on ? 0 : -1) : (index === 0 ? 0 : -1)}
                   aria-controls={opt.detailKey ? detailId : undefined}
                   onClick={() => choose(opt.id, index)}
                 >
-                  <span className="report-option-text">{opt.label}</span>
-                  <span className="report-radio" aria-hidden="true">
-                    {on ? <span className="report-radio-dot" /> : null}
-                  </span>
+                  <span className="ds-choice__title">{opt.label}</span>
+                  <span className="ds-radio" aria-hidden="true" />
                 </button>
                 {opt.detailKey ? (
                   <div className={`report-detail${on ? ' is-open' : ''}`} id={detailId}>
                     <div className="report-detail-inner" inert={!on}>
                       {showFollowUpBooking ? (
-                        <div className="report-booking" role="status">
+                        <div className="report-booking ds-card is-muted is-padded" role="status">
                           <p className="report-booking-kicker">Scheduled follow-up</p>
                           <p className="report-booking-title">
                             {followUpCard.doctor?.name ? `Dr. ${String(followUpCard.doctor.name).replace(/^Dr\.?\s*/i, '')}` : 'Your follow-up'}
@@ -205,6 +185,7 @@ export default function PostVisitReport() {
                           </span>
                           {opt.multiline ? (
                             <textarea
+                              className="ds-field is-multiline"
                               id={`${detailId}-input`}
                               rows={3}
                               value={details[opt.detailKey]}
@@ -213,6 +194,7 @@ export default function PostVisitReport() {
                             />
                           ) : (
                             <input
+                              className="ds-field"
                               id={`${detailId}-input`}
                               type="text"
                               value={details[opt.detailKey]}
@@ -232,22 +214,22 @@ export default function PostVisitReport() {
         </ul>
 
         {error ? (
-          <p className="ccancel-form-error" role="alert">
+          <p className="ds-page__error" role="alert">
             {error}
           </p>
         ) : null}
       </div>
 
       {needsSaveStep || (selected === 'felt_better' && (saving || error)) ? (
-        <div className="ccancel-footer">
-          <p id="report-save-hint" className="ccancel-save-hint">
+        <div className="ds-page__footer">
+          <p id="report-save-hint" className="ds-page__note">
             {selected === 'felt_better'
               ? 'Saving your report.'
               : 'Add any details you have, then save.'}
           </p>
           <button
             type="button"
-            className="ccancel-confirm-btn"
+            className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block"
             aria-disabled={!canSave}
             aria-busy={saving}
             aria-describedby="report-save-hint"

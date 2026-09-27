@@ -1,3 +1,5 @@
+/* Tab bar — PocketPills mobile nav: white/95 + blur, hairline top edge,
+   icon tile + label, active = ink + medium + tinted tile. */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -5,11 +7,15 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: var(--phone-width);
-  background: var(--white);
-  border-top: var(--border-width) solid var(--border-subtle);
+  background: var(--surface-chrome);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: var(--border-width) solid var(--border-default);
   padding-bottom: var(--frame-footer);
-  z-index: 100;
-  transition: transform var(--duration-moderate) var(--ease-standard), padding-bottom var(--duration-moderate) var(--ease-standard);
+  z-index: var(--z-footer);
+  transition:
+    transform var(--duration-reveal) var(--ease-emphasized),
+    padding-bottom var(--duration-moderate) var(--ease-standard);
 }
 
 .phone-app.nav-hidden .bottom-nav,
@@ -18,124 +24,66 @@
   pointer-events: none;
 }
 
-.bottom-nav-inner {
-  height: var(--nav-height);
-  padding: var(--space-2) var(--space-3);
-}
-
 .bottom-nav-bar {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  height: var(--nav-height);
+  padding: 0 var(--space-1);
 }
 
 .bottom-nav-tab {
-  flex: 1 1 0;
-  min-width: 0;
-  height: var(--touch-min);
-  min-height: var(--touch-min);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-1);
+  min-width: 0;
+  min-height: var(--touch-min);
+  padding: var(--space-1-5) var(--space-0-5);
   background: none;
   border: none;
-  padding: 0;
-  margin: 0;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font: inherit;
+  font-size: var(--text-micro-size);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.2;
   cursor: pointer;
-  z-index: 2;
-  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--transition), background-color var(--transition);
 }
+
+.bottom-nav-tab:hover { background: var(--state-hover); }
+.bottom-nav-tab:active { background: var(--state-pressed); }
+
+.bottom-nav-tab.is-active {
+  color: var(--pp-headline);
+  font-weight: var(--font-weight-medium);
+}
+
+.bottom-nav-tab.is-active:hover { background: none; }
 
 .bottom-nav-tab-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--icon-2xl);
-  height: var(--icon-2xl);
-  color: var(--icon-color-muted);
-  opacity: var(--opacity-visible);
-  transition: opacity var(--duration-fast) var(--ease-standard);
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition);
 }
 
-.bottom-nav-tab-icon.is-hidden {
-  opacity: var(--opacity-hidden);
+.bottom-nav-tab.is-active .bottom-nav-tab-icon {
+  background: var(--state-hover);
 }
 
 .bottom-nav-tab-icon svg {
-  width: var(--icon-2xl);
-  height: var(--icon-2xl);
-  stroke-width: var(--icon-stroke);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.bottom-nav-pill {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  height: var(--space-12);
-  margin-top: calc(var(--space-12) / -2);
-  border-radius: var(--radius-card);
-  background: var(--brand-action);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 1;
-  box-sizing: border-box;
-  padding: 0 var(--space-4);
-  will-change: transform, width;
-  transition: none;
-}
-
-.bottom-nav-pill-measure {
-  position: absolute;
-  visibility: hidden;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: var(--space-12);
-  padding: 0 var(--space-4);
-  white-space: nowrap;
-}
-
-.bottom-nav-pill-face {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  animation: bnPillFace var(--duration-dialog) var(--ease-standard);
-}
-
-@keyframes bnPillFace {
-  from { opacity: var(--opacity-ghost); }
-  to { opacity: var(--opacity-visible); }
-}
-
-.bottom-nav-pill-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--icon-lg);
-  height: var(--icon-lg);
-  flex-shrink: 0;
-  color: var(--white);
-}
-
-.bottom-nav-pill-icon svg {
   width: var(--icon-lg);
   height: var(--icon-lg);
 }
 
-.bottom-nav-pill-label {
-  font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--white);
+.bottom-nav-tab-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 1;
-  letter-spacing: var(--letter-tight);
 }

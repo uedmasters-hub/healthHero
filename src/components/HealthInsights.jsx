@@ -22,10 +22,10 @@ export default function HealthInsights() {
 
   return (
     <div className="health-insights">
-      <div className="section-header">
-        <h2 className="section-title">Health Insights</h2>
-        <button type="button" className="view-all-link" onClick={openInsights}>
-          View all &gt;
+      <div className="ds-section-head">
+        <h2 className="ds-section-head__title">Health Insights</h2>
+        <button type="button" className="ds-link" onClick={openInsights}>
+          View all
         </button>
       </div>
       <div className="insights-scroll" ref={containerRef}>

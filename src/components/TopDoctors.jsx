@@ -97,9 +97,9 @@ export default function TopDoctors() {
 
   return (
     <div className={`top-doctors ${holdCachedCards ? 'is-return-hold' : ''}`}>
-      <div className="section-header">
-        <h2 className="section-title">Top 10 Doctor Speciality</h2>
-        <a className="view-all-link" onClick={openTopDoctors}>See all &gt;</a>
+      <div className="ds-section-head">
+        <h2 className="ds-section-head__title">Top 10 Doctor Speciality</h2>
+        <button type="button" className="ds-link" onClick={openTopDoctors}>View all</button>
       </div>
       <div className="doctors-scroll" ref={containerRef}>
         {doctors.map((doctor, i) => {
