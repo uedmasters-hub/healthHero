@@ -2,8 +2,12 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const profile = readFileSync('src/components/DoctorProfile.jsx', 'utf8')
-assert.match(profile, /aria-label="Back"/)
-assert.match(profile, /data-push-back/)
+// Back is the shared AppBar/BackButton: named "Back" and tagged for the push stack.
+const ui = readFileSync(new URL('../src/components/ui/index.jsx', import.meta.url), 'utf8')
+assert.match(profile, /<AppBar[\s\S]*?onBack=\{goBack\}/)
+assert.match(ui, /function BackButton\(\{ onClick, label = 'Back'/)
+assert.match(ui, /aria-label=\{label\}/)
+assert.match(ui, /data-push-back/)
 
 const schedule = readFileSync('src/components/WeeklySchedule.jsx', 'utf8')
 assert.match(schedule, /role="status"/)
