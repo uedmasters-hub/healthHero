@@ -18,7 +18,11 @@ export default function ServiceTileGrid({ items = [], onSelect, className = '' }
           as="button"
           type="button"
           key={item.id}
-          className={`service-tile service-tile--${item.tone || 'mint'}`}
+          className={[
+            'service-tile',
+            `service-tile--${item.tone || 'mint'}`,
+            item.badge || item.subtitle ? 'service-tile--detail' : '',
+          ].filter(Boolean).join(' ')}
           revealed={isRevealed(index)}
           cached={isCached}
           ref={setItemRef(index)}
@@ -27,10 +31,14 @@ export default function ServiceTileGrid({ items = [], onSelect, className = '' }
           <span className="service-tile__icon" aria-hidden="true">
             <PharmacyIcon name={item.icon} size={22} />
           </span>
+          {item.badge ? <span className="service-tile__badge">{item.badge}</span> : null}
           <span className="service-tile__label">{item.label}</span>
-          <span className="service-tile__chevron" aria-hidden="true">
-            <PharmacyIcon name="chevron" />
-          </span>
+          {item.subtitle ? <span className="service-tile__subtitle">{item.subtitle}</span> : null}
+          {item.badge || item.subtitle ? null : (
+            <span className="service-tile__chevron" aria-hidden="true">
+              <PharmacyIcon name="chevron" />
+            </span>
+          )}
         </RevealItem>
       ))}
     </div>

@@ -75,6 +75,36 @@ function fallbackReviews(doctorId) {
   ]
 }
 
+function placeFallback(key) {
+  const pharmacy = String(key).startsWith('pharmacy:')
+  return [
+    review({
+      id: `${key}-r1`,
+      author: pharmacy ? 'Sita R.' : 'Anil K.',
+      date: '12 Aug 2026',
+      rating: 5,
+      text: pharmacy
+        ? 'Staff found the medicine quickly and the counter wait was short. Packaging was clearly labeled.'
+        : 'Clean facility and a clear explanation of the visit. Registration did not take long.',
+    }),
+    review({
+      id: `${key}-r2`,
+      author: pharmacy ? 'Bikash T.' : 'Maya P.',
+      date: '2 Jul 2026',
+      rating: 4,
+      text: pharmacy
+        ? 'Good stock of everyday medicines. Delivery arrived the same evening.'
+        : 'Helpful front desk. The queue moved steadily once we were checked in.',
+    }),
+  ]
+}
+
+function catalogFor(store, key) {
+  if (store[key]?.length) return store[key]
+  if (String(key).startsWith('pharmacy:') || String(key).startsWith('facility:')) return placeFallback(key)
+  return fallbackReviews(key)
+}
+
 function cloneSeed() {
   const next = {}
   Object.keys(seedByDoctor).forEach((id) => {
@@ -96,8 +126,12 @@ function loadStore() {
 
 function listFor(store, doctorId) {
   const key = String(doctorId)
-  const items = store[key] || fallbackReviews(doctorId)
+  const items = catalogFor(store, key)
   return [...items].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+}
+
+export function placeReviewKey(kind, id) {
+  return `${kind}:${id}`
 }
 
 export function formatReviewDate(date = new Date()) {

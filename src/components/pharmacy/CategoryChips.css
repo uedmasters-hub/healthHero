@@ -51,3 +51,10 @@
   border-color: var(--interact-selected-border);
   color: var(--text-primary);
 }
+
+.category-chip.is-solid.is-active,
+.category-chip.is-solid[aria-pressed='true'] {
+  background: var(--primary-700);
+  border-color: transparent;
+  color: var(--white);
+}

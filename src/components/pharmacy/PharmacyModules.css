@@ -90,6 +90,24 @@
   color: var(--primary);
 }
 
+.pharmacy-support__cta.is-pill {
+  margin-top: 0;
+  align-self: center;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-full);
+  background: var(--primary-700);
+  color: var(--white);
+}
+
+.pharmacy-support .reveal-body:has(.is-pill) {
+  align-items: center;
+}
+
 .pharmacy-support__chevron {
   align-self: center;
   color: var(--text-muted);

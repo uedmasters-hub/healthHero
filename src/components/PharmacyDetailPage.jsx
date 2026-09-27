@@ -1,65 +1,61 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   fetchPharmacyPage,
   mapsPharmacyDirectionsUrl,
 } from '../features/providers/pharmaciesRepository'
-import { formatPlaceParts } from '../features/geography/formatPlace'
-import { pharmacyAvatarName, pharmacyDisplayTitle } from '../lib/pharmacyModel'
-import GalleryLightbox from './GalleryLightbox'
-import EmptyState from './EmptyState'
+import { getDoctorReviewSummary, placeReviewKey } from '../data/reviews'
+import { pharmacyDisplayTitle } from '../lib/pharmacyModel'
+import { formatMoney } from '../lib/paymentSession'
+import { flowState } from '../lib/careFlow'
 import { usePushBack } from '../features/pushNav'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
-import { useDemoPreview } from './DemoPreviewModal'
-import Avatar from './directory/Avatar'
-import './PharmacyDetailPage.css'
+import GalleryLightbox from './GalleryLightbox'
+import EmptyState from './EmptyState'
+import { galleryFor, mapEmbedUrl } from './profile/placeMedia'
+import { PharmacyHeroCard, ProfileGallery, ProfileHeader, ProfileMap, ProfileRatings } from './profile/placeProfile'
+import './DoctorProfile.css'
+import './DoctorCard.css'
 
-function PharmacySkeleton() {
+const TAG_BACKGROUNDS = ['#DBEAFE', '#D1FAE5', '#EDE9FE', '#FFEDD5']
+
+function ProfileSkeletons() {
   return (
-    <div className="pharm-detail-skel" aria-hidden="true">
-      <div className="pharm-detail-skel-hero shimmer" />
-      <div className="pharm-detail-skel-block shimmer" />
-      <div className="pharm-detail-skel-block is-mid shimmer" />
-      <div className="pharm-detail-skel-row">
-        <div className="pharm-detail-skel-chip shimmer" />
-        <div className="pharm-detail-skel-chip shimmer" />
+    <div className="profile-skeletons" aria-hidden="true">
+      <div className="profile-section">
+        <div className="profile-skel-label shimmer" />
+        <div className="profile-skel-line shimmer" />
+        <div className="profile-skel-line is-mid shimmer" />
       </div>
-      <div className="pharm-detail-skel-card shimmer" />
-      <div className="pharm-detail-skel-card shimmer" />
+      <div className="profile-stats">
+        <div className="profile-stat shimmer" />
+        <div className="profile-stat shimmer" />
+        <div className="profile-stat shimmer" />
+      </div>
+      <div className="profile-section">
+        <div className="profile-skel-label shimmer" />
+        <div className="profile-skel-tags">
+          <div className="profile-skel-tag shimmer" />
+          <div className="profile-skel-tag shimmer" />
+        </div>
+      </div>
     </div>
-  )
-}
-
-function Section({ title, children, empty, emptyTitle }) {
-  if (!children && empty) {
-    return (
-      <section className="pharm-detail-section">
-        <h2 className="pharm-detail-section-title">{title}</h2>
-        <p className="pharm-detail-section-empty">{emptyTitle || 'Nothing listed yet.'}</p>
-      </section>
-    )
-  }
-  if (!children) return null
-  return (
-    <section className="pharm-detail-section">
-      <h2 className="pharm-detail-section-title">{title}</h2>
-      {children}
-    </section>
   )
 }
 
 export default function PharmacyDetailPage() {
   const { pharmacyId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const goBack = usePushBack(-1)
   const scrollRef = useRef(null)
-  const { show: showDemoPreview } = useDemoPreview()
 
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState(null)
   const [payload, setPayload] = useState(null)
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false)
 
   const load = useCallback(async () => {
     if (!pharmacyId) {
@@ -95,53 +91,102 @@ export default function PharmacyDetailPage() {
   const hours = payload?.hours || []
   const services = payload?.services || []
   const contacts = payload?.contacts || []
-  const media = payload?.media || []
-
-  const galleryImages = useMemo(() => {
-    const fromMedia = media.map((m) => m.url).filter(Boolean)
-    if (fromMedia.length) return fromMedia
-    if (pharmacy?.image) return [pharmacy.image]
-    return []
-  }, [media, pharmacy])
-
-  const directionsUrl = useMemo(() => mapsPharmacyDirectionsUrl(pharmacy), [pharmacy])
-  const phoneContact = contacts.find((c) => c.kind === 'phone')?.value || pharmacy?.phone
-  const emailContact = contacts.find((c) => c.kind === 'email')?.value || pharmacy?.email
-  const todayHours = useMemo(() => {
-    const today = new Date().getDay()
-    return hours.find((h) => h.dayOfWeek === today) || null
-  }, [hours])
-
-  const mapEmbedUrl = useMemo(() => {
-    if (!pharmacy) return null
-    if (pharmacy.latitude != null && pharmacy.longitude != null) {
-      return `https://maps.google.com/maps?q=${pharmacy.latitude},${pharmacy.longitude}&z=15&output=embed`
-    }
-    const q = encodeURIComponent(pharmacy.fullAddress || pharmacy.address || pharmacy.name || '')
-    if (!q) return null
-    return `https://maps.google.com/maps?q=${q}&z=14&output=embed`
-  }, [pharmacy])
-
-  const locationLabel = pharmacy
-    ? (pharmacy.locationLabel || formatPlaceParts(pharmacy.area || pharmacy.place, pharmacy.city, pharmacy.district) || pharmacy.address)
-    : ''
   const displayName = pharmacyDisplayTitle(pharmacy)
+  const address = pharmacy?.fullAddress || pharmacy?.address || pharmacy?.locationLabel || ''
+  const kind = pharmacy?.pharmacyType || pharmacy?.systemType || 'Pharmacy'
+  const reviews = useMemo(() => getDoctorReviewSummary(placeReviewKey('pharmacy', pharmacyId)), [pharmacyId])
+  const rating = reviews.total
+    ? reviews.rating
+    : (pharmacy?.rating != null && Number(pharmacy.rating) > 0 ? Number(pharmacy.rating).toFixed(1) : null)
+  const phoneContact = contacts.find((item) => item.kind === 'phone')?.value || pharmacy?.phone
+  const emailContact = contacts.find((item) => item.kind === 'email')?.value || pharmacy?.email
+  const directionsUrl = useMemo(() => mapsPharmacyDirectionsUrl(pharmacy), [pharmacy])
+  const embedUrl = useMemo(() => mapEmbedUrl(pharmacy), [pharmacy])
+
+  const galleryImages = useMemo(
+    () => galleryFor((payload?.media || []).map((item) => item.url), pharmacy?.image || pharmacy?.logoUrl),
+    [payload, pharmacy],
+  )
+
+  const about = pharmacy
+    ? [
+      `${displayName} is a registered ${kind.toLowerCase()} on eMedicalls.`,
+      address || null,
+      pharmacy.ddaVerifiedLabel || (pharmacy.isVerified ? 'DDA verified.' : null),
+      pharmacy.delivers ? 'This pharmacy delivers.' : null,
+    ].filter(Boolean).join(' ')
+    : ''
+
+  const shareProfile = useCallback(async () => {
+    const url = window.location.href
+    const title = displayName ? `${displayName} on eMedicalls` : 'Pharmacy on eMedicalls'
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text: `Check out ${displayName} on eMedicalls`, url })
+        return
+      }
+    } catch {
+      /* cancelled */
+    }
+    try {
+      await navigator.clipboard?.writeText(url)
+    } catch {
+      /* ignore */
+    }
+  }, [displayName])
+
+  const openShop = () => {
+    const storePath = `/pharmacy/store/${pharmacyId}`
+    if (location.state?.returnTo === storePath) {
+      goBack()
+      return
+    }
+    navigate(storePath, {
+      state: flowState(location, {
+        origin: 'pharmacy-profile',
+        returnTo: `/pharmacy/${pharmacyId}`,
+        storeName: displayName,
+      }),
+    })
+  }
+
+  const headerActions = (
+    <>
+      <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share" onClick={shareProfile}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+      </button>
+      <button
+        className={`ds-icon-btn is-subtle is-md ${isFavorite ? 'is-danger' : ''}`}
+        type="button"
+        onClick={() => setIsFavorite((value) => !value)}
+        aria-label="Favorite"
+        aria-pressed={isFavorite}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill={isFavorite ? 'currentColor' : 'none'}
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      </button>
+    </>
+  )
 
   if (status === 'loading') {
     return (
-      <div className="pharm-detail-page page-push-in">
-        <header className="pharm-detail-header">
-          <button type="button" className="pharm-detail-back" data-push-back onClick={goBack} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="pharm-detail-header-title">Pharmacy</h1>
-          <span className="pharm-detail-header-spacer" />
-        </header>
-        <div className="pharm-detail-scroll">
-          <PharmacySkeleton />
+      <div className="doctor-profile is-skeleton has-cta">
+        <ProfileHeader title="Pharmacy Profile" onBack={goBack} />
+        <div className="profile-scroll is-loading">
+          <ProfileSkeletons />
         </div>
       </div>
     )
@@ -149,230 +194,155 @@ export default function PharmacyDetailPage() {
 
   if (status === 'error' || !pharmacy) {
     return (
-      <div className="pharm-detail-page page-push-in">
-        <header className="pharm-detail-header">
-          <button type="button" className="pharm-detail-back" data-push-back onClick={goBack} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="pharm-detail-header-title">Pharmacy</h1>
-          <span className="pharm-detail-header-spacer" />
-        </header>
-        <div className="pharm-detail-scroll pharm-detail-scroll-empty">
-          <EmptyState
-            image="/img/empty_state/pharmacy.png"
-            alt=""
-            title="Pharmacy unavailable"
-            message={error || 'We could not load this pharmacy from the DDA registry.'}
-          />
-          <button type="button" className="pharmacy-retry" onClick={load}>Try again</button>
-          <button type="button" className="pharmacy-retry is-secondary" onClick={() => navigate('/pharmacy')}>
-            Back to pharmacies
-          </button>
+      <div className="doctor-profile page-push-in">
+        <ProfileHeader title="Pharmacy Profile" onBack={goBack} />
+        <div className="profile-scroll">
+          <div className="profile-section">
+            <EmptyState
+              image="/img/empty_state/hospital.png"
+              alt=""
+              title="Pharmacy unavailable"
+              message={error || 'We could not load this pharmacy from the registry.'}
+            />
+            <button type="button" className="view-all-reviews" onClick={load}>Try again</button>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="pharm-detail-page page-push-in has-cta">
-      <header className="pharm-detail-header">
-        <button type="button" className="pharm-detail-back" data-push-back onClick={goBack} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="pharm-detail-header-title">Pharmacy</h1>
-        <span className="pharm-detail-header-spacer" />
-      </header>
+    <div className="doctor-profile page-push-in has-cta">
+      <ProfileHeader title="Pharmacy Profile" onBack={goBack} actions={headerActions} />
 
-      <div className="pharm-detail-scroll" ref={scrollRef}>
+      <div className="profile-scroll" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing || status === 'refreshing'} />
 
-        <div className="pharm-detail-hero">
-          <div className="pharm-detail-hero-media">
-            {pharmacy.image || pharmacy.logoUrl ? (
-              <img src={pharmacy.image || pharmacy.logoUrl} alt="" className="pharm-detail-hero-img" />
-            ) : (
-              <div className="pharm-detail-hero-placeholder" aria-hidden="true">
-                <Avatar name={pharmacyAvatarName(pharmacy)} size={72} />
+        <div className="profile-hero-card">
+          <PharmacyHeroCard pharmacy={pharmacy} />
+        </div>
+
+        <div className="profile-body is-ready">
+          <div className="profile-section">
+            <div className="profile-section-label">About</div>
+            <p className="profile-about-text">{about}</p>
+          </div>
+
+          <div className="profile-stats">
+            <div className="profile-stat">
+              <strong>{services.length}</strong>
+              <span>Services</span>
+            </div>
+            <div className="profile-stat">
+              <strong>{hours.length || '—'}</strong>
+              <span>Open days</span>
+            </div>
+            <div className="profile-stat">
+              <strong>{rating || '—'}</strong>
+              <span>Rating</span>
+            </div>
+          </div>
+
+          <div className="profile-section">
+            <div className="profile-section-label">Services</div>
+            {services.length ? (
+              <div className="specialty-grid">
+                {services.slice(0, 8).map((item, index) => (
+                  <div className="specialty-tag" key={item.id || item.name}>
+                    <div className="specialty-tag-icon" style={{ background: TAG_BACKGROUNDS[index % TAG_BACKGROUNDS.length] }}>
+                      {String(item.name || '•').slice(0, 1)}
+                    </div>
+                    {item.name}
+                  </div>
+                ))}
               </div>
+            ) : (
+              <p className="profile-about-text">No services published yet.</p>
             )}
           </div>
-          <div className="pharm-detail-hero-body">
-            <div className="pharm-detail-chips">
-              {pharmacy.isVerified ? <span className="pharm-detail-chip is-verified">Verified</span> : null}
-              {pharmacy.ddaVerifiedLabel && !pharmacy.isVerified ? (
-                <span className="pharm-detail-chip">{pharmacy.ddaVerifiedLabel}</span>
-              ) : null}
-              {pharmacy.pharmacyType ? <span className="pharm-detail-chip">{pharmacy.pharmacyType}</span> : null}
-              {pharmacy.delivers ? <span className="pharm-detail-chip">Delivery</span> : null}
-              {pharmacy.openLabel ? <span className="pharm-detail-chip">{pharmacy.openLabel}</span> : null}
+
+          {services.some((item) => item.fee != null || item.description) ? (
+            <div className="profile-section">
+              <div className="profile-section-label">Service details</div>
+              {services.map((item) => (
+                <div className="center-card" key={`detail-${item.id}`} style={{ cursor: 'default' }}>
+                  <div className="center-info">
+                    <div className="center-name">{item.name}</div>
+                    {item.description ? <div className="center-address">{item.description}</div> : null}
+                  </div>
+                  {item.fee != null ? <div className="center-distance">{formatMoney(item.fee)}</div> : null}
+                </div>
+              ))}
             </div>
-            <h2 className="pharm-detail-name">{displayName}</h2>
-            {locationLabel ? <p className="pharm-detail-subtitle">{locationLabel}</p> : null}
-            {todayHours ? (
-              <p className="pharm-detail-today">
-                Today · {todayHours.isClosed ? 'Closed' : todayHours.label}
-              </p>
-            ) : pharmacy.delivers ? (
-              <p className="pharm-detail-today">Delivery available</p>
-            ) : null}
-          </div>
-        </div>
+          ) : null}
 
-        <div className="pharm-detail-actions">
-          {phoneContact ? (
-            <a className="pharm-detail-action" href={`tel:${phoneContact}`}>Call</a>
-          ) : null}
-          {directionsUrl ? (
-            <a className="pharm-detail-action" href={directionsUrl} target="_blank" rel="noreferrer">Directions</a>
-          ) : null}
-          {emailContact ? (
-            <a className="pharm-detail-action" href={`mailto:${emailContact}`}>Email</a>
-          ) : null}
-        </div>
-
-        <Section title="License" empty={!(pharmacy.licenseNumber || pharmacy.pharmacyCode)}>
-          <ul className="pharm-detail-list">
-            {pharmacy.licenseNumber || pharmacy.pharmacyCode ? (
-              <li className="pharm-detail-list-item">
-                <div className="pharm-detail-list-title">DDA registration</div>
-                <div className="pharm-detail-list-copy">{pharmacy.licenseNumber || pharmacy.pharmacyCode}</div>
-              </li>
-            ) : null}
-            {pharmacy.pharmacyType ? (
-              <li className="pharm-detail-list-item">
-                <div className="pharm-detail-list-title">Pharmacy type</div>
-                <div className="pharm-detail-list-copy">{pharmacy.pharmacyType}</div>
-                {pharmacy.systemType && pharmacy.systemType !== pharmacy.pharmacyType ? (
-                  <div className="pharm-detail-list-meta">{pharmacy.systemType}</div>
-                ) : null}
-              </li>
-            ) : null}
-            <li className="pharm-detail-list-item">
-              <div className="pharm-detail-list-title">Verification</div>
-              <div className="pharm-detail-list-copy">
-                {pharmacy.isVerified ? 'Verified on eMedicalls' : 'Listed from DDA registry'}
+          <div className="profile-section">
+            <div className="profile-section-label">Opening hours</div>
+            {hours.length ? hours.map((row) => (
+              <div className="center-card" key={row.id || row.dayOfWeek} style={{ cursor: 'default' }}>
+                <div className="center-info">
+                  <div className="center-name">{row.dayLabel}</div>
+                  <div className="center-address">{row.isClosed ? 'Closed' : row.label}</div>
+                </div>
               </div>
-            </li>
-          </ul>
-        </Section>
+            )) : (
+              <p className="profile-about-text">Hours not published yet.</p>
+            )}
+          </div>
 
-        <Section title="Contact" empty={!(phoneContact || emailContact || pharmacy.fullAddress || pharmacy.address)}>
-          <ul className="pharm-detail-list">
+          <div className="profile-section">
+            <div className="profile-section-label">Contact</div>
             {phoneContact ? (
-              <li className="pharm-detail-list-item">
-                <div className="pharm-detail-list-title">Phone</div>
-                <a className="pharm-detail-link" href={`tel:${phoneContact}`}>{phoneContact}</a>
-              </li>
+              <a className="center-card" href={`tel:${phoneContact}`}>
+                <div className="center-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </div>
+                <div className="center-info">
+                  <div className="center-name">Phone</div>
+                  <div className="center-address">{phoneContact}</div>
+                </div>
+              </a>
             ) : null}
             {emailContact ? (
-              <li className="pharm-detail-list-item">
-                <div className="pharm-detail-list-title">Email</div>
-                <a className="pharm-detail-link" href={`mailto:${emailContact}`}>{emailContact}</a>
-              </li>
+              <a className="center-card" href={`mailto:${emailContact}`}>
+                <div className="center-info">
+                  <div className="center-name">Email</div>
+                  <div className="center-address">{emailContact}</div>
+                </div>
+              </a>
             ) : null}
-            {pharmacy.fullAddress || pharmacy.address ? (
-              <li className="pharm-detail-list-item">
-                <div className="pharm-detail-list-title">Address</div>
-                <div className="pharm-detail-list-copy">{pharmacy.fullAddress || pharmacy.address}</div>
-                {directionsUrl ? (
-                  <a className="pharm-detail-link" href={directionsUrl} target="_blank" rel="noreferrer">
-                    Get directions
-                  </a>
-                ) : null}
-              </li>
+            {!phoneContact && !emailContact && !embedUrl ? (
+              <p className="profile-about-text">No contact details published yet.</p>
             ) : null}
-          </ul>
-        </Section>
-
-        <Section title="Opening hours" empty={!hours.length} emptyTitle="Hours not published yet.">
-          {hours.length ? (
-            <ul className="pharm-detail-hours">
-              {hours.map((row) => (
-                <li key={row.id || row.dayOfWeek} className={`pharm-detail-hours-row ${row.isClosed ? 'is-closed' : ''}`}>
-                  <span>{row.dayLabel}</span>
-                  <span>{row.label}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </Section>
-
-        <Section title="Services" empty={!services.length} emptyTitle="Services will appear here when published.">
-          {services.length ? (
-            <ul className="pharm-detail-list">
-              {services.map((svc) => (
-                <li key={svc.id} className="pharm-detail-list-item">
-                  <div className="pharm-detail-list-title">{svc.name}</div>
-                  {svc.description ? <p className="pharm-detail-list-copy">{svc.description}</p> : null}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </Section>
-
-        <Section title="Location" empty={!mapEmbedUrl} emptyTitle="Map unavailable for this pharmacy.">
-          {mapEmbedUrl ? (
-            <div className="pharm-detail-map">
-              <iframe
-                title="Pharmacy location"
-                src={mapEmbedUrl}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-          ) : null}
-        </Section>
-
-        <Section title="Gallery" empty={!galleryImages.length} emptyTitle="No photos published yet.">
-          {galleryImages.length ? (
-            <button
-              type="button"
-              className="pharm-detail-gallery"
-              onClick={() => setGalleryOpen(true)}
-              aria-label="Open gallery"
-            >
-              {galleryImages.slice(0, 4).map((src) => (
-                <img key={src} src={src} alt="" className="pharm-detail-gallery-img" />
-              ))}
-              {galleryImages.length > 4 ? (
-                <span className="pharm-detail-gallery-more">+{galleryImages.length - 4}</span>
-              ) : null}
-            </button>
-          ) : null}
-        </Section>
-
-        <section className="pharm-detail-section">
-          <h2 className="pharm-detail-section-title">Order & prescriptions</h2>
-          <div className="pharm-detail-future">
-            <p>Medicine ordering and prescription upload are coming soon for this pharmacy.</p>
-            <button type="button" className="pharm-detail-future-btn" onClick={() => showDemoPreview?.()}>
-              Upload prescription
-            </button>
           </div>
-        </section>
+
+          <ProfileMap name={displayName} embedUrl={embedUrl} directionsUrl={directionsUrl} />
+
+          <ProfileGallery images={galleryImages} onOpen={() => setGalleryOpen(true)} />
+
+          <ProfileRatings
+            summary={reviews}
+            onViewAll={() => navigate(`/pharmacy/${pharmacyId}/reviews`, {
+              state: flowState(location, {
+                returnTo: `/pharmacy/${pharmacyId}`,
+                subjectName: displayName,
+              }),
+            })}
+          />
+
+          <div className="end-of-page-placeholder">- You've reached the end -</div>
+        </div>
       </div>
 
       <div className="app-flow-footer">
-        <button type="button" className="app-flow-cta" onClick={() => showDemoPreview?.()}>
-          Order medicine
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
+        <button type="button" className="app-flow-cta" onClick={openShop}>
+          Shop this pharmacy
         </button>
       </div>
 
-      <GalleryLightbox
-        images={galleryImages}
-        isOpen={galleryOpen}
-        onClose={() => setGalleryOpen(false)}
-      />
+      <GalleryLightbox images={galleryImages} isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />
     </div>
   )
 }

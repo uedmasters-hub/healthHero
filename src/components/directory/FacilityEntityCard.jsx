@@ -8,7 +8,7 @@ import EntityCard from './EntityCard'
  * Facility card — classification in subtitle, location only in the location row.
  * Avatar initials come from the cleaned display name (facilityModel).
  */
-export default function FacilityEntityCard({ center, onOpen }) {
+export default function FacilityEntityCard({ center, onOpen, variant = 'list' }) {
   const name = facilityDisplayTitle(center)
   const locationLabel = center?.locationLabel
     || [center?.city, center?.district].filter(Boolean)
@@ -22,6 +22,41 @@ export default function FacilityEntityCard({ center, onOpen }) {
     || center?.facilityLevel
     || center?.type
     || 'Healthcare Center'
+
+  if (variant === 'home') {
+    const distance = center?.distance ? `${center.distance} away` : null
+    const place = center?.city || locationLabel
+    const chips = (center?.departmentNames || []).slice(0, 2).map((label) => ({ id: label, label }))
+    if (!chips.length && classification) chips.push({ id: 'kind', label: classification })
+
+    const meta = (
+      <>
+        {center?.rating != null ? (
+          <span className="dir-entity__rating">★ {Number(center.rating).toFixed(1)}</span>
+        ) : null}
+        {center?.rating != null && (distance || place) ? ' · ' : null}
+        {distance}
+        {distance && place ? ' · ' : null}
+        {place}
+      </>
+    )
+
+    return (
+      <EntityCard
+        className="dir-entity--facility-home"
+        name={name}
+        meta={meta}
+        chips={chips}
+        avatarSrc={center?.image || null}
+        avatarName={facilityAvatarName(center)}
+        avatarSize={72}
+        actionLabel="View"
+        actionVariant="outline"
+        onAction={() => onOpen?.(center)}
+        onClick={() => onOpen?.(center)}
+      />
+    )
+  }
 
   const meta = [
     center?.hfCode || center?.shortHfCode

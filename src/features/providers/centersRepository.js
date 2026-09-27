@@ -304,7 +304,7 @@ async function enrichCentersPage(centers) {
         .in('center_id', ids)
         .eq('day_of_week', today),
       sb.from('departments')
-        .select('center_id')
+        .select('center_id, name')
         .in('center_id', ids)
         .eq('is_active', true),
       sb.from('entity_services')
@@ -320,8 +320,12 @@ async function enrichCentersPage(centers) {
     })
 
     const deptCounts = new Map()
+    const namesById = new Map()
     ;(deptRes.data || []).forEach((row) => {
       deptCounts.set(row.center_id, (deptCounts.get(row.center_id) || 0) + 1)
+      const names = namesById.get(row.center_id) || []
+      if (row.name && names.length < 2) names.push(row.name)
+      namesById.set(row.center_id, names)
     })
 
     const svcCounts = new Map()
@@ -336,6 +340,7 @@ async function enrichCentersPage(centers) {
       return {
         ...center,
         departmentCount: deptCounts.get(id) || 0,
+        departmentNames: namesById.get(id) || [],
         serviceCount: svcCounts.get(id) || 0,
         openStatus: open.openStatus,
         openLabel: open.openLabel,

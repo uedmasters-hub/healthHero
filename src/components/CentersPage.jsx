@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import AppBottomSheet from './AppBottomSheet'
-import { useAppSheet } from './PageTransition'
+import PageSearchHeader from './PageSearchHeader'
+import AppFooter from './AppFooter'
 import EmptyState from './EmptyState'
 import ExpandRadiusEmpty from './ExpandRadiusEmpty'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
@@ -9,25 +9,75 @@ import PullToRefreshIndicator from './PullToRefreshIndicator'
 import {
   queryCenters,
   clearCentersQueryCache,
-  CENTERS_PAGE_SIZE,
 } from '../features/providers/centersRepository'
 import { flowState } from '../lib/careFlow'
 import { useAppLocation } from '../features/location'
 import {
-  DirectoryShell,
+  CategoryChips,
+  PharmacySupportCard,
+  ServiceTileGrid,
+} from './pharmacy'
+import {
   FacilityEntityCard,
   EntityCardSkeletonStack,
 } from './directory'
-import './SelectProvider.css'
+import './pharmacy/PharmacyPage.css'
+import './Services.css'
 import './ExpandRadiusEmpty.css'
 
-const PAGE_SIZE = CENTERS_PAGE_SIZE || 24
+const PAGE_SIZE = 8
 
-const SORT_OPTIONS = [
-  { id: 'nearest', label: 'Nearest' },
-  { id: 'name', label: 'Name A–Z' },
-  { id: 'rating', label: 'Highest Rated' },
+const SERVICES = [
+  {
+    id: 'hospital',
+    icon: 'building',
+    tone: 'sky',
+    badge: 'Tertiary',
+    label: 'Find Hospital',
+    subtitle: 'ICU, OT & Inpatient',
+  },
+  {
+    id: 'clinic',
+    icon: 'plus',
+    tone: 'mint',
+    badge: 'Local',
+    label: 'Find Clinic',
+    subtitle: 'Polyclinic & GP visits',
+  },
+  {
+    id: 'home',
+    icon: 'home',
+    tone: 'peach',
+    badge: '24/7 Live',
+    label: 'Home Care',
+    subtitle: 'Doctor & nursing visits',
+  },
+  {
+    id: 'lab',
+    icon: 'calendar',
+    tone: 'sky',
+    badge: 'Fast Queue',
+    label: 'Lab & Diagnostics',
+    subtitle: 'Blood tests & diagnostics',
+  },
 ]
+
+const FACILITY_FILTERS = [
+  { id: 'hospital', label: 'Hospital', query: 'hospital' },
+  { id: 'clinic', label: 'Clinic', query: 'clinic' },
+  { id: 'home', label: 'Home Care', query: 'home' },
+  { id: 'lab', label: 'Diagnostics', query: 'diagnostic' },
+]
+
+function matchesKind(center, kind) {
+  if (!kind) return true
+  const blob = `${center?.type || ''} ${center?.classification || ''} ${center?.facilityLevel || ''} ${center?.name || ''}`.toLowerCase()
+  if (kind === 'hospital') return blob.includes('hospital')
+  if (kind === 'clinic') return /clinic|polyclinic|health post|phc/.test(blob)
+  if (kind === 'home') return /home|nursing/.test(blob)
+  if (kind === 'lab') return /lab|diagnostic|patholog/.test(blob)
+  return true
+}
 
 export default function CentersPage() {
   const navigate = useNavigate()
@@ -40,18 +90,17 @@ export default function CentersPage() {
     nextExpandRadiusKm,
     expandRadius,
   } = useAppLocation()
-  const { isPresented, isClosing, show, hide } = useAppSheet()
   const scrollRef = useRef(null)
+  const searchBarRef = useRef(null)
+  const facilitiesRef = useRef(null)
   const requestIdRef = useRef(0)
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [sortBy, setSortBy] = useState('nearest')
-  const [activeSheet, setActiveSheet] = useState(null)
+  const [kind, setKind] = useState('hospital')
   const [centers, setCenters] = useState([])
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(false)
-  const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(null)
@@ -61,6 +110,8 @@ export default function CentersPage() {
     return () => clearTimeout(t)
   }, [search])
 
+  const kindQuery = FACILITY_FILTERS.find((item) => item.id === kind)?.query || ''
+
   const loadPage = useCallback(async ({ page: nextPage, append = false } = {}) => {
     const reqId = ++requestIdRef.current
     if (!locationReady || !origin) {
@@ -68,7 +119,6 @@ export default function CentersPage() {
       setLoadingMore(false)
       if (!append) {
         setCenters([])
-        setTotalCount(0)
         setHasMore(false)
         setError(null)
       }
@@ -82,9 +132,9 @@ export default function CentersPage() {
     }
 
     const result = await queryCenters({
-      q: debouncedSearch,
+      q: debouncedSearch || kindQuery,
       city: locality,
-      sort: sortBy,
+      sort: 'nearest',
       page: nextPage,
       pageSize: PAGE_SIZE,
       force: !append,
@@ -94,24 +144,26 @@ export default function CentersPage() {
 
     if (reqId !== requestIdRef.current) return
 
+    const rows = (result.centers || []).filter((center) => (
+      debouncedSearch ? matchesKind(center, kind) : true
+    ))
+
     if (result.error && !result.centers?.length) {
       setError(result.error)
       if (!append) {
         setCenters([])
-        setTotalCount(0)
         setHasMore(false)
       }
     } else {
       setError(null)
-      setCenters((prev) => (append ? [...prev, ...result.centers] : result.centers))
-      setTotalCount(result.total || 0)
+      setCenters((prev) => (append ? [...prev, ...rows] : rows))
       setHasMore(Boolean(result.hasMore))
       setPage(result.page)
     }
 
     setLoading(false)
     setLoadingMore(false)
-  }, [debouncedSearch, locality, sortBy, origin, radiusKm, locationReady])
+  }, [debouncedSearch, kind, kindQuery, locality, origin, radiusKm, locationReady])
 
   useEffect(() => {
     if (locationStatus === 'locating') {
@@ -128,13 +180,11 @@ export default function CentersPage() {
 
   const ptr = usePullToRefresh(scrollRef, onRefresh)
 
-  const openSheet = (id) => {
-    setActiveSheet(id)
-    show()
-  }
-
-  const closeSheet = () => {
-    hide(() => setActiveSheet(null))
+  const focusFacilities = (nextKind) => {
+    setKind(nextKind)
+    window.requestAnimationFrame(() => {
+      facilitiesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
   }
 
   const openFacility = (center) => {
@@ -149,117 +199,124 @@ export default function CentersPage() {
   const needsLocation = !locationReady && !waitingForLocation
 
   return (
-    <>
-      <DirectoryShell
+    <div className="pharmacy-page">
+      <PageSearchHeader
         title="Healthcare Centers"
-        showBack={false}
-        searchScope="centers"
-        searchPlaceholder="Search hospitals, clinics…"
-        searchQuery={search}
-        onSearchChange={setSearch}
-        shown={centers.length}
-        total={totalCount}
-        loading={loading || waitingForLocation}
-        onSort={() => openSheet('sort')}
-        sortActive={sortBy !== 'nearest'}
         scrollRef={scrollRef}
-      >
+        searchBarRef={searchBarRef}
+        scope="centers"
+        placeholder="Search hospitals, clinics…"
+        query={search}
+        onQueryChange={setSearch}
+        dockClassName="pharmacy-search-dock"
+      />
+
+      <div className="pharmacy-scroll" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
+        <div className="pharmacy-page__feed">
+          <ServiceTileGrid
+            items={SERVICES}
+            onSelect={(item) => focusFacilities(item.id)}
+          />
 
-        {(loading || waitingForLocation) ? <EntityCardSkeletonStack count={4} /> : null}
+          <PharmacySupportCard
+            icon="ambulance"
+            title="24/7 Ambulance"
+            body="Triage & Rapid Response"
+            cta="Call"
+            ctaAs="button"
+            onClick={() => { window.location.href = 'tel:112' }}
+          />
 
-        {!loading && !waitingForLocation && error ? (
-          <div className="dir-shell__empty">
-            <EmptyState
-              image="/img/empty_state/hospital.png"
-              alt=""
-              title="Couldn’t load facilities"
-              message={error}
+          <section className="pharmacy-nearby" aria-label="Top facilities" ref={facilitiesRef}>
+            <div className="section-header">
+              <h2 className="section-title">Top Facilities</h2>
+              <button type="button" className="view-all-link" onClick={() => focusFacilities(null)}>
+                See All
+              </button>
+            </div>
+
+            <CategoryChips
+              title="Facility type"
+              hideHeader
+              variant="solid"
+              activeId={kind}
+              items={FACILITY_FILTERS}
+              onSelect={(item) => focusFacilities(item.id)}
             />
-            <button type="button" className="dir-shell__load-more" onClick={() => loadPage({ page: 0 })}>
-              Try again
-            </button>
-          </div>
-        ) : null}
 
-        {!loading && needsLocation ? (
-          <div className="dir-shell__empty">
-            <EmptyState
-              image="/img/empty_state/hospital.png"
-              alt=""
-              title="Set your location"
-              message="Allow precise location or pick a place to find nearby facilities."
-            />
-          </div>
-        ) : null}
+            {(loading || waitingForLocation) ? <EntityCardSkeletonStack count={3} /> : null}
 
-        {!loading && !error && locationReady && !centers.length ? (
-          <div className="dir-shell__empty">
-            <ExpandRadiusEmpty
-              radiusKm={radiusKm}
-              nextRadiusKm={nextExpandRadiusKm}
-              locality={locality}
-              entityLabel="facilities"
-              onExpand={() => expandRadius()}
-              onChangeLocation={() => navigate('/')}
-            />
-            {search ? (
-              <div className="doctors-empty-suggestions">
-                <button type="button" onClick={() => setSearch('')}>Clear search</button>
+            {!loading && !waitingForLocation && error ? (
+              <div className="pharmacy-nearby-empty">
+                <EmptyState
+                  image="/img/empty_state/hospital.png"
+                  alt=""
+                  title="Couldn’t load facilities"
+                  message={error}
+                />
+                <button type="button" className="pharmacy-nearby-retry" onClick={() => loadPage({ page: 0 })}>
+                  Try again
+                </button>
               </div>
             ) : null}
-          </div>
-        ) : null}
 
-        {!loading && !error && centers.length ? (
-          <ul className="dir-shell__list">
-            {centers.map((center) => (
-              <li key={center.providerUuid || center.id}>
-                <FacilityEntityCard center={center} onOpen={openFacility} />
-              </li>
-            ))}
-            {hasMore ? (
-              <li>
-                <button
-                  type="button"
-                  className="dir-shell__load-more"
-                  onClick={() => loadPage({ page: page + 1, append: true })}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? 'Loading…' : 'Load more facilities'}
-                </button>
-              </li>
+            {!loading && needsLocation ? (
+              <div className="pharmacy-nearby-empty">
+                <EmptyState
+                  image="/img/empty_state/hospital.png"
+                  alt=""
+                  title="Set your location"
+                  message="Allow precise location or pick a place to find nearby facilities."
+                />
+              </div>
             ) : null}
-          </ul>
-        ) : null}
-      </DirectoryShell>
 
-      {isPresented && activeSheet === 'sort' ? (
-        <AppBottomSheet open closing={isClosing} onClose={closeSheet} labelledBy="centers-sort-title" sheetClassName="filter-sheet">
-          <div className="ds-sheet-header">
-            <h3 id="centers-sort-title">Sort</h3>
-            <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-          <div className="filter-options">
-            {SORT_OPTIONS.map((opt) => (
+            {!loading && !error && locationReady && !centers.length ? (
+              kind ? (
+                <div className="pharmacy-nearby-empty">
+                  <p>No {FACILITY_FILTERS.find((item) => item.id === kind)?.label.toLowerCase() || 'matching'} facilities nearby.</p>
+                  <button type="button" className="pharmacy-nearby-retry" onClick={() => focusFacilities(null)}>
+                    See all facilities
+                  </button>
+                </div>
+              ) : (
+                <ExpandRadiusEmpty
+                  radiusKm={radiusKm}
+                  nextRadiusKm={nextExpandRadiusKm}
+                  locality={locality}
+                  entityLabel="facilities"
+                  onExpand={() => expandRadius()}
+                  onChangeLocation={() => navigate('/')}
+                />
+              )
+            ) : null}
+
+            {!loading && !error && centers.length ? (
+              <ul className="pharmacy-nearby-list">
+                {centers.map((center) => (
+                  <li key={center.providerUuid || center.id}>
+                    <FacilityEntityCard center={center} variant="home" onOpen={openFacility} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {!loading && !error && hasMore ? (
               <button
                 type="button"
-                key={opt.id}
-                className={`filter-option ${sortBy === opt.id ? 'active' : ''}`}
-                onClick={() => { setSortBy(opt.id); closeSheet() }}
+                className="pharmacy-nearby-more"
+                onClick={() => loadPage({ page: page + 1, append: true })}
+                disabled={loadingMore}
               >
-                <div className="filter-option-circle" />
-                <span className="filter-option-label">{opt.label}</span>
+                {loadingMore ? 'Loading…' : 'Load more facilities'}
               </button>
-            ))}
-          </div>
-        </AppBottomSheet>
-      ) : null}
-    </>
+            ) : null}
+          </section>
+
+          <AppFooter page="centers" />
+        </div>
+      </div>
+    </div>
   )
 }

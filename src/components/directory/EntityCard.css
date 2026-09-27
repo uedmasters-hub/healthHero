@@ -264,6 +264,15 @@
   color: var(--text-primary);
 }
 
+.dir-entity__rating {
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.dir-entity--facility-home .dir-avatar {
+  border-radius: var(--radius-md, 12px);
+}
+
 .dir-entity__action {
   display: inline-flex;
   align-items: center;

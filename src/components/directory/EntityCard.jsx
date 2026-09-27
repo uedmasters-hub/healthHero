@@ -25,6 +25,7 @@ export default function EntityCard({
   footerBadge = null,
   avatarSrc,
   avatarName,
+  avatarSize = 56,
   doctor,
   badge,
   priceLabel,
@@ -122,7 +123,7 @@ export default function EntityCard({
           name={avatarName || name}
           src={avatarSrc}
           doctor={doctor}
-          size={56}
+          size={avatarSize}
           className="dir-entity__avatar"
         />
         <div className="dir-entity__copy">

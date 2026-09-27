@@ -623,6 +623,14 @@
   border-color: var(--border);
 }
 
+button.dc-card-profile {
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  width: 100%;
+  cursor: pointer;
+}
+
 .dc-profile-photo {
   width: 72px;
   height: 72px;

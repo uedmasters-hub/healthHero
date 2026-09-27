@@ -36,6 +36,13 @@ import PostVisitReport from './components/PostVisitReport'
 import PharmacyPage from './components/PharmacyPage'
 import PharmacyBrowsePage from './components/PharmacyBrowsePage'
 import PharmacyDetailPage from './components/PharmacyDetailPage'
+import { FacilityReviewsPage, PharmacyReviewsPage } from './components/PlaceReviews'
+import PharmacyProductPage from './components/pharmacy/PharmacyProductPage'
+import PharmacyCartPage from './components/pharmacy/PharmacyCartPage'
+import PharmacyCheckoutPage from './components/pharmacy/PharmacyCheckoutPage'
+import PharmacyOrdersPage from './components/pharmacy/PharmacyOrdersPage'
+import PharmacyOrderPage from './components/pharmacy/PharmacyOrderPage'
+import PharmacyStorePage from './components/pharmacy/PharmacyStorePage'
 import CentersPage from './components/CentersPage'
 import FacilityPage from './components/FacilityPage'
 import SettingsPage from './components/SettingsPage'
@@ -169,8 +176,16 @@ function AppRoutes() {
             <Route path="/post-visit-report" element={<PostVisitReport />} />
             <Route path="/pharmacy" element={<PharmacyPage />} />
             <Route path="/pharmacy/browse" element={<PharmacyBrowsePage />} />
+            <Route path="/pharmacy/product/:productId" element={<PharmacyProductPage />} />
+            <Route path="/pharmacy/cart" element={<PharmacyCartPage />} />
+            <Route path="/pharmacy/checkout" element={<PharmacyCheckoutPage />} />
+            <Route path="/pharmacy/orders" element={<PharmacyOrdersPage />} />
+            <Route path="/pharmacy/orders/:orderId" element={<PharmacyOrderPage />} />
+            <Route path="/pharmacy/store/:storeId" element={<PharmacyStorePage />} />
+            <Route path="/pharmacy/:pharmacyId/reviews" element={<PharmacyReviewsPage />} />
             <Route path="/pharmacy/:pharmacyId" element={<PharmacyDetailPage />} />
             <Route path="/centers" element={<CentersPage />} />
+            <Route path="/centers/:centerId/reviews" element={<FacilityReviewsPage />} />
             <Route path="/centers/:centerId" element={<FacilityPage />} />
             <Route path="/calendar" element={<CentersPage />} />
             <Route path="/settings" element={<SettingsPage />} />

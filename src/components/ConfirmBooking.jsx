@@ -20,6 +20,11 @@ import BookingInvoiceSheet from './BookingInvoiceSheet'
 import MedicalRecordsPicker, { AttachedRecordsSummary } from './MedicalRecordsPicker'
 import { usePushBack } from '../features/pushNav'
 import { readVideoJourney, videoEntryState } from '../features/videoConsult/lock'
+import {
+  clearPharmacyResume,
+  issueConsultPrescription,
+  readPharmacyResume,
+} from '../features/pharmacy/shopApi'
 import './ConfirmBooking.css'
 
 export default function ConfirmBooking() {
@@ -72,6 +77,7 @@ export default function ConfirmBooking() {
   const { isPresented: showMenu, isClosing: menuClosing, show: openMenu, hide: closeMenuSheet } = useAppSheet()
   const { isPresented: showInvoice, isClosing: invoiceClosing, show: openInvoice, hide: closeInvoice } = useAppSheet()
   const [menuView, setMenuView] = useState('menu')
+  const resumeHandled = useRef(false)
   const invoiceBooking = booking || {
     doctor,
     date,
@@ -95,6 +101,28 @@ export default function ConfirmBooking() {
       setShowSuccess(true)
     }
   }, [location.state?.showSuccess, location.state?.paid, showSuccess, setShowSuccess])
+
+  useEffect(() => {
+    if (!paid || !(location.state?.showSuccess || location.state?.paid) || resumeHandled.current) return undefined
+    const resume = readPharmacyResume()
+    if (!resume?.drugs?.length) return undefined
+    resumeHandled.current = true
+    let cancelled = false
+    issueConsultPrescription({
+      drugs: resume.drugs,
+      bookingId: booking?.engineId || booking?.id,
+      providerId: doctor?.providerUuid || doctor?.id,
+      appointmentId: booking?.remoteAppointmentId,
+    }).then((prescriptionId) => {
+      clearPharmacyResume()
+      if (!cancelled) {
+        navigate('/pharmacy/checkout', { replace: true, state: { prescriptionId } })
+      }
+    }).catch(() => {
+      resumeHandled.current = false
+    })
+    return () => { cancelled = true }
+  }, [paid, booking, doctor, navigate])
 
   useEffect(() => {
     if (!showSuccess) {

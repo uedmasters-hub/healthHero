@@ -35,6 +35,8 @@ export function PharmacySupportCard({
   title = 'Need help with medicines?',
   body = 'Chat with a pharmacist for dosage guidance, interactions, and refill questions.',
   cta = 'Start Live Chat',
+  ctaAs = 'link',
+  icon = 'chat',
   onClick,
   className = '',
 }) {
@@ -53,16 +55,19 @@ export function PharmacySupportCard({
       onClick={onClick}
     >
       <span className="pharmacy-support__icon" aria-hidden="true">
-        <PharmacyIcon name="chat" size={22} />
+        <PharmacyIcon name={icon} size={22} />
       </span>
       <span className="pharmacy-support__copy">
         <span className="pharmacy-support__title">{title}</span>
-        <span className="pharmacy-support__body">{body}</span>
-        <span className="pharmacy-support__cta">{cta}</span>
+        {body ? <span className="pharmacy-support__body">{body}</span> : null}
+        {ctaAs === 'button' ? null : <span className="pharmacy-support__cta">{cta}</span>}
       </span>
-      <span className="pharmacy-support__chevron" aria-hidden="true">
-        <PharmacyIcon name="chevron" />
-      </span>
+      {ctaAs === 'button' ? <span className="pharmacy-support__cta is-pill">{cta}</span> : null}
+      {ctaAs === 'button' ? null : (
+        <span className="pharmacy-support__chevron" aria-hidden="true">
+          <PharmacyIcon name="chevron" />
+        </span>
+      )}
     </RevealItem>
   )
 }

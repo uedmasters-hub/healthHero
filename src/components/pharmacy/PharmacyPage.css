@@ -176,3 +176,11 @@
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
+
+.pharmacy-nearby .category-chips {
+  margin: 0 0 var(--space-4);
+}
+
+.pharmacy-nearby .category-chips__scroll {
+  padding-inline: 0;
+}

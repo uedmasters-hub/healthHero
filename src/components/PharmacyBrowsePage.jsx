@@ -183,10 +183,14 @@ export default function PharmacyBrowsePage() {
   }
 
   const openPharmacy = (pharmacy) => {
-    const id = pharmacy.pharmacyUuid || pharmacy.pharmacyCode || pharmacy.id
+    const id = pharmacy.pharmacyUuid || pharmacy.id
     if (!id) return
-    navigate(`/pharmacy/${id}`, {
-      state: flowState(location, { origin: 'pharmacy-browse', returnTo: '/pharmacy/browse' }),
+    navigate(`/pharmacy/store/${id}`, {
+      state: flowState(location, {
+        origin: 'pharmacy-browse',
+        returnTo: '/pharmacy/browse',
+        storeName: pharmacy.name || pharmacy.displayName,
+      }),
     })
   }
 

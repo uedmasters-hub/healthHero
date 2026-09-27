@@ -1,49 +1,46 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { fetchFacilityPage, mapsDirectionsUrl } from '../features/providers'
-import DoctorCard from './DoctorCard'
-import GalleryLightbox from './GalleryLightbox'
-import EmptyState from './EmptyState'
+import { getDoctorReviewSummary, placeReviewKey } from '../data/reviews'
+import { formatMoney } from '../lib/paymentSession'
+import { flowState } from '../lib/careFlow'
 import { usePushBack } from '../features/pushNav'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
-import useStaggerReveal from './useStaggerReveal'
-import RevealItem from './RevealItem'
-import { flowState } from '../lib/careFlow'
-import './FacilityPage.css'
+import DoctorCard from './DoctorCard'
+import GalleryLightbox from './GalleryLightbox'
+import EmptyState from './EmptyState'
+import ProviderAvatar from './ProviderAvatar'
+import { galleryFor, mapEmbedUrl } from './profile/placeMedia'
+import { ProfileGallery, ProfileHeader, ProfileMap, ProfileRatings } from './profile/placeProfile'
+import './DoctorProfile.css'
+import './DoctorCard.css'
 
-function FacilitySkeleton() {
+const TAG_BACKGROUNDS = ['#DBEAFE', '#D1FAE5', '#EDE9FE', '#FFEDD5']
+
+function ProfileSkeletons() {
   return (
-    <div className="facility-skel" aria-hidden="true">
-      <div className="facility-skel-hero shimmer" />
-      <div className="facility-skel-block shimmer" />
-      <div className="facility-skel-block is-mid shimmer" />
-      <div className="facility-skel-row">
-        <div className="facility-skel-chip shimmer" />
-        <div className="facility-skel-chip shimmer" />
-        <div className="facility-skel-chip shimmer" />
+    <div className="profile-skeletons" aria-hidden="true">
+      <div className="profile-section">
+        <div className="profile-skel-label shimmer" />
+        <div className="profile-skel-line shimmer" />
+        <div className="profile-skel-line is-mid shimmer" />
       </div>
-      <div className="facility-skel-card shimmer" />
-      <div className="facility-skel-card shimmer" />
+      <div className="profile-stats">
+        <div className="profile-stat shimmer" />
+        <div className="profile-stat shimmer" />
+        <div className="profile-stat shimmer" />
+      </div>
+      <div className="profile-section">
+        <div className="profile-skel-label shimmer" />
+        <div className="profile-skel-tags">
+          <div className="profile-skel-tag shimmer" />
+          <div className="profile-skel-tag shimmer" />
+          <div className="profile-skel-tag shimmer" />
+          <div className="profile-skel-tag shimmer" />
+        </div>
+      </div>
     </div>
-  )
-}
-
-function Section({ title, children, empty, emptyTitle }) {
-  if (!children && empty) {
-    return (
-      <section className="facility-section">
-        <h2 className="facility-section-title">{title}</h2>
-        <p className="facility-section-empty">{emptyTitle || 'Nothing listed yet.'}</p>
-      </section>
-    )
-  }
-  if (!children) return null
-  return (
-    <section className="facility-section">
-      <h2 className="facility-section-title">{title}</h2>
-      {children}
-    </section>
   )
 }
 
@@ -53,14 +50,12 @@ export default function FacilityPage() {
   const location = useLocation()
   const goBack = usePushBack(-1)
   const scrollRef = useRef(null)
-  const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    dataset: 'facility:detail',
-  })
 
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState(null)
   const [payload, setPayload] = useState(null)
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false)
 
   const load = useCallback(async () => {
     if (!centerId) {
@@ -97,45 +92,61 @@ export default function FacilityPage() {
   const departments = payload?.departments || []
   const services = payload?.services || []
   const contacts = payload?.contacts || []
-  const media = payload?.media || []
   const doctors = payload?.doctors || []
 
-  const galleryImages = useMemo(() => {
-    const fromMedia = media.map((m) => m.url).filter(Boolean)
-    if (fromMedia.length) return fromMedia
-    if (facility?.imageUrl) return [facility.imageUrl]
-    if (facility?.logoUrl) return [facility.logoUrl]
-    return []
-  }, [media, facility])
-
+  const galleryImages = useMemo(
+    () => galleryFor((payload?.media || []).map((item) => item.url), facility?.image),
+    [payload, facility],
+  )
+  const reviews = useMemo(() => getDoctorReviewSummary(placeReviewKey('facility', centerId)), [centerId])
   const directionsUrl = useMemo(() => mapsDirectionsUrl(facility), [facility])
+  const embedUrl = useMemo(() => mapEmbedUrl(facility), [facility])
+  const phoneContact = contacts.find((item) => item.kind === 'phone')?.value || facility?.phone
+  const emailContact = contacts.find((item) => item.kind === 'email')?.value || facility?.email
+  const address = facility?.fullAddress || facility?.address || ''
+  const subtitle = facility?.classification || facility?.facilityLevel || facility?.type || ''
+  const rating = reviews.total
+    ? reviews.rating
+    : (facility?.rating != null && Number(facility.rating) > 0 ? Number(facility.rating).toFixed(1) : null)
+  const lowestFee = services.reduce((min, item) => {
+    if (item.fee == null || !Number.isFinite(item.fee)) return min
+    return min == null || item.fee < min ? item.fee : min
+  }, null)
 
-  const phoneContact = contacts.find((c) => c.kind === 'phone')?.value || facility?.phone
-  const emailContact = contacts.find((c) => c.kind === 'email')?.value || facility?.email
-  const todayHours = useMemo(() => {
-    const today = new Date().getDay()
-    return hours.find((h) => h.dayOfWeek === today) || null
-  }, [hours])
+  const tags = (departments.length ? departments : services).slice(0, 8)
+  const about = facility
+    ? [
+      `${facility.name} is listed as a ${subtitle || 'healthcare center'}.`,
+      address || null,
+      facility.verificationStatus === 'verified' ? 'Verified on the health facility registry.' : null,
+    ].filter(Boolean).join(' ')
+    : ''
 
-  const subtitle = facility?.classification
-    || facility?.facilityLevel
-    || facility?.type
-    || ''
-
-  const openDoctor = (doctor) => {
-    navigate(`/doctor/${doctor.id}`, {
-      state: flowState(location, {
-        origin: 'facility',
-        returnTo: `/centers/${centerId}`,
-        centerId,
-      }),
-    })
-  }
+  const shareProfile = useCallback(async () => {
+    const url = window.location.href
+    const title = facility?.name ? `${facility.name} on eMedicalls` : 'Healthcare center on eMedicalls'
+    const text = subtitle
+      ? `Check out ${facility.name}, ${subtitle}, on eMedicalls`
+      : 'Check out this healthcare center on eMedicalls'
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text, url })
+        return
+      }
+    } catch {
+      /* cancelled */
+    }
+    try {
+      await navigator.clipboard?.writeText(url)
+    } catch {
+      /* ignore */
+    }
+  }, [facility, subtitle])
 
   const bookFacility = () => {
     if (doctors[0]) {
       navigate('/booking/slot', {
-        state: flowState(location, {
+        state: flowState(null, {
           doctor: doctors[0],
           origin: 'facility',
           returnTo: `/centers/${centerId}`,
@@ -145,7 +156,7 @@ export default function FacilityPage() {
       return
     }
     navigate('/booking', {
-      state: flowState(location, {
+      state: flowState(null, {
         origin: 'facility',
         returnTo: `/centers/${centerId}`,
         centerId,
@@ -153,21 +164,43 @@ export default function FacilityPage() {
     })
   }
 
+  const headerActions = (
+    <>
+      <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share" onClick={shareProfile}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+      </button>
+      <button
+        className={`ds-icon-btn is-subtle is-md ${isFavorite ? 'is-danger' : ''}`}
+        type="button"
+        onClick={() => setIsFavorite((value) => !value)}
+        aria-label="Favorite"
+        aria-pressed={isFavorite}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill={isFavorite ? 'currentColor' : 'none'}
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      </button>
+    </>
+  )
+
   if (status === 'loading') {
     return (
-      <div className="facility-page page-push-in">
-        <header className="facility-header">
-          <button type="button" className="facility-back" data-push-back onClick={goBack} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="facility-header-title">Facility</h1>
-          <span className="facility-header-spacer" />
-        </header>
-        <div className="facility-scroll">
-          <FacilitySkeleton />
+      <div className="doctor-profile is-skeleton has-cta">
+        <ProfileHeader title="Healthcare Profile" onBack={goBack} />
+        <div className="profile-scroll is-loading">
+          <ProfileSkeletons />
         </div>
       </div>
     )
@@ -175,276 +208,214 @@ export default function FacilityPage() {
 
   if (status === 'error' || !facility) {
     return (
-      <div className="facility-page page-push-in">
-        <header className="facility-header">
-          <button type="button" className="facility-back" data-push-back onClick={goBack} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="facility-header-title">Facility</h1>
-          <span className="facility-header-spacer" />
-        </header>
-        <div className="facility-scroll facility-scroll-empty">
-          <EmptyState
-            image="/img/empty_state/hospital.png"
-            alt=""
-            title="Facility unavailable"
-            message={error || 'We could not load this healthcare center from the registry.'}
-          />
-          <button type="button" className="facility-retry" onClick={load}>
-            Try again
-          </button>
-          <button type="button" className="facility-link-btn" onClick={() => navigate('/centers')}>
-            Back to centers
-          </button>
+      <div className="doctor-profile page-push-in">
+        <ProfileHeader title="Healthcare Profile" onBack={goBack} />
+        <div className="profile-scroll">
+          <div className="profile-section">
+            <EmptyState
+              image="/img/empty_state/hospital.png"
+              alt=""
+              title="Facility unavailable"
+              message={error || 'We could not load this healthcare center from the registry.'}
+            />
+            <button type="button" className="view-all-reviews" onClick={load}>Try again</button>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="facility-page page-push-in has-cta">
-      <header className="facility-header">
-        <button type="button" className="facility-back" data-push-back onClick={goBack} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="facility-header-title">Facility</h1>
-        <span className="facility-header-spacer" />
-      </header>
+    <div className="doctor-profile page-push-in has-cta">
+      <ProfileHeader title="Healthcare Profile" onBack={goBack} actions={headerActions} />
 
-      <div className="facility-scroll" ref={scrollRef}>
+      <div className="profile-scroll" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing || status === 'refreshing'} />
 
-        <RevealItem
-          className="facility-hero"
-          revealed={isRevealed(0)}
-          cached={isCached}
-          ref={setItemRef(0)}
-        >
-          <div className="facility-hero-media">
-            {facility.image ? (
-              <img src={facility.image} alt="" className="facility-hero-img" />
-            ) : (
-              <div className="facility-hero-placeholder" aria-hidden="true" />
-            )}
-          </div>
-          <div className="facility-hero-body">
-            <div className="facility-hero-chips">
-              {facility.verificationStatus === 'verified' ? (
-                <span className="facility-chip is-verified">Verified</span>
-              ) : null}
-              {facility.hfCode ? (
-                <span className="facility-chip">HF {facility.hfCode}</span>
-              ) : null}
-              {facility.facilityLevel || facility.type ? (
-                <span className="facility-chip">{facility.facilityLevel || facility.type}</span>
+        <div className="profile-hero-card">
+          <div className="dc-card dc-card-profile">
+            <div className="dc-profile-photo">
+              <ProviderAvatar
+                name={facility.name}
+                src={facility.image || null}
+                useCatalogFallback={false}
+                imgClassName="dc-profile-photo-img"
+                alt=""
+              />
+            </div>
+            <div className="dc-profile-copy">
+              <div className="dc-title-row">
+                <h3 className="dc-name">{facility.name}</h3>
+                {rating ? (
+                  <span className="dc-rating">
+                    <span className="dc-star" aria-hidden="true">★</span>
+                    {rating}
+                  </span>
+                ) : null}
+              </div>
+              {subtitle ? <p className="dc-specialty">{subtitle}</p> : null}
+              {facility.hfCode ? <p className="dc-degree">HF {facility.shortHfCode || facility.hfCode}</p> : null}
+              {lowestFee != null ? (
+                <p className="dc-fee">
+                  <strong>{formatMoney(lowestFee)}*</strong> Starting fee
+                </p>
               ) : null}
             </div>
-            <h2 className="facility-name">{facility.name}</h2>
-            {subtitle ? <p className="facility-subtitle">{subtitle}</p> : null}
-            <div className="facility-meta-row">
-              {facility.rating != null ? (
-                <span className="facility-rating">
-                  <span aria-hidden="true">★</span>
-                  {Number(facility.rating).toFixed(1)}
-                  {facility.ratingCount ? (
-                    <span className="facility-rating-count">({facility.ratingCount})</span>
-                  ) : null}
-                </span>
-              ) : null}
-              {facility.fullAddress || facility.address ? (
-                <span className="facility-location">{facility.fullAddress || facility.address}</span>
-              ) : null}
-            </div>
-            {todayHours ? (
-              <p className="facility-today">
-                Today · {todayHours.isClosed ? 'Closed' : todayHours.label}
-              </p>
-            ) : null}
           </div>
-        </RevealItem>
-
-        <div className="facility-actions">
-          {phoneContact ? (
-            <a className="facility-action" href={`tel:${phoneContact}`}>
-              Call
-            </a>
-          ) : null}
-          {directionsUrl ? (
-            <a className="facility-action" href={directionsUrl} target="_blank" rel="noreferrer">
-              Directions
-            </a>
-          ) : null}
-          {facility.website ? (
-            <a className="facility-action" href={facility.website} target="_blank" rel="noreferrer">
-              Website
-            </a>
-          ) : null}
         </div>
 
-        <Section title="Departments" empty={!departments.length} emptyTitle="No departments listed yet.">
-          {departments.length ? (
-            <ul className="facility-list">
-              {departments.map((dept) => (
-                <li key={dept.id} className="facility-list-item">
-                  <div className="facility-list-title">{dept.name}</div>
-                  {dept.description ? <p className="facility-list-copy">{dept.description}</p> : null}
-                  <div className="facility-list-meta">
-                    {dept.floor != null ? <span>Floor {dept.floor}</span> : null}
-                    {dept.phone ? <span>{dept.phone}</span> : null}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </Section>
+        <div className="profile-body is-ready">
+          <div className="profile-section">
+            <div className="profile-section-label">About</div>
+            <p className="profile-about-text">{about}</p>
+          </div>
 
-        <Section title="Services" empty={!services.length} emptyTitle="No services published yet.">
-          {services.length ? (
-            <ul className="facility-list">
-              {services.map((svc) => (
-                <li key={svc.id} className="facility-list-item">
-                  <div className="facility-list-title-row">
-                    <div className="facility-list-title">{svc.name}</div>
-                    {svc.fee != null ? (
-                      <span className="facility-fee">
-                        {svc.currency} {svc.fee}
-                      </span>
-                    ) : null}
-                  </div>
-                  {svc.description ? <p className="facility-list-copy">{svc.description}</p> : null}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </Section>
+          <div className="profile-stats">
+            <div className="profile-stat">
+              <strong>{departments.length}</strong>
+              <span>Departments</span>
+            </div>
+            <div className="profile-stat">
+              <strong>{services.length}</strong>
+              <span>Services</span>
+            </div>
+            <div className="profile-stat">
+              <strong>{rating || '—'}</strong>
+              <span>Rating</span>
+            </div>
+          </div>
 
-        <Section title="Doctors" empty={!doctors.length} emptyTitle="No doctors linked to this facility yet.">
-          {doctors.length ? (
-            <div className="facility-doctors">
-              {doctors.map((doctor, index) => (
-                <RevealItem
-                  key={doctor.id}
-                  className="facility-doctor-wrap"
-                  revealed={isRevealed(index + 1)}
-                  cached={isCached}
-                  ref={setItemRef(index + 1)}
-                >
-                  <DoctorCard
-                    doctor={doctor}
-                    variant="list"
-                    onClick={() => openDoctor(doctor)}
-                  />
-                </RevealItem>
+          <div className="profile-section">
+            <div className="profile-section-label">{departments.length ? 'Departments' : 'Services'}</div>
+            {tags.length ? (
+              <div className="specialty-grid">
+                {tags.map((item, index) => (
+                  <div className="specialty-tag" key={item.id || item.name}>
+                    <div className="specialty-tag-icon" style={{ background: TAG_BACKGROUNDS[index % TAG_BACKGROUNDS.length] }}>
+                      {String(item.name || '•').slice(0, 1)}
+                    </div>
+                    {item.name}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="profile-about-text">No departments listed yet.</p>
+            )}
+          </div>
+
+          {services.length && departments.length ? (
+            <div className="profile-section">
+              <div className="profile-section-label">Services</div>
+              {services.map((item) => (
+                <div className="center-card" key={item.id} style={{ cursor: 'default' }}>
+                  <div className="center-info">
+                    <div className="center-name">{item.name}</div>
+                    {item.description ? <div className="center-address">{item.description}</div> : null}
+                  </div>
+                  {item.fee != null ? <div className="center-distance">{formatMoney(item.fee)}</div> : null}
+                </div>
               ))}
             </div>
           ) : null}
-        </Section>
 
-        <Section title="Opening hours" empty={!hours.length} emptyTitle="Hours not published yet.">
-          {hours.length ? (
-            <ul className="facility-hours">
-              {hours.map((row) => (
-                <li key={row.id || row.dayOfWeek} className={`facility-hours-row ${row.isClosed ? 'is-closed' : ''}`}>
-                  <span>{row.dayLabel}</span>
-                  <span>{row.label}</span>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </Section>
+          <div className="profile-section">
+            <div className="profile-section-label">Opening hours</div>
+            {hours.length ? hours.map((row) => (
+              <div className="center-card" key={row.id || row.dayOfWeek} style={{ cursor: 'default' }}>
+                <div className="center-info">
+                  <div className="center-name">{row.dayLabel}</div>
+                  <div className="center-address">{row.isClosed ? 'Closed' : row.label}</div>
+                </div>
+              </div>
+            )) : (
+              <p className="profile-about-text">Hours not published yet.</p>
+            )}
+          </div>
 
-        <Section
-          title="Contact"
-          empty={!(phoneContact || emailContact || contacts.length || facility.fullAddress || facility.address)}
-          emptyTitle="No contact details published yet."
-        >
-          {(phoneContact || emailContact || contacts.length || facility.fullAddress || facility.address) ? (
-            <ul className="facility-list">
-              {phoneContact ? (
-                <li className="facility-list-item">
-                  <div className="facility-list-title">Phone</div>
-                  <a className="facility-inline-link" href={`tel:${phoneContact}`}>{phoneContact}</a>
-                </li>
-              ) : null}
-              {emailContact ? (
-                <li className="facility-list-item">
-                  <div className="facility-list-title">Email</div>
-                  <a className="facility-inline-link" href={`mailto:${emailContact}`}>{emailContact}</a>
-                </li>
-              ) : null}
-              {contacts
-                .filter((c) => c.kind !== 'phone' && c.kind !== 'email')
-                .map((c) => (
-                  <li key={c.id} className="facility-list-item">
-                    <div className="facility-list-title">{c.label}</div>
-                    <div className="facility-list-copy">{c.value}</div>
-                  </li>
+          <div className="profile-section">
+            <div className="profile-section-label">Contact</div>
+            {phoneContact ? (
+              <a className="center-card" href={`tel:${phoneContact}`}>
+                <div className="center-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </div>
+                <div className="center-info">
+                  <div className="center-name">Phone</div>
+                  <div className="center-address">{phoneContact}</div>
+                </div>
+              </a>
+            ) : null}
+            {emailContact ? (
+              <a className="center-card" href={`mailto:${emailContact}`}>
+                <div className="center-info">
+                  <div className="center-name">Email</div>
+                  <div className="center-address">{emailContact}</div>
+                </div>
+              </a>
+            ) : null}
+            {!phoneContact && !emailContact && !embedUrl ? (
+              <p className="profile-about-text">No contact details published yet.</p>
+            ) : null}
+            {facility.parentName ? (
+              <div className="center-card" style={{ cursor: 'default' }}>
+                <div className="center-info">
+                  <div className="center-name">Parent facility</div>
+                  <div className="center-address">
+                    {facility.parentName}
+                    {facility.parentHfCode ? ` · HF ${facility.parentHfCode}` : ''}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <ProfileMap name={facility.name} embedUrl={embedUrl} directionsUrl={directionsUrl} />
+
+          <ProfileGallery images={galleryImages} onOpen={() => setGalleryOpen(true)} />
+
+          <ProfileRatings
+            summary={reviews}
+            onViewAll={() => navigate(`/centers/${centerId}/reviews`, {
+              state: flowState(location, {
+                returnTo: `/centers/${centerId}`,
+                subjectName: facility.name,
+              }),
+            })}
+          />
+
+          <div className="profile-section">
+            <div className="profile-section-label">Doctors</div>
+            {doctors.length ? (
+              <div className="profile-consultants">
+                {doctors.map((doctor) => (
+                  <DoctorCard
+                    key={doctor.id}
+                    doctor={doctor}
+                    variant="grid"
+                    hideBook
+                    origin="facility"
+                    returnTo={`/centers/${centerId}`}
+                  />
                 ))}
-              {facility.fullAddress || facility.address ? (
-                <li className="facility-list-item">
-                  <div className="facility-list-title">Address</div>
-                  <div className="facility-list-copy">{facility.fullAddress || facility.address}</div>
-                  {directionsUrl ? (
-                    <a className="facility-inline-link" href={directionsUrl} target="_blank" rel="noreferrer">
-                      Get directions
-                    </a>
-                  ) : null}
-                </li>
-              ) : null}
-            </ul>
-          ) : null}
-        </Section>
+              </div>
+            ) : (
+              <p className="profile-about-text">No doctors linked to this facility yet.</p>
+            )}
+          </div>
 
-        <Section title="Gallery" empty={!galleryImages.length} emptyTitle="No photos published yet.">
-          {galleryImages.length ? (
-            <button
-              type="button"
-              className="facility-gallery"
-              onClick={() => setGalleryOpen(true)}
-              aria-label="Open gallery"
-            >
-              {galleryImages.slice(0, 4).map((src) => (
-                <img key={src} src={src} alt="" className="facility-gallery-img" />
-              ))}
-              {galleryImages.length > 4 ? (
-                <span className="facility-gallery-more">+{galleryImages.length - 4}</span>
-              ) : null}
-            </button>
-          ) : null}
-        </Section>
-
-        {facility.parentName ? (
-          <section className="facility-section">
-            <h2 className="facility-section-title">Parent facility</h2>
-            <p className="facility-list-copy">
-              {facility.parentName}
-              {facility.parentHfCode ? ` · HF ${facility.parentHfCode}` : ''}
-            </p>
-          </section>
-        ) : null}
+          <div className="end-of-page-placeholder">- You've reached the end -</div>
+        </div>
       </div>
 
       <div className="app-flow-footer">
         <button type="button" className="app-flow-cta" onClick={bookFacility}>
           Book appointment
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
         </button>
       </div>
 
-      <GalleryLightbox
-        images={galleryImages}
-        isOpen={galleryOpen}
-        onClose={() => setGalleryOpen(false)}
-      />
+      <GalleryLightbox images={galleryImages} isOpen={galleryOpen} onClose={() => setGalleryOpen(false)} />
     </div>
   )
 }

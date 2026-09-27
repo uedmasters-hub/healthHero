@@ -151,11 +151,15 @@ export default function PharmacyPage() {
 
   const ptr = usePullToRefresh(scrollRef, onRefresh)
 
-  const openPharmacy = useCallback((pharmacy) => {
-    const id = pharmacy.pharmacyUuid || pharmacy.pharmacyCode || pharmacy.id
+  const openStore = useCallback((pharmacy) => {
+    const id = pharmacy.pharmacyUuid || pharmacy.id
     if (!id) return
-    navigate(`/pharmacy/${id}`, {
-      state: flowState(null, { origin: 'pharmacy', returnTo: '/pharmacy' }),
+    navigate(`/pharmacy/store/${id}`, {
+      state: flowState(null, {
+        origin: 'pharmacy',
+        returnTo: '/pharmacy',
+        storeName: pharmacy.name || pharmacy.displayName,
+      }),
     })
   }, [navigate])
 
@@ -177,10 +181,6 @@ export default function PharmacyPage() {
   const runPharmacyAction = useCallback((action) => {
     if (action === 'consult') {
       openLiveChat()
-      return
-    }
-    if (action === 'orders-view-all' || action === 'orders') {
-      showDemoPreview?.()
       return
     }
     if (PREVIEW_ACTIONS.has(action)) {
@@ -296,7 +296,7 @@ export default function PharmacyPage() {
                     <PharmacyEntityCard
                       pharmacy={pharmacy}
                       variant="nearby"
-                      onOpen={openPharmacy}
+                      onOpen={openStore}
                     />
                   </li>
                 ))}
