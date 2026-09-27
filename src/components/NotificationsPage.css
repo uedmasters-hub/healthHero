@@ -32,7 +32,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -42,7 +42,7 @@
   background: none;
   color: var(--primary);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   padding: var(--space-1) 0;
@@ -219,7 +219,7 @@
 .notification-card-top h2 {
   margin: 0;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 

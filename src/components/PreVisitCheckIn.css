@@ -50,7 +50,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -109,7 +109,7 @@
   font-weight: 650;
   color: var(--success-text);
   margin: 0 0 var(--space-1);
-  letter-spacing: -0.2px;
+  letter-spacing: var(--letter-tight);
 }
 
 .previsit-success-desc {
@@ -147,9 +147,9 @@
 .previsit-card-title,
 .previsit-section-title {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   margin: 0 0 var(--space-3);
 }
@@ -194,22 +194,22 @@
 
 .previsit-info-label {
   font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .previsit-info-value {
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: 1.35;
 }
 
 .previsit-timeline {
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .previsit-step {
@@ -272,7 +272,7 @@
 
 .previsit-step-num {
   font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   line-height: 1;
 }
 
@@ -288,10 +288,10 @@
 
 .previsit-step-label {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin-bottom: 2px;
-  letter-spacing: -0.15px;
+  margin-bottom: var(--space-0-5);
+  letter-spacing: var(--letter-tight);
 }
 
 .previsit-step.completed .previsit-step-label {
@@ -339,9 +339,9 @@
 
 .previsit-clinic-address {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .previsit-clinic-floor {
@@ -358,7 +358,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   font-family: inherit;
   padding: 0;
@@ -366,7 +366,7 @@
 
 .previsit-floor-badge {
   font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   background: var(--service-icon-bg);
   padding: var(--space-1) var(--space-2-5);
@@ -378,7 +378,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2-5);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .previsit-reminder-item {
@@ -472,15 +472,15 @@
   display: flex;
   align-items: flex-end;
   background: transparent;
-  animation: previsitFadeIn 0.2s ease;
+  animation: previsitFadeIn var(--duration-normal) var(--ease-standard);
 }
 
 .previsit-sheet-overlay.is-closing {
-  animation: previsitFadeOut 0.25s ease forwards;
+  animation: previsitFadeOut var(--duration-sheet) var(--ease-standard) forwards;
 }
 
 .previsit-sheet-overlay.is-closing .previsit-sheet {
-  animation: previsitSlideDown 0.25s ease forwards;
+  animation: previsitSlideDown var(--duration-sheet) var(--ease-standard) forwards;
   box-shadow: var(--shadow-sheet);
 
 }
@@ -492,7 +492,7 @@
   padding: var(--space-2) var(--space-5) var(--bottom-bar-pad);
   max-height: 72vh;
   overflow-y: auto;
-  animation: previsitSlideUp 0.3s ease;
+  animation: previsitSlideUp var(--duration-moderate) var(--ease-standard);
 }
 
 .previsit-sheet-header {
@@ -504,7 +504,7 @@
 
 .previsit-sheet-header h3 {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin: 0;
 }
 

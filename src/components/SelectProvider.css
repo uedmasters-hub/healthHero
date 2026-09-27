@@ -17,7 +17,7 @@
 
 .select-provider-heading {
   font-size: var(--text-display-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: var(--space-4);
 }
@@ -65,7 +65,7 @@
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-tight);
   color: var(--text-primary);
   cursor: pointer;
   white-space: nowrap;
@@ -141,11 +141,11 @@
 }
 
 .select-provider .booking-body.is-ready {
-  transition: opacity 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: opacity var(--duration-reveal) var(--ease-sheet);
 }
 
 .select-provider .booking-skel-layer {
-  transition: opacity 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: opacity var(--duration-moderate) var(--ease-sheet);
 }
 
 .results-meta {
@@ -170,9 +170,9 @@
   margin: 0;
   font-size: var(--text-title-size);
   line-height: var(--text-title-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--letter-tight);
 }
 
 .results-meta-count {
@@ -242,7 +242,7 @@
   background: var(--service-icon-bg);
   color: var(--primary);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
@@ -258,10 +258,10 @@
   background: none;
   color: var(--primary);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
-  padding: var(--space-1-5) 2px;
+  padding: var(--space-1-5) var(--space-0-5);
   white-space: nowrap;
 }
 
@@ -285,7 +285,7 @@
 
 .doctors-empty h3 {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: var(--space-2);
 }
@@ -312,7 +312,7 @@
   border-radius: var(--radius-pill);
   padding: var(--space-2) var(--space-3-5);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
@@ -335,7 +335,7 @@
   background: var(--white);
   color: var(--primary);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
@@ -390,7 +390,7 @@
 .doctor-list-skel-line.mid { width: 48%; }
 .doctor-list-skel-line.short { width: 36%; height: 22px; border-radius: var(--radius); }
 .doctor-list-skel-line.long { width: 88%; height: 12px; }
-.doctor-list-skel-line.avail { width: 54%; height: 12px; margin-top: 2px; }
+.doctor-list-skel-line.avail { width: 54%; height: 12px; margin-top: var(--space-0-5); }
 .doctor-list-skel-line.fee { width: 42%; height: 12px; }
 
 .doctor-list-skel-details {
@@ -501,7 +501,7 @@
   content: '✓';
   color: white;
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .filter-option-label {
@@ -515,7 +515,7 @@
 
 .filter-option.active .filter-option-label {
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .filter-option-count-slot {
@@ -535,7 +535,7 @@
   top: 50%;
   width: 32px;
   height: 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   transform: translateY(-50%);
   background: linear-gradient(
     90deg,
@@ -546,7 +546,7 @@
   background-size: 200% 100%;
   animation: doctor-list-shimmer 1.1s ease-in-out infinite;
   opacity: var(--opacity-visible);
-  transition: opacity 160ms ease;
+  transition: opacity var(--duration-normal) var(--ease-standard);
   pointer-events: none;
 }
 
@@ -564,9 +564,9 @@
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
+  letter-spacing: var(--letter-tight);
   opacity: var(--opacity-hidden);
-  transition: opacity 160ms ease;
+  transition: opacity var(--duration-normal) var(--ease-standard);
 }
 
 .filter-option-count-slot.is-loaded .filter-option-count {

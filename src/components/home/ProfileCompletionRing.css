@@ -30,9 +30,7 @@
 .profile-completion-ring__track,
 .profile-completion-ring__progress {
   stroke-width: var(--pcr-stroke);
-  transition:
-    stroke-width 0.22s var(--ease-standard, ease),
-    stroke 0.22s var(--ease-standard, ease);
+  transition: stroke-width var(--duration-dialog) var(--ease-standard),stroke var(--duration-dialog) var(--ease-standard);
 }
 
 .profile-completion-ring__track {
@@ -43,10 +41,7 @@
 .profile-completion-ring__progress {
   stroke: var(--pcr-accent);
   stroke-linecap: round;
-  transition:
-    stroke-dasharray 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    stroke-width 0.22s var(--ease-standard, ease),
-    stroke 0.22s var(--ease-standard, ease);
+  transition: stroke-dasharray var(--duration-slow) var(--ease-emphasized),stroke-width var(--duration-dialog) var(--ease-standard),stroke var(--duration-dialog) var(--ease-standard);
 }
 
 .profile-completion-ring.is-complete {
@@ -56,7 +51,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .profile-completion-ring__progress {
-    transition-duration: 0.01ms !important;
+    transition-duration: var(--duration-instant) !important;
   }
 }
 

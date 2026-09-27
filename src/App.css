@@ -15,13 +15,13 @@
   position: relative;
   z-index: 5;
   background: var(--white);
-  transition: max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease;
+  transition: max-height var(--duration-reveal) var(--ease-emphasized), opacity var(--duration-sheet) var(--ease-standard);
 }
 
 .home-header-inner {
   overflow: visible;
   transform: translate3d(0, 0, 0);
-  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--duration-reveal) var(--ease-emphasized);
 }
 
 .app.is-search .home-header {
@@ -72,7 +72,7 @@
   gap: var(--section-gap);
   opacity: var(--opacity-visible);
   transform: translate3d(0, 0, 0);
-  transition: opacity 0.28s ease, transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-moderate) var(--ease-standard), transform var(--duration-reveal) var(--ease-emphasized);
 }
 
 .app.is-search .home-feed {

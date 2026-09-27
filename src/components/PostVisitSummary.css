@@ -38,7 +38,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -51,7 +51,7 @@
   border: none;
   color: var(--icon-color-brand);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   padding: 0;
@@ -97,9 +97,9 @@
 
 .postvisit-success-title {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .postvisit-success-subtitle {
@@ -141,7 +141,7 @@
   align-items: center;
   justify-content: center;
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--white);
 }
 
@@ -166,7 +166,7 @@
 
 .postvisit-doctor-name {
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -180,7 +180,7 @@
   align-items: center;
   gap: var(--space-1);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--rating);
 }
 
@@ -213,7 +213,7 @@
 
 .postvisit-detail-value {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   text-align: right;
   flex: 1;
@@ -231,7 +231,7 @@
   background: var(--success-bg);
   color: var(--success);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   padding: var(--space-1-5) var(--space-3-5);
   border-radius: var(--radius-pill);
   margin-top: var(--space-4);
@@ -248,7 +248,7 @@
 
 .postvisit-card-title {
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0 0 var(--space-4);
 }
@@ -279,7 +279,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   padding: 0;
@@ -299,7 +299,7 @@
 
 .postvisit-followup-badge {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   background: var(--info-bg);
   padding: var(--space-1) var(--space-2-5);
@@ -321,7 +321,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   margin-bottom: var(--space-3);
@@ -342,7 +342,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   padding: 0;
@@ -391,7 +391,7 @@
 
 .postvisit-resource-label {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -414,7 +414,7 @@
   background: var(--white);
   color: var(--primary);
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   transition: all var(--transition);
@@ -478,7 +478,7 @@
 .postvisit-support-label {
   flex: 1;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -522,7 +522,7 @@
 
 .postvisit-report-title {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: var(--space-1);
 }
@@ -537,7 +537,7 @@
   font-size: var(--text-caption-size);
   color: var(--primary);
   background: var(--info-bg);
-  padding: 2px var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-xs);
 }
 

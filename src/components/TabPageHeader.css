@@ -18,10 +18,10 @@
 
 .tab-page-header__title {
   font-size: var(--text-hero-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
-  letter-spacing: -0.4px;
+  letter-spacing: var(--letter-tight);
 }
 
 .tab-page-header__actions-spacer {

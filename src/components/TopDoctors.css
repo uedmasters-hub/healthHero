@@ -50,11 +50,11 @@
 }
 
 .top-doctors.is-return-hold .reveal-body {
-  transition: opacity 0.38s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-reveal) var(--ease-standard), transform var(--duration-slow) var(--ease-emphasized);
 }
 
 .top-doctors.is-return-hold .reveal-skel {
-  transition: opacity 0.32s ease;
+  transition: opacity var(--duration-reveal) var(--ease-standard);
 }
 
 .doctors-scroll .dc-card,

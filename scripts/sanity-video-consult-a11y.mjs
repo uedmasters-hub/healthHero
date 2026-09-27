@@ -50,7 +50,7 @@ check('preview privacy is stated', readiness.includes('never uploaded'))
 check('a passed check continues to booking or runs again', readiness.includes('>Continue<') && readiness.includes('Run test again'))
 check('a poor check can retry or switch before booking', readiness.includes('Retry Test') && readiness.includes('Switch to In-Person'))
 check('live checks sit in a card above the controls', readiness.includes('video-check-card') && readiness.includes('video-readiness-dock'))
-check('the checklist keeps a 24px gap and side inset', css.includes('gap: 24px') && css.includes('padding: 0 24px calc(24px + env(safe-area-inset-bottom, 0px))'))
+check('the checklist keeps a 24px gap and side inset', css.includes('gap: var(--space-6)') && css.includes('padding: 0 var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom, 0px))'))
 check('the live header stays simple', readiness.includes('Checking connection') && readiness.includes('role="progressbar"'))
 
 if (failures.length) {

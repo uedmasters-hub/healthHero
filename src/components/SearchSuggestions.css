@@ -10,7 +10,7 @@
   visibility: hidden;
   pointer-events: none;
   transform: translate3d(0, 10px, 0);
-  transition: opacity 0.3s ease, transform 0.36s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 0.32s;
+  transition: opacity var(--duration-moderate) var(--ease-standard), transform var(--duration-reveal) var(--ease-emphasized), visibility 0s 0.32s;
 }
 
 .search-suggest.is-active {
@@ -18,7 +18,7 @@
   visibility: visible;
   pointer-events: auto;
   transform: translate3d(0, 0, 0);
-  transition: opacity 0.3s ease 0.04s, transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-moderate) var(--ease-standard) 0.04s, transform var(--duration-reveal) var(--ease-emphasized);
 }
 
 .search-suggest-row {
@@ -49,7 +49,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-regular);
   line-height: 1.3;
@@ -66,10 +66,10 @@
 .search-suggest-section {
   margin: 0 0 var(--space-2);
   padding: 0 var(--space-4);
-  font-size: var(--text-caption-size, 12px);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-bold);
   color: var(--text-secondary);
-  letter-spacing: 0.02em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
 }
 

@@ -80,7 +80,7 @@
 
 .insight-title {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: var(--text-title-line);
   display: -webkit-box;

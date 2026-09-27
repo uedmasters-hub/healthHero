@@ -90,7 +90,7 @@
   height: 3px;
   border-radius: var(--radius-2xs);
   background: var(--border);
-  transition: background 0.3s ease;
+  transition: background var(--duration-moderate) var(--ease-standard);
 }
 
 .stepper-step.active {
@@ -150,7 +150,7 @@
   z-index: 2;
   opacity: var(--opacity-visible);
   background: var(--white);
-  transition: opacity 0.4s ease;
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .booking-skel-layer.is-gone {
@@ -179,7 +179,7 @@
   z-index: 1;
   opacity: var(--opacity-visible);
   pointer-events: auto;
-  transition: opacity 0.42s ease;
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .booking-hero-skel {

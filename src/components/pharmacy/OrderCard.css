@@ -56,7 +56,7 @@
   flex: 0 0 56px;
   width: 56px;
   height: 56px;
-  border-radius: var(--radius-md, 12px);
+  border-radius: var(--radius-md);
   background: var(--active-bg, #f7f8fa);
   border: var(--border-width) solid var(--border-subtle, var(--border));
   overflow: hidden;
@@ -86,9 +86,9 @@
   margin: 0;
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: -0.15px;
+  letter-spacing: var(--letter-tight);
 }
 
 .order-card__window {

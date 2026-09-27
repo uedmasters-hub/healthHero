@@ -200,7 +200,7 @@
 .push-stack .notif-page-back,
 .push-stack [data-push-back] {
   transform: translateZ(0);
-  transition: transform 0.14s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform var(--duration-fast) var(--ease-sheet);
 }
 
 .push-stack .user-profile-back-btn:active,
@@ -223,7 +223,7 @@
   .push-stack.is-popping > .push-stack__layer.is-under-active:not(.is-exiting),
   .page-layer.is-push-popping-home .home-layer.is-behind,
   .page-layer.is-push-pushing-home .home-layer.is-behind.is-push-underlay {
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--duration-instant) !important;
   }
 
   .push-stack .user-profile-back-btn,

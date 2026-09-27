@@ -26,15 +26,15 @@
 }
 
 .notif-btn--enter-bell {
-  animation: notif-spring 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: notif-spring var(--duration-slow) var(--ease-emphasized) both;
 }
 
 .notif-btn--island-bounce {
-  animation: notif-island-bounce 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: notif-island-bounce var(--duration-enter) var(--ease-emphasized) both;
 }
 
 .notif-btn--exit-bell {
-  animation: notif-exit-scale 0.28s cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: notif-exit-scale var(--duration-moderate) cubic-bezier(0.33, 1, 0.68, 1) both;
 }
 
 .notif-btn--exit-hold {
@@ -58,7 +58,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   background: var(--surface-muted);
   color: var(--text-primary);
   cursor: pointer;
@@ -93,14 +93,14 @@
   margin: 0;
   padding: 0;
   border: 2px solid #ffffff;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   background: #c2410c;
   color: #ffffff;
   font-family: inherit;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: var(--text-micro-size);
+  font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.2px;
+  letter-spacing: var(--letter-tight);
   line-height: 1;
   text-align: center;
   pointer-events: none;
@@ -118,7 +118,7 @@
   width: 20px;
   height: 20px;
   min-width: 20px;
-  font-size: 9px;
+  font-size: var(--text-micro-size);
 }
 
 .notif-btn__badge.is-lg {
@@ -126,15 +126,15 @@
   height: 22px;
   min-width: 22px;
   padding: 0 1px;
-  font-size: 9px;
+  font-size: var(--text-micro-size);
 }
 
 .notif-btn__badge--in {
-  animation: notif-badge-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: notif-badge-in var(--duration-moderate) var(--ease-emphasized) both;
 }
 
 .notif-btn__badge--out {
-  animation: notif-badge-out 0.16s cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: notif-badge-out var(--duration-normal) cubic-bezier(0.33, 1, 0.68, 1) both;
 }
 
 @keyframes notif-spring {
@@ -202,7 +202,7 @@
   .notif-btn--island-bounce,
   .notif-btn__badge--in,
   .notif-btn__badge--out {
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--duration-instant) !important;
     animation-delay: 0ms !important;
   }
 }

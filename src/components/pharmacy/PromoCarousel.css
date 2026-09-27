@@ -59,11 +59,7 @@
   transform: scale(0.96);
   transform-origin: center center;
   opacity: 0.9;
-  transition:
-    transform 0.35s var(--ease-emphasized),
-    opacity 0.35s var(--ease-standard),
-    border-color var(--transition),
-    background var(--transition);
+  transition: transform var(--duration-reveal) var(--ease-emphasized),opacity var(--duration-reveal) var(--ease-standard),border-color var(--transition),background var(--transition);
 }
 
 .promo-card.is-active {
@@ -105,16 +101,16 @@
 
 .promo-card__title {
   margin: 0;
-  font-size: var(--text-heading-size, 18px);
+  font-size: var(--text-heading-size);
   line-height: 1.25;
-  font-weight: var(--font-weight-bold, 700);
-  letter-spacing: -0.3px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-tight);
   color: var(--text-primary);
 }
 
 .promo-card__body {
   margin: 0;
-  font-size: var(--text-caption-size, 12.5px);
+  font-size: var(--text-caption-size);
   line-height: 1.4;
   color: var(--text-secondary);
 }
@@ -131,7 +127,7 @@
   color: var(--white);
   font: inherit;
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: background var(--transition), opacity var(--transition);
 }
@@ -161,7 +157,7 @@
   top: 18%;
   width: 72px;
   height: 72px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: rgba(91, 95, 198, 0.08);
   filter: blur(2px);
 }
@@ -184,7 +180,7 @@
   object-fit: contain;
   filter: drop-shadow(0 10px 20px rgba(15, 18, 28, 0.1));
   transform: translate3d(0, 0, 0) scale(1);
-  transition: transform 0.45s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: transform var(--duration-enter) var(--ease-emphasized);
 }
 
 .promo-card.is-active .promo-card__image {
@@ -203,16 +199,14 @@
   height: 7px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   background: var(--border);
   cursor: pointer;
-  transition:
-    width 0.22s var(--ease-emphasized, cubic-bezier(0.22, 1, 0.36, 1)),
-    background 0.22s ease;
+  transition: width var(--duration-dialog) var(--ease-emphasized),background var(--duration-dialog) var(--ease-standard);
 }
 
 .promo-carousel__dot.is-active {
   width: 18px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--cta);
 }

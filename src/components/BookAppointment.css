@@ -63,8 +63,8 @@
   padding: var(--space-1) var(--space-2-5);
   border-radius: var(--radius-pill);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.02em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-body);
   flex-shrink: 0;
 }
 
@@ -167,11 +167,7 @@
   transform-origin: left center;
   box-shadow: none;
   opacity: 0.88;
-  transition:
-    width var(--duration-slow) var(--ease-emphasized),
-    transform var(--duration-slow) var(--ease-emphasized),
-    box-shadow var(--duration-slow) var(--ease-emphasized),
-    opacity var(--duration-moderate) var(--ease-standard);
+  transition: width var(--duration-slow) var(--ease-emphasized),transform var(--duration-slow) var(--ease-emphasized),box-shadow var(--duration-slow) var(--ease-emphasized),opacity var(--duration-moderate) var(--ease-standard);
 }
 
 .upcoming-card.is-active {
@@ -196,8 +192,7 @@
 }
 
 .upcoming-card.is-completed-journey.is-active {
-  box-shadow:
-    var(--shadow-hover),
+  box-shadow: var(--shadow-hover),
     inset 0 0 0 var(--border-width) var(--featured-completed-glass-border);
 }
 
@@ -259,8 +254,8 @@
 .upcoming-context {
   min-width: 0;
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-caps);
   color: var(--featured-ink-muted);
 }
 
@@ -282,8 +277,8 @@
 
 .upcoming-service-type {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--featured-ink-muted);
 }
@@ -335,7 +330,7 @@
 
 .upcoming-avatar-initials {
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--featured-ink);
 }
 
@@ -355,7 +350,7 @@
   flex: 1;
   min-width: 0;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--featured-ink);
   line-height: 1.25;
   white-space: nowrap;
@@ -369,7 +364,7 @@
   gap: var(--space-1);
   flex-shrink: 0;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--featured-ink);
   white-space: nowrap;
 }
@@ -446,9 +441,9 @@
   margin-top: auto;
   padding: var(--space-1) 0 0;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--featured-ink);
-  letter-spacing: 0.01em;
+  letter-spacing: var(--letter-body);
 }
 
 .upcoming-cta svg {
@@ -472,7 +467,7 @@
   padding: 0;
   background: color-mix(in srgb, var(--primary) 28%, var(--border));
   cursor: pointer;
-  transition: width 0.25s var(--ease-emphasized), background 0.25s var(--ease-standard);
+  transition: width var(--duration-sheet) var(--ease-emphasized), background var(--duration-sheet) var(--ease-standard);
 }
 
 .upcoming-dot.is-active {
@@ -501,7 +496,7 @@
   margin: 0;
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--featured-ink);
 }
 
@@ -518,7 +513,7 @@
   border-radius: var(--radius-card);
   font: inherit;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: var(--interact-transition);
 }
@@ -616,9 +611,9 @@
 
 .book-appointment-title {
   font-size: var(--text-display-size);
-  font-weight: 800;
+  font-weight: var(--font-weight-medium);
   color: var(--brand-action);
-  letter-spacing: -0.45px;
+  letter-spacing: var(--letter-tight);
   line-height: 1.12;
   margin-bottom: var(--space-1-5);
   white-space: nowrap;
@@ -643,7 +638,7 @@
   border-radius: var(--radius-full);
   padding: var(--space-2-5) var(--space-5) var(--space-2-5) var(--space-4);
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   font-family: inherit;
   box-shadow: none;

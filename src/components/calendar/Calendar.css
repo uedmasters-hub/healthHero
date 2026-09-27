@@ -11,7 +11,7 @@
 
 .cal-picker-title {
   font-size: var(--text-lead-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -22,7 +22,7 @@
   background: none;
   border: none;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   cursor: pointer;
   font-family: inherit;
@@ -32,7 +32,7 @@
   display: flex;
   gap: var(--space-0-5);
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: var(--space-0-5);
   margin-bottom: var(--space-4);
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -49,7 +49,7 @@
   color: var(--text-primary);
   cursor: pointer;
   font-family: inherit;
-  transition: border-color var(--duration-normal) var(--ease-standard), background 0.2s ease, color 0.2s ease, opacity var(--duration-normal) var(--ease-standard);
+  transition: border-color var(--duration-normal) var(--ease-standard), background var(--duration-normal) var(--ease-standard), color var(--duration-normal) var(--ease-standard), opacity var(--duration-normal) var(--ease-standard);
 }
 
 .cal-date {
@@ -140,7 +140,7 @@
 .cal-chip-row.is-segmented > .cal-chip.is-active {
   background: var(--white);
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   box-shadow: var(--shadow-sm);
   border: none;
 }
@@ -179,11 +179,11 @@
   background: var(--active-bg);
   border-color: var(--primary);
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .cal-chip-row.is-quiet > .cal-chip.is-active .cal-chip-label {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .cal-chip-row.is-quiet > .cal-chip.is-active .cal-chip-time {
@@ -196,7 +196,7 @@
 
 .cal-picker.is-compact .cal-picker-title {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
 }
 
@@ -257,7 +257,7 @@
 
 .cal-chip-label {
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   line-height: 1.2;
 }
 
@@ -292,7 +292,7 @@
 .cal-slot-quick {
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.02em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--urgent);
 }
@@ -357,12 +357,12 @@
 .cal-date.is-active .cal-date-disc {
   background: var(--cta);
   color: var(--white);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .cal-date.is-active .cal-date-day {
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .cal-chip.is-active,
@@ -370,7 +370,7 @@
   border-color: var(--primary);
   background: var(--active-bg);
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .cal-chip.is-active .cal-chip-time {
@@ -410,7 +410,7 @@
 
 .cal-sheet-title {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -488,7 +488,7 @@
 
 .cal-picker-cell.is-active {
   color: var(--primary);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   background: transparent;
   border: none;
 }
@@ -619,7 +619,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   font-family: inherit;
   flex-shrink: 0;

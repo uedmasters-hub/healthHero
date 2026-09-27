@@ -16,7 +16,7 @@
   object-fit: cover;
   display: block;
   opacity: 1;
-  transition: opacity 160ms ease;
+  transition: opacity var(--duration-normal) var(--ease-standard);
 }
 
 .dir-avatar.is-loading .dir-avatar__img {
@@ -29,8 +29,8 @@
 
 .dir-avatar__initials {
   font-size: calc(var(--text-title-size) * 0.95);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.02em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-tight);
   line-height: 1;
   user-select: none;
 }

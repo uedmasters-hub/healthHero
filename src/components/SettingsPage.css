@@ -59,7 +59,7 @@
   background: var(--avatar-surface);
   color: var(--avatar-ink);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .settings-profile-copy {
@@ -67,12 +67,12 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
 }
 
 .settings-profile-name {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -86,10 +86,10 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-badge-size);
-  font-weight: var(--font-weight-bold);
-  padding: 2px var(--space-1-5);
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-0-5) var(--space-1-5);
   border-radius: var(--radius-sm);
-  letter-spacing: 0.3px;
+  letter-spacing: var(--letter-body);
 }
 
 .settings-row {
@@ -128,7 +128,7 @@
   color: var(--danger);
   font-family: inherit;
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
 }
 
@@ -164,20 +164,20 @@
 .settings-radius-marks {
   display: flex;
   justify-content: space-between;
-  gap: 2px;
+  gap: var(--space-0-5);
 }
 
 .settings-radius-mark {
   border: none;
   background: transparent;
   font: inherit;
-  font-size: 11px;
+  font-size: var(--text-micro-size);
   color: var(--text-muted);
   cursor: pointer;
-  padding: 2px 0;
+  padding: var(--space-0-5) 0;
 }
 
 .settings-radius-mark.is-active {
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }

@@ -32,7 +32,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -84,19 +84,19 @@
   text-align: right;
   flex-shrink: 0;
   align-self: flex-start;
-  padding-top: 2px;
+  padding-top: var(--space-0-5);
 }
 
 .pay-hero-fee-label {
   display: block;
   font-size: var(--text-caption-size);
   color: var(--text-muted);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .pay-hero-fee-value {
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: 1.2;
 }
@@ -109,19 +109,19 @@
 
 .pay-amount-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.8px;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   margin-bottom: var(--space-1);
 }
 
 .pay-amount-value {
   font-size: clamp(1.75rem, 7vw, 2.25rem);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: 1.15;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-tight);
 }
 
 .pay-hero-footer {
@@ -170,7 +170,7 @@
 .pay-section-title {
   margin: 0;
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -181,7 +181,7 @@
   color: var(--primary);
   font: inherit;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   padding: 0;
 }
@@ -206,10 +206,7 @@
   background: var(--white);
   cursor: pointer;
   font-family: inherit;
-  transition:
-    border-color var(--duration-normal) var(--ease-standard),
-    background var(--duration-normal) var(--ease-standard),
-    box-shadow var(--duration-normal) var(--ease-standard);
+  transition: border-color var(--duration-normal) var(--ease-standard),background var(--duration-normal) var(--ease-standard),box-shadow var(--duration-normal) var(--ease-standard);
 }
 
 .pay-method:hover {
@@ -228,7 +225,7 @@
 }
 
 .pay-method.is-ready .pay-method-label {
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
 }
 
 .pay-method.is-locked,
@@ -248,9 +245,9 @@
 .pay-method-edit {
   flex-shrink: 0;
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
-  padding: 2px 0;
+  padding: var(--space-0-5) 0;
 }
 
 .pay-method-status {
@@ -258,7 +255,7 @@
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-medium);
   color: var(--success-text);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .pay-hero-card.is-locked {
@@ -268,7 +265,7 @@
 
 .pay-timer.is-expired {
   color: var(--text-muted);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   animation: none;
 }
 
@@ -290,7 +287,7 @@
   background: transparent;
   color: var(--primary);
   font: inherit;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   white-space: nowrap;
   padding: 0;
@@ -340,7 +337,7 @@
 .pay-expired-modal h3 {
   margin: 0 0 var(--space-2);
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -358,7 +355,7 @@
   min-height: var(--app-flow-cta-height, 48px);
   border-radius: var(--radius-cta);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
@@ -476,12 +473,12 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
 }
 
 .pay-method-label {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -492,9 +489,9 @@
 }
 
 .pay-method-default {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
 }
 
@@ -518,8 +515,8 @@
   background: var(--info-bg);
   color: var(--info);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
-  padding: 4px 8px;
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
 }
 
@@ -636,7 +633,7 @@
   border: none;
   background: transparent;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   cursor: pointer;
   font-family: inherit;
@@ -684,7 +681,7 @@
 .pay-app-name {
   display: block;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -727,7 +724,7 @@
 }
 
 .pay-timer.is-urgent {
-  animation: payPulse 1s ease infinite;
+  animation: payPulse 1s var(--ease-standard) infinite;
 }
 
 .pay-banner.is-error {
@@ -786,9 +783,7 @@
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition:
-    border-color var(--duration-normal) var(--ease-standard),
-    background var(--duration-normal) var(--ease-standard);
+  transition: border-color var(--duration-normal) var(--ease-standard),background var(--duration-normal) var(--ease-standard);
 }
 
 .pay-sheet-choice.is-selected {
@@ -804,7 +799,7 @@
 .pay-sheet-choice-copy {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
   min-width: 0;
 }
 
@@ -831,7 +826,7 @@
   font-size: var(--text-caption-size);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: var(--letter-caps);
 }
 
 .pay-wallet-balance {
@@ -870,7 +865,7 @@
   color: var(--text-on-primary);
   font: inherit;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: opacity var(--duration-fast) var(--ease-standard);
 }

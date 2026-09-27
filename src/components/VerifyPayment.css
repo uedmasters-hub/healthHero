@@ -31,7 +31,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -82,7 +82,7 @@
 
 .vp-hero-fee-value {
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -121,7 +121,7 @@
   color: var(--primary);
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.4px;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   margin-bottom: var(--space-3);
 }
@@ -161,7 +161,7 @@
   content: '';
   width: 1.5px;
   height: 22px;
-  border-radius: 1px;
+  border-radius: var(--radius-2xs);
   background: var(--text-primary);
   animation: vpCaret 1.05s steps(1) infinite;
 }
@@ -196,17 +196,17 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 6px 12px;
+  padding: var(--space-1-5) var(--space-3);
   border-radius: var(--radius-full);
   background: var(--danger-bg);
   color: var(--danger);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-3);
 }
 
 .vp-timer-badge.is-urgent {
-  animation: vpPulse 1s ease infinite;
+  animation: vpPulse 1s var(--ease-standard) infinite;
 }
 
 .vp-timer-dot {
@@ -246,7 +246,7 @@
   color: var(--primary);
   font: inherit;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   padding: var(--space-2);
 }
@@ -302,8 +302,8 @@
 }
 
 .vp-key-num {
-  font-size: 22px;
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-display-size);
+  font-weight: var(--font-weight-medium);
   line-height: 1;
 }
 

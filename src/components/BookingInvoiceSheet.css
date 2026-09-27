@@ -17,10 +17,10 @@
 .invoice-status {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-2-5);
   border-radius: var(--radius-full);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   background: var(--success-bg);
   color: var(--success-text);
 }
@@ -45,7 +45,7 @@
   display: block;
   font-size: var(--text-caption-size);
   color: var(--text-muted);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .invoice-ids strong {
@@ -61,21 +61,21 @@
 .invoice-section h4 {
   margin: 0 0 var(--space-1-5);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: var(--letter-caps);
 }
 
 .invoice-primary {
   margin: 0;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .invoice-secondary {
-  margin: 2px 0 0;
+  margin: var(--space-0-5) 0 0;
   font-size: var(--text-body-size);
   color: var(--text-secondary);
 }
@@ -97,7 +97,7 @@
 
 .invoice-row strong {
   color: var(--text-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .invoice-row.is-total {
@@ -105,7 +105,7 @@
   padding-top: var(--space-2-5);
   border-top: var(--border-width) solid var(--border);
   color: var(--text-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .invoice-row.is-total strong {
@@ -135,14 +135,14 @@
   border: none;
   font: inherit;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
 }
 
 .invoice-btn.is-primary {
   grid-column: 1 / -1;
   background: var(--cta);
-  color: var(--text-on-primary, var(--white));
+  color: var(--text-on-primary);
 }
 
 .invoice-btn.is-secondary {

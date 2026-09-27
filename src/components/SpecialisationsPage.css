@@ -74,7 +74,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -155,7 +155,7 @@
   gap: var(--space-3);
   padding: var(--space-6) var(--space-2);
   opacity: var(--opacity-visible);
-  transition: opacity 0.3s ease;
+  transition: opacity var(--duration-moderate) var(--ease-standard);
 }
 
 .skeleton-layer.hidden {
@@ -171,7 +171,7 @@
   gap: var(--space-3);
   opacity: var(--opacity-hidden);
   transform: translateY(10px) scale(0.97);
-  transition: opacity var(--duration-normal) var(--ease-standard), transform 0.2s ease;
+  transition: opacity var(--duration-normal) var(--ease-standard), transform var(--duration-normal) var(--ease-standard);
 }
 
 .content-layer.visible {

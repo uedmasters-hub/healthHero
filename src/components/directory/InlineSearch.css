@@ -7,7 +7,7 @@
   flex-shrink: 0;
   width: 100%;
   box-sizing: border-box;
-  animation: dir-inline-search-in 180ms var(--ease-standard, ease) both;
+  animation: dir-inline-search-in var(--duration-normal) var(--ease-standard) both;
 }
 
 .dir-inline-search__field {

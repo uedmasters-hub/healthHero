@@ -14,10 +14,10 @@
 
 .placeholder-title {
   font-size: var(--text-hero-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin: 0 0 2px;
-  letter-spacing: -0.4px;
+  margin: 0 0 var(--space-0-5);
+  letter-spacing: var(--letter-tight);
 }
 
 .placeholder-subtitle {

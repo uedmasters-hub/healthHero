@@ -72,7 +72,7 @@
   background: var(--white);
   color: var(--text-primary);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }

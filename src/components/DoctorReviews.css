@@ -30,7 +30,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin: 0;
 }
 
@@ -54,8 +54,8 @@
 
 .reviews-summary-score {
   font-size: var(--text-stat-size);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: -1px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-tight);
   line-height: 1;
 }
 
@@ -88,7 +88,7 @@
 
 .reviews-compose-title {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2);
 }
 
@@ -98,7 +98,7 @@
   font-size: var(--text-display-size);
   color: var(--border);
   cursor: pointer;
-  padding: 0 2px;
+  padding: 0 var(--space-0-5);
 }
 
 .reviews-compose textarea {
@@ -133,7 +133,7 @@
   color: var(--white);
   font: inherit;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
 }
 
@@ -164,7 +164,7 @@
 
 .reviews-item-author {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -172,17 +172,17 @@
 
 .reviews-you {
   font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   background: var(--active-bg);
   border-radius: var(--radius-full);
-  padding: 2px var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
 }
 
 .reviews-item-date {
   font-size: var(--text-caption-size);
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .reviews-item-actions {
@@ -196,7 +196,7 @@
   color: var(--primary);
   font: inherit;
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   padding: 0;
 }

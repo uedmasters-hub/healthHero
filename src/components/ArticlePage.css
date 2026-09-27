@@ -8,7 +8,7 @@
 }
 
 .article-page.page-push-in {
-  animation: articlePushIn 0.36s var(--ease-emphasized) both;
+  animation: articlePushIn var(--duration-reveal) var(--ease-emphasized) both;
 }
 
 @keyframes articlePushIn {
@@ -52,7 +52,7 @@
   text-align: center;
   font-size: var(--text-heading-size);
   line-height: var(--text-heading-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -276,7 +276,7 @@
   justify-content: center;
   color: var(--primary);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .article-author-copy {
@@ -289,7 +289,7 @@
 .article-author-name {
   font-size: var(--text-body-lg-size);
   line-height: var(--text-body-lg-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -317,7 +317,7 @@
   margin: var(--space-2) 0 0;
   font-size: var(--text-title-size);
   line-height: var(--text-title-line);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 

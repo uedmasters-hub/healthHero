@@ -14,15 +14,15 @@
   gap: var(--space-1);
   margin: 0 var(--content-padding) var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-lg, 16px);
+  border-radius: var(--radius-lg);
   background: var(--neutral-100);
   color: var(--neutral-900);
 }
 
 .appointment-relay-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.02em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-body);
 }
 
 .appointment-relay-message {
@@ -114,7 +114,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -161,7 +161,7 @@
   display: inline-flex;
   font-size: var(--text-overline-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--urgent);
   background: var(--white);
@@ -184,7 +184,7 @@
   border: none;
   background: none;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   color: var(--primary);
   cursor: pointer;
@@ -193,8 +193,8 @@
 .appointment-view-only {
   margin-left: var(--space-2);
   font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -223,7 +223,7 @@
 
 .appointment-reschedule-banner-title {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -258,12 +258,12 @@
 .appointment-page.is-shared-hero.is-content-ready .appointment-header-title,
 .appointment-page.is-shared-hero.is-content-ready .appointment-menu-btn,
 .appointment-page.is-shared-hero.is-content-ready .appointment-countdown {
-  transition: opacity 0.42s ease;
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .appointment-doctor-row {
   width: 100%;
-  padding: 2px 0 var(--space-3-5);
+  padding: var(--space-0-5) 0 var(--space-3-5);
   border-bottom: var(--border-width) solid var(--border);
   margin-bottom: var(--space-1);
 }
@@ -314,16 +314,16 @@
 
 .appointment-info-label {
   font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .appointment-info-value {
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: 1.35;
 }
@@ -375,14 +375,14 @@
 }
 
 .appointment-section {
-  margin-bottom: 22px;
+  margin-bottom: var(--space-5-5);
 }
 
 .appointment-section-title {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   margin: 0 0 var(--space-3);
 }
@@ -551,7 +551,7 @@
   color: var(--text-secondary);
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
-  padding: 2px var(--space-2-5);
+  padding: var(--space-0-5) var(--space-2-5);
   border-radius: var(--radius);
 }
 
@@ -569,7 +569,7 @@
 
 .appointment-payment-badge {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   padding: var(--space-1) var(--space-2-5);
   border-radius: var(--radius-sm);
 }
@@ -593,7 +593,7 @@
 
 .appointment-billing-value {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -608,14 +608,14 @@
 }
 
 .appointment-billing-row.total .appointment-billing-label {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .appointment-billing-row.total .appointment-billing-value.total {
   color: var(--primary);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
 }
 
 .appointment-payment-meta {
@@ -693,7 +693,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
@@ -750,9 +750,9 @@
 .appointment-article-title {
   display: block;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .appointment-article-subtitle {
@@ -845,7 +845,7 @@
 
 .appointment-support-msg {
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -861,7 +861,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   white-space: nowrap;
@@ -903,7 +903,7 @@
 
 .appointment-sheet-option.is-active {
   color: var(--primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .appointment-sheet-cta.is-danger {
@@ -947,7 +947,7 @@
 
 .appointment-sheet-header h3 {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin: 0;
 }
 
@@ -993,14 +993,14 @@
 
 .appointment-sheet-row-title {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .appointment-sheet-row-meta {
   font-size: var(--text-caption-size);
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .appointment-sheet-thumb {
@@ -1036,7 +1036,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   text-decoration: none;
   cursor: pointer;

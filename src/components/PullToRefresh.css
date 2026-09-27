@@ -3,10 +3,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: var(--space-1-5);
   overflow: hidden;
   pointer-events: none;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--duration-fast) var(--ease-standard);
   opacity: 0;
   flex-shrink: 0;
 }
@@ -18,7 +18,7 @@
 .ptr-spinner {
   width: 22px;
   height: 22px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 2px solid var(--border, #e4e7ee);
   border-top-color: var(--primary, #6c5ce7);
   box-sizing: border-box;
@@ -29,11 +29,11 @@
 }
 
 .ptr-label {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-secondary, #6b7280);
-  letter-spacing: 0.01em;
-  margin-bottom: 8px;
+  font-size: var(--text-micro-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  letter-spacing: var(--letter-body);
+  margin-bottom: var(--space-2);
 }
 
 @keyframes ptr-spin {

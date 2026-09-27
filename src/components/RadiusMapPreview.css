@@ -46,8 +46,7 @@
 .radius-map__veil {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(
+  background: linear-gradient(
       to bottom,
       var(--white) 0,
       var(--white) calc(var(--space-10) + var(--space-6)),
@@ -68,7 +67,7 @@
   bottom: calc(var(--space-10) + var(--space-4));
   margin: 0;
   text-align: center;
-  font-size: 10px;
+  font-size: var(--text-micro-size);
   line-height: 1;
   color: var(--neutral-500);
   opacity: 0.85;

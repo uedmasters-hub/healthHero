@@ -15,13 +15,13 @@
   box-sizing: border-box;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
   width: calc(100% - 28px);
   max-width: 360px;
   margin: 0;
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-3-5);
   border: 0;
-  border-radius: 22px;
+  border-radius: var(--radius-card);
   background: rgba(22, 24, 32, 0.96);
   color: #f5f6fa;
   text-align: left;
@@ -29,8 +29,7 @@
   cursor: pointer;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
-  box-shadow:
-    0 14px 36px rgba(15, 18, 28, 0.32),
+  box-shadow: 0 14px 36px rgba(15, 18, 28, 0.32),
     0 0 0 1px rgba(255, 255, 255, 0.08);
   transform: translate3d(-50%, -12px, 0) scale(0.92);
   transform-origin: center center;
@@ -41,11 +40,11 @@
 }
 
 .notif-island__card--enter {
-  animation: notif-island-enter 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: notif-island-enter var(--duration-enter) var(--ease-emphasized) both;
 }
 
 .notif-island__card--mode-toast.notif-island__card--enter {
-  animation: notif-island-toast-enter 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: notif-island-toast-enter var(--duration-enter) var(--ease-emphasized) both;
 }
 
 .notif-island__card--hold {
@@ -66,13 +65,13 @@
 }
 
 .notif-island__card--dismiss {
-  animation: notif-island-dismiss 0.28s cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: notif-island-dismiss var(--duration-moderate) cubic-bezier(0.33, 1, 0.68, 1) both;
   pointer-events: none;
 }
 
 /* Non-home: reverse the entrance — slide up, no shrink-to-nothing */
 .notif-island__card--toast-exit {
-  animation: notif-island-toast-exit 0.42s cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: notif-island-toast-exit var(--duration-slow) cubic-bezier(0.33, 1, 0.68, 1) both;
   pointer-events: none;
 }
 
@@ -84,7 +83,7 @@
   width: 34px;
   height: 34px;
   margin-top: 1px;
-  border-radius: 11px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
@@ -125,15 +124,15 @@
 }
 
 .notif-island__title {
-  font-size: 14px;
+  font-size: var(--text-label-size);
   font-weight: 650;
-  letter-spacing: -0.2px;
+  letter-spacing: var(--letter-tight);
   line-height: 1.25;
   color: #fff;
 }
 
 .notif-island__body {
-  font-size: 12.5px;
+  font-size: var(--text-caption-size);
   font-weight: 450;
   line-height: 1.35;
   color: rgba(245, 246, 250, 0.72);
@@ -195,6 +194,6 @@
   .notif-island__card--enter,
   .notif-island__card--dismiss,
   .notif-island__card--toast-exit {
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--duration-instant) !important;
   }
 }

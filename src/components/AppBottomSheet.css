@@ -47,10 +47,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
-  transition:
-    transform var(--duration-sheet) var(--ease-sheet),
-    max-height var(--duration-sheet) var(--ease-sheet),
-    padding-bottom var(--duration-sheet) var(--ease-sheet);
+  transition: transform var(--duration-sheet) var(--ease-sheet),max-height var(--duration-sheet) var(--ease-sheet),padding-bottom var(--duration-sheet) var(--ease-sheet);
   touch-action: pan-y;
   will-change: transform;
   /* Keep geometry rectangular — never use radius-pill / radius-full on sheets */
@@ -91,7 +88,7 @@
 .ds-sheet-header h3,
 .ds-sheet-title {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -169,7 +166,7 @@
 .ds-sheet-option.is-active {
   background: var(--interact-selected-bg);
   color: var(--text-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .ds-sheet-option.is-danger {
@@ -189,6 +186,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ds-sheet,
   .ds-sheet-overlay.is-closing .ds-sheet {
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--duration-instant) !important;
   }
 }

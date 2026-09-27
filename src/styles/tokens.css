@@ -539,6 +539,7 @@
   --text-subtitle-line: 1.2;
   --text-subtitle-weight: var(--font-weight-medium);
 
+  --text-dense-size: 0.8125rem;
   --text-micro-size: var(--font-size-floor);
   --text-micro-line: 1.3;
 

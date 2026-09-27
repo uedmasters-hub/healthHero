@@ -46,7 +46,7 @@
   margin: 0;
   font-size: var(--text-heading-size);
   line-height: var(--text-heading-line);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-snug);
   color: var(--text-primary);
   white-space: nowrap;

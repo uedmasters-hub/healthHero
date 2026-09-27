@@ -29,9 +29,7 @@
 }
 
 .radius-dial.is-spring .radius-dial__coverage {
-  transition:
-    width 0.62s var(--radius-spring),
-    height 0.62s var(--radius-spring);
+  transition: width 0.62s var(--radius-spring),height 0.62s var(--radius-spring);
 }
 
 .radius-dial.is-dragging .radius-dial__coverage {
@@ -40,8 +38,7 @@
 
 .radius-dial.is-map .radius-dial__value,
 .radius-dial.is-map .radius-dial__count {
-  text-shadow:
-    0 0 10px var(--white),
+  text-shadow: 0 0 10px var(--white),
     0 0 3px var(--white);
 }
 
@@ -64,9 +61,7 @@
 }
 
 .radius-dial.is-spring .radius-dial__handle {
-  transition:
-    left 0.62s var(--radius-spring),
-    top 0.62s var(--radius-spring);
+  transition: left 0.62s var(--radius-spring),top 0.62s var(--radius-spring);
 }
 
 .radius-dial.is-dragging .radius-dial__handle {
@@ -85,7 +80,7 @@
   top: 50%;
   width: 16px;
   height: 16px;
-  margin: -8px 0 0 -8px;
+  margin: calc(var(--space-2) * -1) 0 0 calc(var(--space-2) * -1);
   border-radius: var(--radius-full);
   background: var(--primary-400);
   box-shadow: 0 0 0 2px var(--neutral-0);
@@ -111,15 +106,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--space-0-5);
   pointer-events: none;
   text-align: center;
 }
 
 .radius-dial__value {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-caps);
   line-height: 1.1;
   text-transform: uppercase;
   animation: radius-dial-count var(--duration-moderate) var(--ease-emphasized);
@@ -170,7 +165,7 @@
 .radius-nepal__copy {
   margin: 0;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   line-height: 1.4;
   color: var(--primary-800);
   text-wrap: balance;
@@ -195,16 +190,13 @@
   color: var(--primary-800);
   font: inherit;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateY(8px);
-  transition:
-    opacity var(--duration-moderate) var(--ease-emphasized),
-    transform var(--duration-moderate) var(--ease-emphasized),
-    visibility 0s linear var(--duration-moderate);
+  transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized),visibility 0s linear var(--duration-moderate);
 }
 
 .radius-flow__action.is-shown {
@@ -212,10 +204,7 @@
   visibility: visible;
   pointer-events: auto;
   transform: none;
-  transition:
-    opacity var(--duration-moderate) var(--ease-emphasized),
-    transform var(--duration-moderate) var(--ease-emphasized),
-    visibility 0s;
+  transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized),visibility 0s;
 }
 
 .radius-flow__action:hover {
@@ -261,7 +250,7 @@
 
 .doctors-empty:has(.radius-dial) h3 {
   color: var(--primary-800);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 @keyframes radius-dial-count {

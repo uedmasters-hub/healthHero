@@ -50,7 +50,7 @@
 
 .insights-sheet-title {
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -144,7 +144,7 @@
   min-height: calc(var(--space-10) * 2);
   opacity: var(--opacity-hidden);
   transform: translateY(10px) scale(0.97);
-  transition: opacity var(--duration-normal) var(--ease-standard), transform 0.2s ease;
+  transition: opacity var(--duration-normal) var(--ease-standard), transform var(--duration-normal) var(--ease-standard);
 }
 
 .insights-sheet-body.is-visible {

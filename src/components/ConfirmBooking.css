@@ -45,7 +45,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -61,7 +61,7 @@
 
 .confirm-heading {
   font-size: var(--text-display-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: var(--space-4);
 }
@@ -81,7 +81,7 @@
   align-items: center;
   justify-content: center;
   font-size: var(--text-lead-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--white);
 }
 
@@ -106,7 +106,7 @@
 
 .confirm-doctor-name {
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -136,7 +136,7 @@
   align-items: center;
   gap: var(--space-1);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--rating);
 }
 
@@ -157,7 +157,7 @@
   background: none;
   color: var(--primary);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
@@ -171,7 +171,7 @@
   font-weight: var(--font-weight-medium);
   color: var(--text-muted);
   background: var(--bg);
-  padding: 2px var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-xs);
 }
 
@@ -197,7 +197,7 @@
   display: inline-flex;
   font-size: var(--text-overline-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   color: var(--urgent);
   background: var(--white);
@@ -259,7 +259,7 @@
 
 .confirm-summary-value {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   text-align: right;
   flex: 1;
@@ -323,7 +323,7 @@
   height: 28px;
   border-radius: var(--radius-md);
   background: var(--toggle-off);
-  padding: 2px;
+  padding: var(--space-0-5);
   transition: background var(--transition);
   cursor: pointer;
 }
@@ -428,7 +428,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   line-height: 1;
   display: flex;
   align-items: center;
@@ -512,7 +512,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   font-family: inherit;
   transition: all var(--transition);
@@ -531,14 +531,14 @@
   opacity: var(--opacity-hidden);
   pointer-events: none;
   transform: translateY(16px);
-  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-slow) var(--ease-standard), transform var(--duration-enter) var(--ease-emphasized);
 }
 
 .confirm-bottom-bar.is-visible {
   opacity: var(--opacity-visible);
   pointer-events: auto;
   transform: none;
-  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-slow) var(--ease-standard), transform var(--duration-enter) var(--ease-emphasized);
 }
 
 /* Success Page */
@@ -573,7 +573,7 @@
   justify-content: center;
   width: 100%;
   min-height: 100%;
-  transition: min-height 0.78s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: min-height 0.78s var(--ease-emphasized);
 }
 
 .confirm-success-page.is-details .confirm-success-stage,
@@ -611,7 +611,7 @@
 }
 
 .confirm-success-icon.is-success {
-  animation: confirmCheckPop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: confirmCheckPop var(--duration-enter) var(--ease-emphasized);
 }
 
 .confirm-process-spinner {
@@ -639,7 +639,7 @@
 }
 
 .confirm-check-svg.is-drawn polyline {
-  animation: confirmDrawCheck 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: confirmDrawCheck var(--duration-enter) var(--ease-emphasized) forwards;
 }
 
 .confirm-success-status,
@@ -647,7 +647,7 @@
 .confirm-success-message {
   opacity: var(--opacity-hidden);
   transform: translateY(8px);
-  animation: confirmCopyIn 0.42s ease forwards;
+  animation: confirmCopyIn var(--duration-slow) var(--ease-standard) forwards;
 }
 
 .confirm-success-status {
@@ -659,7 +659,7 @@
 
 .confirm-success-title {
   font-size: var(--text-display-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0 0 var(--space-1-5);
 }
@@ -685,7 +685,7 @@
   opacity: var(--opacity-hidden);
   transform: translateY(36px);
   pointer-events: none;
-  transition: opacity 0.55s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-enter) var(--ease-standard), transform 0.7s var(--ease-emphasized);
 }
 
 .confirm-success-details.is-visible,
@@ -786,7 +786,7 @@
   align-items: center;
   justify-content: center;
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--white);
 }
 
@@ -811,7 +811,7 @@
 
 .confirm-success-doctor-name {
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -825,7 +825,7 @@
   align-items: center;
   gap: var(--space-1);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--rating);
   flex-shrink: 0;
 }
@@ -857,7 +857,7 @@
 
 .confirm-success-row-value {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -900,7 +900,7 @@
   background: var(--success-bg);
   color: var(--success);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   border-radius: var(--radius-xs);
 }
 
@@ -911,7 +911,7 @@
 
 .confirm-payment-amount {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-left: auto;
 }
@@ -945,7 +945,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   margin-bottom: var(--space-6);
@@ -1029,7 +1029,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   padding: 0;
@@ -1087,7 +1087,7 @@
 
 .confirm-next-title {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: var(--space-1);
 }
@@ -1124,7 +1124,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   padding: 0;
@@ -1139,7 +1139,7 @@
   border: none;
   color: var(--primary);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
   text-align: center;
@@ -1156,9 +1156,9 @@
 
 .confirm-success-notes-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
-  letter-spacing: 0.5px;
+  letter-spacing: var(--letter-caps);
   margin-bottom: var(--space-2);
 }
 
@@ -1177,15 +1177,15 @@
   z-index: 1000;
   display: flex;
   align-items: flex-end;
-  animation: fadeIn 0.3s ease forwards;
+  animation: fadeIn var(--duration-moderate) var(--ease-standard) forwards;
 }
 
 .records-sheet-overlay.closing {
-  animation: fadeOut 0.25s ease forwards;
+  animation: fadeOut var(--duration-sheet) var(--ease-standard) forwards;
 }
 
 .records-sheet-overlay.closing .records-sheet {
-  animation: slideDown 0.25s ease forwards;
+  animation: slideDown var(--duration-sheet) var(--ease-standard) forwards;
   box-shadow: var(--shadow-sheet);
 
 }
@@ -1230,7 +1230,7 @@
 
 .records-sheet-title {
   font-size: var(--text-lead-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -1311,7 +1311,7 @@
   font-size: var(--text-body-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
-  letter-spacing: 0;
+  letter-spacing: var(--letter-tight);
   margin-bottom: var(--space-3);
   margin-top: var(--space-4);
 }
@@ -1396,9 +1396,9 @@
 
 .record-item-title {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-0-5);
 }
 
 .record-item-meta {
@@ -1436,9 +1436,9 @@
 
 .record-attachments-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
-  letter-spacing: 0.5px;
+  letter-spacing: var(--letter-caps);
   margin-bottom: var(--space-2);
 }
 
@@ -1508,7 +1508,7 @@
 
 .records-upload-text {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: var(--space-1);
 }
@@ -1524,7 +1524,7 @@
   border: none;
   background: transparent;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   cursor: pointer;
   font-family: inherit;
@@ -1546,7 +1546,7 @@
   background: var(--cta);
   color: var(--white);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   font-family: inherit;
   transition: all var(--transition);

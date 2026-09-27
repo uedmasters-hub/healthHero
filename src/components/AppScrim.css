@@ -22,6 +22,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .app-scrim {
-    transition-duration: 0.01ms;
+    transition-duration: var(--duration-instant);
   }
 }

@@ -40,9 +40,9 @@
 .pharmacy-tip__icon,
 .pharmacy-support__icon {
   flex-shrink: 0;
-  width: var(--space-10, 40px);
-  height: var(--space-10, 40px);
-  border-radius: var(--radius-md, 12px);
+  width: var(--space-10);
+  height: var(--space-10);
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -61,19 +61,19 @@
 
 .pharmacy-tip__eyebrow {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--letter-caps);
 }
 
 .pharmacy-tip__title,
 .pharmacy-support__title {
   font-size: var(--text-body-size);
   line-height: var(--text-body-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: -0.15px;
+  letter-spacing: var(--letter-tight);
 }
 
 .pharmacy-tip__body,
@@ -85,8 +85,8 @@
 
 .pharmacy-support__cta {
   margin-top: var(--space-1);
-  font-size: var(--text-label-size, 13px);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
 }
 

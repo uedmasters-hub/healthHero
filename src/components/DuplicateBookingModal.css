@@ -23,7 +23,7 @@
 .dup-modal h3 {
   margin: 0 0 var(--space-2-5);
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -40,7 +40,7 @@
   min-height: var(--app-flow-cta-height);
   border-radius: var(--radius-cta);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }

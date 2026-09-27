@@ -63,9 +63,7 @@
   align-items: start;
   margin: 0 var(--content-padding) 0 0;
   background: var(--white);
-  transition:
-    grid-template-columns var(--duration-moderate) var(--ease-emphasized),
-    column-gap var(--duration-moderate) var(--ease-emphasized);
+  transition: grid-template-columns var(--duration-moderate) var(--ease-emphasized),column-gap var(--duration-moderate) var(--ease-emphasized);
 }
 
 .shop-browse.is-rail-hidden {
@@ -207,10 +205,7 @@
   pointer-events: none;
   opacity: 0;
   transform: translate3d(0, 0, 0);
-  transition:
-    transform var(--duration-moderate) var(--ease-emphasized),
-    height var(--duration-moderate) var(--ease-emphasized),
-    opacity var(--duration-moderate) var(--ease-emphasized);
+  transition: transform var(--duration-moderate) var(--ease-emphasized),height var(--duration-moderate) var(--ease-emphasized),opacity var(--duration-moderate) var(--ease-emphasized);
 }
 
 .shop-rail__indicator.is-ready {
@@ -274,9 +269,7 @@
   place-items: center;
   color: var(--icon-color-muted);
   transform: scale(1);
-  transition:
-    transform var(--duration-moderate) var(--ease-emphasized),
-    color var(--transition);
+  transition: transform var(--duration-moderate) var(--ease-emphasized),color var(--transition);
 }
 
 .shop-rail__item.is-active .shop-rail__icon {

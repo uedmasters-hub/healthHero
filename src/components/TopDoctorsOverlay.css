@@ -48,7 +48,7 @@
   visibility: hidden;
   pointer-events: none;
   z-index: 1;
-  transition: opacity 0.24s ease;
+  transition: opacity var(--duration-sheet) var(--ease-standard);
 }
 
 .top-doctors-overlay.is-ghost .top-doctors-sheet {
@@ -83,7 +83,7 @@
   flex: 1;
   text-align: left;
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
@@ -138,7 +138,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 18px var(--space-4) 22px;
+  padding: 18px var(--space-4) var(--space-5-5);
   overflow: hidden;
   background: var(--white);
   border: var(--border-width) solid var(--border-strong);
@@ -186,7 +186,7 @@
   height: auto;
   opacity: var(--opacity-hidden);
   transform: translateY(6px);
-  transition: opacity 0.38s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-reveal) var(--ease-standard), transform var(--duration-slow) var(--ease-emphasized);
 }
 
 .top-doctor-content .dc-card-grid {
@@ -216,11 +216,11 @@
   z-index: 20;
   pointer-events: none;
   white-space: nowrap;
-  animation: tdToastIn 0.22s ease;
+  animation: tdToastIn var(--duration-dialog) var(--ease-standard);
 }
 
 .top-doctors-loading-toast.is-leaving {
-  animation: tdToastOut 0.2s ease forwards;
+  animation: tdToastOut var(--duration-normal) var(--ease-standard) forwards;
 }
 
 @keyframes tdToastIn {

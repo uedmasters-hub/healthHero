@@ -76,7 +76,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -103,7 +103,7 @@
 .doctor-profile.is-shared-hero.is-content-ready .profile-header {
   opacity: var(--opacity-visible);
   pointer-events: auto;
-  transition: opacity 0.32s ease 0.08s;
+  transition: opacity var(--duration-reveal) var(--ease-standard) 0.08s;
 }
 
 .profile-skeletons {
@@ -125,7 +125,7 @@
   z-index: 2;
   opacity: var(--opacity-visible);
   background: var(--white);
-  transition: opacity 0.4s ease;
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .profile-skeletons-layer.is-gone {
@@ -155,7 +155,7 @@
   z-index: 1;
   opacity: var(--opacity-visible);
   pointer-events: auto;
-  transition: opacity 0.42s ease;
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .profile-skel-label {
@@ -226,9 +226,9 @@
 
 .profile-section-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.06em;
+  letter-spacing: var(--letter-caps);
   text-transform: uppercase;
   margin: 0 0 var(--space-3);
 }
@@ -311,19 +311,19 @@
 
 .center-name {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .center-address {
   font-size: var(--text-caption-size);
   color: var(--text-secondary);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .center-distance {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   flex-shrink: 0;
 }
@@ -381,7 +381,7 @@
   display: inline-block;
   margin-top: var(--space-3);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   text-decoration: none;
 }
@@ -400,7 +400,7 @@
 
 .ratings-big-num {
   font-size: var(--text-stat-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: 1;
 }
@@ -456,7 +456,7 @@
   height: 100%;
   background: var(--cta);
   border-radius: var(--radius-2xs);
-  transition: width 0.3s ease;
+  transition: width var(--duration-moderate) var(--ease-standard);
 }
 
 .rating-bar-percent {
@@ -489,7 +489,7 @@
 
 .review-author {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -519,7 +519,7 @@
   border: var(--border-width) solid var(--border);
   background: var(--white);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   cursor: pointer;
   font-family: inherit;
@@ -555,9 +555,9 @@
 .profile-stat strong {
   display: block;
   font-size: var(--text-display-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: -0.4px;
+  letter-spacing: var(--letter-tight);
   line-height: 1.15;
 }
 
@@ -575,7 +575,7 @@
   align-items: center;
   gap: var(--space-3);
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: var(--space-0-5);
   scrollbar-width: none;
 }
 

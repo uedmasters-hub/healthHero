@@ -17,8 +17,7 @@
   --search-bar-pad-block-end: var(--space-3);
   --search-bar-pad-inline: var(--content-padding);
 
-  padding:
-    var(--search-bar-pad-block-start)
+  padding: var(--search-bar-pad-block-start)
     max(var(--search-bar-pad-inline), env(safe-area-inset-right, 0px))
     var(--search-bar-pad-block-end)
     max(var(--search-bar-pad-inline), env(safe-area-inset-left, 0px));
@@ -111,7 +110,7 @@
   border: var(--border-width) solid var(--border);
   box-shadow: var(--shadow-xs);
   color: var(--text-secondary);
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
 }
 
 .search-dismiss-visual svg {
@@ -209,9 +208,7 @@
   box-sizing: border-box;
   /* Width always reserved — fade/scale only so the mic never shifts */
   transform-origin: center;
-  transition:
-    opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-sheet) var(--ease-emphasized),transform var(--duration-sheet) var(--ease-emphasized);
 }
 
 .search-lang-hit.is-shown {
@@ -250,7 +247,7 @@
   border: none;
   background: transparent;
   margin: 0;
-  padding: 0 12px;
+  padding: 0 var(--space-3);
   min-width: 2.25rem;
   height: 100%;
   display: inline-flex;
@@ -260,7 +257,7 @@
   -webkit-tap-highlight-color: transparent;
   flex: 0 0 auto;
   border-radius: var(--radius-full);
-  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  transition: background var(--duration-normal) var(--ease-standard), color var(--duration-normal) var(--ease-standard), box-shadow var(--duration-normal) var(--ease-standard);
 }
 
 .search-lang-chip {
@@ -268,9 +265,9 @@
   align-items: center;
   justify-content: center;
   font-family: inherit;
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.02em;
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-body);
   line-height: 1;
   color: var(--primary);
   pointer-events: none;
@@ -323,7 +320,7 @@
   z-index: 0;
   background: transparent;
   transform: translate(-50%, -50%);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  transition: background var(--duration-normal) var(--ease-standard), box-shadow var(--duration-normal) var(--ease-standard);
 }
 
 /* Thin ring — idle transparent; listening = animated pulse */
@@ -341,7 +338,7 @@
   border: 1.5px solid transparent;
   background: transparent;
   transform: translate(-50%, -50%);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: border-color var(--duration-normal) var(--ease-standard), box-shadow var(--duration-normal) var(--ease-standard), opacity var(--duration-normal) var(--ease-standard);
 }
 
 .search-field-mic-btn:hover::before {
@@ -361,8 +358,7 @@
 .search-field-mic-btn.is-listening::after,
 .search-field-mic-btn.is-processing::after {
   border-color: color-mix(in srgb, var(--primary) 70%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
     0 0 10px color-mix(in srgb, var(--primary) 24%, transparent);
   animation: search-mic-ring-pulse 1.85s ease-in-out infinite;
 }
@@ -382,15 +378,13 @@
   0%, 100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 10%, transparent),
       0 0 8px color-mix(in srgb, var(--primary) 18%, transparent);
   }
   50% {
     opacity: 0.68;
     transform: translate(-50%, -50%) scale(1.06);
-    box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--primary) 6%, transparent),
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 6%, transparent),
       0 0 14px color-mix(in srgb, var(--primary) 28%, transparent);
   }
 }
@@ -404,7 +398,7 @@
   border: none;
   border-radius: var(--radius-full);
   background: transparent;
-  color: var(--text-faint, var(--text-secondary));
+  color: var(--text-faint);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -414,10 +408,7 @@
   -webkit-tap-highlight-color: transparent;
   opacity: 0;
   transform: scale(0.88);
-  transition:
-    opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-    color 0.15s ease;
+  transition: opacity var(--duration-normal) var(--ease-emphasized),transform var(--duration-normal) var(--ease-emphasized),color var(--duration-fast) var(--ease-standard);
   pointer-events: none;
 }
 
@@ -487,7 +478,7 @@
   height: 20px;
   transform: scale(1);
   transform-origin: center;
-  transition: transform 0.18s var(--ease-standard, ease), opacity 0.18s ease;
+  transition: transform var(--duration-normal) var(--ease-standard), opacity var(--duration-normal) var(--ease-standard);
 }
 
 .search-field-mic-btn:hover .search-field-mic-glyph,
@@ -527,13 +518,13 @@
   opacity: 0;
   pointer-events: none;
   /* Height reserved via .is-reserved — opacity-only changes when text appears */
-  transition: opacity 0.2s ease;
+  transition: opacity var(--duration-normal) var(--ease-standard);
 }
 
 .search-status-layer.is-reserved {
   height: var(--search-status-h);
   min-height: var(--search-status-h);
-  margin-top: 6px;
+  margin-top: var(--space-1-5);
 }
 
 .search-status-layer.is-visible {
@@ -546,11 +537,11 @@
 
 .search-status-text {
   margin: 0;
-  font-size: var(--text-caption-size, 12px);
+  font-size: var(--text-caption-size);
   font-weight: var(--font-weight-regular);
   color: var(--text-secondary);
   line-height: 1.35;
-  letter-spacing: 0.01em;
+  letter-spacing: var(--letter-body);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

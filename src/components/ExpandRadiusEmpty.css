@@ -10,7 +10,7 @@
 .expand-radius-empty__title {
   margin: 0;
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -35,7 +35,7 @@
   padding: 0 var(--space-4);
   border-radius: var(--radius-md);
   font: inherit;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
 }
 

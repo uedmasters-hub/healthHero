@@ -59,7 +59,7 @@
   align-items: center;
   justify-content: center;
   height: 72px;
-  border-radius: var(--radius-md, 12px);
+  border-radius: var(--radius-md);
   background: var(--active-bg, #f7f8fa);
   overflow: hidden;
 }
@@ -71,8 +71,8 @@
 }
 
 .recent-card__name {
-  font-size: var(--text-label-size, 13px);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   line-height: 1.25;
   display: -webkit-box;
