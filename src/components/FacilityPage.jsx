@@ -233,7 +233,7 @@ export default function FacilityPage() {
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing || status === 'refreshing'} />
 
         <div className="profile-hero-card">
-          <div className="dc-card dc-card-profile">
+          <div className="dc-card dc-card-profile ds-card">
             <div className="dc-profile-photo">
               <ProviderAvatar
                 name={facility.name}

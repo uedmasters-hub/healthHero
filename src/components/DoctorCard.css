@@ -1,34 +1,14 @@
+/* Doctor cards — surface + states from .ds-card(.is-interactive);
+   badges .ds-badge · actions .ds-btn / .ds-icon-btn. Geometry only here
+   (SharedHero mirrors these measurements for the morph). */
 .dc-card {
   width: 100%;
-  min-height: 148px;
-  height: 148px;
-  background: var(--surface-2);
-  border: var(--border-width) solid var(--border-subtle);
-  border-radius: var(--radius-card);
-  box-shadow: none;
+  min-height: 9.25rem;
+  height: 9.25rem;
   overflow: hidden;
   display: flex;
   align-items: stretch;
   position: relative;
-  cursor: pointer;
-  outline: none;
-  transition: var(--interact-transition);
-}
-
-.dc-card:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.dc-card:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-}
-
-.dc-card:focus-visible {
-  outline: 3px solid var(--primary-500);
-  outline-offset: 2px;
-  box-shadow: none;
 }
 
 .dc-media {
@@ -116,8 +96,8 @@
 }
 
 .dc-specialty {
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-regular);
   color: var(--text-secondary);
   line-height: 1.3;
   margin: var(--space-0-5) 0 0;
@@ -126,8 +106,8 @@
 .dc-degree {
   margin: var(--space-0-5) 0 0;
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-tertiary);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -136,17 +116,7 @@
 }
 
 .dc-exp {
-  display: inline-flex;
-  align-items: center;
   margin-top: var(--space-1-5);
-  padding: var(--space-1) var(--space-2-5);
-  border-radius: var(--radius-sm);
-  background: var(--chip-bg);
-  color: var(--text-secondary);
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  line-height: 1.3;
-  white-space: nowrap;
 }
 
 .dc-actions {
@@ -158,100 +128,19 @@
 .dc-book {
   flex: 1;
   min-width: 0;
-  height: 40px;
-  background: var(--surface-2);
-  color: var(--text-primary);
-  border: var(--border-width) solid var(--border-subtle);
-  border-radius: var(--radius-card);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  font-family: inherit;
-  letter-spacing: var(--letter-tight);
-  padding: 0 var(--space-3);
-  transition: var(--interact-transition);
 }
 
 .dc-book-icon {
-  width: 16px;
-  height: 16px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
   flex-shrink: 0;
 }
 
 .dc-call {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border: var(--border-width) solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  background: var(--surface-muted);
-  color: var(--icon-color-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: var(--interact-transition);
-}
-
-.dc-call svg {
-  width: 18px;
-  height: 18px;
-}
-
-.dc-book:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.dc-call:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.dc-chat {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border: var(--border-width) solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  background: var(--card-bg);
-  color: var(--icon-color-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: var(--interact-transition);
-}
-
-.dc-chat svg {
-  width: 20px;
-  height: 20px;
-}
-
-.dc-chat:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.dc-chat:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-  transform: none;
-}
-
-.dc-chat:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: default;
-  transform: none;
+  width: var(--icon-btn-visual);
+  height: var(--icon-btn-visual);
+  min-width: var(--icon-btn-visual);
+  min-height: var(--icon-btn-visual);
 }
 
 .dc-card-booking {
@@ -275,6 +164,7 @@
   padding: var(--space-1) 0;
   border: none;
   background: none;
+  color: inherit;
   text-align: left;
   cursor: pointer;
   font-family: inherit;
@@ -285,8 +175,8 @@
 }
 
 .dc-identity-photo {
-  width: 52px;
-  height: 52px;
+  width: var(--avatar-md);
+  height: var(--avatar-md);
   border-radius: var(--radius-full);
   object-fit: cover;
   background: var(--media-bg);
@@ -341,7 +231,7 @@
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  gap: 3px;
+  gap: var(--space-0-5);
 }
 
 .dc-identity .dc-star {
@@ -356,8 +246,6 @@
   align-items: center;
   text-align: center;
   padding: var(--space-4) var(--card-padding) var(--space-5);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
 }
 
 .dc-grid-photo {
@@ -419,11 +307,6 @@
 
 .dc-card-grid .dc-exp {
   margin-top: var(--space-2-5);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius);
-  background: var(--chip-bg);
-  color: var(--text-secondary);
-  font-size: var(--text-caption-size);
 }
 
 .dc-card-grid.is-mini {
@@ -435,10 +318,7 @@
   height: auto;
   flex-direction: column;
   align-items: stretch;
-  padding: 18px var(--space-4) var(--space-4);
-  border-radius: var(--radius-card);
-  border: var(--border-width) solid var(--border);
-  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
 }
 
 .dc-list-top {
@@ -449,8 +329,8 @@
 }
 
 .dc-card-list .dc-grid-photo {
-  width: 72px;
-  height: 72px;
+  width: var(--avatar-xl);
+  height: var(--avatar-xl);
   margin-bottom: 0;
 }
 
@@ -512,23 +392,6 @@
 
 .dc-card-list .dc-exp {
   margin-top: 0;
-  padding: 5px var(--space-3);
-  border-radius: var(--radius);
-  background: var(--chip-bg);
-  color: var(--text-secondary);
-  font-size: var(--text-caption-size);
-}
-
-.dc-recent {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px var(--space-2-5);
-  border-radius: var(--radius);
-  background: var(--surface-muted);
-  color: var(--text-secondary);
-  font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-body);
 }
 
 .dc-list-details {
@@ -550,11 +413,10 @@
 }
 
 .dc-list-row svg {
-  width: 15px;
-  height: 15px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
   flex-shrink: 0;
-  margin-top: 1px;
-  color: var(--text-secondary);
+  color: var(--icon-color-muted);
 }
 
 .dc-list-tags {
@@ -563,23 +425,7 @@
   gap: var(--space-2);
 }
 
-.dc-list-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: 5px var(--space-2-5);
-  border-radius: var(--radius);
-  background: var(--chip-bg);
-  color: var(--text-secondary);
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-}
 
-.dc-list-tag svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-}
 
 .dc-list-avail {
   margin: var(--space-0-5) 0 0;
@@ -595,7 +441,7 @@
   gap: var(--space-3);
   margin-top: var(--space-3-5);
   padding-top: var(--space-3-5);
-  border-top: var(--border-width) solid var(--border);
+  border-top: var(--border-width) solid var(--border-divider);
 }
 
 .dc-card-list .dc-fee {
@@ -604,11 +450,6 @@
 
 .dc-card-list .dc-book {
   flex: none;
-  width: auto;
-  min-width: 128px;
-  height: 42px;
-  border-radius: var(--radius-card);
-  padding: 0 var(--space-4);
 }
 
 .dc-card-profile {
@@ -617,10 +458,7 @@
   align-items: center;
   gap: var(--space-3-5);
   padding: var(--space-3-5) var(--space-4);
-  border-radius: var(--radius-card);
   cursor: default;
-  box-shadow: none;
-  border-color: var(--border);
 }
 
 button.dc-card-profile {
@@ -632,8 +470,8 @@ button.dc-card-profile {
 }
 
 .dc-profile-photo {
-  width: 72px;
-  height: 72px;
+  width: var(--avatar-xl);
+  height: var(--avatar-xl);
   border-radius: var(--radius-full);
   overflow: hidden;
   background: var(--avatar-bg);
@@ -671,7 +509,7 @@ button.dc-card-profile {
 }
 
 .dc-card-profile .dc-specialty {
-  margin: 3px 0 0;
+  margin: var(--space-0-5) 0 0;
 }
 
 .dc-card-profile .dc-exp {
@@ -690,6 +528,6 @@ button.dc-card-profile {
 }
 
 .dc-fee strong {
-  color: var(--text-primary);
+  color: var(--pp-headline);
   font-weight: var(--font-weight-medium);
 }

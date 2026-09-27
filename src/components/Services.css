@@ -193,21 +193,18 @@
   width: 48px;
   height: 48px;
   border-radius: var(--radius);
-  background: var(--border);
 }
 
 .sheet-skeleton-text {
   width: 70%;
   height: 12px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .sheet-skeleton-text-sm {
   width: 50%;
   height: 10px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .sheet-content-layer {

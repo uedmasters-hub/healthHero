@@ -205,13 +205,13 @@ export default function PharmacyBrowsePage() {
         className={`filter-option ${active ? 'active' : ''}`}
         onClick={onSelect}
       >
-        <div className="filter-option-circle" />
+        <span className="filter-option-circle ds-radio" aria-hidden="true" />
         <span className="filter-option-label">{label}</span>
         <span
           className={`filter-option-count-slot${countReady ? ' is-loaded' : ' is-loading'}`}
           aria-busy={!countReady}
         >
-          <span className="filter-option-count-skel" aria-hidden="true" />
+          <span className="filter-option-count-skel shimmer" aria-hidden="true" />
           <span className="filter-option-count">
             {countLabel || '\u00a0'}
           </span>
@@ -243,10 +243,17 @@ export default function PharmacyBrowsePage() {
 
         {!loading && error ? (
           <div className="dir-shell__empty">
-            <EmptyState image="/img/empty_state/pharmacy.png" alt="" title="Couldn’t load pharmacies" message={error} />
-            <button type="button" className="dir-shell__load-more" onClick={() => loadPage({ page: 0 })}>
-              Try again
-            </button>
+            <EmptyState
+              image="/img/empty_state/pharmacy.png"
+              alt=""
+              title="Couldn’t load pharmacies"
+              message={error}
+              action={(
+                <button type="button" className="ds-btn ds-btn--secondary ds-btn--md" onClick={() => loadPage({ page: 0 })}>
+                  Try again
+                </button>
+              )}
+            />
           </div>
         ) : null}
 
@@ -283,7 +290,7 @@ export default function PharmacyBrowsePage() {
               <li>
                 <button
                   type="button"
-                  className="dir-shell__load-more"
+                  className="dir-shell__load-more ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
                   disabled={loadingMore}
                   onClick={() => loadPage({ page: page + 1, append: true })}
                 >

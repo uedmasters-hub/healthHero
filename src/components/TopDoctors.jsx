@@ -101,7 +101,7 @@ export default function TopDoctors() {
         <h2 className="ds-section-head__title">Top 10 Doctor Speciality</h2>
         <button type="button" className="ds-link" onClick={openTopDoctors}>View all</button>
       </div>
-      <div className="doctors-scroll" ref={containerRef}>
+      <div className="doctors-scroll ds-chip-row" ref={containerRef}>
         {doctors.map((doctor, i) => {
           const isPlaceholder = shared?.active && shared.sourceDoctorId === doctor.id
           const shown = holdCachedCards

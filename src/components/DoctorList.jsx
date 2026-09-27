@@ -610,14 +610,14 @@ export default function DoctorList({
                   closeFilter()
                 }}
               >
-                <div className="filter-option-circle" />
+                <span className="filter-option-circle ds-radio" aria-hidden="true" />
                 <span className="filter-option-label">{optionLabel(opt)}</span>
                 {showCount ? (
                   <span
                     className={`filter-option-count-slot${countReady ? ' is-loaded' : ' is-loading'}`}
                     aria-busy={!countReady}
                   >
-                    <span className="filter-option-count-skel" aria-hidden="true" />
+                    <span className="filter-option-count-skel shimmer" aria-hidden="true" />
                     <span className="filter-option-count">
                       {countLabel || '\u00a0'}
                     </span>
@@ -779,7 +779,7 @@ export default function DoctorList({
               {atMaxRadius ? (
                 <button
                   type="button"
-                  className={`radius-flow__action${showNepalCta ? ' is-shown' : ''}`}
+                  className={`radius-flow__action ds-btn ds-btn--outline ds-btn--md${showNepalCta ? ' is-shown' : ''}`}
                   aria-hidden={showNepalCta ? undefined : true}
                   tabIndex={showNepalCta ? 0 : -1}
                   onClick={showNepalCta ? searchAcrossNepal : undefined}
@@ -795,14 +795,14 @@ export default function DoctorList({
               <p className="radius-nepal__copy" role="status">{nationwideEmptyTitle(dateLabel)}</p>
               <p className="radius-nepal__hint">{NATIONWIDE_EMPTY_HINT}</p>
             </div>
-            <button type="button" className="radius-flow__action" onClick={searchNearby}>
+            <button type="button" className="radius-flow__action ds-btn ds-btn--outline ds-btn--md" onClick={searchNearby}>
               Search nearby
             </button>
           </div>
         ) : filteredDoctors.length === 0 ? (
-          <div className="dir-shell__empty doctors-empty">
-            <h3>No doctors match</h3>
-            <p role="status">
+          <div className="dir-shell__empty doctors-empty ds-empty">
+            <h3 className="ds-empty__title">No doctors match</h3>
+            <p className="ds-empty__copy" role="status">
               {selectedAvailability !== 'All'
                 ? `No doctors have an open slot for ${dateLabel || selectedAvailability.toLowerCase()}.`
                 : search.trim()
@@ -820,9 +820,9 @@ export default function DoctorList({
                 onExpand={() => expandRadius()}
               />
             ) : null}
-            <div className="doctors-empty-suggestions">
+            <div className="doctors-empty-suggestions ds-empty__actions">
               {emptySuggestions.map((item) => (
-                <button type="button" key={item.id} onClick={item.run}>
+                <button type="button" className="ds-chip ds-chip--sm" key={item.id} onClick={item.run}>
                   {item.label}
                 </button>
               ))}

@@ -28,12 +28,12 @@ export default function HealthInsights() {
           View all
         </button>
       </div>
-      <div className="insights-scroll" ref={containerRef}>
+      <div className="insights-scroll ds-chip-row" ref={containerRef}>
         {insights.map((insight, i) => (
           <RevealItem
             as="button"
             type="button"
-            className="insight-card"
+            className="insight-card ds-card is-interactive"
             key={insight.id}
             revealed={isRevealed(i)}
             cached={isCached}

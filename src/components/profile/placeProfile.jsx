@@ -99,7 +99,7 @@ export function PharmacyHeroCard({ pharmacy, onClick }) {
   return (
     <Tag
       type={onClick ? 'button' : undefined}
-      className="dc-card dc-card-profile"
+      className={`dc-card dc-card-profile ds-card${onClick ? ' is-interactive' : ''}`}
       onClick={onClick}
       aria-label={onClick ? `Open ${displayName} profile` : undefined}
     >

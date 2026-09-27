@@ -7,7 +7,7 @@
   padding: 0 var(--space-5) var(--space-6);
 }
 .select-provider .booking-stack {
-  min-height: 480px;
+  min-height: 30rem;
 }
 
 .select-provider .booking-body.is-ready {
@@ -18,47 +18,6 @@
   transition: opacity var(--duration-moderate) var(--ease-sheet);
 }
 
-.doctors-empty {
-  text-align: center;
-  padding: 36px var(--space-4) var(--space-7);
-}
-.doctors-empty h3 {
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  margin-bottom: var(--space-2);
-}
-
-.doctors-empty p {
-  font-size: var(--text-body-size);
-  color: var(--text-muted);
-  line-height: 1.5;
-  max-width: 280px;
-  margin: 0 auto var(--space-4);
-}
-
-.doctors-empty-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-2);
-}
-
-.doctors-empty-suggestions button {
-  border: var(--border-width) solid var(--border);
-  background: var(--surface-2);
-  color: var(--text-primary);
-  border-radius: var(--radius-pill);
-  padding: var(--space-2) var(--space-3-5);
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  cursor: pointer;
-}
-@keyframes doctor-list-shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
 /* Filter sheet — chrome from AppBottomSheet; local rules are options layout */
 .ds-sheet.filter-sheet {
   max-height: 60vh;
@@ -79,69 +38,41 @@
   padding: var(--space-3-5) var(--space-3);
   background: none;
   border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
+  border-radius: var(--card-radius-sm);
   font-family: inherit;
-  transition: var(--interact-transition);
   text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
 }
 
-.filter-option:hover:not(.active) {
-  background: var(--interact-hover-bg);
-}
+.filter-option:hover:not(.active) { background: var(--state-hover); }
+.filter-option:active:not(.active) { background: var(--state-pressed); }
+.filter-option.active { background: var(--primary-200); }
 
-.filter-option:active:not(.active) {
-  background: var(--interact-pressed-bg);
-}
-
-.filter-option.active {
-  background: var(--interact-selected-bg);
-}
-
-.filter-option-circle {
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
-  border: var(--border-width-strong) solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all var(--transition);
-}
-
-.filter-option.active .filter-option-circle {
-  border-color: var(--primary);
-  background: var(--cta);
-}
-
-.filter-option.active .filter-option-circle::after {
-  content: '✓';
-  color: white;
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-}
+/* Radio glyph from .ds-radio — selected row turns it on */
+.filter-option.active .filter-option-circle { border-color: var(--primary-950); }
+.filter-option.active .filter-option-circle::after { transform: scale(1); }
 
 .filter-option-label {
   flex: 1;
   min-width: 0;
   text-align: left;
-  font-size: var(--text-body-lg-size);
+  font-size: var(--text-body-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .filter-option.active .filter-option-label {
-  color: var(--primary);
-  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
 }
 
 .filter-option-count-slot {
   position: relative;
   flex-shrink: 0;
   margin-left: auto;
-  min-width: 36px;
-  height: 16px;
+  min-width: var(--btn-height-sm);
+  height: var(--space-4);
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
@@ -151,18 +82,10 @@
   position: absolute;
   right: 0;
   top: 50%;
-  width: 32px;
-  height: 14px;
+  width: var(--space-8);
+  height: var(--space-3-5);
   border-radius: var(--radius-full);
   transform: translateY(-50%);
-  background: linear-gradient(
-    90deg,
-    var(--surface-muted) 0%,
-    var(--border) 50%,
-    var(--surface-muted) 100%
-  );
-  background-size: 200% 100%;
-  animation: doctor-list-shimmer 1.1s ease-in-out infinite;
   opacity: var(--opacity-visible);
   transition: opacity var(--duration-normal) var(--ease-standard);
   pointer-events: none;
@@ -175,7 +98,7 @@
 .filter-option-count {
   position: relative;
   z-index: 1;
-  min-width: 28px;
+  min-width: var(--space-7);
   text-align: right;
   font-size: var(--text-label-size);
   line-height: var(--text-label-line);

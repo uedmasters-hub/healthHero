@@ -139,6 +139,9 @@
   opacity: 1;
 }
 .ds-btn--outline:disabled { border-color: var(--neutral-300); color: var(--btn-disabled-fg); }
+.ds-btn--glass:disabled,
+.ds-btn--inverse:disabled,
+.ds-btn--danger-quiet:disabled { opacity: var(--opacity-disabled); }
 .ds-btn--text:disabled { color: var(--text-disabled); }
 
 /* Busy — label stays for width; spinner overlays */

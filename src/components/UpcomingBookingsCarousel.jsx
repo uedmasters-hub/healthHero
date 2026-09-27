@@ -26,6 +26,7 @@ import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
 import AppointmentMenuOptions from './AppointmentMenuOptions'
 import './BookAppointment.css'
+import { EmptyState } from './ui'
 
 function bookingKey(booking) {
   return String(booking?.engineId || booking?.id || '')
@@ -384,7 +385,7 @@ function UpcomingBookingCard({
       <div className="upcoming-card-inner">
         <div className="upcoming-card-header">
           <span className="upcoming-context">{context}</span>
-          <span className={`upcoming-badge upcoming-status is-${badgeTone}`}>{chip}</span>
+          <span className={`ds-badge upcoming-badge upcoming-status is-${badgeTone}`}>{chip}</span>
         </div>
 
         <div className="upcoming-top">
@@ -421,7 +422,7 @@ function UpcomingBookingCard({
                 <button
                   key={action.id}
                   type="button"
-                  className={secondary ? 'upcoming-checkin-not-yet' : 'upcoming-checkin-yes'}
+                  className={`ds-btn ds-btn--sm ${secondary ? 'ds-btn--glass upcoming-checkin-not-yet' : 'ds-btn--inverse upcoming-checkin-yes'}`}
                   onClick={(e) => onRelayAction(action, e)}
                   disabled={busy}
                   aria-busy={busy || undefined}
@@ -621,12 +622,12 @@ export default function UpcomingBookingsCarousel({
     return (
       <div className={`book-appointment ${className}`.trim()}>
         {!hideHeader ? (
-          <div className="upcoming-header">
-            <h3 className="upcoming-label">Upcoming Bookings</h3>
+          <div className="upcoming-header ds-section-head">
+            <h3 className="ds-section-head__title">Upcoming Bookings</h3>
           </div>
         ) : null}
         <div className="upcoming-carousel-skel" aria-hidden="true">
-          <div className="upcoming-skel-card shimmer" />
+          <div className="upcoming-skel-card ds-skel is-card" />
         </div>
       </div>
     )
@@ -637,11 +638,11 @@ export default function UpcomingBookingsCarousel({
       return (
         <div className={`book-appointment ${className}`.trim()}>
           {!hideHeader ? (
-            <div className="upcoming-header">
-              <h3 className="upcoming-label">Upcoming Bookings</h3>
+            <div className="upcoming-header ds-section-head">
+              <h3 className="ds-section-head__title">Upcoming Bookings</h3>
             </div>
           ) : null}
-          <p className="upcoming-empty" role="status">No upcoming bookings yet.</p>
+          <div className="upcoming-empty"><EmptyState card compact role="status" message="No upcoming bookings yet." /></div>
         </div>
       )
     }
@@ -653,7 +654,7 @@ export default function UpcomingBookingsCarousel({
             <p className="book-appointment-subtitle">Consult with trusted doctors anytime.</p>
             <button
               type="button"
-              className="book-now-btn"
+              className="book-now-btn ds-btn ds-btn--primary ds-btn--md"
               onClick={() => navigate('/booking', {
                 state: {
                   origin,
@@ -677,10 +678,10 @@ export default function UpcomingBookingsCarousel({
   return (
     <div className={`book-appointment has-carousel ${className}`.trim()}>
       {!hideHeader ? (
-        <div className="upcoming-header">
-          <h3 className="upcoming-label" id={`journey-carousel-label-${origin}`}>{sectionLabel}</h3>
+        <div className="upcoming-header ds-section-head">
+          <h3 className="ds-section-head__title" id={`journey-carousel-label-${origin}`}>{sectionLabel}</h3>
           {!hideSeeMore ? (
-            <button type="button" className="upcoming-see-more" onClick={handleSeeMore}>
+            <button type="button" className="ds-link" onClick={handleSeeMore}>
               {seeMoreLabel}
             </button>
           ) : null}

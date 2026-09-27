@@ -145,7 +145,7 @@
   width: 100%;
   min-height: 0;
   height: 100%;
-  animation: radius-fade var(--duration-slow) var(--ease-emphasized);
+  animation: fadeIn var(--duration-slow) var(--ease-emphasized);
 }
 
 .radius-flow__copy,
@@ -167,7 +167,7 @@
   font-size: var(--text-body-lg-size);
   font-weight: var(--font-weight-medium);
   line-height: 1.4;
-  color: var(--primary-800);
+  color: var(--pp-headline);
   text-wrap: balance;
 }
 
@@ -177,21 +177,12 @@
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-regular);
   line-height: 1.4;
-  color: var(--neutral-500);
+  color: var(--text-tertiary);
   text-wrap: balance;
 }
 
 .radius-flow__action {
-  min-height: var(--touch-min);
-  padding: 0 var(--space-6);
-  border: 1.5px solid var(--primary-600);
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--primary-800);
-  font: inherit;
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
+  /* chrome from .ds-btn.ds-btn--outline.ds-btn--md; reveal only */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -207,19 +198,6 @@
   transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized),visibility 0s;
 }
 
-.radius-flow__action:hover {
-  background: color-mix(in srgb, var(--primary-400) 12%, transparent);
-}
-
-.radius-flow__action:active {
-  background: color-mix(in srgb, var(--primary-400) 22%, transparent);
-}
-
-.radius-flow__action:focus-visible {
-  outline: 2px solid var(--primary-600);
-  outline-offset: 3px;
-}
-
 .radius-nepal {
   display: flex;
   flex: 1;
@@ -231,7 +209,7 @@
   min-height: 0;
   padding: 0 var(--space-4);
   text-align: center;
-  animation: radius-fade var(--duration-slow) var(--ease-emphasized);
+  animation: fadeIn var(--duration-slow) var(--ease-emphasized);
 }
 
 .radius-nepal > .radius-flow__action:not(.is-shown) {
@@ -245,7 +223,7 @@
 
 .radius-reveal {
   width: 100%;
-  animation: radius-fade var(--duration-moderate) var(--ease-emphasized);
+  animation: fadeIn var(--duration-moderate) var(--ease-emphasized);
 }
 
 .doctors-empty:has(.radius-dial) h3 {
@@ -262,11 +240,6 @@
     opacity: 1;
     transform: none;
   }
-}
-
-@keyframes radius-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

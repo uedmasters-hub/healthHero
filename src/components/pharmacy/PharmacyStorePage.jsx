@@ -126,7 +126,7 @@ export default function PharmacyStorePage() {
       <div className="shop-store-scroll" ref={scrollRef}>
         <section className="shop-pharmacy-card" aria-label={name}>
           {!cardReady ? (
-            <div className="dc-card dc-card-profile shop-pharmacy-card__skel shimmer" aria-hidden="true" />
+            <div className="dc-card dc-card-profile shop-pharmacy-card__skel ds-skel is-card" aria-hidden="true" />
           ) : (
             <PharmacyHeroCard
               pharmacy={pharmacy || { id: storeId, pharmacyUuid: storeId, name }}

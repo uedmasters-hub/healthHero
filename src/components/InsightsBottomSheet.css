@@ -114,7 +114,6 @@
   width: 88%;
   height: 12px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .insights-sheet-skel-line.is-short {
@@ -125,7 +124,6 @@
   width: 36%;
   height: 10px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .insights-sheet-skel-thumb {
@@ -133,7 +131,6 @@
   height: calc(var(--space-10) * 2);
   border-radius: var(--radius);
   flex-shrink: 0;
-  background: var(--border);
 }
 
 .insights-sheet-body {

@@ -107,9 +107,11 @@
 
 /* ── Skeleton ─────────────────────────────────────────────────────────────
    PP `.pp-skeleton`: lavender base + white sheen, 1.55s. `.shimmer` is the
-   legacy name used by every screen skeleton — same look.                   */
-.shimmer,
-.ds-skel {
+   legacy name used by every screen skeleton — same look.
+   `:not(#ds)` lifts specificity so a screen's placeholder shape can never
+   repaint the sheen (screens set size/radius only).                       */
+.shimmer:not(#ds),
+.ds-skel:not(#ds) {
   background-color: var(--skel-base);
   background-image: linear-gradient(
     105deg,

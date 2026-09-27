@@ -183,21 +183,18 @@
   width: 72px;
   height: 72px;
   border-radius: var(--radius);
-  background: var(--border);
 }
 
 .skeleton-text {
   width: 70%;
   height: 12px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .skeleton-text-sm {
   width: 50%;
   height: 10px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 @keyframes shimmer {
