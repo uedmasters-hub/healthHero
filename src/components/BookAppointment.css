@@ -15,24 +15,6 @@
   padding: 0 var(--content-padding);
 }
 
-.upcoming-badge.is-booked,
-.upcoming-badge.is-prepared {
-  background: var(--featured-glass);
-  color: var(--featured-ink);
-  border-color: var(--featured-glass-border);
-}
-
-.upcoming-badge.is-checked_in {
-  background: var(--badge-ready-bg);
-  color: var(--badge-ready-fg);
-  border-color: var(--badge-ready-border);
-}
-
-.upcoming-badge.is-payment_pending {
-  background: var(--warning-bg);
-  color: var(--warning);
-}
-
 .upcoming-carousel {
   --relay-card-gap: var(--space-2);
   --relay-peek: var(--space-6);

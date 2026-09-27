@@ -26,7 +26,6 @@ import {
   EntityCardSkeletonStack,
 } from './directory'
 import './SelectProvider.css'
-import './ExpandRadiusEmpty.css'
 
 const PAGE_SIZE = PHARMACIES_PAGE_SIZE || 24
 

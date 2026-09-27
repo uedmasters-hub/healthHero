@@ -22,8 +22,6 @@ import {
   EntityCardSkeletonStack,
 } from './directory'
 import './pharmacy/PharmacyPage.css'
-import './Services.css'
-import './ExpandRadiusEmpty.css'
 
 const PAGE_SIZE = 8
 
@@ -248,38 +246,42 @@ export default function CentersPage() {
             {(loading || waitingForLocation) ? <EntityCardSkeletonStack count={3} /> : null}
 
             {!loading && !waitingForLocation && error ? (
-              <div className="pharmacy-nearby-empty">
-                <EmptyState
-                  image="/img/empty_state/hospital.png"
-                  alt=""
-                  title="Couldn’t load facilities"
-                  message={error}
-                />
-                <button type="button" className="pharmacy-nearby-retry" onClick={() => loadPage({ page: 0 })}>
-                  Try again
-                </button>
-              </div>
+              <EmptyState
+                card
+                image="/img/empty_state/hospital.png"
+                alt=""
+                title="Couldn’t load facilities"
+                message={error}
+                action={(
+                  <button type="button" className="ds-btn ds-btn--primary ds-btn--sm" onClick={() => loadPage({ page: 0 })}>
+                    Try again
+                  </button>
+                )}
+              />
             ) : null}
 
             {!loading && needsLocation ? (
-              <div className="pharmacy-nearby-empty">
-                <EmptyState
-                  image="/img/empty_state/hospital.png"
-                  alt=""
-                  title="Set your location"
-                  message="Allow precise location or pick a place to find nearby facilities."
-                />
-              </div>
+              <EmptyState
+                card
+                image="/img/empty_state/hospital.png"
+                alt=""
+                title="Set your location"
+                message="Allow precise location or pick a place to find nearby facilities."
+              />
             ) : null}
 
             {!loading && !error && locationReady && !centers.length ? (
               kind ? (
-                <div className="pharmacy-nearby-empty">
-                  <p>No {FACILITY_FILTERS.find((item) => item.id === kind)?.label.toLowerCase() || 'matching'} facilities nearby.</p>
-                  <button type="button" className="pharmacy-nearby-retry" onClick={() => focusFacilities(null)}>
-                    See all facilities
-                  </button>
-                </div>
+                <EmptyState
+                  card
+                  compact
+                  message={`No ${FACILITY_FILTERS.find((item) => item.id === kind)?.label.toLowerCase() || 'matching'} facilities nearby.`}
+                  action={(
+                    <button type="button" className="ds-btn ds-btn--secondary ds-btn--sm" onClick={() => focusFacilities(null)}>
+                      See all facilities
+                    </button>
+                  )}
+                />
               ) : (
                 <ExpandRadiusEmpty
                   radiusKm={radiusKm}
@@ -305,7 +307,7 @@ export default function CentersPage() {
             {!loading && !error && hasMore ? (
               <button
                 type="button"
-                className="pharmacy-nearby-more"
+                className="pharmacy-nearby-more ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
                 onClick={() => loadPage({ page: page + 1, append: true })}
                 disabled={loadingMore}
               >

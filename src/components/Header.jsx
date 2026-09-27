@@ -14,7 +14,6 @@ import {
 import { NEPAL_MAJOR_CITIES } from '../data/nepalGeography'
 import { EmptyState, Icon } from './ui'
 import './Header.css'
-import './ExpandRadiusEmpty.css'
 
 const GpsIcon = () => (
   <svg className="location-gps-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

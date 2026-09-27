@@ -177,7 +177,7 @@ export default function NotificationsPage() {
                     <span>{item.time}</span>
                   </div>
                   <p>{relay?.message || item.body}</p>
-                  {relay ? <span className={`relay-chip is-${relay.accent}`}>{relay.label}</span> : null}
+                  {relay ? <span className={`ds-badge relay-chip is-${relay.accent}`}>{relay.label}</span> : null}
                 </div>
                 {item.unread && <span className="notification-unread-dot" />}
               </button>

@@ -13,7 +13,6 @@ import {
 import { flowState } from '../lib/careFlow'
 import { useAppLocation } from '../features/location'
 import ExpandRadiusEmpty from './ExpandRadiusEmpty'
-import './ExpandRadiusEmpty.css'
 import {
   PHARMACY_CATEGORIES,
   PHARMACY_ORDERS,
@@ -37,8 +36,6 @@ import {
   EntityCardSkeletonStack,
 } from './directory'
 import './pharmacy/PharmacyPage.css'
-import './Services.css'
-import './SelectProvider.css'
 import { Button, EmptyState, SectionHead } from './ui'
 
 const PREVIEW_ACTIONS = new Set(['refill', 'upload-rx', 'essentials', 'order-medicine', 'category', 'recent', 'orders', 'tip'])

@@ -341,11 +341,15 @@
   box-shadow: none;
 }
 
-.ds-card.is-interactive {
+/* :where() keeps the defaults overridable by a screen's layout rule */
+.ds-card:where(.is-interactive) {
   width: 100%;
+  text-align: left;
+}
+
+.ds-card.is-interactive {
   font: inherit;
   color: inherit;
-  text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: var(--interact-transition);

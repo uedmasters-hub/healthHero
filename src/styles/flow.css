@@ -112,86 +112,109 @@
 }
 
 /* —— Care-journey status tones ——
-   One tone map for Home relay cards, Treat history and relay chips.       */
+   Two surfaces, one vocabulary (accents from booking/relayStates.js):
+   · .upcoming-badge  sits on the dark featured gradient (Home relay card)
+   · .treat-history-badge / .relay-chip sit on white cards and lists       */
+
+/* Featured gradient (relay accents + booking statuses) */
 .upcoming-badge.is-upcoming,
 .upcoming-badge.is-visit,
-.treat-history-badge.is-upcoming,
-.treat-history-badge.is-visit,
-.relay-chip.is-upcoming,
-.relay-chip.is-visit {
+.upcoming-badge.is-booked,
+.upcoming-badge.is-prepared {
   background: var(--featured-glass);
   color: var(--featured-ink);
-  border: var(--border-width) solid var(--featured-glass-border);
+  border-color: var(--featured-glass-border);
 }
 
 .upcoming-badge.is-checkin,
-.treat-history-badge.is-checkin,
-.relay-chip.is-checkin {
+.upcoming-badge.is-checked_in {
   background: var(--badge-ready-bg);
   color: var(--badge-ready-fg);
-  border: var(--border-width) solid var(--badge-ready-border);
+  border-color: var(--badge-ready-border);
 }
 
 .upcoming-badge.is-waiting,
 .upcoming-badge.is-missed,
-.treat-history-badge.is-waiting,
-.treat-history-badge.is-missed,
-.relay-chip.is-waiting,
-.relay-chip.is-missed {
+.upcoming-badge.is-payment_pending {
   background: var(--warning-500);
   color: var(--warning-900);
-  border: var(--border-width) solid transparent;
 }
 
 .upcoming-badge.is-reported,
 .upcoming-badge.is-prescription,
-.upcoming-badge.is-confirmed,
+.upcoming-badge.is-confirmed {
+  background: var(--success-300);
+  color: var(--success-900);
+}
+
+.upcoming-badge.is-tests,
+.upcoming-badge.is-follow {
+  background: var(--secondary-500);
+  color: var(--secondary-900);
+}
+
+.upcoming-badge.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+}
+
+.upcoming-badge.is-cancelled {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+/* Light surfaces */
+.treat-history-badge.is-upcoming,
+.relay-chip.is-upcoming,
+.treat-history-badge.is-waiting,
+.treat-history-badge.is-missed,
+.relay-chip.is-waiting,
+.relay-chip.is-missed {
+  background: var(--color-warning-subtle);
+  color: var(--warning-900);
+}
+
+.treat-history-badge.is-visit,
+.relay-chip.is-visit,
+.treat-history-badge.is-referral,
+.relay-chip.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+}
+
+.treat-history-badge.is-active,
+.treat-history-badge.is-checkin,
+.relay-chip.is-checkin {
+  background: var(--badge-ready-bg);
+  color: var(--badge-ready-fg);
+  border-color: var(--badge-ready-border);
+}
+
 .treat-history-badge.is-reported,
 .treat-history-badge.is-prescription,
 .treat-history-badge.is-confirmed,
 .relay-chip.is-reported,
 .relay-chip.is-prescription,
 .relay-chip.is-confirmed {
-  background: var(--success-300);
+  background: var(--color-success-subtle);
   color: var(--success-900);
-  border: var(--border-width) solid transparent;
 }
 
-.upcoming-badge.is-tests,
-.upcoming-badge.is-follow,
 .treat-history-badge.is-tests,
 .treat-history-badge.is-follow,
 .relay-chip.is-tests,
 .relay-chip.is-follow {
-  background: var(--secondary-500);
+  background: var(--color-wellness-subtle);
   color: var(--secondary-900);
-  border: var(--border-width) solid transparent;
 }
 
-.upcoming-badge.is-referral,
-.treat-history-badge.is-referral,
-.relay-chip.is-referral {
-  background: var(--primary-300);
-  color: var(--primary-950);
-  border: var(--border-width) solid transparent;
-}
-
-.upcoming-badge.is-cancelled,
+.treat-history-badge.is-completed,
 .treat-history-badge.is-cancelled,
 .relay-chip.is-cancelled {
   background: var(--neutral-200);
   color: var(--neutral-700);
-  border: var(--border-width) solid transparent;
 }
 
 .relay-chip {
-  display: inline-flex;
-  align-items: center;
   margin-top: var(--space-1-5);
-  min-height: var(--badge-height);
-  padding: 0 var(--badge-pad-x);
-  border-radius: var(--radius-full);
-  font-size: var(--badge-font);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-body);
 }
