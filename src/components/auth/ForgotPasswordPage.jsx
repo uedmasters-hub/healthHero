@@ -54,12 +54,12 @@ export default function ForgotPasswordPage() {
         : 'Enter the email on your account.'}
       extra={<AuthTrust />}
       footer={(
-        <Link to="/login" className="auth-text-btn">Back to sign in</Link>
+        <Link to="/login" className="auth-text-btn ds-link">Back to sign in</Link>
       )}
     >
       {sent ? null : (
         <form className="auth-form" onSubmit={onSubmit} noValidate>
-          {formError ? <p className="auth-banner" role="alert">{formError}</p> : null}
+          {formError ? <p className="auth-banner ds-callout is-danger" role="alert">{formError}</p> : null}
           <AuthField
             id="reset-identifier"
             label="Email"

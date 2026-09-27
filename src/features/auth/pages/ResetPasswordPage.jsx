@@ -67,11 +67,11 @@ export default function ResetPasswordPage() {
           ? 'Choose a strong password for your account.'
           : 'This reset link is invalid or has expired.'}
       extra={<AuthTrust />}
-      footer={<Link to="/forgot" className="auth-text-btn">Request a new link</Link>}
+      footer={<Link to="/forgot" className="auth-text-btn ds-link">Request a new link</Link>}
     >
       {done || !canReset ? null : (
         <form className="auth-form" onSubmit={onSubmit} noValidate>
-          {formError ? <p className="auth-banner" role="alert">{formError}</p> : null}
+          {formError ? <p className="auth-banner ds-callout is-danger" role="alert">{formError}</p> : null}
           <AuthField
             id="reset-password"
             label="New password"

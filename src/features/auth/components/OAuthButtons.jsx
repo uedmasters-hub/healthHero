@@ -11,17 +11,17 @@ export default function OAuthButtons({
 }) {
   return (
     <div className="auth-oauth">
-      <div className="auth-oauth-rule" role="separator">
+      <div className="auth-oauth-rule ds-divider-label" role="separator">
         <span>or continue with</span>
       </div>
       <div className="auth-oauth-row">
-        <button type="button" className="auth-oauth-btn" onClick={onGoogle} disabled={busy}>
+        <button type="button" className="auth-oauth-btn ds-btn ds-btn--secondary ds-btn--lg" onClick={onGoogle} disabled={busy}>
           <GoogleMark />
           Google
         </button>
         <button
           type="button"
-          className="auth-oauth-btn"
+          className="auth-oauth-btn ds-btn ds-btn--secondary ds-btn--lg"
           onClick={onApple}
           disabled={busy || !appleReady}
           title={appleReady ? 'Continue with Apple' : 'Apple Sign-In will be available once credentials are configured'}

@@ -30,7 +30,7 @@ export function AuthSkeleton({ fields = 2 }) {
 export function AuthTrust() {
   return (
     <div className="auth-trust">
-      <p className="auth-trust-badge">
+      <p className="auth-trust-badge ds-badge is-primary is-caps">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           <path d="M9 12l2 2 4-4" />
@@ -81,10 +81,10 @@ export function AuthLayout({
 
 export function AuthSubmit({ busy, children, disabled }) {
   return (
-    <button type="submit" className="auth-cta" disabled={disabled || busy}>
+    <button type="submit" className="auth-cta ds-btn ds-btn--primary ds-btn--lg ds-btn--block" disabled={disabled || busy}>
       {busy ? (
         <span className="auth-cta-busy">
-          <span className="auth-spinner" aria-hidden="true" />
+          <span className="ds-spinner" aria-hidden="true" />
           <span>{children}</span>
         </span>
       ) : children}

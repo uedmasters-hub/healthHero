@@ -150,7 +150,7 @@ export default function EmailOtpVerify({
             {onChangeEmail ? (
               <button
                 type="button"
-                className="auth-text-btn auth-otp-change"
+                className="auth-text-btn auth-otp-change ds-link"
                 onClick={onChangeEmail}
                 disabled={verifying}
               >
@@ -175,7 +175,7 @@ export default function EmailOtpVerify({
           />
           {verifying ? (
             <div className="auth-otp-verifying" role="status" aria-live="polite">
-              <span className="auth-spinner auth-spinner--dark" aria-hidden="true" />
+              <span className="ds-spinner" aria-hidden="true" />
               <span>Verifying…</span>
             </div>
           ) : null}
@@ -192,7 +192,7 @@ export default function EmailOtpVerify({
           ) : (
             <button
               type="button"
-              className="auth-text-btn"
+              className="auth-text-btn ds-link"
               onClick={handleResend}
               disabled={resendBusy || verifying}
             >
@@ -203,7 +203,7 @@ export default function EmailOtpVerify({
 
         {showOpenApp ? (
           <a
-            className="auth-otp-open-app"
+            className="auth-otp-open-app ds-btn ds-btn--secondary ds-btn--md"
             href={confirmationUrl}
             target="_blank"
             rel="noreferrer"

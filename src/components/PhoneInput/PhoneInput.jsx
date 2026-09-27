@@ -3,6 +3,7 @@ import countries from './countries'
 import AppBottomSheet from '../AppBottomSheet'
 import { useAppSheet } from '../PageTransition'
 import './PhoneInput.css'
+import { EmptyState, Icon } from '../ui'
 
 export function toE164(countryCode, localNumber) {
   const cc = (countryCode || '').replace('+', '')
@@ -71,28 +72,25 @@ function CountrySheet({ selected, onChange, onClose, closing = false }) {
       sheetClassName="phone-sheet"
       keyboardAware
     >
-        <div className="phone-sheet-header">
-          <h3 id="phone-sheet-title" className="phone-sheet-title">Select country</h3>
-          <button type="button" className="phone-sheet-close" onClick={onClose} aria-label="Close">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+        <div className="ds-sheet-header phone-sheet-header">
+          <h3 id="phone-sheet-title" className="ds-sheet-title">Select country</h3>
+          <button type="button" className="ds-sheet-close" onClick={onClose} aria-label="Close">
+            <Icon.Close />
           </button>
         </div>
-        <div className="phone-sheet-search">
-          <svg className="phone-sheet-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
+        <div className="phone-sheet-search ds-search">
+          <Icon.Search className="ds-search__icon" />
           <input
             ref={inputRef}
             value={search}
             onChange={(e) => { setSearch(e.target.value); setActiveIndex(0) }}
             onKeyDown={handleKeyDown}
             placeholder="Search by name or code..."
-            className="phone-sheet-search-input"
+            className="ds-search__input"
+            aria-label="Search countries"
           />
           {search && (
-            <button type="button" className="phone-sheet-search-clear" onClick={() => { setSearch(''); setActiveIndex(0) }} aria-label="Clear search">
+            <button type="button" className="ds-icon-btn is-sm-size is-muted" onClick={() => { setSearch(''); setActiveIndex(0) }} aria-label="Clear search">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
@@ -101,7 +99,7 @@ function CountrySheet({ selected, onChange, onClose, closing = false }) {
         </div>
         <div className="phone-sheet-list" ref={listRef}>
           {filtered.length === 0 && (
-            <div className="phone-sheet-empty">No countries found</div>
+            <EmptyState compact message="No countries found" />
           )}
           {filtered.map((c, i) => (
             <button
@@ -177,7 +175,7 @@ export default function PhoneInput({
 
   return (
     <div className={`phone-input-wrap ${error ? 'has-error' : ''} ${className}`}>
-      {label && <span className="phone-input-label">{label}{required ? ' *' : ''}</span>}
+      {label && <span className="ds-field-label">{label}{required ? ' *' : ''}</span>}
       <div className="phone-input-row" ref={containerRef}>
         <div className="phone-input-composite">
           <button
@@ -194,7 +192,7 @@ export default function PhoneInput({
               <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <div className="phone-input-divider" />
+          <div className="phone-input-divider" aria-hidden="true" />
           <input
             className="phone-input-field"
             inputMode="numeric"
@@ -209,9 +207,9 @@ export default function PhoneInput({
             aria-label="Phone number"
           />
         </div>
-        {verified && <span className="phone-input-verified">Verified</span>}
+        {verified && <span className="ds-badge is-success">Verified</span>}
       </div>
-      {error && <span className="phone-input-error" role="alert">{error}</span>}
+      {error && <span className="ds-field-error" role="alert">{error}</span>}
       {isPresented && (
         <CountrySheet
           selected={resolvedCountry.code}
