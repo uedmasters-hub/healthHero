@@ -161,71 +161,8 @@
   gap: var(--space-3);
 }
 
-.auth-otp-boxes {
-  display: flex;
-  width: 100%;
-  gap: 0;
-}
-
-.auth-otp-box {
-  flex: 1 1 0;
-  min-width: 0;
-  height: calc(var(--app-flow-cta-height) + var(--space-2));
-  margin: 0 0 0 -1px;
-  border: var(--border-width-strong, 1.5px) solid var(--primary-soft-strong, var(--primary-soft));
-  border-radius: 0;
-  background: var(--surface-muted);
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: var(--text-hero-size);
-  font-weight: var(--font-weight-medium);
-  line-height: 1;
-  letter-spacing: var(--letter-tight);
-  text-align: center;
-  outline: none;
-  box-shadow: none;
-  caret-color: var(--primary);
-  transition: transform var(--duration-reveal) cubic-bezier(0.34, 1.45, 0.64, 1),border-color var(--duration-fast) var(--ease-standard),background var(--duration-fast) var(--ease-standard),box-shadow var(--duration-reveal) cubic-bezier(0.34, 1.45, 0.64, 1);
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.auth-otp-box:first-child {
-  margin-left: 0;
-  border-radius: var(--field-radius) 0 0 var(--field-radius);
-}
-
-.auth-otp-box:last-child {
-  border-radius: 0 var(--field-radius) var(--field-radius) 0;
-}
-
-.auth-otp-box.is-filled {
-  background: var(--surface-2);
-  border-color: var(--primary-soft-strong, var(--primary));
-  transform: scale(1.02);
-}
-
-.auth-otp-box.is-focus,
-.auth-otp-box:focus,
-.auth-otp-box:focus-visible {
-  z-index: 1;
-  background: var(--surface-2);
-  border-color: var(--border-focus, var(--primary));
-  box-shadow: var(--shadow-focus, 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent));
-  transform: scale(1.04);
-}
-
-.auth-otp-boxes.is-invalid .auth-otp-box {
-  border-color: var(--danger);
-  background: var(--danger-bg);
-}
-
 .auth-otp-boxes.is-shaking {
   animation: authOtpShake var(--duration-enter) cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-.auth-otp-boxes.is-disabled .auth-otp-box {
-  opacity: var(--opacity-muted);
 }
 
 .auth-otp-verifying {

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SheetPortal } from './PageTransition'
-import './AppBottomSheet.css'
 
 const DISMISS_THRESHOLD = 110
 const VELOCITY_DISMISS = 0.65

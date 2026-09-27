@@ -113,7 +113,7 @@ export default function OtpBoxes({
 
   return (
     <div
-      className={`auth-otp-boxes ${invalid ? 'is-invalid' : ''} ${shaking ? 'is-shaking' : ''} ${disabled ? 'is-disabled' : ''}`}
+      className={`auth-otp-boxes ds-otp ${invalid ? 'is-invalid' : ''} ${shaking ? 'is-shaking' : ''} ${disabled ? 'is-disabled' : ''}`}
       role="group"
       aria-label={`${length}-digit verification code`}
       onPaste={handlePaste}
@@ -124,7 +124,7 @@ export default function OtpBoxes({
           ref={(node) => { refs.current[index] = node }}
           id={index === 0 ? id : `${id}-${index}`}
           className={[
-            'auth-otp-box',
+            'auth-otp-box ds-otp__box',
             digit ? 'is-filled' : '',
             focused === index ? 'is-focus' : '',
           ].filter(Boolean).join(' ')}

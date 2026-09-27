@@ -16,6 +16,7 @@ import {
   secondsRemaining,
 } from '../lib/paymentSession'
 import { getAppointmentStart } from '../lib/bookingPolicy'
+import { AppBar, Badge, Button, Callout, EmptyState, Icon } from './ui'
 import './VerifyPayment.css'
 
 export default function VerifyPayment() {
@@ -78,21 +79,15 @@ export default function VerifyPayment() {
   if (!session?.draftBooking) {
     return (
       <div className="vp-page">
-        <div className="vp-header-bar">
-          <button type="button" className="vp-back-btn" onClick={() => navigate('/process-payment')} aria-label="Back">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 12H5" /><polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="vp-header-title">Verify & Pay</h1>
-          <div className="vp-header-spacer" />
-        </div>
-        <div className="vp-empty">
-          <p>No active payment to verify.</p>
-          <button type="button" className="app-flow-cta" onClick={() => navigate('/process-payment')}>
-            Back to Checkout
-          </button>
-        </div>
+        <AppBar title="Verify & Pay" onBack={() => navigate('/process-payment')} as="div" />
+        <EmptyState
+          message="No active payment to verify."
+          action={(
+            <Button onClick={() => navigate('/process-payment')}>
+              Back to Checkout
+            </Button>
+          )}
+        />
       </div>
     )
   }
@@ -217,18 +212,10 @@ export default function VerifyPayment() {
 
   return (
     <div className={`vp-page ${status === 'processing' ? 'is-processing' : ''}`}>
-      <div className="vp-header-bar">
-        <button type="button" className="vp-back-btn" onClick={() => navigate('/process-payment')} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" /><polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="vp-header-title">Verify & Pay</h1>
-        <div className="vp-header-spacer" />
-      </div>
+      <AppBar title="Verify & Pay" onBack={() => navigate('/process-payment')} as="div" />
 
       <div className="vp-body">
-        <div className="vp-hero-card ds-card">
+        <div className="vp-hero-card ds-card is-padded">
           <div className="vp-hero-top">
             <DoctorCard doctor={doctor} context="identity" className="vp-hero-doctor" disableNavigate />
             <div className="vp-hero-fee">
@@ -236,56 +223,51 @@ export default function VerifyPayment() {
               <span className="vp-hero-fee-value">{formatMoney(session.amount, session.currency)}</span>
             </div>
           </div>
-          <div className="vp-hero-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
+          <div className="vp-hero-meta ds-card__section">
+            <Icon.Calendar />
             <span>{when}</span>
           </div>
           <div className="vp-hero-method">Paying with {paymentLabelFromSession(session)}</div>
         </div>
 
         <div className="vp-pin-section">
-          <div className="vp-lock-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <p className="vp-lock-icon ds-overline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
             Secure payment verification
-          </div>
+          </p>
           <h2 className="vp-pin-title">Enter OTP to pay</h2>
-          <div className="vp-pin-boxes" aria-label="OTP input">
+          <div className="vp-pin-boxes ds-otp" aria-label="OTP input">
             {pin.map((digit, index) => {
               const filled = digit !== ''
               const focused = !filled && pin.findIndex((d) => d === '') === index
               return (
                 <div
                   key={`otp-${index}`}
-                  className={`vp-pin-box ${filled ? 'is-filled' : ''} ${focused ? 'is-focus' : ''} ${status === 'error' ? 'is-error' : ''}`}
+                  className={`ds-otp__box ${filled ? 'is-filled' : ''} ${focused ? 'is-focus' : ''} ${status === 'error' ? 'is-error' : ''}`}
                 >
-                  {filled ? <span className="vp-pin-mask" /> : null}
+                  {filled ? <span className="ds-otp__dot" /> : null}
                 </div>
               )
             })}
           </div>
           <p className="vp-pin-note">OTP is verified securely before your booking is confirmed. Demo code: 1234</p>
 
-          <div className={`vp-timer-badge ${remaining <= 60 ? 'is-urgent' : ''}`}>
+          <Badge tone="danger" className={`vp-timer-badge ${remaining <= 60 ? 'is-urgent' : ''}`}>
             <span className="vp-timer-dot" />
             {remaining > 0 ? `${formatCountdown(remaining)} remaining` : 'Expired'}
-          </div>
+          </Badge>
 
-          {error ? <div className="vp-error" role="alert">{error}</div> : null}
+          {error ? <Callout tone="danger" role="alert" className="vp-error">{error}</Callout> : null}
           {status === 'processing' ? <div className="vp-processing">Verifying payment…</div> : null}
           {status === 'success' ? <div className="vp-success">Payment successful</div> : null}
           {resendFlash ? <div className="vp-success">A new OTP was sent</div> : null}
 
-          <button type="button" className="vp-help-link" onClick={handleResend} disabled={remaining <= 0 || status === 'processing'}>
+          <Button variant="text" onClick={handleResend} disabled={remaining <= 0 || status === 'processing'}>
             Resend OTP
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -297,9 +279,9 @@ export default function VerifyPayment() {
               if (key === 'del') {
                 return (
                   <button key="del" type="button" className="vp-key is-action" onClick={handleDelete} aria-label="Delete">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 12l4-4m-4 4l-4-4m4 4l4 4m-4-4l-4 4" />
-                      <circle cx="12" cy="12" r="9" />
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                      <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
+                      <path d="m18 9-6 6M12 9l6 6" />
                     </svg>
                   </button>
                 )

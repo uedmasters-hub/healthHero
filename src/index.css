@@ -7,7 +7,8 @@
      base        reset, document, typography roles, focus
      motion      keyframes (defined once), skeleton sheen, reveal
      primitives  Button, IconButton, Card, Chip, Badge, Field, Search, Switch,
-                 SectionHead, List, Empty, AppBar, Progress
+                 SectionHead, List, Empty, AppBar, Progress, OTP, Choice, Steps
+     overlays    bottom sheet + dialog
      flow        bottom CTA bars + care-journey status tones
 
    Screen stylesheets position primitives; they never restate their look.
@@ -16,4 +17,5 @@
 @import './styles/base.css';
 @import './styles/motion.css';
 @import './styles/primitives.css';
+@import './styles/overlays.css';
 @import './styles/flow.css';

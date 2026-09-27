@@ -649,6 +649,42 @@
   scroll-padding-inline: var(--content-padding);
 }
 
+/* ── Segmented control — pill track, ink-filled active segment ─────────── */
+.ds-segmented {
+  display: flex;
+  gap: var(--space-0-5);
+  padding: var(--space-0-5);
+  border-radius: var(--radius-full);
+  border: var(--border-width) solid var(--border-default);
+  background: var(--surface-1);
+}
+
+.ds-segmented__item {
+  flex: 1 1 0;
+  min-height: var(--chip-height);
+  padding: 0 var(--space-md);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.ds-segmented__item:hover:not(.is-active):not([aria-selected='true']) { background: var(--state-hover); }
+
+.ds-segmented__item.is-active,
+.ds-segmented__item.active,
+.ds-segmented__item[aria-selected='true'],
+.ds-segmented__item[aria-pressed='true'] {
+  background: var(--chip-selected-bg);
+  color: var(--chip-selected-fg);
+}
+
 /* ── Badge / status pill ───────────────────────────────────────────────── */
 .ds-badge {
   display: inline-flex;
@@ -829,6 +865,68 @@ textarea.ds-field,
   color: inherit;
   font: inherit;
   font-size: var(--text-body-size);
+}
+
+/* ── OTP / PIN boxes — one field style for sign-in codes and payment PINs */
+.ds-otp {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.ds-otp__box {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: var(--border-width) solid var(--border-strong);
+  border-radius: var(--field-radius);
+  background: var(--field-bg);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--font-size-h5);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  text-align: center;
+  caret-color: var(--primary-950);
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.ds-otp__box.is-filled { border-color: var(--primary-950); }
+.ds-otp__box.is-focus,
+.ds-otp__box:focus,
+.ds-otp__box:focus-visible { border-color: var(--primary-600); outline: none; box-shadow: none; }
+.ds-otp.is-invalid .ds-otp__box,
+.ds-otp__box.is-error { border-color: var(--danger); background: var(--error-300); }
+.ds-otp.is-disabled .ds-otp__box { opacity: var(--opacity-muted); }
+
+/* Masked PIN dot + blinking caret for non-input boxes */
+.ds-otp__dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: var(--radius-full);
+  background: var(--primary-950);
+}
+
+.ds-otp__box.is-focus:not(.is-filled)::after {
+  content: '';
+  width: 1.5px;
+  height: 1.375rem;
+  border-radius: var(--radius-2xs);
+  background: var(--text-primary);
+  animation: ds-caret 1.05s steps(1) infinite;
+}
+
+@keyframes ds-caret {
+  50% { opacity: 0; }
 }
 
 /* ── Switch ───────────────────────────────────────────────────────────── */

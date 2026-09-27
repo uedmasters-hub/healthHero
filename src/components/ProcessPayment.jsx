@@ -28,6 +28,7 @@ import {
   secondsRemaining,
   validateCardDraft,
 } from '../lib/paymentSession'
+import { AppBar, Badge, Button, EmptyState, Icon, SectionHead } from './ui'
 import './ProcessPayment.css'
 
 function PaymentDoctorSummary({ doctor, date, time, amount, currency, orderId, ready, locked }) {
@@ -44,7 +45,7 @@ function PaymentDoctorSummary({ doctor, date, time, amount, currency, orderId, r
     : `${date?.day || ''} ${time || ''}`.trim()
 
   return (
-    <div className={`pay-hero-card ds-card ${ready ? '' : 'is-pending'} ${locked ? 'is-locked' : ''}`}>
+    <div className={`pay-hero-card ds-card is-padded ${ready ? '' : 'is-pending'} ${locked ? 'is-locked' : ''}`}>
       <div className="pay-hero-top">
         <DoctorCard doctor={doctor} context="identity" className="pay-hero-doctor" disableNavigate />
         <div className="pay-hero-fee">
@@ -54,18 +55,13 @@ function PaymentDoctorSummary({ doctor, date, time, amount, currency, orderId, r
       </div>
 
       <div className="pay-hero-amount-block">
-        <div className="pay-amount-label">Amount to pay</div>
+        <div className="pay-amount-label ds-overline">Amount to pay</div>
         <div className="pay-amount-value">{formatMoney(amount, currency)}</div>
       </div>
 
       <div className="pay-hero-footer">
         <div className="pay-hero-when">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
+          <Icon.Calendar />
           <span>{when}</span>
         </div>
         <span className="pay-hero-footer-sep" aria-hidden="true">|</span>
@@ -215,17 +211,11 @@ export default function ProcessPayment() {
   if (!session?.draftBooking) {
     return (
       <div className="pay-page">
-        <div className="pay-header-bar">
-          <div className="pay-header-spacer" />
-          <h1 className="pay-header-title">Payment & Checkout</h1>
-          <div className="pay-header-spacer" />
-        </div>
-        <div className="pay-empty">
-          <p>No payment session found.</p>
-          <button type="button" className="app-flow-cta" onClick={() => navigate('/', { replace: true })}>
-            Go to Home
-          </button>
-        </div>
+        <AppBar title="Payment & Checkout" as="div" />
+        <EmptyState
+          message="No payment session found."
+          action={<Button onClick={() => navigate('/', { replace: true })}>Go to Home</Button>}
+        />
       </div>
     )
   }
@@ -409,11 +399,7 @@ export default function ProcessPayment() {
 
   return (
     <div className={`pay-page ${locked ? 'is-locked' : ''} ${isExpired ? 'is-expired' : ''}`}>
-      <div className="pay-header-bar">
-        <div className="pay-header-spacer" />
-        <h1 className="pay-header-title">Payment & Checkout</h1>
-        <div className="pay-header-spacer" />
-      </div>
+      <AppBar title="Payment & Checkout" as="div" />
 
       <div className="pay-body">
         <PaymentDoctorSummary
@@ -438,17 +424,20 @@ export default function ProcessPayment() {
             </>
           )}
         >
-          <div className="pay-section-head">
-            <h2 className="pay-section-title">Payment Method</h2>
-            <button
-              type="button"
-              className="pay-add-link"
-              disabled={isExpired}
-              onClick={() => selectMethod('card', { addCard: true })}
-            >
-              + Add New
-            </button>
-          </div>
+          <SectionHead
+            title="Payment Method"
+            action={(
+              <button
+                type="button"
+                className="ds-link pay-add-link"
+                disabled={isExpired}
+                onClick={() => selectMethod('card', { addCard: true })}
+              >
+                <Icon.Plus />
+                Add New
+              </button>
+            )}
+          />
 
           <div className={`pay-methods ${isExpired ? 'is-disabled' : ''}`} role="radiogroup" aria-label="Payment methods">
             {PAYMENT_METHODS.map((method) => {
@@ -461,18 +450,16 @@ export default function ProcessPayment() {
                   role="radio"
                   aria-checked={active}
                   aria-disabled={isExpired}
-                  className={`pay-method ${active ? 'is-selected' : ''} ${view.ready ? 'is-ready' : ''} ${isExpired ? 'is-locked' : ''}`}
+                  className={`pay-method ds-card is-interactive ${active ? 'is-selected' : ''} ${view.ready ? 'is-ready' : ''} ${isExpired ? 'is-locked' : ''}`}
                   onClick={() => selectMethod(method.id)}
                 >
-                  <span className={`pay-radio ${active ? 'is-on' : ''}`} aria-hidden="true">
-                    {active ? <span className="pay-radio-dot" /> : null}
-                  </span>
+                  <span className={`ds-radio ${active ? 'is-on' : ''}`} aria-hidden="true" />
                   <span className="pay-method-copy">
                     <span className="pay-method-label-row">
                       <span className="pay-method-label">{view.label}</span>
                       {view.showEdit ? (
                         <span
-                          className="pay-method-edit"
+                          className="pay-method-edit ds-link"
                           onClick={(e) => {
                             e.stopPropagation()
                             selectMethod(method.id)
@@ -488,7 +475,7 @@ export default function ProcessPayment() {
                       <span className="pay-method-sub">{view.subtitle}</span>
                     ) : null}
                     {method.id === 'card' && active && method.default && !session.showAddCard && view.ready ? (
-                      <span className="pay-method-default">✓ Default</span>
+                      <Badge tone="primary" className="pay-method-default"><Icon.Check />Default</Badge>
                     ) : null}
                   </span>
                   <span className="pay-method-aside">
@@ -496,10 +483,10 @@ export default function ProcessPayment() {
                       <img key={src} src={src} alt="" className="pay-brand-logo" />
                     ))}
                     {view.balance != null && !view.ready ? (
-                      <span className="pay-balance-chip">{formatMoney(view.balance)}</span>
+                      <Badge tone="info">{formatMoney(view.balance)}</Badge>
                     ) : null}
                     {view.showBankIcon ? (
-                      <span className="pay-bank-icon" aria-hidden="true">
+                      <span className="ds-icon-well is-muted" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M3 10h18L12 3 3 10Z" />
                           <path d="M5 10v8h14v-8" />
@@ -531,9 +518,9 @@ export default function ProcessPayment() {
           </div>
 
           {refreshPrompt ? (
-            <div className="pay-banner is-warn" role="status">
-              Session expired. Refresh checkout to continue.
-              <button type="button" className="pay-banner-action" onClick={handleRefreshCheckout}>
+            <div className="ds-callout is-warning pay-banner" role="status">
+              <span className="ds-callout__body">Session expired. Refresh checkout to continue.</span>
+              <button type="button" className="ds-link" onClick={handleRefreshCheckout}>
                 Refresh
               </button>
             </div>
@@ -572,10 +559,7 @@ export default function ProcessPayment() {
         <div className="ds-sheet-header">
           <h3 id="pay-method-sheet-title">{methodSheetTitle(sheetMethodId)}</h3>
           <button type="button" className="ds-sheet-close" onClick={hideMethodSheet} aria-label="Close">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <Icon.Close />
           </button>
         </div>
 
@@ -585,26 +569,26 @@ export default function ProcessPayment() {
               {!session.showAddCard ? (
                 <button
                   type="button"
-                  className="pay-sheet-choice is-selected"
+                  className="pay-sheet-choice ds-card is-interactive is-selected"
                   onClick={() => patchSession({ showAddCard: false })}
                 >
                   <span className="pay-sheet-choice-copy">
                     <strong>Visa •••• 4242</strong>
                     <span>Expires 08/27 · Default</span>
                   </span>
-                  <span className="pay-radio is-on"><span className="pay-radio-dot" /></span>
+                  <span className="ds-radio is-on" aria-hidden="true" />
                 </button>
               ) : null}
 
-              <div className="pay-card-form pay-sheet-panel">
+              <div className="pay-card-form ds-card is-padded">
                 <div className="pay-card-form-head">
                   <h3>{session.showAddCard ? 'Add card' : 'Or add a new card'}</h3>
                   {session.showAddCard ? (
-                    <button type="button" className="pay-text-btn" onClick={() => patchSession({ showAddCard: false })}>
+                    <button type="button" className="ds-link" onClick={() => patchSession({ showAddCard: false })}>
                       Use saved card
                     </button>
                   ) : (
-                    <button type="button" className="pay-text-btn" onClick={() => patchSession({ showAddCard: true })}>
+                    <button type="button" className="ds-link" onClick={() => patchSession({ showAddCard: true })}>
                       Add new
                     </button>
                   )}
@@ -613,9 +597,9 @@ export default function ProcessPayment() {
                 {session.showAddCard ? (
                   <>
                     <label className="pay-field">
-                      <span>Card number</span>
+                      <span className="ds-field-label">Card number</span>
                       <input
-                        className={`pay-input ${cardErrors.number ? 'is-error' : ''}`}
+                        className={`ds-field ${cardErrors.number ? 'is-error' : ''}`}
                         inputMode="numeric"
                         autoComplete="cc-number"
                         placeholder="ACCT-000003"
@@ -627,12 +611,12 @@ export default function ProcessPayment() {
                         }}
                         onBlur={() => setCardErrors(validateCardDraft(session.cardDraft).errors)}
                       />
-                      {cardErrors.number ? <em className="pay-field-error">{cardErrors.number}</em> : null}
+                      {cardErrors.number ? <em className="ds-field-error">{cardErrors.number}</em> : null}
                     </label>
                     <label className="pay-field">
-                      <span>Name on card</span>
+                      <span className="ds-field-label">Name on card</span>
                       <input
-                        className={`pay-input ${cardErrors.name ? 'is-error' : ''}`}
+                        className={`ds-field ${cardErrors.name ? 'is-error' : ''}`}
                         autoComplete="cc-name"
                         placeholder="Full name"
                         value={session.cardDraft.name}
@@ -640,13 +624,13 @@ export default function ProcessPayment() {
                           cardDraft: { ...session.cardDraft, name: e.target.value },
                         })}
                       />
-                      {cardErrors.name ? <em className="pay-field-error">{cardErrors.name}</em> : null}
+                      {cardErrors.name ? <em className="ds-field-error">{cardErrors.name}</em> : null}
                     </label>
                     <div className="pay-field-row">
                       <label className="pay-field">
-                        <span>Expiry</span>
+                        <span className="ds-field-label">Expiry</span>
                         <input
-                          className={`pay-input ${cardErrors.expiry ? 'is-error' : ''}`}
+                          className={`ds-field ${cardErrors.expiry ? 'is-error' : ''}`}
                           inputMode="numeric"
                           autoComplete="cc-exp"
                           placeholder="MM/YY"
@@ -655,12 +639,12 @@ export default function ProcessPayment() {
                             cardDraft: { ...session.cardDraft, expiry: formatExpiry(e.target.value) },
                           })}
                         />
-                        {cardErrors.expiry ? <em className="pay-field-error">{cardErrors.expiry}</em> : null}
+                        {cardErrors.expiry ? <em className="ds-field-error">{cardErrors.expiry}</em> : null}
                       </label>
                       <label className="pay-field">
-                        <span>CVV</span>
+                        <span className="ds-field-label">CVV</span>
                         <input
-                          className={`pay-input ${cardErrors.cvv ? 'is-error' : ''}`}
+                          className={`ds-field ${cardErrors.cvv ? 'is-error' : ''}`}
                           inputMode="numeric"
                           autoComplete="cc-csc"
                           placeholder="123"
@@ -672,7 +656,7 @@ export default function ProcessPayment() {
                             },
                           })}
                         />
-                        {cardErrors.cvv ? <em className="pay-field-error">{cardErrors.cvv}</em> : null}
+                        {cardErrors.cvv ? <em className="ds-field-error">{cardErrors.cvv}</em> : null}
                       </label>
                     </div>
                     <div className="pay-card-brands">
@@ -689,18 +673,20 @@ export default function ProcessPayment() {
           ) : null}
 
           {sheetMethodId === 'upi' ? (
-            <div className="pay-upi-panel pay-sheet-panel">
-              <div className="pay-tab-group" role="tablist">
+            <div className="pay-upi-panel">
+              <div className="pay-tab-group ds-segmented" role="group" aria-label="Wallet method">
                 <button
                   type="button"
-                  className={`pay-tab ${session.upiMode === 'app' ? 'active' : ''}`}
+                  aria-pressed={session.upiMode === 'app'}
+                  className="ds-segmented__item"
                   onClick={() => patchSession({ upiMode: 'app' })}
                 >
                   Wallet apps
                 </button>
                 <button
                   type="button"
-                  className={`pay-tab ${session.upiMode === 'id' ? 'active' : ''}`}
+                  aria-pressed={session.upiMode === 'id'}
+                  className="ds-segmented__item"
                   onClick={() => patchSession({ upiMode: 'id' })}
                 >
                   Wallet ID
@@ -714,7 +700,7 @@ export default function ProcessPayment() {
                       <button
                         key={app.id}
                         type="button"
-                        className={`pay-app-item ${on ? 'selected' : ''}`}
+                        className={`pay-app-item ds-card is-interactive ${on ? 'is-selected' : ''}`}
                         onClick={() => patchSession({ upiAppId: app.id, upiMode: 'app' })}
                       >
                         <img src={app.logo} alt="" className="pay-app-logo" />
@@ -722,25 +708,23 @@ export default function ProcessPayment() {
                           <span className="pay-app-name">{app.label}</span>
                           <span className="pay-app-sub">Pay directly with a single tap</span>
                         </span>
-                        <span className={`pay-radio ${on ? 'is-on' : ''}`}>
-                          {on ? <span className="pay-radio-dot" /> : null}
-                        </span>
+                        <span className={`ds-radio ${on ? 'is-on' : ''}`} aria-hidden="true" />
                       </button>
                     )
                   })}
                 </div>
               ) : (
                 <label className="pay-field">
-                  <span>Enter Wallet ID</span>
+                  <span className="ds-field-label">Enter Wallet ID</span>
                   <input
-                    className={`pay-input ${session.upiId && !isValidUpiId(session.upiId) ? 'is-error' : ''}`}
+                    className={`ds-field ${session.upiId && !isValidUpiId(session.upiId) ? 'is-error' : ''}`}
                     placeholder="yourname@upi"
                     value={session.upiId}
                     onChange={(e) => patchSession({ upiId: e.target.value.trim() })}
                     autoComplete="off"
                   />
                   {session.upiId && !isValidUpiId(session.upiId) ? (
-                    <em className="pay-field-error">Enter a valid Wallet ID (name@bank)</em>
+                    <em className="ds-field-error">Enter a valid Wallet ID (name@bank)</em>
                   ) : null}
                 </label>
               )}
@@ -749,8 +733,8 @@ export default function ProcessPayment() {
 
           {sheetMethodId === 'wallet' ? (
             <div className="pay-sheet-panel">
-              <div className="pay-wallet-card">
-                <span className="pay-wallet-label">Available balance</span>
+              <div className="pay-wallet-card ds-card is-muted is-padded">
+                <span className="pay-wallet-label ds-overline">Available balance</span>
                 <strong className="pay-wallet-balance">{formatMoney(walletMethod?.balance ?? 0)}</strong>
                 <p className="pay-sheet-hint">
                   Pay from your eMedicalls wallet. Eligible for this consultation.
@@ -770,10 +754,10 @@ export default function ProcessPayment() {
                     <button
                       key={bank.id}
                       type="button"
-                      className={`pay-app-item ${on ? 'selected' : ''}`}
+                      className={`pay-app-item ds-card is-interactive ${on ? 'is-selected' : ''}`}
                       onClick={() => patchSession({ bankId: bank.id })}
                     >
-                      <span className="pay-bank-icon is-inline" aria-hidden="true">
+                      <span className="ds-icon-well is-tile is-muted" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M3 10h18L12 3 3 10Z" />
                           <path d="M5 10v8h14v-8" />
@@ -784,9 +768,7 @@ export default function ProcessPayment() {
                         <span className="pay-app-name">{bank.label}</span>
                         <span className="pay-app-sub">Secure bank redirect</span>
                       </span>
-                      <span className={`pay-radio ${on ? 'is-on' : ''}`}>
-                        {on ? <span className="pay-radio-dot" /> : null}
-                      </span>
+                      <span className={`ds-radio ${on ? 'is-on' : ''}`} aria-hidden="true" />
                     </button>
                   )
                 })}
@@ -798,7 +780,7 @@ export default function ProcessPayment() {
         <div className="pay-sheet-footer">
           <button
             type="button"
-            className="pay-sheet-continue"
+            className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block"
             onClick={confirmMethodSheet}
             disabled={!sheetReady || submitting || isExpired}
           >
@@ -809,9 +791,9 @@ export default function ProcessPayment() {
 
       {expiredModalOpen ? (
         <SheetPortal>
-          <div className="pay-expired-overlay" role="presentation">
+          <div className="ds-dialog-overlay is-dimmed" role="presentation">
             <div
-              className={`pay-expired-modal ${expiredModalView === 'cancelling' ? 'is-cancelling' : ''}`}
+              className={`ds-dialog pay-expired-modal ${expiredModalView === 'cancelling' ? 'is-cancelling' : ''}`}
               role="alertdialog"
               aria-modal="true"
               aria-labelledby="pay-expired-title"
@@ -821,40 +803,34 @@ export default function ProcessPayment() {
               {expiredModalView === 'cancelling' ? (
                 <>
                   <div className="pay-expired-skel" aria-hidden="true">
-                    <div className="pay-expired-skel-icon shimmer" />
-                    <div className="pay-expired-skel-line shimmer" />
-                    <div className="pay-expired-skel-line is-short shimmer" />
-                    <div className="pay-expired-skel-cta shimmer" />
-                    <div className="pay-expired-skel-cta is-secondary shimmer" />
+                    <span className="ds-skel is-circle pay-expired-skel-icon" />
+                    <span className="ds-skel is-text pay-expired-skel-line" />
+                    <span className="ds-skel is-text pay-expired-skel-line is-short" />
+                    <span className="ds-skel is-btn" />
                   </div>
-                  <h3 id="pay-expired-title">Cancelling your booking…</h3>
-                  <p id="pay-expired-desc">
+                  <h3 id="pay-expired-title" className="ds-dialog__title">Cancelling your booking…</h3>
+                  <p id="pay-expired-desc" className="ds-dialog__copy">
                     Please wait while we securely cancel your appointment. This will only take a few seconds.
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="pay-expired-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <polyline points="12 6 12 12 16 14" />
-                    </svg>
+                  <div className="ds-dialog__icon is-danger" aria-hidden="true">
+                    <Icon.Clock />
                   </div>
-                  <h3 id="pay-expired-title">Payment session expired</h3>
-                  <p id="pay-expired-desc">
+                  <h3 id="pay-expired-title" className="ds-dialog__title">Payment session expired</h3>
+                  <p id="pay-expired-desc" className="ds-dialog__copy">
                     Your secure checkout window ended after 10 minutes. Refresh to generate a new session
                     with the same booking details, or cancel this booking.
                   </p>
-                  <button type="button" className="pay-expired-primary" onClick={handleRefreshCheckout}>
-                    Refresh Checkout
-                  </button>
-                  <button
-                    type="button"
-                    className="pay-expired-secondary is-danger"
-                    onClick={handleExpiredCancelBooking}
-                  >
-                    Cancel Booking
-                  </button>
+                  <div className="ds-dialog__actions">
+                    <Button size="lg" onClick={handleRefreshCheckout}>
+                      Refresh Checkout
+                    </Button>
+                    <Button size="lg" variant="danger-quiet" onClick={handleExpiredCancelBooking}>
+                      Cancel Booking
+                    </Button>
+                  </div>
                 </>
               )}
             </div>
@@ -864,32 +840,30 @@ export default function ProcessPayment() {
 
       {cancelDialogOpen ? (
         <SheetPortal>
-          <div className="pay-expired-overlay" role="presentation">
+          <div className="ds-dialog-overlay is-dimmed" role="presentation">
             <div
-              className="pay-expired-modal"
+              className="ds-dialog pay-expired-modal"
               role="alertdialog"
               aria-modal="true"
               aria-labelledby="pay-cancel-title"
               aria-describedby="pay-cancel-desc"
             >
-              <div className="pay-expired-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="15" y1="9" x2="9" y2="15" />
-                  <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
+              <div className="ds-dialog__icon is-danger" aria-hidden="true">
+                <Icon.Close />
               </div>
-              <h3 id="pay-cancel-title">Cancel this booking?</h3>
-              <p id="pay-cancel-desc">
+              <h3 id="pay-cancel-title" className="ds-dialog__title">Cancel this booking?</h3>
+              <p id="pay-cancel-desc" className="ds-dialog__copy">
                 Payment isn’t complete yet. Continue to pay with your selected method, or cancel
                 this booking and exit checkout.
               </p>
-              <button type="button" className="pay-expired-primary" onClick={handleContinueToPay}>
-                Continue to Pay
-              </button>
-              <button type="button" className="pay-expired-secondary is-danger" onClick={handleConfirmCancelBooking}>
-                Cancel Booking
-              </button>
+              <div className="ds-dialog__actions">
+                <Button size="lg" onClick={handleContinueToPay}>
+                  Continue to Pay
+                </Button>
+                <Button size="lg" variant="danger-quiet" onClick={handleConfirmCancelBooking}>
+                  Cancel Booking
+                </Button>
+              </div>
             </div>
           </div>
         </SheetPortal>
