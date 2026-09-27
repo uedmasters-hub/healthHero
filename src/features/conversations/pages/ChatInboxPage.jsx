@@ -82,7 +82,7 @@ export default function ChatInboxPage() {
   const showEmpty = !loading && !conversations.length
 
   return (
-    <div className="chat-page page-push-in">
+    <div className="chat-page">
       <header className="chat-header">
         <button type="button" className="chat-header-back" onClick={goBack} aria-label="Back" data-push-back>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

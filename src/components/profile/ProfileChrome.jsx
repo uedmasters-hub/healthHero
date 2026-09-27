@@ -29,7 +29,7 @@ export function ProfilePage({ title, onBack, action, children, dataset }) {
   const ptr = usePullToRefresh(pageRef, onRefresh)
 
   return (
-    <div className="user-profile-page page-push-in" ref={pageRef}>
+    <div className="user-profile-page" ref={pageRef}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="user-profile-header-bar">
         <button type="button" className="user-profile-back-btn" data-push-back onClick={goBack} aria-label="Back">

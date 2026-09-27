@@ -259,7 +259,7 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
   const composerReady = Boolean(conversation) && !loading && !error
 
   return (
-    <div className={`chat-page page-push-in ${isSupport ? 'is-support-thread' : ''} ${isProvider ? 'is-provider-thread' : ''}`}>
+    <div className={`chat-page ${isSupport ? 'is-support-thread' : ''} ${isProvider ? 'is-provider-thread' : ''}`}>
       <header className={`chat-header ${isSupport ? 'is-support' : ''} ${isProvider ? 'is-provider' : ''}`}>
         <button type="button" className="chat-header-back" onClick={goBack} aria-label="Back" data-push-back>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

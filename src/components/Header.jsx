@@ -12,6 +12,7 @@ import {
   PLACE_COORDS,
 } from '../features/location'
 import { NEPAL_MAJOR_CITIES } from '../data/nepalGeography'
+import { EmptyState, Icon } from './ui'
 import './Header.css'
 import './ExpandRadiusEmpty.css'
 
@@ -205,10 +206,7 @@ export default function Header({ endAccessory = null }) {
           <div className="ds-sheet-header location-modal-header">
             <h3 id="location-sheet-title">Choose location</h3>
             <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <Icon.Close />
             </button>
           </div>
           <div className="location-search">
@@ -221,14 +219,14 @@ export default function Header({ endAccessory = null }) {
           <div className="location-list" ref={cityReveal.containerRef}>
             <button
               type="button"
-              className={`location-gps ${fromGps ? 'is-selected' : ''} ${locating ? 'is-busy' : ''} ${status === 'denied' ? 'is-alert' : ''}`}
+              className={`location-gps ds-card is-interactive ${fromGps ? 'is-selected' : ''} ${locating ? 'is-busy' : ''} ${status === 'denied' ? 'is-alert' : ''}`}
               onClick={onCurrentLocation}
               disabled={locating}
               aria-label={fromGps ? 'Use current GPS location, selected' : 'Use current GPS location'}
               aria-current={fromGps ? 'true' : undefined}
               aria-busy={locating || undefined}
             >
-              <span className={`location-gps-mark ${locating ? 'is-spin' : ''}`} aria-hidden="true">
+              <span className={`location-gps-mark ds-icon-well is-tile is-lg ${locating ? 'is-spin' : ''}`} aria-hidden="true">
                 <GpsIcon />
               </span>
               <span className="location-gps-copy">
@@ -239,7 +237,7 @@ export default function Header({ endAccessory = null }) {
 
             <button
               type="button"
-              className="location-refresh"
+              className="location-refresh ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
               onClick={onRefreshLocation}
               disabled={locating}
               aria-label="Refresh current location"
@@ -249,7 +247,7 @@ export default function Header({ endAccessory = null }) {
 
             {recentLocations?.length ? (
               <div className="location-section" role="group" aria-labelledby="location-recent-label">
-                <p className="location-section-label" id="location-recent-label">Recent</p>
+                <p className="location-section-label ds-section-title" id="location-recent-label">Recent</p>
                 {recentLocations.map((item, i) => {
                   const isActive = locality === item.locality && source !== 'gps'
                   const key = item.placeId
@@ -267,7 +265,7 @@ export default function Header({ endAccessory = null }) {
                       aria-label={isActive ? `${item.locality}, current location` : `Use ${item.locality}`}
                       aria-current={isActive ? 'true' : undefined}
                     >
-                      <span className="location-item-pin" aria-hidden="true">◷</span>
+                      <span className="location-item-pin" aria-hidden="true"><Icon.Clock /></span>
                       <span className="location-item-name">{item.locality}</span>
                     </RevealItem>
                   )
@@ -277,7 +275,7 @@ export default function Header({ endAccessory = null }) {
 
             {searchHits.length ? (
               <div className="location-section" role="group" aria-labelledby="location-search-label">
-                <p className="location-section-label" id="location-search-label">
+                <p className="location-section-label ds-section-title" id="location-search-label">
                   {searching ? 'Searching…' : 'Search results'}
                 </p>
                 {searchHits.map((hit) => (
@@ -288,7 +286,7 @@ export default function Header({ endAccessory = null }) {
                     onClick={() => pickManual(hit)}
                     aria-label={`Use ${hit.locality}`}
                   >
-                    <span className="location-item-pin" aria-hidden="true">⌕</span>
+                    <span className="location-item-pin" aria-hidden="true"><Icon.Search /></span>
                     <span className="location-item-copy">
                       <span className="location-item-name">{hit.locality}</span>
                       {hit.label && hit.label !== hit.locality ? (
@@ -301,7 +299,7 @@ export default function Header({ endAccessory = null }) {
             ) : null}
 
             <div className="location-section" role="group" aria-labelledby="location-suggested-label">
-              <p className="location-section-label" id="location-suggested-label">Suggested</p>
+              <p className="location-section-label ds-section-title" id="location-suggested-label">Suggested</p>
               {suggested.map((city, i) => {
                 const isActive = locality === city && source === 'manual'
                 return (
@@ -317,18 +315,16 @@ export default function Header({ endAccessory = null }) {
                     aria-label={isActive ? `${city}, current location` : `Use ${city}`}
                     aria-current={isActive ? 'true' : undefined}
                   >
-                    <span className="location-item-pin" aria-hidden="true">📍</span>
+                    <span className="location-item-pin" aria-hidden="true"><Icon.Pin /></span>
                     <span className="location-item-name">{city}</span>
                     {isActive ? (
-                      <svg className="location-item-check" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" aria-hidden="true">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
+                      <Icon.Check className="location-item-check" />
                     ) : null}
                   </RevealItem>
                 )
               })}
               {!suggested.length && !searchHits.length ? (
-                <div className="location-empty" role="status">No places found</div>
+                <EmptyState compact role="status" message="No places found" />
               ) : null}
             </div>
           </div>

@@ -69,17 +69,6 @@
   opacity: 0;
   pointer-events: none;
 }
-
-.previsit-page.is-shared-hero.is-skeleton .previsit-skel-banner {
-  opacity: var(--opacity-soft);
-}
-
-.previsit-skel-banner {
-  height: 72px;
-  border-radius: var(--radius-lg);
-  margin: var(--space-2) 0 var(--space-4);
-}
-
 .previsit-success-banner {
   display: flex;
   align-items: flex-start;
@@ -464,87 +453,6 @@
   color: var(--text-secondary);
   margin: 0 0 var(--space-3);
 }
-
-.previsit-sheet-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  background: transparent;
-  animation: previsitFadeIn var(--duration-normal) var(--ease-standard);
-}
-
-.previsit-sheet-overlay.is-closing {
-  animation: previsitFadeOut var(--duration-sheet) var(--ease-standard) forwards;
-}
-
-.previsit-sheet-overlay.is-closing .previsit-sheet {
-  animation: previsitSlideDown var(--duration-sheet) var(--ease-standard) forwards;
-  box-shadow: var(--shadow-sheet);
-
-}
-
-.previsit-sheet {
-  width: 100%;
-  background: var(--surface-2);
-  border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
-  padding: var(--space-2) var(--space-5) var(--bottom-bar-pad);
-  max-height: 72vh;
-  overflow-y: auto;
-  animation: previsitSlideUp var(--duration-moderate) var(--ease-standard);
-}
-
-.previsit-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) 0 var(--space-2);
-}
-
-.previsit-sheet-header h3 {
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-medium);
-  margin: 0;
-}
-
-.previsit-sheet-close {
-  width: var(--touch-min);
-  height: var(--touch-min);
-  min-width: var(--touch-min);
-  min-height: var(--touch-min);
-  border: none;
-  border-radius: var(--radius-full);
-  background: var(--bg);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.previsit-sheet-option {
-  width: 100%;
-  display: block;
-  text-align: left;
-  padding: var(--space-3-5) 0;
-  border: none;
-  border-bottom: var(--border-width) solid var(--border-subtle);
-  background: none;
-  font-size: var(--text-body-lg-size);
-  font-family: inherit;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
-.previsit-sheet-option:last-child {
-  border-bottom: none;
-}
-
-.previsit-sheet-option.is-danger {
-  color: var(--danger);
-}
-
 @keyframes previsitFadeIn {
   from { opacity: var(--opacity-hidden); }
   to { opacity: var(--opacity-visible); }

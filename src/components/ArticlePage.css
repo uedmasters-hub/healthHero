@@ -7,21 +7,6 @@
   background: var(--bg);
 }
 
-.article-page.page-push-in {
-  animation: articlePushIn var(--duration-reveal) var(--ease-emphasized) both;
-}
-
-@keyframes articlePushIn {
-  from {
-    transform: translate3d(18%, 0, 0);
-    opacity: var(--opacity-muted);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-    opacity: var(--opacity-visible);
-  }
-}
-
 .article-header {
   display: flex;
   align-items: center;

@@ -221,7 +221,7 @@ export default function PharmacyBrowsePage() {
   }
 
   return (
-    <div className="page-push-in" style={{ height: '100%', minHeight: 0 }}>
+    <div style={{ height: '100%', minHeight: 0 }}>
       <DirectoryShell
         title="Pharmacies"
         onBack={goBack}

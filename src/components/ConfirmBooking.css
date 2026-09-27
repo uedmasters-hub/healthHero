@@ -58,88 +58,6 @@
 .confirm-success-menu-btn:disabled {
   opacity: var(--opacity-soft);
 }
-
-.confirm-heading {
-  font-size: var(--text-display-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  margin-bottom: var(--space-4);
-}
-
-/* Doctor Card */
-
-.confirm-doctor-left {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.confirm-doctor-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-lead-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--white);
-}
-
-.confirm-doctor-badge {
-  position: absolute;
-  bottom: 0;
-  right: -2px;
-  width: 20px;
-  height: 20px;
-  background: var(--cta);
-  border-radius: var(--radius-full);
-  border: var(--border-width-strong) solid var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.confirm-doctor-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.confirm-doctor-name {
-  font-size: var(--text-title-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-}
-
-.confirm-doctor-specialty {
-  font-size: var(--text-label-size);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-1-5);
-}
-
-.confirm-doctor-address {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  font-size: var(--text-caption-size);
-  color: var(--text-muted);
-}
-
-.confirm-doctor-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-1);
-}
-
-.confirm-doctor-rating {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--rating);
-}
-
 /* Section Label */
 .confirm-section-label {
   font-size: var(--text-body-size);
@@ -174,41 +92,6 @@
   padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-xs);
 }
-
-.confirm-mode-banner {
-  background: var(--info-bg);
-  border-radius: var(--radius);
-  padding: var(--space-3) var(--space-3-5);
-  margin-bottom: var(--space-5);
-}
-
-.confirm-mode-banner p {
-  margin: var(--space-2) 0 0;
-  font-size: var(--text-label-size);
-  line-height: 1.45;
-  color: var(--text-secondary);
-}
-
-.confirm-mode-banner.is-quick {
-  background: var(--urgent-bg);
-}
-
-.confirm-mode-chip {
-  display: inline-flex;
-  font-size: var(--text-overline-size);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-caps);
-  text-transform: uppercase;
-  color: var(--urgent);
-  background: var(--surface-2);
-  border-radius: var(--radius-pill);
-  padding: var(--space-1) var(--space-2);
-}
-
-.confirm-mode-chip.is-standard {
-  color: var(--info);
-}
-
 /* Summary Card — inherits .ds-card (Border/Default, radius-card, shadow-card) */
 .confirm-summary-card.ds-card {
   background: var(--card-bg);
@@ -440,46 +323,6 @@
   color: var(--text-muted);
   flex-shrink: 0;
 }
-
-.confirm-record-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: 0 0 var(--space-3-5) var(--space-8);
-}
-
-.confirm-record-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  padding: var(--space-1-5) var(--space-3);
-  background: var(--service-icon-bg);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-caption-size);
-  color: var(--primary);
-  font-weight: var(--font-weight-medium);
-}
-
-.confirm-record-chip-remove {
-  width: 16px;
-  height: 16px;
-  border-radius: var(--radius-full);
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--primary);
-  padding: 0;
-  transition: all var(--transition);
-}
-
-.confirm-record-chip-remove:hover {
-  background: var(--cta);
-  color: var(--white);
-}
-
 .confirm-records-hint {
   font-size: var(--text-caption-size);
   color: var(--text-muted);
@@ -772,64 +615,6 @@
   padding: var(--space-4);
   border-bottom: var(--border-width) solid var(--border);
 }
-
-.confirm-success-doctor-left {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.confirm-success-doctor-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--white);
-}
-
-.confirm-success-doctor-badge {
-  position: absolute;
-  bottom: 0;
-  right: -2px;
-  width: 18px;
-  height: 18px;
-  background: var(--cta);
-  border-radius: var(--radius-full);
-  border: var(--border-width-strong) solid var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.confirm-success-doctor-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.confirm-success-doctor-name {
-  font-size: var(--text-title-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-}
-
-.confirm-success-doctor-specialty {
-  font-size: var(--text-label-size);
-  color: var(--text-secondary);
-}
-
-.confirm-success-doctor-rating {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--rating);
-  flex-shrink: 0;
-}
-
 .confirm-success-row {
   display: flex;
   align-items: center;
@@ -932,67 +717,6 @@
   white-space: nowrap;
   font-family: inherit;
 }
-
-/* Inline Action */
-.confirm-inline-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1-5);
-  width: 100%;
-  padding: var(--space-3-5);
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  cursor: pointer;
-  margin-bottom: var(--space-6);
-}
-
-/* Quick Actions */
-.confirm-quick-actions {
-  display: flex;
-  justify-content: space-around;
-  padding: var(--space-2) 0 0;
-  margin: 0 0 var(--space-10);
-}
-
-.confirm-quick-action {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  cursor: pointer;
-}
-
-.confirm-quick-action-icon {
-  width: var(--icon-well-size-lg);
-  height: var(--icon-well-size-lg);
-  border-radius: var(--icon-btn-radius);
-  background: var(--icon-surface-info);
-  color: var(--icon-color-info);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.confirm-quick-action-icon svg {
-  width: var(--icon-lg);
-  height: var(--icon-lg);
-  stroke-width: var(--icon-stroke);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.confirm-quick-action-label {
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-secondary);
-}
-
 /* Symptoms Card */
 .confirm-symptoms-card {
   background: var(--card-bg);
@@ -1145,51 +869,6 @@
   text-align: center;
   margin-top: var(--space-1);
 }
-
-.confirm-success-notes-card {
-  background: var(--surface-2);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-.confirm-success-notes-label {
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--primary);
-  letter-spacing: var(--letter-caps);
-  margin-bottom: var(--space-2);
-}
-
-.confirm-success-notes-text {
-  font-size: var(--text-body-size);
-  color: var(--text-primary);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Records Sheet Overlay */
-.records-sheet-overlay {
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  animation: fadeIn var(--duration-moderate) var(--ease-standard) forwards;
-}
-
-.records-sheet-overlay.closing {
-  animation: fadeOut var(--duration-sheet) var(--ease-standard) forwards;
-}
-
-.records-sheet-overlay.closing .records-sheet {
-  animation: slideDown var(--duration-sheet) var(--ease-standard) forwards;
-  box-shadow: var(--shadow-sheet);
-
-}
-
 .ds-sheet.records-sheet {
   width: 100%;
   background: var(--sheet-surface);
@@ -1212,15 +891,6 @@
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
-
-.records-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  margin: var(--space-3) auto 0;
-}
-
 .records-sheet-header {
   display: flex;
   align-items: center;
@@ -1429,37 +1099,6 @@
   line-height: 1.5;
   margin: var(--space-3) 0;
 }
-
-.record-attachments {
-  margin-top: var(--space-3);
-}
-
-.record-attachments-label {
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--primary);
-  letter-spacing: var(--letter-caps);
-  margin-bottom: var(--space-2);
-}
-
-.record-attachments-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.record-attachment-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1-5);
-  padding: var(--space-1-5) var(--space-3);
-  background: var(--service-icon-bg);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-caption-size);
-  color: var(--primary);
-  font-weight: var(--font-weight-medium);
-}
-
 /* Divider */
 .records-bottom-section {
   padding: 0 var(--content-padding);

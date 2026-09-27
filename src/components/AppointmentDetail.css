@@ -168,14 +168,6 @@
   border-radius: var(--radius-pill);
   padding: var(--space-1) var(--space-2);
 }
-
-.appointment-quick-note {
-  font-size: var(--text-label-size);
-  line-height: 1.45;
-  color: var(--text-secondary);
-  margin: calc(-1 * var(--space-1)) 0 var(--space-4);
-}
-
 .appointment-info-edit {
   display: inline-flex;
   align-items: center;
@@ -867,105 +859,9 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-
-.appointment-reschedule-link {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.appointment-cancel-link {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  cursor: pointer;
-  padding: 0;
-}
-
-.appointment-reschedule-link.is-locked,
-.appointment-cancel-link.is-locked {
-  color: var(--text-muted);
-}
-
-.appointment-sheet-option.is-danger {
-  color: var(--danger);
-}
-
-.appointment-sheet-option.is-active {
-  color: var(--primary);
-  font-weight: var(--font-weight-medium);
-}
-
 .appointment-sheet-cta.is-danger {
   background: var(--danger);
 }
-
-.appointment-sheet-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  background: transparent;
-}
-
-.appointment-sheet-overlay.is-closing {
-  pointer-events: none;
-}
-
-.appointment-sheet-overlay.is-closing .appointment-sheet {
-  animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
-  box-shadow: var(--shadow-sheet);
-}
-
-.appointment-sheet {
-  width: 100%;
-  background: var(--surface-2);
-  border-radius: var(--app-sheet-radius) var(--app-sheet-radius) 0 0;
-  padding: var(--space-2) var(--space-5) var(--bottom-bar-pad);
-  max-height: 72vh;
-  overflow-y: auto;
-  animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
-}
-
-.appointment-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) 0 var(--space-2);
-}
-
-.appointment-sheet-header h3 {
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-medium);
-  margin: 0;
-}
-
-.appointment-sheet-close {
-  width: var(--touch-min);
-  height: var(--touch-min);
-  min-width: var(--touch-min);
-  min-height: var(--touch-min);
-  border: none;
-  border-radius: var(--radius-full);
-  background: var(--bg);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
 .appointment-sheet-body,
 .appointment-sheet-list,
 .appointment-sheet-options {
@@ -1010,21 +906,6 @@
   object-fit: cover;
   flex-shrink: 0;
 }
-
-.appointment-sheet-option {
-  width: 100%;
-  display: block;
-  text-align: left;
-  padding: var(--space-3-5) 0;
-  border: none;
-  border-bottom: var(--border-width) solid var(--border-subtle);
-  background: none;
-  font-size: var(--text-body-lg-size);
-  font-family: inherit;
-  color: var(--text-primary);
-  cursor: pointer;
-}
-
 .appointment-sheet-cta {
   display: flex;
   align-items: center;

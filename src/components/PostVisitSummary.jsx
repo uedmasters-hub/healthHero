@@ -223,7 +223,7 @@ export default function PostVisitSummary() {
   }
 
   return (
-    <div className="postvisit-page page-push-in" ref={pageRef}>
+    <div className="postvisit-page" ref={pageRef}>
       <div className="postvisit-header">
         <button className="postvisit-back-btn" data-push-back type="button" onClick={goBack} aria-label="Back">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

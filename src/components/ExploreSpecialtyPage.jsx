@@ -37,7 +37,7 @@ export default function ExploreSpecialtyPage() {
   }, [specialty, saved?.scrollY])
 
   return (
-    <div className="page-push-in" style={{ height: '100%', minHeight: 0 }}>
+    <div style={{ height: '100%', minHeight: 0 }}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <DoctorList
         lockedSpecialty={specialty}
@@ -49,7 +49,6 @@ export default function ExploreSpecialtyPage() {
         title={specialty}
         onBack={goBack}
         showBack
-        className="page-push-in"
       />
     </div>
   )

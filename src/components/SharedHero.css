@@ -43,8 +43,7 @@
 .shared-hero-name,
 .shared-hero-meta,
 .shared-hero-degree,
-.shared-hero-exp,
-.shared-hero-actions {
+.shared-hero-exp {
   position: absolute;
 }
 
@@ -107,52 +106,6 @@
   color: var(--primary);
   font-weight: var(--font-weight-medium);
 }
-
-.shared-hero-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.shared-hero-book {
-  flex: 1;
-  min-width: 0;
-  height: 40px;
-  border: var(--border-width-emphasis) solid var(--primary);
-  color: var(--primary);
-  border-radius: var(--radius-xl);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  background: var(--surface-2);
-}
-
-.shared-hero-book-icon {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.shared-hero-call {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--cta);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.shared-hero-call svg {
-  width: 18px;
-  height: 18px;
-}
-
 .shared-hero-card.is-grid,
 .shared-hero-card.is-hero {
   transition: border-radius var(--duration-enter) var(--ease-emphasized);
@@ -170,12 +123,6 @@
 .shared-hero-card.is-hero .shared-hero-exp,
 .shared-hero-card.is-grid .shared-hero-fee,
 .shared-hero-card.is-hero .shared-hero-fee,
-.shared-hero-card.is-grid .shared-hero-actions,
-.shared-hero-card.is-hero .shared-hero-actions,
-.shared-hero-card.is-grid .shared-hero-book-icon,
-.shared-hero-card.is-hero .shared-hero-book-icon,
-.shared-hero-card.is-grid .shared-hero-call,
-.shared-hero-card.is-hero .shared-hero-call,
 .shared-hero-card.is-grid .shared-hero-photo img,
 .shared-hero-card.is-hero .shared-hero-photo img {
   transition: top var(--duration-enter) var(--ease-emphasized),left var(--duration-enter) var(--ease-emphasized),right var(--duration-enter) var(--ease-emphasized),bottom var(--duration-enter) var(--ease-emphasized),width var(--duration-enter) var(--ease-emphasized),height var(--duration-enter) var(--ease-emphasized),border-radius var(--duration-enter) var(--ease-emphasized),font-size var(--duration-enter) var(--ease-emphasized),opacity var(--duration-slow) var(--ease-standard),transform var(--duration-enter) var(--ease-emphasized),padding var(--duration-enter) var(--ease-emphasized),margin var(--duration-enter) var(--ease-emphasized),object-position var(--duration-enter) var(--ease-emphasized),justify-content var(--duration-enter) var(--ease-emphasized),text-align var(--duration-enter) var(--ease-emphasized);
@@ -231,30 +178,7 @@
   font-size: var(--text-caption-size);
 }
 
-.shared-hero-card.is-grid .shared-hero-actions {
-  left: 12px;
-  right: 12px;
-  bottom: 14px;
-}
-
-.shared-hero-card.is-grid .shared-hero-book-icon,
-.shared-hero-card.is-grid .shared-hero-call {
-  width: 0;
-  opacity: var(--opacity-hidden);
-  transform: scale(0.6);
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-.shared-hero-card.is-mini .shared-hero-actions {
-  opacity: var(--opacity-hidden);
-  pointer-events: none;
-}
-
 .shared-hero-card.is-grid .shared-hero-fee,
-.shared-hero-card.is-hero .shared-hero-actions,
 .shared-hero-card.is-hero .shared-hero-exp,
 .shared-hero-card.is-hero .shared-hero-rating {
   opacity: var(--opacity-hidden);
@@ -326,20 +250,12 @@
   opacity: var(--opacity-visible);
 }
 
-.shared-hero-card.is-hero .shared-hero-exp,
-.shared-hero-card.is-hero .shared-hero-actions {
+.shared-hero-card.is-hero .shared-hero-exp {
   left: 102px;
   right: 16px;
   bottom: 12px;
   opacity: var(--opacity-hidden);
 }
-
-.shared-hero-card.is-hero .shared-hero-book-icon,
-.shared-hero-card.is-hero .shared-hero-call {
-  width: 0;
-  opacity: var(--opacity-hidden);
-}
-
 /* Appointment journey morph — Confirmation → Appointment Details */
 .shared-hero-card.is-appointment {
   border-radius: var(--radius-card);

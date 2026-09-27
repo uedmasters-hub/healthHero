@@ -73,11 +73,6 @@
   box-shadow: -10px 0 28px rgba(15, 18, 28, 0.16);
 }
 
-/* Suppress per-page push keyframes — stack owns enter/exit */
-.push-stack .page-push-in {
-  animation: none !important;
-}
-
 @keyframes pushStackEnter {
   from {
     transform: translate3d(100%, 0, 0);

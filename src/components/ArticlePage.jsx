@@ -120,7 +120,7 @@ export default function ArticlePage() {
   const toggleSaved = () => setSaved(toggleInsightSaved(article.id))
 
   return (
-    <div className={`article-page page-push-in ${contentReady ? 'is-content-ready' : 'is-skeleton'}`}>
+    <div className={`article-page ${contentReady ? 'is-content-ready' : 'is-skeleton'}`}>
       <header className="article-header">
         <div className="article-header-side is-start">
           <button

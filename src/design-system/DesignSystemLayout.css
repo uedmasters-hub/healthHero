@@ -216,11 +216,6 @@
   font-size: var(--text-caption-size); color: var(--primary-950);
 }
 .ds-token-value { font-family: 'SF Mono', 'Fira Code', monospace; font-size: var(--text-caption-size); }
-.ds-token-swatch {
-  width: 28px; height: 28px; border-radius: var(--radius-sm);
-  border: 1px solid var(--neutral-200); display: inline-block; vertical-align: middle;
-}
-
 /* Do / Don't cards */
 .ds-do-dont-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin: 0 0 var(--space-6);
@@ -393,10 +388,7 @@
 .ds-showcase-btn-ghost {
   background: var(--primary-200); color: var(--primary-950); padding: var(--space-3) var(--space-4);
 }
-.ds-showcase-btn-ghost:hover { background: var(--state-hover); }
-.ds-showcase-btn-sm { padding: var(--space-2) var(--space-4); font-size: var(--font-size-body-xxs); }
-.ds-showcase-btn-lg { padding: var(--space-4) var(--space-8); font-size: var(--font-size-body-m); }
-.ds-showcase-btn:disabled { background: var(--cta-disabled-bg); color: var(--cta-disabled-fg); opacity: 1; cursor: not-allowed; }
+.ds-showcase-btn-ghost:hover { background: var(--state-hover); }.ds-showcase-btn:disabled { background: var(--cta-disabled-bg); color: var(--cta-disabled-fg); opacity: 1; cursor: not-allowed; }
 
 /* Input showcase */
 .ds-showcase-input {
@@ -422,27 +414,10 @@
 .ds-showcase-chip-brand { background: var(--primary-300); color: var(--primary-950); border-color: var(--primary-400); }
 .ds-showcase-chip-success { background: var(--success-300); color: var(--success-900); border-color: var(--secondary-600); }
 .ds-showcase-chip-warning { background: var(--warning-500); color: var(--warning-900); border-color: var(--warning-700); }
-.ds-showcase-chip-danger { background: var(--danger-bg); color: var(--error-900); border-color: var(--error-700); }
-
-/* Skeleton showcase */
-.ds-showcase-skeleton {
-  border-radius: var(--radius-sm); background: linear-gradient(90deg, var(--border) 25%, var(--neutral-200) 37%, var(--border) 63%);
-  background-size: 200% 100%; animation: ds-skel-shimmer 1.45s ease-in-out infinite;
-}
-@keyframes ds-skel-shimmer {
+.ds-showcase-chip-danger { background: var(--danger-bg); color: var(--error-900); border-color: var(--error-700); }@keyframes ds-skel-shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-/* Card showcase */
-.ds-showcase-card {
-  background: white; border: 1px solid var(--border);
-  border-radius: var(--radius-card); padding: var(--space-5); box-shadow: 0 4px 16px rgba(17, 24, 39, 0.05);
-  max-width: 320px;
-}
-.ds-showcase-card-title { font-size: var(--text-body-size); font-weight: var(--font-weight-medium); color: var(--text-primary); margin-bottom: var(--space-1); }
-.ds-showcase-card-desc { font-size: var(--text-label-size); color: var(--text-tertiary); line-height: 1.5; }
-
 /* Modal showcase */
 .ds-showcase-modal-overlay {
   position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);

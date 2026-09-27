@@ -153,16 +153,6 @@
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-
-.phone-sheet-handle {
-  flex-shrink: 0;
-  width: 36px;
-  height: 4px;
-  margin: var(--space-2) auto 0;
-  border-radius: var(--radius-full);
-  background: var(--border-strong);
-}
-
 .phone-sheet-header {
   flex-shrink: 0;
   display: flex;

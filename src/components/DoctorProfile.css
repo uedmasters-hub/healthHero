@@ -29,25 +29,6 @@
   flex-shrink: 0;
 }
 
-.doctor-profile.page-push-in {
-  animation: doctorPushIn var(--duration-page) var(--ease-page) both;
-}
-
-.doctor-profile.is-under-overlay {
-  animation: none;
-}
-
-@keyframes doctorPushIn {
-  from {
-    transform: translate3d(18%, 0, 0);
-    opacity: var(--opacity-muted);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-    opacity: var(--opacity-visible);
-  }
-}
-
 .profile-header {
   /* Chrome from .ds-app-bar; stays above the morphing hero */
   z-index: 3;
@@ -163,18 +144,6 @@
   height: 44px;
   border-radius: var(--radius-md);
 }
-
-.profile-skel-chiprow {
-  height: 40px;
-  border-radius: var(--radius);
-  margin-bottom: var(--space-2-5);
-}
-
-.profile-skel-chiprow.is-small {
-  height: 36px;
-  width: 88%;
-}
-
 .profile-skel-dates {
   height: 72px;
   border-radius: var(--radius-md);

@@ -208,7 +208,7 @@ export default function FacilityPage() {
 
   if (status === 'error' || !facility) {
     return (
-      <div className="doctor-profile page-push-in">
+      <div className="doctor-profile">
         <ProfileHeader title="Healthcare Profile" onBack={goBack} />
         <div className="profile-scroll">
           <div className="profile-section">
@@ -226,7 +226,7 @@ export default function FacilityPage() {
   }
 
   return (
-    <div className="doctor-profile page-push-in has-cta">
+    <div className="doctor-profile has-cta">
       <ProfileHeader title="Healthcare Profile" onBack={goBack} actions={headerActions} />
 
       <div className="profile-scroll" ref={scrollRef}>

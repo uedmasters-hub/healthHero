@@ -340,14 +340,6 @@
   margin-bottom: var(--space-2);
   background: var(--media-bg);
 }
-
-.treat-sheet-label {
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
-  margin: var(--space-1) 0 var(--space-2);
-}
-
 .treat-sheet-options,
 .treat-sheet-body {
   padding-bottom: var(--space-2);

@@ -21,6 +21,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshDoctorsData } from '../features/sync/pageRefresh'
 import './DoctorProfile.css'
+import { AppBar } from './ui'
 
 const LOGO_BADGES = [
   '/img/logo-badges/LogoBadge-1.png',
@@ -295,16 +296,7 @@ export default function DoctorProfile() {
   if (!doctor) {
     return (
       <div className="doctor-profile is-skeleton has-cta">
-        <div className="profile-header">
-          <button type="button" className="ds-icon-btn is-xl profile-back-btn" data-push-back onClick={goBack} aria-label="Back">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path d="M19 12H5" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className="profile-header-title">Doctor Profile</h1>
-          <div className="profile-header-actions" />
-        </div>
+        <AppBar className="profile-header" title="Doctor Profile" onBack={goBack} as="div" />
         <div className="profile-scroll is-loading">
           <ProfileSkeletons />
         </div>
@@ -314,17 +306,15 @@ export default function DoctorProfile() {
 
   return (
     <div
-      className={`doctor-profile ${sharedFlow ? 'is-shared-hero' : restore?.topDoctors ? 'is-under-overlay' : 'page-push-in'} ${showSkeletons ? 'is-skeleton' : ''} ${contentReady ? 'is-content-ready' : ''} has-cta`}
+      className={`doctor-profile ${sharedFlow ? 'is-shared-hero' : restore?.topDoctors ? 'is-under-overlay' : ''} ${showSkeletons ? 'is-skeleton' : ''} ${contentReady ? 'is-content-ready' : ''} has-cta`}
     >
-      <div className="profile-header">
-        <button type="button" className="ds-icon-btn is-xl profile-back-btn" data-push-back onClick={goBack} aria-label="Back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="profile-header-title">Doctor Profile</h1>
-        <div className="profile-header-actions">
+      <AppBar
+        className="profile-header"
+        title="Doctor Profile"
+        onBack={goBack}
+        as="div"
+        actions={(
+          <>
           <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share" onClick={shareProfile}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <circle cx="18" cy="5" r="3" />
@@ -351,8 +341,9 @@ export default function DoctorProfile() {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
-        </div>
-      </div>
+          </>
+        )}
+      />
 
       <div ref={pageRef} className={`profile-scroll ${contentReady ? '' : 'is-loading'}`.trim()}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />

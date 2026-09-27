@@ -107,13 +107,6 @@
   background: var(--success-bg);
   color: var(--success-text);
 }
-
-.auth-banner--info,
-.auth-banner.auth-banner--info {
-  background: var(--primary-soft);
-  color: var(--primary);
-}
-
 .auth-mode-switch {
   margin: var(--space-3) 0 0;
   text-align: center;
@@ -212,14 +205,6 @@
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
-
-.auth-otp-hint {
-  margin: 0;
-  font-size: var(--text-caption-size);
-  line-height: var(--text-caption-line);
-  color: var(--text-secondary);
-}
-
 .auth-otp-open-app {
   display: inline-flex;
   align-items: center;

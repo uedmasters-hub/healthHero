@@ -6,30 +6,6 @@
   display: flex;
   flex-direction: column;
 }
-
-.booking-layout.explore-layout {
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-.booking-layout.page-push-in {
-  animation: bookingPushIn var(--duration-page) var(--ease-page) both;
-}
-
-.booking-layout.is-under-overlay {
-  animation: none;
-}
-
-@keyframes bookingPushIn {
-  from {
-    transform: translate3d(100%, 0, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
 /* Stepper */
 .stepper {
   display: flex;
@@ -70,13 +46,6 @@
   min-height: 0;
   height: 100%;
 }
-
-.booking-layout.explore-layout .booking-content {
-  overflow: visible;
-  display: block;
-  flex: none;
-}
-
 .booking-layout.is-success .booking-content {
   display: flex;
   flex-direction: column;

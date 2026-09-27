@@ -118,7 +118,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="notifications-page page-push-in" ref={pageRef}>
+    <div className="notifications-page" ref={pageRef}>
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="notifications-header">
         <button className="notifications-back" data-push-back type="button" onClick={goBack} aria-label="Back">

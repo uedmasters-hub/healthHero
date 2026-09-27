@@ -81,7 +81,7 @@ export default function BookingFlow({ children }) {
 
   return (
     <BookingFlowContext.Provider value={ctx}>
-      <div className={`booking-layout ${showSuccess ? 'is-success' : ''} ${currentStep === 0 && !showSuccess ? 'is-directory' : ''} page-push-in`}>
+      <div className={`booking-layout ${showSuccess ? 'is-success' : ''} ${currentStep === 0 && !showSuccess ? 'is-directory' : ''}`}>
         {!showSuccess && currentStep > 0 && (
           <>
             <AppBar className="booking-header" title={titles[currentStep]} onBack={goBack} as="div" />
