@@ -1,0 +1,634 @@
+/* =============================================================================
+   eMedicalls design tokens — PocketPills production language (source of truth)
+
+   Architecture:  primitive  →  semantic role  →  component token / legacy alias
+   Rules
+   - Components consume semantic roles (--surface-*, --text-*, --border-*,
+     --color-*) or component tokens (--btn-*, --chip-*, --card-*). Never a hex.
+   - Legacy eMedicalls names (--primary, --white, --cta …) stay as aliases so
+     older selectors keep resolving; new work should not reach for them.
+   - Mirrors pocketpills/src/index.css + tailwind.config.js + DESIGN.md.
+   ============================================================================= */
+
+:root {
+  /* ── 1. Primitives (PocketPills production) ─────────────────────────────── */
+  --primary-950: #4e2a84;
+  --primary-900: #220f3e;
+  --primary-800: #37325d;
+  --primary-700: #6b1ce2;
+  --primary-600: #7b47ff;
+  --primary-500: #8c60ff;
+  --primary-400: #aaa4ff;
+  --primary-300: #e5e3ff;
+  --primary-200: #f5f4fa;
+  --primary-100: #ffffff;
+
+  --neutral-900: #180730;
+  --neutral-800: #362952;
+  --neutral-700: #534b74;
+  --neutral-600: #67648b;
+  --neutral-500: #8e90b8;
+  --neutral-400: #aaacca;
+  --neutral-300: #c8c8dc;
+  --neutral-200: #e7e7f2;
+  --neutral-100: #f5f4fa;
+  --neutral-50: #fafafa;
+  --neutral-0: #ffffff;
+
+  --secondary-900: #043b45;
+  --secondary-800: #0a5a68;
+  --secondary-700: #54c7da;
+  --secondary-600: #a4eefb;
+  --secondary-500: #dbf7fa;
+
+  --success-900: #043b45;
+  --success-700: #0a5a68;
+  --success-500: #54c7da;
+  --success-300: #a4eefb;
+
+  --warning-900: #b94801;
+  --warning-700: #ffa13c;
+  --warning-500: #ffebd5;
+  --warning-300: #fff5e8;
+
+  --error-900: #b8310f;
+  --error-700: #ff5950;
+  --error-500: #ffe8e8;
+  --error-300: #fff5f5;
+
+  --gray-500: #8a8a8a;
+
+  /* Space — PP production ladder (xxs 2 · xs 4 · sm 8 · md 12 · lg 16 · xl 24 …) */
+  --space-xxs: 0.125rem;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 2.5rem;
+  --space-4xl: 3rem;
+  --space-5xl: 6rem;
+
+  /* Radius — PP production: s 8 · m 16 · l 24 · x 36 · xl 48 · full */
+  --radius-pp-xs: 0.125rem;
+  --radius-pp-s: 0.5rem;
+  --radius-pp-m: 1rem;
+  --radius-pp-l: 1.5rem;
+  --radius-pp-x: 2.25rem;
+  --radius-pp-xl: 3rem;
+
+  /* Type sizes — PP production (Satoshi) */
+  --font-size-h1: 2.875rem;
+  --font-size-h2: 2.563rem;
+  --font-size-h3: 1.813rem;
+  --font-size-h4: 1.625rem;
+  --font-size-h5: 1.4375rem;
+  --font-size-h6: 1.25rem;
+  --font-size-body-xxl: 1.5rem;
+  --font-size-body-xl: 1.375rem;
+  --font-size-body-l: 1.25rem;
+  --font-size-body-m: 1.125rem;
+  --font-size-body-s: 1rem;
+  --font-size-body-xs: 0.9375rem;
+  --font-size-body-xxs: 0.75rem;
+  /* Floor — PP: nothing below 11px (count badges only) */
+  --font-size-floor: 0.6875rem;
+
+  /* ── 2. Semantic roles ──────────────────────────────────────────────────── */
+  --color-primary: var(--primary-950);
+  --color-primary-hover: var(--neutral-600);
+  --color-primary-pressed: var(--neutral-800);
+  --color-primary-subtle: var(--primary-200);
+  --color-primary-fg: var(--neutral-0);
+
+  /* Primary CTA on production is neutral-800, not purple */
+  --color-cta: var(--neutral-800);
+  --color-cta-hover: var(--neutral-600);
+  --color-cta-pressed: var(--neutral-800);
+  --color-cta-disabled-bg: var(--neutral-200);
+  --color-cta-disabled-fg: var(--gray-500);
+
+  --color-wellness: var(--secondary-800);
+  --color-wellness-subtle: var(--secondary-500);
+  --color-accent: var(--primary-500);
+  --color-accent-subtle: var(--primary-300);
+
+  --color-success: var(--success-700);
+  --color-success-subtle: var(--success-300);
+  --color-warning: var(--warning-900);
+  --color-warning-subtle: var(--warning-500);
+  --color-danger: var(--error-900);
+  --color-danger-subtle: var(--error-500);
+  --color-info: var(--primary-600);
+  --color-info-subtle: var(--primary-300);
+  --color-processing: #0369a1;
+  --color-processing-subtle: #e0f2fe;
+
+  /* Links are brand ink (PP `text-primary`); eyebrows are violet (PP `.pp-caps`) */
+  --color-link: var(--primary-950);
+  --color-eyebrow: var(--primary-600);
+
+  /* Surfaces — lavender canvas, white islands */
+  --surface-0: var(--neutral-100);
+  --surface-1: var(--neutral-100);
+  --surface-2: var(--neutral-0);
+  --surface-3: var(--neutral-0);
+  --surface-4: var(--neutral-0);
+  --surface-chrome: color-mix(in srgb, var(--neutral-0) 95%, transparent);
+
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-700);
+  --text-tertiary: var(--neutral-600);
+  --text-disabled: var(--neutral-500);
+  --text-inverse: var(--neutral-0);
+
+  /* Hairline edges — lavender-tinted, barely-there on white & tinted fills */
+  --border-default: color-mix(in srgb, var(--primary-800) 12%, transparent);
+  --border-divider: color-mix(in srgb, var(--primary-800) 9%, transparent);
+  --border-strong: color-mix(in srgb, var(--primary-800) 20%, transparent);
+
+  /* Interaction — colour only on light surfaces; no lift, glow or scale */
+  --state-hover: var(--primary-300);
+  --state-pressed: color-mix(in srgb, var(--primary-400) 35%, var(--primary-300));
+  --state-selected: var(--primary-300);
+  --state-selected-border: color-mix(in srgb, var(--primary-950) 28%, transparent);
+
+  --interact-hover-bg: var(--state-hover);
+  --interact-hover-border: var(--border-default);
+  --interact-pressed-bg: var(--state-pressed);
+  --interact-pressed-border: var(--border-strong);
+  --interact-selected-bg: var(--state-selected);
+  --interact-selected-border: var(--state-selected-border);
+  --interact-transition: background-color var(--transition), border-color var(--transition),
+    color var(--transition), opacity var(--transition), box-shadow var(--transition);
+
+  --focus-ring: 3px solid var(--primary-500);
+  --focus-offset: 2px;
+
+  --pp-navy: var(--primary-900);
+  --pp-violet: var(--primary-600);
+  --pp-headline: var(--primary-950);
+  --pp-lavender: var(--primary-300);
+  --pp-page: var(--primary-200);
+  --pp-star: var(--primary-500);
+  --pp-green: #0f4c3f;
+
+  /* ── 3. Component tokens ────────────────────────────────────────────────── */
+
+  /* Buttons — PP `.ds-btn-*`: pill, Satoshi 500, 200ms colour-only states */
+  --btn-radius: var(--radius-full);
+  --btn-weight: var(--font-weight-medium);
+  --btn-height-lg: 3.5rem;
+  --btn-height-md: 2.875rem;
+  --btn-height-sm: 2.25rem;
+  --btn-pad-lg: 0 var(--space-2xl);
+  --btn-pad-md: 0 var(--space-xl);
+  --btn-pad-sm: 0 var(--space-lg);
+  --btn-font-lg: var(--font-size-body-m);
+  --btn-font-md: var(--font-size-body-xs);
+  --btn-font-sm: var(--font-size-body-xs);
+  --btn-padding-default: 1rem 2rem;
+  --btn-padding-sm: 0.75rem 1.5rem;
+  --btn-padding-lg: 0.625rem 1.5rem;
+  --btn-font-size-default: 1.125rem;
+  --btn-font-size-sm: 0.9375rem;
+  --btn-font-size-lg: 1.125rem;
+
+  --btn-primary-bg: var(--color-cta);
+  --btn-primary-bg-hover: var(--color-cta-hover);
+  --btn-primary-bg-pressed: var(--color-cta-pressed);
+  --btn-primary-fg: var(--neutral-0);
+  --btn-disabled-bg: var(--color-cta-disabled-bg);
+  --btn-disabled-fg: var(--color-cta-disabled-fg);
+  --btn-secondary-bg: var(--surface-2);
+  --btn-secondary-fg: var(--neutral-800);
+  --btn-secondary-border: var(--border-strong);
+  --btn-quiet-bg: var(--neutral-100);
+  --btn-quiet-bg-hover: var(--neutral-300);
+  --btn-invert-bg: var(--neutral-600);
+
+  /* Cards — PP `rounded-2xl border border-line bg-white` */
+  --card-radius: var(--radius-pp-l);
+  --card-radius-sm: var(--radius-pp-m);
+  --card-border: var(--border-width) solid var(--border-default);
+
+  /* Chips — PP toggle: pill, 500, selected = brand-ink fill */
+  --chip-height: 2.25rem;
+  --chip-height-sm: 1.875rem;
+  --chip-pad-x: 0.875rem;
+  --chip-font: var(--font-size-body-xs);
+  --chip-selected-bg: var(--primary-950);
+  --chip-selected-fg: var(--neutral-0);
+
+  /* Badges — tone pills */
+  --badge-height: 1.5rem;
+  --badge-pad-x: 0.625rem;
+  --badge-font: var(--font-size-body-xxs);
+
+  /* Skeleton — PP `.pp-skeleton` lavender + white sheen */
+  --skel-base: color-mix(in srgb, var(--primary-300) 55%, var(--neutral-0));
+  --skel-sheen: color-mix(in srgb, var(--neutral-0) 62%, transparent);
+
+  /*
+    Hierarchy (~70% neutral / 20% support / 10% emphasis):
+    --accent          → brand ink: active nav, selected, headings
+    --cta             → the one filled action per view (neutral-800)
+    --featured-*      → the single hero surface (Upcoming card)
+  */
+  --accent: var(--primary-950);
+  --accent-hover: var(--primary-800);
+  --accent-pressed: var(--primary-900);
+  --accent-fg: var(--neutral-0);
+  --accent-subtle: var(--primary-300);
+  --accent-muted: var(--primary-800);
+  --accent-quiet: var(--neutral-800);
+
+  --brand-action: var(--color-cta);
+  --brand-action-hover: var(--color-cta-hover);
+  --brand-action-pressed: var(--color-cta-pressed);
+  --brand-action-fg: var(--neutral-0);
+
+  /* Featured booking card — the single Home hero */
+  --featured-gradient-start: color-mix(in srgb, var(--primary-800) 68%, var(--primary-400));
+  --featured-gradient-mid: var(--primary-800);
+  --featured-gradient-end: var(--primary-900);
+  --featured-ink: var(--neutral-0);
+  --featured-ink-muted: color-mix(in srgb, var(--neutral-0) 82%, transparent);
+  --featured-ink-soft: color-mix(in srgb, var(--neutral-0) 58%, transparent);
+  --featured-glass: color-mix(in srgb, var(--neutral-0) 18%, transparent);
+  --featured-glass-border: color-mix(in srgb, var(--neutral-0) 28%, transparent);
+  --featured-completed-start: color-mix(in srgb, var(--featured-gradient-start) 20%, var(--neutral-0));
+  --featured-completed-mid: color-mix(in srgb, var(--featured-gradient-mid) 12%, var(--primary-200));
+  --featured-completed-end: color-mix(in srgb, var(--featured-gradient-end) 10%, var(--neutral-0));
+  --featured-completed-ink: var(--text-primary);
+  --featured-completed-ink-muted: var(--text-secondary);
+  --featured-completed-glass: color-mix(in srgb, var(--primary-300) 78%, var(--neutral-0));
+  --featured-completed-glass-border: color-mix(in srgb, var(--primary-800) 16%, transparent);
+
+  /* Avatar — very light lavender identity chip */
+  --avatar-surface: color-mix(in srgb, var(--primary-300) 42%, var(--primary-200));
+  --avatar-ink: var(--primary-950);
+
+  /* Ready badge — pastel sage */
+  --badge-ready-bg: color-mix(in srgb, var(--secondary-600) 35%, var(--neutral-0));
+  --badge-ready-fg: var(--secondary-900);
+  --badge-ready-border: color-mix(in srgb, var(--secondary-800) 16%, transparent);
+
+  /* FAB — quiet utility control (same ink as the CTA) */
+  --fab-bg: var(--color-cta);
+  --fab-bg-open: var(--color-cta-hover);
+  --fab-fg: var(--neutral-0);
+  --fab-shadow: var(--shadow-float);
+
+  /* ── 4. Legacy eMedicalls aliases (resolve onto the roles above) ────────── */
+  --primary: var(--accent);
+  --primary-light: var(--accent-muted);
+  --primary-dark: var(--primary-900);
+  --primary-gradient-end: var(--primary-400);
+  --primary-soft: var(--primary-200);
+  --primary-soft-strong: var(--primary-300);
+  --primary-press: var(--primary-300);
+  --on-primary: var(--neutral-0);
+
+  --cta: var(--color-cta);
+  --cta-hover: var(--color-cta-hover);
+  --cta-pressed: var(--color-cta-pressed);
+  --cta-disabled-bg: var(--color-cta-disabled-bg);
+  --cta-disabled-fg: var(--color-cta-disabled-fg);
+
+  --white: var(--neutral-0);
+  --surface: var(--surface-2);
+  --card-bg: var(--surface-2);
+  --bg: var(--surface-0);
+  --bg-dark: var(--neutral-100);
+  --surface-muted: var(--neutral-100);
+  --surface-subtle: var(--neutral-100);
+  --surface-soft: var(--neutral-100);
+  --media-bg: var(--neutral-200);
+  --avatar-bg: var(--avatar-surface);
+  --chip-bg: var(--primary-300);
+  --chip-bg-alt: var(--primary-200);
+  --badge-bg: var(--neutral-100);
+  --active-bg: var(--state-hover);
+  --service-icon-bg: transparent;
+  --slot-day-bg: var(--neutral-100);
+
+  --text-muted: var(--neutral-700);
+  --text-faint: var(--neutral-500);
+  --text-on-primary: var(--neutral-0);
+  --text-on-cta: var(--neutral-0);
+  --text-link: var(--color-link);
+
+  --border: var(--border-default);
+  --border-subtle: var(--border-divider);
+  --border-card: var(--border-default);
+  --border-soft: var(--border-divider);
+  --border-focus: var(--primary-500);
+  --divider: var(--border-divider);
+  --border-width: 1px;
+  --border-width-emphasis: 1.5px;
+  --border-width-strong: 2px;
+
+  --success: var(--color-success);
+  --success-light: var(--success-500);
+  --success-bg: var(--color-success-subtle);
+  --success-bg-light: var(--secondary-500);
+  --success-border: var(--secondary-600);
+  --success-border-soft: var(--secondary-600);
+  --success-text: var(--success-900);
+
+  --danger: var(--color-danger);
+  --danger-bg: var(--color-danger-subtle);
+  --danger-soft: var(--error-300);
+
+  --warning: var(--color-warning);
+  --warning-bg: var(--color-warning-subtle);
+  --warning-border: var(--warning-700);
+  --urgent: var(--warning-900);
+  --urgent-bg: var(--warning-300);
+  --urgent-soft: var(--warning-300);
+
+  --info: var(--color-info);
+  --info-bg: var(--color-info-subtle);
+
+  --rating: var(--pp-star);
+  --rating-star: var(--pp-star);
+
+  --upcoming: var(--warning);
+  --upcoming-bg: var(--warning-bg);
+
+  --toggle-off: var(--neutral-300);
+
+  /* Overlay */
+  --overlay: color-mix(in srgb, var(--neutral-900) 12%, transparent);
+  --overlay-strong: color-mix(in srgb, var(--neutral-900) 18%, transparent);
+  --overlay-dark: var(--overlay);
+  --overlay-media: color-mix(in srgb, var(--neutral-900) 55%, transparent);
+  --overlay-lightbox: #0c0e14;
+  --surface-lightbox: #1c1d22;
+  --surface-lightbox-bar: var(--neutral-800);
+  --frame-backdrop: var(--neutral-900);
+  --shimmer-mid: var(--neutral-200);
+
+  /* Elevation — PP: prefer the hairline edge; shadow only for floating layers */
+  --shadow-xs: 0 1px 2px color-mix(in srgb, var(--neutral-900) 6%, transparent);
+  --shadow-sm: 0 1px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-btn: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 1px 3px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-card-lg: var(--shadow-card);
+  --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-hover: var(--shadow-float);
+  --shadow-md: var(--shadow-float);
+  --shadow-sheet: 0 8px 28px color-mix(in srgb, var(--neutral-900) 12%, transparent);
+  --shadow-modal: 0 16px 48px color-mix(in srgb, var(--neutral-900) 16%, transparent);
+  --shadow-chrome-up: 0 -6px 24px color-mix(in srgb, var(--neutral-900) 8%, transparent);
+  --shadow-focus: 0 0 0 3px var(--primary-500);
+  --shadow-ring-soft: 0 0 0 8px var(--primary-300);
+
+  /* Radius — PP ladder under eMedicalls names */
+  --radius-2xs: var(--radius-pp-xs);
+  --radius-xs: var(--radius-pp-s);
+  --radius-sm: var(--radius-pp-s);
+  --radius: var(--radius-pp-s);
+  --radius-md: var(--radius-pp-m);
+  --radius-lg: var(--radius-pp-m);
+  --radius-card: var(--radius-pp-l);
+  --radius-xl: var(--radius-pp-l);
+  --radius-cta: var(--radius-full);
+  --radius-device: var(--radius-pp-x);
+  --radius-full: 9999px;
+  --radius-pill: var(--radius-full);
+
+  /* Spacing — eMedicalls step names on the PP 4px ladder */
+  --space-0: 0;
+  --space-0-5: var(--space-xxs);
+  --space-1: var(--space-xs);
+  --space-1-5: 0.375rem;
+  --space-2: var(--space-sm);
+  --space-2-5: 0.625rem;
+  --space-3: var(--space-md);
+  --space-3-5: 0.875rem;
+  --space-4: var(--space-lg);
+  --space-5: 1.25rem;
+  --space-5-5: 1.375rem;
+  --space-6: var(--space-xl);
+  --space-7: 1.75rem;
+  --space-8: var(--space-2xl);
+  --space-10: var(--space-3xl);
+  --space-12: var(--space-4xl);
+  --space-16: 4rem;
+
+  --page-padding: var(--space-5);
+  --content-padding: var(--space-5);
+  --section-gap: var(--space-xl);
+  --card-gap: var(--space-md);
+  --card-padding: var(--space-lg);
+  --card-padding-lg: var(--space-5);
+  --stack-gap: var(--space-md);
+  --section-header-gap: var(--space-md);
+  --layout-gutter: var(--space-5);
+  --provider-gap: var(--space-xl);
+
+  /* Touch / fields / icons — PP h-11 / h-12 */
+  --touch-min: 2.75rem;
+  --field-height: 3rem;
+  --field-height-sm: 2.75rem;
+  --field-radius: var(--radius-pp-m);
+  --field-pad-x: var(--space-lg);
+  --field-bg: var(--surface-2);
+  --search-height: 3rem;
+  --search-radius: var(--radius-full);
+  --icon-xs: 0.75rem;
+  --icon-sm: 1rem;
+  --icon-md: 1.125rem;
+  --icon-lg: 1.25rem;
+  --icon-xl: 1.375rem;
+  --icon-2xl: 1.5rem;
+  --icon-stroke: 1.7;
+  --icon-stroke-bold: var(--icon-stroke);
+
+  --icon-btn-size: var(--touch-min);
+  --icon-btn-visual: 2.5rem;
+  --icon-well-size: 2.25rem;
+  --icon-well-size-lg: var(--touch-min);
+  --icon-tile-radius: var(--radius-pp-m);
+  --icon-chip-size: 1.75rem;
+  --icon-btn-radius: var(--radius-full);
+  --icon-btn-border: var(--border-width) solid var(--border);
+  --icon-gap: var(--space-sm);
+
+  --icon-color-default: var(--neutral-700);
+  --icon-color-muted: var(--neutral-600);
+  --icon-color-brand: var(--primary-950);
+  --icon-color-brand-active: var(--primary-950);
+  --icon-color-on-brand: var(--text-on-primary);
+  --icon-color-danger: var(--danger);
+  --icon-color-success: var(--success);
+  --icon-color-warning: var(--warning);
+  --icon-color-info: var(--info);
+
+  --icon-surface-ghost: transparent;
+  --icon-surface-subtle: var(--surface-2);
+  --icon-surface-muted: var(--surface-1);
+  --icon-surface-press: var(--interact-pressed-bg);
+  --icon-surface-brand: var(--primary-300);
+  --icon-surface-info: var(--color-info-subtle);
+  --icon-surface-danger: var(--color-danger-subtle);
+  --icon-surface-success: var(--color-success-subtle);
+  --icon-surface-warning: var(--color-warning-subtle);
+  --icon-surface-selected: var(--interact-selected-bg);
+
+  --avatar-sm: 2.5rem;
+  --avatar-md: 3.25rem;
+  --avatar-lg: 3.5rem;
+  --avatar-xl: 4.5rem;
+  --header-control: var(--icon-btn-size);
+  --app-bar-height: 3.5rem;
+  --app-flow-cta-height: var(--btn-height-lg);
+  --nav-height: 4rem;
+
+  /* Typography — Satoshi + PP scale; headings 500, caps 700, never extrabold */
+  --font-sans: "Satoshi", "Noto Sans Devanagari", "Noto Sans", "Hiragino Sans", "Kohinoor Devanagari", Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-nepali: "Noto Sans Devanagari", "Kohinoor Devanagari", "Noto Sans", "Satoshi", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Fira Code", Menlo, monospace;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  /* PP never uses 600/800: "semibold" resolves to medium; bold is caps only */
+  --font-weight-semibold: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  --text-display-size: var(--font-size-h5);
+  --text-display-line: 1.2;
+  --text-display-weight: var(--font-weight-medium);
+
+  --text-heading-size: var(--font-size-h6);
+  --text-heading-line: 1.2;
+  --text-heading-weight: var(--font-weight-medium);
+
+  --text-title-size: var(--font-size-body-s);
+  --text-title-line: 1.3;
+  --text-title-weight: var(--font-weight-medium);
+
+  --text-body-size: var(--font-size-body-s);
+  --text-body-line: 1.5;
+  --text-body-weight: var(--font-weight-regular);
+
+  --text-body-lg-size: var(--font-size-body-m);
+  --text-body-lg-line: 1.5;
+
+  --text-body-sm-size: var(--font-size-body-xs);
+  --text-small-size: var(--font-size-body-xs);
+
+  --text-label-size: var(--font-size-body-xs);
+  --text-label-line: 1.35;
+  --text-label-weight: var(--font-weight-medium);
+
+  --text-caption-size: var(--font-size-body-xxs);
+  --text-caption-line: 1.5;
+  --text-caption-weight: var(--font-weight-medium);
+
+  --text-overline-size: 0.8125rem;
+  --text-overline-line: 1.35;
+  --text-overline-weight: var(--font-weight-bold);
+  --text-overline-tracking: 0.04em;
+
+  --text-subtitle-size: var(--font-size-body-m);
+  --text-subtitle-line: 1.2;
+  --text-subtitle-weight: var(--font-weight-medium);
+
+  --text-micro-size: var(--font-size-floor);
+  --text-micro-line: 1.3;
+
+  --text-lead-size: var(--font-size-body-l);
+  --text-hero-size: var(--font-size-h4);
+  --text-stat-size: var(--font-size-h2);
+  --text-badge-size: var(--font-size-floor);
+
+  --letter-tight: 0;
+  --letter-snug: 0;
+  --letter-body: 0.02em;
+  --letter-caps: 0.04em;
+
+  /* Opacity */
+  --opacity-disabled: 0.45;
+  --opacity-muted: 0.7;
+  --opacity-soft: 0.5;
+  --opacity-pressed: 0.9;
+  --opacity-strong: 0.8;
+  --opacity-ghost: 0.3;
+  --opacity-hidden: 0;
+  --opacity-visible: 1;
+
+  /* Motion — PP: 200ms interaction · 300–380ms reveal / chrome · 500ms+ progress */
+  --ease-standard: ease-in-out;
+  --ease-out: ease-out;
+  --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-page: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-instant: 0.12s;
+  --duration-fast: 0.15s;
+  --duration-normal: 0.2s;
+  --duration-dialog: 0.22s;
+  --duration-sheet: 0.26s;
+  --duration-moderate: 0.28s;
+  --duration-page: 0.28s;
+  --duration-reveal: 0.38s;
+  --duration-slow: 0.4s;
+  --duration-enter: 0.5s;
+  --duration-progress: 0.5s;
+  --duration-sheen: 1.55s;
+  --sheet-recess-scale: 0.98;
+  --sheet-recess-shift: -6px;
+  --transition: var(--duration-normal) var(--ease-standard);
+  --transition-reveal: opacity var(--duration-moderate) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-emphasized);
+
+  /* Layout / Frame */
+  --phone-width: 440px;
+  --phone-height: 956px;
+  --phone-scale: 1;
+  --frame-footer: 28px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-bar-pad: calc(var(--space-2-5) + max(var(--frame-footer), var(--safe-bottom)));
+  --app-flow-footer-pad-top: var(--space-3-5);
+  --app-flow-footer-clearance: calc(
+    var(--app-flow-footer-pad-top)
+    + var(--app-flow-cta-height)
+    + var(--bottom-bar-pad)
+  );
+  --fab-cta-gap: 22px;
+  --sticky-footer-pad-top: var(--space-2-5);
+  --sticky-footer-cta-gap: var(--space-1);
+  --sticky-footer-secondary-pad-y: var(--space-1-5);
+  --sticky-footer-pad-bottom: calc(var(--space-1-5) + max(var(--frame-footer), var(--safe-bottom)));
+  --sticky-footer-clearance: calc(
+    var(--sticky-footer-pad-top)
+    + var(--app-flow-cta-height)
+    + var(--sticky-footer-cta-gap)
+    + (var(--sticky-footer-secondary-pad-y) * 2)
+    + (var(--text-body-size) * var(--text-body-line))
+    + var(--sticky-footer-pad-bottom)
+  );
+  --app-sheet-max-height: 85%;
+  --app-sheet-radius: var(--radius-pp-l);
+  --sheet-surface: var(--surface-2);
+  --sheet-pad-x: var(--space-5);
+  --sheet-pad-top: var(--space-2);
+  --sheet-pad-bottom: var(--bottom-bar-pad);
+  --sheet-handle-width: 40px;
+  --sheet-handle-height: 4px;
+  --z-header: 50;
+  --z-footer: 100;
+  --z-overlay: 1000;
+  --z-sheet: 1001;
+  --z-status: 20;
+  --z-home-indicator: 25;
+  --z-scrim: 8000;
+  --z-scrim-elevated: 8100;
+  --z-lightbox: 8200;
+}

@@ -1,0 +1,191 @@
+/* =============================================================================
+   Motion — the shared vocabulary. PocketPills:
+   200ms interaction · 300–380ms reveal / chrome slide · 500ms+ progress ·
+   routed content enters with fade-up (cubic-bezier(0.16,1,0.3,1)) ·
+   reduced motion disables sheen, chrome slides and reveals.
+
+   Keyframes are global — define each name exactly once, here.
+   ============================================================================= */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* PP `animate-fade-up` */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Soft enter for toasts / banners */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Bottom sheets / drawers */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes ds-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* PP `pp-sheen` — travels right → left across a lavender base */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes ds-skel-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ds-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ── Enter helpers ────────────────────────────────────────────────────── */
+.ds-enter {
+  animation: fadeUp var(--duration-enter) var(--ease-enter) both;
+}
+
+.ds-fade-in {
+  animation: fadeIn var(--duration-reveal) var(--ease-standard) both;
+}
+
+.ds-spinner {
+  display: inline-block;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: var(--radius-full);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: ds-spin 0.7s linear infinite;
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────────────
+   PP `.pp-skeleton`: lavender base + white sheen, 1.55s. `.shimmer` is the
+   legacy name used by every screen skeleton — same look.                   */
+.shimmer,
+.ds-skel {
+  background-color: var(--skel-base);
+  background-image: linear-gradient(
+    105deg,
+    transparent 0%,
+    var(--skel-sheen) 42%,
+    transparent 78%
+  );
+  background-size: 220% 100%;
+  animation: shimmer var(--duration-sheen) var(--ease-standard) infinite;
+}
+
+.ds-skel {
+  display: block;
+  border-radius: var(--radius-md);
+}
+
+.ds-skel.is-text { height: 0.75rem; border-radius: var(--radius-full); }
+.ds-skel.is-title { height: 1rem; width: 60%; border-radius: var(--radius-full); }
+.ds-skel.is-circle { border-radius: var(--radius-full); aspect-ratio: 1; }
+.ds-skel.is-pill { border-radius: var(--radius-full); }
+.ds-skel.is-card { border-radius: var(--card-radius); }
+.ds-skel.is-btn { height: var(--btn-height-md); border-radius: var(--radius-full); }
+
+.ds-skel-in {
+  animation: ds-skel-in var(--duration-reveal) var(--ease-emphasized) both;
+}
+
+.end-of-page-placeholder {
+  text-align: center;
+  font-size: var(--text-caption-size);
+  color: var(--text-tertiary);
+  padding: var(--space-10) 0 var(--space-12);
+  letter-spacing: var(--letter-body);
+}
+
+/* ── Reveal host — skeleton cross-fades into content ─────────────────── */
+.reveal-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-host > .reveal-body {
+  width: 100%;
+}
+
+.reveal-skel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity var(--duration-moderate) var(--ease-standard);
+}
+
+.reveal-skel.is-hidden {
+  opacity: 0;
+}
+
+.reveal-skel-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.reveal-host > .reveal-skel-fill,
+.reveal-skel .reveal-skel-fill {
+  border-radius: inherit;
+}
+
+.reveal-body {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: var(--transition-reveal);
+}
+
+.reveal-body.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal-host.is-cached .reveal-skel {
+  display: none;
+}
+
+.reveal-host.is-cached .reveal-body {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .ds-skel,
+  .ds-enter,
+  .ds-fade-in,
+  .ds-skel-in {
+    animation: none;
+  }
+
+  .reveal-body {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

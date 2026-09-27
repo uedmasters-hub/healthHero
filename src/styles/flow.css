@@ -1,0 +1,197 @@
+/* =============================================================================
+   Flow chrome — bottom CTA bars shared by booking, care and payment flows,
+   plus the care-journey status tones used on cards, history and relays.
+   ============================================================================= */
+
+/* —— App flow footer / primary CTA (booking + care flows) —— */
+.app-flow-footer {
+  flex-shrink: 0;
+  width: 100%;
+  background: var(--surface-chrome);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: var(--border-width) solid var(--border-default);
+  padding: var(--app-flow-footer-pad-top) var(--content-padding) var(--bottom-bar-pad);
+  z-index: 5;
+}
+
+/* The flow CTA *is* the large primary button — same tokens, same states */
+.app-flow-cta,
+.sticky-footer-cta__primary {
+  width: 100%;
+  min-height: var(--btn-height-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--btn-pad-lg);
+  border: none;
+  border-radius: var(--btn-radius);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+  font-family: inherit;
+  font-size: var(--btn-font-lg);
+  font-weight: var(--btn-weight);
+  letter-spacing: var(--letter-body);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.app-flow-cta:hover:not(:disabled),
+.sticky-footer-cta__primary:hover:not(:disabled) {
+  background: var(--btn-primary-bg-hover);
+}
+
+.app-flow-cta:active:not(:disabled),
+.sticky-footer-cta__primary:active:not(:disabled) {
+  background: var(--btn-primary-bg-pressed);
+}
+
+.app-flow-cta:disabled,
+.sticky-footer-cta__primary:disabled {
+  background: var(--btn-disabled-bg);
+  color: var(--btn-disabled-fg);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.app-flow-cta svg,
+.sticky-footer-cta__primary svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  stroke-width: var(--icon-stroke);
+}
+
+/* Sticky footer CTA — Appointment Details, Ready for Visit (SSOT).
+   Bottom CTA owns the safe area; secondary floaters must stay above
+   (var(--fab-cta-gap)) and never use Home-style scroll FAB motion. */
+.sticky-footer-cta {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--phone-width);
+  background: var(--surface-chrome);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  padding: var(--sticky-footer-pad-top) var(--content-padding) var(--sticky-footer-pad-bottom);
+  border-top: var(--border-width) solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sticky-footer-cta-gap);
+  z-index: var(--z-footer);
+}
+
+.sticky-footer-cta.is-pending {
+  opacity: var(--opacity-soft);
+  pointer-events: none;
+}
+
+.sticky-footer-cta__secondary {
+  display: block;
+  width: 100%;
+  padding: var(--sticky-footer-secondary-pad-y) 0;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--color-link);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: opacity var(--transition);
+}
+
+.sticky-footer-cta__secondary:active {
+  opacity: var(--opacity-strong);
+}
+
+/* —— Care-journey status tones ——
+   One tone map for Home relay cards, Treat history and relay chips.       */
+.upcoming-badge.is-upcoming,
+.upcoming-badge.is-visit,
+.treat-history-badge.is-upcoming,
+.treat-history-badge.is-visit,
+.relay-chip.is-upcoming,
+.relay-chip.is-visit {
+  background: var(--featured-glass);
+  color: var(--featured-ink);
+  border: var(--border-width) solid var(--featured-glass-border);
+}
+
+.upcoming-badge.is-checkin,
+.treat-history-badge.is-checkin,
+.relay-chip.is-checkin {
+  background: var(--badge-ready-bg);
+  color: var(--badge-ready-fg);
+  border: var(--border-width) solid var(--badge-ready-border);
+}
+
+.upcoming-badge.is-waiting,
+.upcoming-badge.is-missed,
+.treat-history-badge.is-waiting,
+.treat-history-badge.is-missed,
+.relay-chip.is-waiting,
+.relay-chip.is-missed {
+  background: var(--warning-500);
+  color: var(--warning-900);
+  border: var(--border-width) solid transparent;
+}
+
+.upcoming-badge.is-reported,
+.upcoming-badge.is-prescription,
+.upcoming-badge.is-confirmed,
+.treat-history-badge.is-reported,
+.treat-history-badge.is-prescription,
+.treat-history-badge.is-confirmed,
+.relay-chip.is-reported,
+.relay-chip.is-prescription,
+.relay-chip.is-confirmed {
+  background: var(--success-300);
+  color: var(--success-900);
+  border: var(--border-width) solid transparent;
+}
+
+.upcoming-badge.is-tests,
+.upcoming-badge.is-follow,
+.treat-history-badge.is-tests,
+.treat-history-badge.is-follow,
+.relay-chip.is-tests,
+.relay-chip.is-follow {
+  background: var(--secondary-500);
+  color: var(--secondary-900);
+  border: var(--border-width) solid transparent;
+}
+
+.upcoming-badge.is-referral,
+.treat-history-badge.is-referral,
+.relay-chip.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+  border: var(--border-width) solid transparent;
+}
+
+.upcoming-badge.is-cancelled,
+.treat-history-badge.is-cancelled,
+.relay-chip.is-cancelled {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+  border: var(--border-width) solid transparent;
+}
+
+.relay-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--space-1-5);
+  min-height: var(--badge-height);
+  padding: 0 var(--badge-pad-x);
+  border-radius: var(--radius-full);
+  font-size: var(--badge-font);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-body);
+}

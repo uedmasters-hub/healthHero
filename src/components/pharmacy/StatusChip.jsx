@@ -1,17 +1,12 @@
-import './StatusChip.css'
+import { Badge } from '../ui'
 
-const TONE_CLASS = {
-  success: 'is-success',
-  info: 'is-info',
-  warning: 'is-warning',
-  danger: 'is-danger',
-}
+const TONES = new Set(['success', 'info', 'warning', 'danger', 'processing', 'neutral', 'muted'])
 
-/** Reusable status pill — orders, bookings, and care flows. */
+/** Reusable status pill — orders, bookings, and care flows (`.ds-badge`). */
 export default function StatusChip({ label, tone = 'info', className = '' }) {
   return (
-    <span className={`status-chip ${TONE_CLASS[tone] || TONE_CLASS.info} ${className}`.trim()}>
+    <Badge tone={TONES.has(tone) ? tone : 'info'} className={className}>
       {label}
-    </span>
+    </Badge>
   )
 }
