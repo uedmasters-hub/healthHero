@@ -24,6 +24,7 @@ import { formatTicketId } from '../ticket'
 import { formatBookingStatusLabel } from '../bookingChat'
 import { resolveSmartRelay } from '../../../booking/smartRelay'
 import '../Chat.css'
+import { AppBar, Badge, Button, cx } from '../../../components/ui'
 
 const AGENT_FILTERS = [
   { id: 'all', label: 'All' },
@@ -260,39 +261,25 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
 
   return (
     <div className={`chat-page ${isSupport ? 'is-support-thread' : ''} ${isProvider ? 'is-provider-thread' : ''}`}>
-      <header className={`chat-header ${isSupport ? 'is-support' : ''} ${isProvider ? 'is-provider' : ''}`}>
-        <button type="button" className="chat-header-back" onClick={goBack} aria-label="Back" data-push-back>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <div className="chat-header-copy">
-          <h1 className="chat-header-title">{loading && !title ? 'Opening…' : title}</h1>
-          {isSupport ? (
-            <p className="chat-header-sub">
-              <span className="chat-header-pill is-status">{ticketStatus || 'Open'}</span>
-              <span className="chat-header-dot" aria-hidden="true">·</span>
-              <span>{ticketCategory || 'Support'}</span>
-            </p>
-          ) : null}
-          {isProvider ? (
-            <p className="chat-header-sub">
-              {providerStatus ? (
-                <span className="chat-header-pill is-status">{providerStatus}</span>
-              ) : null}
-              {providerStatus && providerSpecialty ? (
-                <span className="chat-header-dot" aria-hidden="true">·</span>
-              ) : null}
-              {providerSpecialty ? <span>{providerSpecialty}</span> : null}
-            </p>
-          ) : null}
-        </div>
-        {isAgent ? (
-          <button type="button" className="chat-header-action" onClick={() => navigate('/chat/agent')}>
-            Filters
-          </button>
+      <AppBar
+        className={cx('chat-header', isSupport && 'is-support', isProvider && 'is-provider')}
+        onBack={goBack}
+        title={loading && !title ? 'Opening…' : title}
+        subtitle={isSupport ? (
+          <span className="chat-header-sub">
+            <Badge tone="info">{ticketStatus || 'Open'}</Badge>
+            <span>{ticketCategory || 'Support'}</span>
+          </span>
+        ) : isProvider && (providerStatus || providerSpecialty) ? (
+          <span className="chat-header-sub">
+            {providerStatus ? <Badge tone="info">{providerStatus}</Badge> : null}
+            {providerSpecialty ? <span>{providerSpecialty}</span> : null}
+          </span>
         ) : null}
-      </header>
+        actions={isAgent ? (
+          <Button variant="text" size="sm" onClick={() => navigate('/chat/agent')}>Filters</Button>
+        ) : null}
+      />
 
       {isAgent ? (
         <div className="chat-agent-filters" role="toolbar" aria-label="Message filters">
@@ -300,7 +287,8 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
             <button
               key={item.id}
               type="button"
-              className={`chat-agent-chip ${filter === item.id ? 'is-active' : ''}`}
+              className="ds-chip ds-chip--sm"
+              aria-pressed={filter === item.id}
               onClick={() => setFilter(item.id)}
             >
               {item.label}
@@ -311,8 +299,8 @@ export default function ConversationThreadPage({ supportRoute = false } = {}) {
 
       <div className="chat-thread">
         <div className="chat-thread-scroll">
-          {loading && !conversation ? <p className="chat-loading">Opening conversation…</p> : null}
-          {error ? <p className="chat-banner" role="alert">{error}</p> : null}
+          {loading && !conversation ? <p className="ds-page__note chat-loading" role="status">Opening conversation…</p> : null}
+          {error ? <p className="ds-callout is-danger chat-banner" role="alert">{error}</p> : null}
 
           {conversation ? (
             <ContextCard

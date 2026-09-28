@@ -30,12 +30,12 @@ function initials(conversation) {
 export default function ConversationListItem({ conversation, onClick }) {
   const isSupport = conversation.kind === CONVERSATION_KIND.SUPPORT
   return (
-    <button type="button" className="chat-list-item" onClick={() => onClick?.(conversation)}>
+    <button type="button" className="ds-list-row chat-list-item" onClick={() => onClick?.(conversation)}>
       <span className={`chat-list-avatar ${isSupport ? 'is-support' : ''}`}>{initials(conversation)}</span>
       <div className="chat-list-main">
         <div className="chat-list-top">
           <p className="chat-list-name">{titleFor(conversation)}</p>
-          <span className={`chat-list-badge ${isSupport ? 'is-support' : ''}`}>
+          <span className={`ds-badge ${isSupport ? 'is-neutral' : 'is-primary'} chat-list-badge`}>
             {isSupport ? 'Support' : 'Provider'}
           </span>
         </div>

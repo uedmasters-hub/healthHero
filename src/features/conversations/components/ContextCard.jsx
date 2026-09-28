@@ -77,7 +77,7 @@ export default function ContextCard({ conversation, booking = null, compact = fa
   const isVideo = visitType === 'video' || visitType.includes('video')
 
   return (
-    <div className={`chat-context ${compact ? 'is-compact' : ''} ${isProvider ? 'is-provider' : ''}`}>
+    <div className={`ds-card chat-context ${compact ? 'is-compact' : ''} ${isProvider ? 'is-provider' : ''}`}>
       <button
         type="button"
         className="chat-context-toggle"
@@ -163,7 +163,7 @@ export default function ContextCard({ conversation, booking = null, compact = fa
                 {isVideo ? (
                   <button
                     type="button"
-                    className="chat-context-action"
+                    className="ds-chip ds-chip--sm chat-context-action"
                     onClick={() => navigate('/prepare-visit', {
                       state: { bookingId: booking?.id || conversation.booking_ref },
                     })}
@@ -173,7 +173,7 @@ export default function ContextCard({ conversation, booking = null, compact = fa
                 ) : null}
                 <button
                   type="button"
-                  className="chat-context-action"
+                  className="ds-chip ds-chip--sm chat-context-action"
                   onClick={() => navigate('/profile/records', {
                     state: {
                       intent: 'upload_prescription',
@@ -185,7 +185,7 @@ export default function ContextCard({ conversation, booking = null, compact = fa
                 </button>
                 <button
                   type="button"
-                  className="chat-context-action"
+                  className="ds-chip ds-chip--sm chat-context-action"
                   onClick={() => navigate('/profile/records', {
                     state: {
                       intent: 'share_report',

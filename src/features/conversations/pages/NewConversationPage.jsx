@@ -15,6 +15,7 @@ import {
   SUPPORT_CATEGORY,
 } from '../index'
 import '../Chat.css'
+import { AppBar } from '../../../components/ui'
 
 const CATEGORIES = [
   { id: SUPPORT_CATEGORY.GENERAL, label: 'General' },
@@ -172,25 +173,18 @@ export default function NewConversationPage() {
 
   return (
     <div className="chat-page">
-      <header className="chat-header">
-        <button type="button" className="chat-header-back" onClick={goBack} aria-label="Back" data-push-back>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <h1 className="chat-header-title">New conversation</h1>
-      </header>
+      <AppBar className="chat-header" title="New conversation" onBack={goBack} />
 
       <div className="chat-body">
-        {error ? <p className="chat-banner" role="alert">{error}</p> : null}
+        {error ? <p className="ds-callout is-danger chat-banner" role="alert">{error}</p> : null}
 
         {!mode ? (
           <>
-            <button type="button" className="chat-choice-card" onClick={() => setMode('provider')} disabled={busy}>
+            <button type="button" className="ds-card is-interactive is-padded chat-choice-card" onClick={() => setMode('provider')} disabled={busy}>
               <strong>Message a care provider</strong>
               <span>Opens a permanent chat for a checked-in visit.</span>
             </button>
-            <button type="button" className="chat-choice-card" onClick={() => setMode('support')} disabled={busy}>
+            <button type="button" className="ds-card is-interactive is-padded chat-choice-card" onClick={() => setMode('support')} disabled={busy}>
               <strong>Contact support</strong>
               <span>Creates a ticket ID and opens a live chat thread.</span>
             </button>
@@ -199,44 +193,50 @@ export default function NewConversationPage() {
 
         {mode === 'provider' ? (
           <>
-            <button type="button" className="chat-header-action" onClick={() => setMode(null)} disabled={busy}>Back</button>
-            <p className="chat-section-label">Checked-in visits</p>
+            <button type="button" className="ds-btn ds-btn--text ds-btn--sm chat-mode-back" onClick={() => setMode(null)} disabled={busy}>Back</button>
+            <h2 className="ds-section-title chat-section-label">Checked-in visits</h2>
             {!providerBookings.length ? (
-              <div className="chat-empty">
-                <h2>No visits ready for chat</h2>
-                <p>Message your provider after you check in for an appointment.</p>
-                <button type="button" className="chat-empty-cta" onClick={() => navigate('/treat')}>
-                  View appointments
-                </button>
+              <div className="ds-empty chat-empty">
+                <p className="ds-empty__title">No visits ready for chat</p>
+                <p className="ds-empty__copy">Message your provider after you check in for an appointment.</p>
+                <div className="ds-empty__actions">
+                  <button type="button" className="ds-btn ds-btn--primary ds-btn--md" onClick={() => navigate('/treat')}>
+                    View appointments
+                  </button>
+                </div>
               </div>
             ) : (
-              providerBookings.map((booking) => (
+              <div className="ds-list">
+              {providerBookings.map((booking) => (
                 <button
                   key={booking.id}
                   type="button"
-                  className="chat-booking-row"
+                  className="ds-list-row chat-booking-row"
                   disabled={busy}
                   onClick={() => startProvider(booking)}
                 >
-                  <strong>{doctorDisplayName(booking)}</strong>
-                  <span>
-                    {booking.doctor?.specialty || 'Care'}
-                    {' · '}
-                    {resolveSmartRelay(booking)?.label || formatBookingStatusLabel(booking.status)}
+                  <span className="ds-list-row__body">
+                    <span className="ds-list-row__title">{doctorDisplayName(booking)}</span>
+                    <span className="ds-list-row__sub">
+                      {booking.doctor?.specialty || 'Care'}
+                      {' · '}
+                      {resolveSmartRelay(booking)?.label || formatBookingStatusLabel(booking.status)}
+                    </span>
                   </span>
                 </button>
-              ))
+              ))}
+              </div>
             )}
           </>
         ) : null}
 
         {mode === 'support' ? (
           <form onSubmit={startSupport} aria-busy={busy}>
-            <button type="button" className="chat-header-action" onClick={() => setMode(null)} disabled={busy}>Back</button>
-            <label className="chat-form-label" htmlFor="support-category">Category</label>
+            <button type="button" className="ds-btn ds-btn--text ds-btn--sm chat-mode-back" onClick={() => setMode(null)} disabled={busy}>Back</button>
+            <label className="ds-field-label chat-form-label" htmlFor="support-category">Category</label>
             <select
               id="support-category"
-              className="chat-select"
+              className="ds-field chat-select"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               disabled={busy}
@@ -247,10 +247,10 @@ export default function NewConversationPage() {
               ))}
             </select>
 
-            <label className="chat-form-label" htmlFor="support-booking">Link a booking (optional)</label>
+            <label className="ds-field-label chat-form-label" htmlFor="support-booking">Link a booking (optional)</label>
             <select
               id="support-booking"
-              className="chat-select"
+              className="ds-field chat-select"
               value={linkBookingId}
               onChange={(e) => setLinkBookingId(e.target.value)}
               disabled={busy}
@@ -263,10 +263,10 @@ export default function NewConversationPage() {
               ))}
             </select>
 
-            <label className="chat-form-label" htmlFor="support-message">How can we help?</label>
+            <label className="ds-field-label chat-form-label" htmlFor="support-message">How can we help?</label>
             <textarea
               id="support-message"
-              className="chat-textarea"
+              className="ds-field is-multiline chat-textarea"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Describe your issue"
@@ -275,7 +275,7 @@ export default function NewConversationPage() {
               minLength={1}
             />
 
-            <button type="submit" className="chat-submit" disabled={busy || !message.trim()}>
+            <button type="submit" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block chat-submit" disabled={busy || !message.trim()}>
               {busy ? 'Opening chat…' : 'Create support ticket'}
             </button>
           </form>

@@ -5,6 +5,7 @@ import { useAuth } from '../../auth/hooks/useAuth'
 import { listInbox, SUPPORT_CATEGORY, SUPPORT_TICKET_STATUS } from '../index'
 import ConversationListItem from '../components/ConversationListItem'
 import '../Chat.css'
+import { AppBar } from '../../../components/ui'
 
 const STATUS_FILTERS = [
   { id: 'open', label: 'Open', match: (c) => c.support_ticket?.status === SUPPORT_TICKET_STATUS.OPEN },
@@ -51,21 +52,15 @@ export default function AgentInboxPage() {
 
   return (
     <div className="chat-page">
-      <header className="chat-header">
-        <button type="button" className="chat-header-back" onClick={goBack} aria-label="Back" data-push-back>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <h1 className="chat-header-title">Support desk</h1>
-      </header>
+      <AppBar className="chat-header" title="Support desk" onBack={goBack} />
 
       <div className="chat-agent-filters" role="toolbar" aria-label="Ticket filters">
         {STATUS_FILTERS.map((item) => (
           <button
             key={item.id}
             type="button"
-            className={`chat-agent-chip ${filter === item.id ? 'is-active' : ''}`}
+            className="ds-chip ds-chip--sm"
+              aria-pressed={filter === item.id}
             onClick={() => setFilter(item.id)}
           >
             {item.label}
@@ -74,14 +69,14 @@ export default function AgentInboxPage() {
       </div>
 
       <div className="chat-body">
-        {loading ? <p className="chat-loading">Loading tickets…</p> : null}
+        {loading ? <p className="ds-page__note chat-loading" role="status">Loading tickets…</p> : null}
         {!loading && !filtered.length ? (
-          <div className="chat-empty">
-            <h2>No tickets</h2>
-            <p>Nothing matches this filter yet.</p>
+          <div className="ds-empty chat-empty">
+            <p className="ds-empty__title">No tickets</p>
+            <p className="ds-empty__copy">Nothing matches this filter yet.</p>
           </div>
         ) : (
-          <div className="chat-list">
+          <div className="ds-list chat-list">
             {filtered.map((c) => (
               <ConversationListItem
                 key={c.id}
