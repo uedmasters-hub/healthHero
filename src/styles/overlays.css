@@ -81,6 +81,10 @@
   touch-action: none;
 }
 
+.ds-sheet-header.sheet-page-header {
+  padding-inline: var(--content-padding);
+}
+
 .ds-sheet-header {
   display: flex;
   align-items: center;

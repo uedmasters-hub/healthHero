@@ -1619,3 +1619,13 @@ a.ds-list-row:active,
   height: var(--border-width);
   background: var(--border-divider);
 }
+
+/* End-of-list note — "You've reached the end" under long scroll pages */
+.end-of-page-placeholder {
+  margin: 0;
+  padding: var(--space-10) 0 var(--space-12);
+  text-align: center;
+  font-size: var(--text-caption-size);
+  letter-spacing: var(--letter-body);
+  color: var(--text-tertiary);
+}

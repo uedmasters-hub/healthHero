@@ -79,40 +79,6 @@
 .services-bottom-sheet-overlay.closing .services-bottom-sheet {
   animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
 }
-
-.services-bottom-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  margin: var(--space-3) auto;
-}
-
-.services-bottom-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--content-padding) var(--space-4);
-  border-bottom: var(--border-width) solid var(--border);
-}
-
-.services-bottom-sheet-title {
-  font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.services-bottom-sheet-close {
-  background: none;
-  border: none;
-  padding: var(--space-1);
-  cursor: pointer;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-}
-
 .services-bottom-sheet-content {
   flex: 1;
   overflow-y: auto;
@@ -148,27 +114,11 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-5) var(--space-3);
-  background: var(--surface-2);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);
-  cursor: pointer;
-  box-shadow: none;
-  transition: var(--interact-transition);
-  min-height: 100px;
+  min-height: 6.25rem;
   justify-content: center;
   width: 100%;
   font: inherit;
   color: inherit;
-}
-
-.services-bottom-sheet-item:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.services-bottom-sheet-item:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
 }
 
 .sheet-skeleton {

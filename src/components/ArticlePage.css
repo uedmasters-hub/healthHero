@@ -7,41 +7,6 @@
   background: var(--bg);
 }
 
-.article-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--content-padding) var(--space-3);
-  background: var(--surface-2);
-  flex-shrink: 0;
-  z-index: 2;
-}
-
-.article-header-side {
-  display: flex;
-  align-items: center;
-  gap: var(--icon-gap);
-  min-width: calc(var(--icon-btn-size) * 2 + var(--icon-gap));
-}
-
-.article-header-side.is-start {
-  justify-content: flex-start;
-}
-
-.article-header-side.is-end {
-  justify-content: flex-end;
-}
-
-.article-header-title {
-  flex: 1;
-  text-align: center;
-  font-size: var(--text-heading-size);
-  line-height: var(--text-heading-line);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  margin: 0;
-}
-
 .article-scroll {
   flex: 1;
   min-height: 0;

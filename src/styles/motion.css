@@ -139,13 +139,6 @@
   animation: ds-skel-in var(--duration-reveal) var(--ease-emphasized) both;
 }
 
-.end-of-page-placeholder {
-  text-align: center;
-  font-size: var(--text-caption-size);
-  color: var(--text-tertiary);
-  padding: var(--space-10) 0 var(--space-12);
-  letter-spacing: var(--letter-body);
-}
 
 /* ── Reveal host — skeleton cross-fades into content ─────────────────── */
 .reveal-host {

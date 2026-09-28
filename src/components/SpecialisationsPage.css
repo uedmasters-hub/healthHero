@@ -50,26 +50,6 @@
   background: var(--bg);
   overscroll-behavior: contain;
 }
-
-.specialisations-header {
-  display: flex;
-  align-items: center;
-  padding: var(--space-2) var(--content-padding) var(--space-3);
-  background: var(--surface-2);
-  border-bottom: var(--border-width) solid var(--border);
-  flex-shrink: 0;
-}
-
-.specialisations-back-btn {
-  background: none;
-  border: none;
-  padding: var(--space-1);
-  cursor: pointer;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-}
-
 .specialisations-title {
   flex: 1;
   text-align: center;
@@ -78,15 +58,11 @@
   color: var(--text-primary);
   margin: 0;
 }
-
-.specialisations-header-placeholder {
-  width: 30px;
-}
-
 .specialisations-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: var(--border-width) solid var(--border);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-1) var(--content-padding) 0;
 }
 
 .specialisation-card {
@@ -96,33 +72,14 @@
   justify-content: center;
   gap: var(--space-3);
   padding: var(--space-6) var(--space-2) var(--space-5);
-  min-height: 150px;
+  min-height: 9.375rem;
   width: 100%;
-  border: none;
-  border-right: var(--border-width) solid var(--border);
-  border-bottom: var(--border-width) solid var(--border);
-  background: var(--surface-2);
-  font-family: inherit;
-  cursor: pointer;
-  transition: var(--interact-transition);
   position: relative;
 }
 
-.specialisation-card:nth-child(3n) {
-  border-right: none;
-}
-
-.specialisation-card:hover {
-  background: var(--interact-hover-bg);
-}
-
-.specialisation-card:active {
-  background: var(--interact-pressed-bg);
-}
-
 .specialisation-icon {
-  width: 72px;
-  height: 72px;
+  width: 4.5rem;
+  height: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,8 +137,8 @@
 }
 
 .skeleton-icon {
-  width: 72px;
-  height: 72px;
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: var(--radius);
 }
 

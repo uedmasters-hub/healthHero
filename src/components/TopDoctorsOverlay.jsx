@@ -8,6 +8,7 @@ import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './TopDoctorsOverlay.css'
 import './TopDoctors.css'
 import './DoctorCard.css'
+import { EndOfPage, SheetHeader } from './ui'
 
 const FAST_STAGGER = 60
 const LOADING_TOAST_DELAY = 400
@@ -192,16 +193,8 @@ export default function TopDoctorsOverlay() {
         aria-labelledby="top-doctors-sheet-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="top-doctors-sheet-handle" />
-        <div className="top-doctors-header">
-          <h2 id="top-doctors-sheet-title" className="top-doctors-title">Top 10 Doctor Speciality</h2>
-          <button type="button" className="top-doctors-close-btn" onClick={handleClose} aria-label="Close">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+        <div className="ds-sheet-handle" aria-hidden="true" />
+        <SheetHeader as="h2" className="sheet-page-header" titleId="top-doctors-sheet-title" title="Top 10 Doctor Speciality" onClose={handleClose} />
 
         <div className="top-doctors-list" ref={contentRef}>
           {doctors.map((doctor, i) => {
@@ -231,7 +224,7 @@ export default function TopDoctorsOverlay() {
               </div>
             )
           })}
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
 
         {loadingToast && (

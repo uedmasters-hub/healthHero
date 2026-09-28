@@ -15,6 +15,7 @@ import { galleryFor, mapEmbedUrl } from './profile/placeMedia'
 import { ProfileGallery, ProfileHeader, ProfileMap, ProfileRatings } from './profile/placeProfile'
 import './DoctorProfile.css'
 import './DoctorCard.css'
+import { EndOfPage } from './ui'
 
 const TAG_BACKGROUNDS = ['#DBEAFE', '#D1FAE5', '#EDE9FE', '#FFEDD5']
 
@@ -405,7 +406,7 @@ export default function FacilityPage() {
             )}
           </div>
 
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
       </div>
 

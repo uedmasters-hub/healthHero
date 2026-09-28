@@ -58,47 +58,6 @@
 .top-doctor-card.is-shared-placeholder {
   visibility: hidden;
 }
-
-.top-doctors-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  margin: var(--space-3) auto;
-  flex-shrink: 0;
-}
-
-.top-doctors-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--content-padding) var(--space-4);
-  background: var(--surface-2);
-  border-bottom: var(--border-width) solid var(--border);
-  flex-shrink: 0;
-  z-index: 10;
-}
-
-.top-doctors-title {
-  flex: 1;
-  text-align: left;
-  font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.top-doctors-close-btn {
-  background: none;
-  border: none;
-  padding: var(--space-1);
-  cursor: pointer;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
 .top-doctors-list {
   flex: 1;
   min-height: 0;

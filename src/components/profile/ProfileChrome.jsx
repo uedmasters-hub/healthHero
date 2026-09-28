@@ -5,7 +5,7 @@ import { BRAND_SUPPORT_EMAIL } from '../../lib/brand'
 import { usePullToRefresh } from '../../hooks/usePullToRefresh'
 import PullToRefreshIndicator from '../PullToRefreshIndicator'
 import { refreshProfileData } from '../../features/sync/pageRefresh'
-import { AppBar, Button, DetailRow, EmptyState, List, ListRow, Progress, SectionHead as UiSectionHead, cx } from '../ui'
+import { AppBar, Button, DetailRow, EmptyState, EndOfPage, List, ListRow, Progress, SectionHead as UiSectionHead, cx } from '../ui'
 import '../PatientProfile.css'
 
 export const CARE_SUPPORT = {
@@ -35,7 +35,7 @@ export function ProfilePage({ title, onBack, action, children, dataset }) {
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
       <div className="ds-page__body">
         {typeof children === 'function' ? children({ setItemRef, isRevealed, isCached }) : children}
-        <p className="ds-page__note user-profile-footer">You&apos;ve reached the end</p>
+        <EndOfPage className="user-profile-footer" />
       </div>
     </div>
   )

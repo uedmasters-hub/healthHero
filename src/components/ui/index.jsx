@@ -538,6 +538,11 @@ export function Disclosure({ title, icon = null, open = false, onToggle, id, cla
   )
 }
 
+/* ── End-of-page note ─────────────────────────────────────────────────── */
+export function EndOfPage({ className = '' }) {
+  return <p className={cx('end-of-page-placeholder', className)}>You&apos;ve reached the end</p>
+}
+
 /* ── Skeleton ─────────────────────────────────────────────────────────── */
 export function Skeleton({ shape, width, height, className = '', style, ...rest }) {
   return (

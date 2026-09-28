@@ -21,7 +21,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshDoctorsData } from '../features/sync/pageRefresh'
 import './DoctorProfile.css'
-import { AppBar } from './ui'
+import { AppBar, EndOfPage } from './ui'
 
 const LOGO_BADGES = [
   '/img/logo-badges/LogoBadge-1.png',
@@ -542,7 +542,7 @@ export default function DoctorProfile() {
             </div>
           )}
 
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
       </div>
       </div>
