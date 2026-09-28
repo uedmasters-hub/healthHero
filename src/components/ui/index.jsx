@@ -44,6 +44,18 @@ export const Icon = {
   More: (p) => (
     <svg {...iconProps} {...p}><circle cx="12" cy="5" r="1.2" fill="currentColor" /><circle cx="12" cy="12" r="1.2" fill="currentColor" /><circle cx="12" cy="19" r="1.2" fill="currentColor" /></svg>
   ),
+  Upload: (p) => (
+    <svg {...iconProps} {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m17 8-5-5-5 5M12 3v12" /></svg>
+  ),
+  Users: (p) => (
+    <svg {...iconProps} {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+  ),
+  Bell: (p) => (
+    <svg {...iconProps} {...p}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+  ),
+  ArrowRight: (p) => (
+    <svg {...iconProps} {...p}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+  ),
   Plus: (p) => (
     <svg {...iconProps} {...p}><path d="M12 5v14M5 12h14" /></svg>
   ),
@@ -462,6 +474,33 @@ export function Progress({ value = 0, thin = false, tone, label, className = '' 
       aria-hidden={label ? undefined : true}
     >
       <span className="ds-progress__bar" style={{ width: `${pct}%` }} />
+    </span>
+  )
+}
+
+/* ── Detail row — optional icon well, caption label over value ─────────── */
+export function DetailRow({ icon = null, label, value, extra = null, emptyLabel, className = '', children }) {
+  const filled = value != null && String(value).trim() !== ''
+  return (
+    <div className={cx('ds-list-row', 'ds-detail-row', className)}>
+      {icon ? <span className="ds-icon-well" aria-hidden="true">{icon}</span> : null}
+      <span className="ds-list-row__body">
+        {label ? <span className="ds-list-row__label">{label}</span> : null}
+        <span className={cx('ds-list-row__title', 'is-wrap', !filled && emptyLabel && 'is-placeholder')}>
+          {filled ? value : emptyLabel}
+        </span>
+        {children}
+      </span>
+      {extra ? <span className="ds-list-row__trail">{extra}</span> : null}
+    </div>
+  )
+}
+
+/* ── Checkbox glyph (pair with role="checkbox" / aria-checked on the row) */
+export function CheckboxMark({ className = '' }) {
+  return (
+    <span className={cx('ds-checkbox', className)} aria-hidden="true">
+      <Icon.Check />
     </span>
   )
 }

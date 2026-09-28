@@ -593,6 +593,8 @@
   --duration-sheet: 0.26s;
   --duration-moderate: 0.28s;
   --duration-page: 0.28s;
+  /* Multi-phase result choreography (booking confirmed) */
+  --duration-stage: 0.75s;
   --duration-reveal: 0.38s;
   --duration-slow: 0.4s;
   --duration-enter: 0.5s;

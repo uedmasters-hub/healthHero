@@ -5,7 +5,7 @@ import { BRAND_SUPPORT_EMAIL } from '../../lib/brand'
 import { usePullToRefresh } from '../../hooks/usePullToRefresh'
 import PullToRefreshIndicator from '../PullToRefreshIndicator'
 import { refreshProfileData } from '../../features/sync/pageRefresh'
-import { AppBar, Button, EmptyState, List, ListRow, Progress, SectionHead as UiSectionHead, cx } from '../ui'
+import { AppBar, Button, DetailRow, EmptyState, List, ListRow, Progress, SectionHead as UiSectionHead, cx } from '../ui'
 import '../PatientProfile.css'
 
 export const CARE_SUPPORT = {
@@ -59,18 +59,7 @@ export function InfoCard({ children, className = '' }) {
 
 /** Detail row — caption label above the value, optional trailing aside */
 export function InfoRow({ label, value, extra, emptyLabel = 'Add this detail' }) {
-  const filled = value != null && String(value).trim() !== ''
-  return (
-    <div className="ds-list-row">
-      <span className="ds-list-row__body">
-        <span className="ds-list-row__label">{label}</span>
-        <span className={cx('ds-list-row__title', 'is-wrap', !filled && 'is-placeholder')}>
-          {filled ? value : emptyLabel}
-        </span>
-      </span>
-      {extra ? <span className="ds-list-row__trail">{extra}</span> : null}
-    </div>
-  )
+  return <DetailRow label={label} value={value} extra={extra} emptyLabel={emptyLabel} />
 }
 
 export function NavGroup({ children }) {
