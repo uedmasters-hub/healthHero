@@ -452,27 +452,7 @@
   color: var(--text-secondary);
 }
 
-.view-all-reviews {
-  display: block;
-  text-align: center;
-  padding: var(--space-3-5);
-  margin-top: var(--space-2);
-  border-radius: var(--radius);
-  border: var(--border-width) solid var(--border);
-  background: var(--surface-2);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--primary);
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--transition);
-  width: 100%;
-}
-
-.view-all-reviews:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
+.view-all-reviews { margin-top: var(--space-2); }
 
 .view-all-reviews:active {
   background: var(--interact-pressed-bg);

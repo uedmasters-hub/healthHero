@@ -22,11 +22,7 @@
 }
 
 .rx-header-spacer,
-.rx-close {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-}
+.rx-close { flex-shrink: 0; }
 
 .rx-title {
   flex: 1;
@@ -35,17 +31,6 @@
   font-size: var(--text-heading-size);
   font-weight: var(--font-weight-medium);
   color: var(--white);
-}
-
-.rx-close {
-  border: none;
-  border-radius: var(--radius-full);
-  background: var(--glass-on-dark);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 
 .rx-preview-scroll {

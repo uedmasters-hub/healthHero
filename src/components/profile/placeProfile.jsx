@@ -56,8 +56,8 @@ export function ProfileRatings({ summary, onViewAll }) {
           </div>
         ))}
       </div>
-      <button className="view-all-reviews" type="button" onClick={onViewAll}>
-        View All Reviews →
+      <button className="ds-btn ds-btn--secondary ds-btn--md ds-btn--block view-all-reviews" type="button" onClick={onViewAll}>
+        View all reviews
       </button>
     </div>
   )

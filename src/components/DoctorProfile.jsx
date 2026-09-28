@@ -512,13 +512,13 @@ export default function DoctorProfile() {
             </div>
 
             <button
-              className="view-all-reviews"
+              className="ds-btn ds-btn--secondary ds-btn--md ds-btn--block view-all-reviews"
               type="button"
               onClick={() => navigate(`/doctor/${doctor.id}/reviews`, {
                 state: flowState(location, { returnTo: `/doctor/${doctor.id}` }),
               })}
             >
-              View All Reviews →
+              View all reviews
             </button>
           </div>
 

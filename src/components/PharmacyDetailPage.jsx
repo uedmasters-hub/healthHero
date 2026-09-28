@@ -205,7 +205,7 @@ export default function PharmacyDetailPage() {
               title="Pharmacy unavailable"
               message={error || 'We could not load this pharmacy from the registry.'}
             />
-            <button type="button" className="view-all-reviews" onClick={load}>Try again</button>
+            <button type="button" className="ds-btn ds-btn--secondary ds-btn--md ds-btn--block view-all-reviews" onClick={load}>Try again</button>
           </div>
         </div>
       </div>

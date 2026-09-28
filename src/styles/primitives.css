@@ -261,6 +261,11 @@
   border-color: var(--interact-selected-border);
 }
 
+/* Glass — controls floating on dark media (lightboxes, video) */
+.ds-icon-btn.is-glass { background: var(--glass-on-dark); color: var(--neutral-0); }
+.ds-icon-btn.is-glass:hover:not(:disabled),
+.ds-icon-btn.is-glass:active:not(:disabled) { background: var(--glass-on-dark-strong); }
+
 .ds-icon-btn.is-brand {
   color: var(--icon-color-brand);
   background: var(--icon-surface-brand);

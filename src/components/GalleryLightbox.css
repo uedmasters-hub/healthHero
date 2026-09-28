@@ -11,20 +11,9 @@
 
 .gallery-lightbox-close {
   position: absolute;
-  top: 14px;
-  left: 16px;
+  top: var(--space-3-5);
+  left: var(--space-4);
   z-index: 2;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: var(--radius-xl);
-  background: var(--glass-on-dark);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
 }
 
 .gallery-lightbox-scroll {
