@@ -6,8 +6,43 @@
   flex-direction: column;
 }
 
-.prepare-page.is-leaving .prepare-header-title,
+.prepare-page.is-leaving .prepare-header-bar .ds-app-bar__title,
 .prepare-page.is-leaving .prepare-timeline {
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-standard);
+  pointer-events: none;
+}
+
+.prepare-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-6) var(--content-padding) var(--sticky-footer-clearance);
+}
+
+/* Shared-hero source — hidden while it morphs into Appointment details */
+.prepare-hero-card {
+  max-width: 21.25rem;
+  margin: 0 auto var(--space-8);
+  overflow: hidden;
+}
+
+.prepare-hero-card.is-morphing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.prepare-doctor-row {
+  width: 100%;
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-divider);
+}
+
+.prepare-hero-meta { margin-top: var(--space-2-5); }
+
+.prepare-timeline {
   opacity: 0;
   transition: opacity var(--duration-normal) var(--ease-standard);
   pointer-events: none;
@@ -49,7 +84,7 @@
   box-shadow: var(--shadow-card);
   padding: var(--card-padding);
   margin: 0 auto var(--space-8);
-  max-width: 340px;
+  max-width: 21.25rem;
   overflow: hidden;
 }
 
@@ -95,7 +130,7 @@
 }
 
 .prepare-timeline {
-  max-width: 340px;
+  max-width: 21.25rem;
   margin: 0 auto;
   transition: opacity var(--duration-normal) var(--ease-standard);
 }
@@ -110,50 +145,37 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  width: 28px;
+  width: 1.75rem;
 }
 
 .prepare-step-icon {
-  width: 28px;
-  height: 28px;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  border: var(--border-width) solid var(--border);
+  background: var(--neutral-200);
+  color: var(--text-secondary);
+  border: none;
   transition: var(--interact-transition);
 }
 
-.prepare-step.completed .prepare-step-icon {
-  background: var(--success-bg);
-  border-color: var(--success-border);
-  color: var(--success);
-  box-shadow: none;
-  transform: none;
-}
-
+/* Same vocabulary as .ds-step: done/active = CTA ink, pending = neutral */
+.prepare-step.completed .prepare-step-icon,
 .prepare-step.current .prepare-step-icon {
-  background: var(--interact-selected-bg);
-  border-color: var(--interact-selected-border);
-  color: var(--primary-950);
-  box-shadow: none;
-  transform: none;
+  background: var(--primary-950);
+  color: var(--neutral-0);
 }
 
-.prepare-step.pending .prepare-step-icon {
-  background: var(--surface-2);
-  border-color: var(--border);
-  color: var(--text-muted);
-}
+.prepare-step.current .prepare-step-icon { box-shadow: var(--shadow-ring-soft); }
 
 .prepare-check {
-  width: 14px;
-  height: 14px;
+  width: 0.875rem;
+  height: 0.875rem;
   stroke: currentColor;
-  stroke-width: 2.75;
+  stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 24;
@@ -165,10 +187,10 @@
   position: relative;
   width: 2px;
   flex: 1;
-  min-height: 36px;
+  min-height: 2.25rem;
   margin: var(--space-1-5) 0;
   border-radius: var(--radius-full);
-  background: var(--border);
+  background: var(--neutral-200);
   overflow: hidden;
 }
 
@@ -177,17 +199,17 @@
   inset: 0;
   transform-origin: top center;
   transform: scaleY(0);
-  background: var(--border);
+  background: var(--neutral-200);
   transition: background var(--duration-reveal) var(--ease-standard);
 }
 
 .prepare-step.completed .prepare-step-line-fill {
-  background: var(--success-border);
+  background: var(--primary-950);
   animation: prepareLineGrow var(--duration-enter) 0.1s var(--ease-emphasized) forwards;
 }
 
 .prepare-step.current .prepare-step-line-fill {
-  background: linear-gradient(to bottom, var(--primary), var(--border));
+  background: linear-gradient(to bottom, var(--primary-950), var(--neutral-200));
   animation: prepareLineGrow var(--duration-enter) 0.1s var(--ease-emphasized) forwards;
 }
 
@@ -204,7 +226,7 @@
 .prepare-step-content {
   flex: 1;
   min-width: 0;
-  padding: 3px 0 var(--space-6);
+  padding: var(--space-0-5) 0 var(--space-6);
   display: flex;
   align-items: flex-start;
 }
@@ -216,27 +238,27 @@
 .prepare-step-label {
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
-  letter-spacing: var(--letter-tight);
+  color: var(--text-tertiary);
+  letter-spacing: var(--letter-body);
   line-height: 1.35;
   transition: color var(--duration-reveal) var(--ease-standard),font-weight var(--duration-reveal) var(--ease-standard),opacity var(--duration-reveal) var(--ease-standard),transform var(--duration-enter) var(--ease-emphasized);
 }
 
 .prepare-step.completed .prepare-step-label {
-  color: var(--success-text);
+  color: var(--text-secondary);
   font-weight: var(--font-weight-medium);
   opacity: 0.92;
 }
 
 .prepare-step.current .prepare-step-label {
-  color: var(--text-primary);
+  color: var(--pp-headline);
   font-weight: var(--font-weight-medium);
   opacity: 1;
   animation: prepareTextIn var(--duration-enter) var(--ease-emphasized) both;
 }
 
 .prepare-step.pending .prepare-step-label {
-  color: var(--text-muted);
+  color: var(--text-tertiary);
   font-weight: var(--font-weight-medium);
   opacity: 0.55;
 }
@@ -244,7 +266,7 @@
 @keyframes prepareTextIn {
   from {
     opacity: 0.35;
-    transform: translateY(6px);
+    transform: translateY(var(--space-1-5));
   }
   to {
     opacity: 1;

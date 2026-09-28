@@ -62,6 +62,12 @@ export const Icon = {
   Heart: (p) => (
     <svg {...iconProps} {...p}><path d="M12 21s-6.5-4.35-9.33-8.5C.5 9.5 2.2 5 6.5 5c2.1 0 3.4 1.1 4.5 2.5C12.1 6.1 13.4 5 15.5 5c4.3 0 6 4.5 3.83 7.5C18.5 16.65 12 21 12 21z" /></svg>
   ),
+  Message: (p) => (
+    <svg {...iconProps} {...p}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+  ),
+  Pill: (p) => (
+    <svg {...iconProps} {...p}><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" /><path d="m8.5 8.5 7 7" /></svg>
+  ),
   Plus: (p) => (
     <svg {...iconProps} {...p}><path d="M12 5v14M5 12h14" /></svg>
   ),

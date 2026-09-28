@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useBooking } from './BookingContext'
 import DoctorCard from './DoctorCard'
 import StickyFooterCta from './StickyFooterCta'
+import { AppBar } from './ui'
 import { useSharedHero } from './SharedHero'
 import { getDoctorById } from '../data/doctors'
 import {
@@ -138,13 +139,11 @@ export default function PrepareVisit() {
 
   return (
     <div className={`prepare-page${isLeaving || sharedFlow ? ' is-leaving' : ''}`}>
-      <div className="prepare-header-bar">
-        <h1 className="prepare-header-title">Prepare for My Visit</h1>
-      </div>
+      <AppBar className="prepare-header-bar" title="Prepare for my visit" lead={null} />
 
       <div className="prepare-body">
         <div
-          className={`prepare-hero-card ds-card${isLeaving || sharedFlow ? ' is-morphing' : ''}`}
+          className={`prepare-hero-card ds-card is-padded${isLeaving || sharedFlow ? ' is-morphing' : ''}`}
           ref={heroRef}
         >
           <DoctorCard
@@ -154,13 +153,9 @@ export default function PrepareVisit() {
             origin="appointment"
             disableNavigate
           />
-          <div className="prepare-hero-meta" aria-hidden="true">
-            <span>{dateStr}</span>
-            <span className="prepare-hero-dot" />
-            <span>{currentBooking.time}</span>
-            <span className="prepare-hero-dot" />
-            <span>{currentBooking.visitType || 'In-Person'} Visit</span>
-          </div>
+          <p className="ds-caption prepare-hero-meta" aria-hidden="true">
+            {[dateStr, currentBooking.time, `${currentBooking.visitType || 'In-Person'} Visit`].filter(Boolean).join(' · ')}
+          </p>
         </div>
 
         <div className="prepare-timeline" aria-label="Preparation timeline">
