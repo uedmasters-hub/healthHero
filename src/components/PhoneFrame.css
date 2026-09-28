@@ -116,9 +116,10 @@
 .phone-time {
   font-size: var(--text-body-size);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   min-width: 72px;
-  line-height: 1;
+  line-height: var(--leading-none);
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
 }

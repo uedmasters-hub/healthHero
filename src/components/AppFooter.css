@@ -47,7 +47,8 @@
   font-size: var(--text-heading-size);
   line-height: var(--text-heading-line);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-snug);
+  --tracking: var(--letter-snug);
+  letter-spacing: var(--tracking);
   color: var(--text-primary);
   white-space: nowrap;
 }
@@ -68,7 +69,8 @@
   font-size: var(--text-overline-size);
   line-height: var(--text-overline-line);
   font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
+  --tracking: var(--text-overline-tracking);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--text-primary);
 }

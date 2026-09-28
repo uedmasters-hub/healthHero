@@ -114,8 +114,9 @@
 .radius-dial__value {
   font-size: var(--text-heading-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-caps);
-  line-height: 1.1;
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-tight);
   text-transform: uppercase;
   animation: radius-dial-count var(--duration-moderate) var(--ease-emphasized);
 }
@@ -166,7 +167,7 @@
   margin: 0;
   font-size: var(--text-body-lg-size);
   font-weight: var(--font-weight-medium);
-  line-height: 1.4;
+  line-height: var(--leading-body);
   color: var(--pp-headline);
   text-wrap: balance;
 }
@@ -176,7 +177,7 @@
   margin: 0;
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-regular);
-  line-height: 1.4;
+  line-height: var(--leading-body);
   color: var(--text-tertiary);
   text-wrap: balance;
 }

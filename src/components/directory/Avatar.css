@@ -30,8 +30,9 @@
 .dir-avatar__initials {
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
-  line-height: 1;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-none);
   user-select: none;
 }
 

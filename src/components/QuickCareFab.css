@@ -73,8 +73,9 @@
   font: inherit;
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
-  line-height: 1.2;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-tight);
   cursor: pointer;
   pointer-events: none;
   box-shadow: var(--shadow-float), 0 0 0 var(--border-width) var(--border-default);

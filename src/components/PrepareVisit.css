@@ -106,7 +106,7 @@
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
-  line-height: 1.35;
+  line-height: var(--leading-dense);
 }
 .prepare-timeline {
   max-width: 21.25rem;
@@ -199,7 +199,7 @@
 .prepare-step-num {
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-medium);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .prepare-step-content {
@@ -218,8 +218,9 @@
   font-size: var(--text-title-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-tertiary);
-  letter-spacing: var(--letter-body);
-  line-height: 1.35;
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-dense);
   transition: color var(--duration-reveal) var(--ease-standard),font-weight var(--duration-reveal) var(--ease-standard),opacity var(--duration-reveal) var(--ease-standard),transform var(--duration-enter) var(--ease-emphasized);
 }
 

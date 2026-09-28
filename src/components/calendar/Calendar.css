@@ -16,8 +16,8 @@
 }
 
 .cal-picker-title {
-  font-size: var(--font-size-body-m);
-  line-height: 1.25;
+  font-size: var(--text-subtitle-size);
+  line-height: var(--leading-snug);
   font-weight: var(--font-weight-medium);
   color: var(--pp-headline);
 }
@@ -87,7 +87,7 @@
 
 .cal-date-day {
   font-size: var(--text-caption-size);
-  line-height: 1.2;
+  line-height: var(--leading-tight);
   font-weight: var(--font-weight-medium);
   color: var(--text-tertiary);
 }
@@ -156,7 +156,7 @@
   min-width: 0;
 }
 
-.cal-chip-label { line-height: 1.2; }
+.cal-chip-label { line-height: var(--leading-tight); }
 
 .cal-chip-time {
   font-size: var(--text-caption-size);
@@ -190,7 +190,8 @@
 .cal-slot-quick {
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-caps);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--urgent);
 }
@@ -262,7 +263,7 @@
 .cal-weekday {
   text-align: center;
   font-size: var(--text-caption-size);
-  line-height: 1;
+  line-height: var(--leading-none);
   font-weight: var(--font-weight-medium);
   color: var(--text-tertiary);
 }

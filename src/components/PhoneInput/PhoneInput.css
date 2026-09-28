@@ -62,7 +62,7 @@
 
 .phone-input-flag {
   font-size: var(--text-body-lg-size);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .phone-input-chevron {
@@ -145,7 +145,7 @@
   width: var(--space-7);
   flex-shrink: 0;
   font-size: var(--text-heading-size);
-  line-height: 1;
+  line-height: var(--leading-none);
   text-align: center;
 }
 

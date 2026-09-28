@@ -93,7 +93,7 @@
   margin: 0;
   font-size: var(--text-heading-size);
   font-weight: var(--font-weight-medium);
-  line-height: 1.25;
+  line-height: var(--leading-snug);
 }
 
 .video-note {
@@ -241,7 +241,7 @@
 
 .video-readiness-top h1 {
   font-size: var(--text-body-size);
-  line-height: 1.3;
+  line-height: var(--leading-snug);
   font-weight: var(--font-weight-medium);
   color: var(--neutral-0);
 }
@@ -329,7 +329,7 @@
   margin: 0;
   color: var(--neutral-0);
   font-size: var(--text-caption-size);
-  line-height: 1.2;
+  line-height: var(--leading-tight);
 }
 .video-check-row {
   width: 100%;
@@ -442,7 +442,7 @@
 .video-ready h1 {
   margin: 0;
   font-size: var(--text-heading-size);
-  line-height: 1.25;
+  line-height: var(--leading-snug);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }

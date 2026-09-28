@@ -105,7 +105,8 @@
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   opacity: var(--opacity-hidden);
   transition: opacity var(--duration-normal) var(--ease-standard);
 }

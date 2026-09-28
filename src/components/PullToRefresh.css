@@ -32,6 +32,7 @@
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-tertiary);
-  letter-spacing: var(--letter-body);
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
   margin-bottom: var(--space-2);
 }

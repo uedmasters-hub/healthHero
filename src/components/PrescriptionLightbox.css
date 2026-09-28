@@ -80,7 +80,7 @@
 .rx-clinic-meta {
   font-size: var(--text-caption-size);
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: var(--leading-body);
 }
 
 .rx-parties {
@@ -93,7 +93,8 @@
 .rx-kicker {
   font-size: var(--text-overline-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-caps);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--text-faint);
   margin-bottom: var(--space-1-5);
@@ -117,13 +118,13 @@
 .rx-party-meta {
   font-size: var(--text-caption-size);
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: var(--leading-body);
 }
 
 .rx-note-text {
   margin: 0 0 var(--space-4);
   font-size: var(--text-label-size);
-  line-height: 1.55;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
@@ -131,7 +132,7 @@
   font-family: var(--font-rx-glyph);
   font-style: italic;
   font-size: var(--text-subtitle-size);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .rx-meds-block {
@@ -177,7 +178,7 @@
 .rx-legal {
   margin: 0;
   font-size: var(--text-overline-size);
-  line-height: 1.45;
+  line-height: var(--leading-body);
   color: var(--text-faint);
   max-width: 58%;
 }

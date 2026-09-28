@@ -24,9 +24,10 @@
 
 .reviews-summary-score {
   font-size: var(--text-stat-size);
-  line-height: 1;
+  line-height: var(--leading-none);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
   font-variant-numeric: tabular-nums;
 }

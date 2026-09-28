@@ -179,7 +179,8 @@
   font-size: var(--text-overline-size);
   line-height: var(--text-overline-line);
   font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
+  --tracking: var(--text-overline-tracking);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
 }
 
@@ -192,7 +193,8 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--text-display-weight);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--text-primary);
 }
 
@@ -259,7 +261,7 @@
 .article-body p {
   margin: 0;
   font-size: var(--text-body-lg-size);
-  line-height: 1.6;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
@@ -281,7 +283,8 @@
   font-size: var(--text-overline-size);
   line-height: var(--text-overline-line);
   font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
+  --tracking: var(--text-overline-tracking);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--text-secondary);
 }

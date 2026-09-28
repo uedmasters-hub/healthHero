@@ -13,9 +13,9 @@
 .dir-results__count {
   margin: 0;
   font-size: var(--text-caption-size);
-  line-height: 1.3;
+  line-height: var(--leading-snug);
   color: var(--text-tertiary);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-regular);
 }
 
 .dir-results__count-skel {

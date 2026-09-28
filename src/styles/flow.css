@@ -35,7 +35,8 @@
   font-family: inherit;
   font-size: var(--btn-font-lg);
   font-weight: var(--btn-weight);
-  letter-spacing: var(--letter-body);
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: var(--interact-transition);

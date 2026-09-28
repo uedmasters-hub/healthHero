@@ -174,7 +174,8 @@
   min-width: 0;
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-caps);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   color: var(--featured-ink-muted);
 }
 
@@ -248,7 +249,7 @@
   font-size: var(--text-heading-size);
   font-weight: var(--font-weight-medium);
   color: var(--featured-ink);
-  line-height: 1.25;
+  line-height: var(--leading-snug);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -268,14 +269,14 @@
 .upcoming-rating-star {
   color: var(--rating-star);
   font-size: var(--text-body-size);
-  line-height: 1;
+  line-height: var(--leading-none);
   opacity: 0.92;
 }
 
 .upcoming-meta {
   margin: 0;
   font-size: var(--text-body-size);
-  line-height: 1.35;
+  line-height: var(--leading-dense);
   font-weight: var(--font-weight-regular);
   color: var(--featured-ink-muted);
   white-space: nowrap;
@@ -381,17 +382,18 @@
   font-size: var(--text-display-size);
   font-weight: var(--font-weight-medium);
   color: var(--pp-headline);
-  letter-spacing: var(--letter-tight);
-  line-height: 1.12;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-tight);
   margin-bottom: var(--space-1-5);
   white-space: nowrap;
 }
 
 .book-appointment-subtitle {
   font-size: var(--text-label-size);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-regular);
   color: var(--text-primary);
-  line-height: 1.35;
+  line-height: var(--leading-dense);
   margin-bottom: var(--space-3-5);
   white-space: nowrap;
 }

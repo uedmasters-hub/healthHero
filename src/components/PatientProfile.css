@@ -156,7 +156,8 @@
   margin: var(--space-2) 0 var(--space-3);
   font-size: var(--text-body-lg-size);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-caps);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 
@@ -185,7 +186,7 @@
 
 .profile-nav-progress__meta {
   font-size: var(--text-caption-size);
-  line-height: 1.2;
+  line-height: var(--leading-tight);
   font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
@@ -216,7 +217,8 @@
   font-weight: var(--font-weight-medium);
   color: var(--color-eyebrow);
   text-transform: uppercase;
-  letter-spacing: var(--letter-caps);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
 }
 
 /* Text action under a list ("Add chronic condition") aligns with row text */

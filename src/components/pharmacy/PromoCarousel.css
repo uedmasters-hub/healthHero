@@ -82,9 +82,10 @@
 .promo-card__title {
   margin: 0;
   font-size: var(--text-heading-size);
-  line-height: 1.25;
+  line-height: var(--leading-snug);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 

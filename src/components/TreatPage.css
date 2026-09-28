@@ -240,6 +240,6 @@
 .treat-sheet-note {
   font-size: var(--text-body-size);
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: var(--leading-body);
   margin: var(--space-2) 0 var(--space-4);
 }

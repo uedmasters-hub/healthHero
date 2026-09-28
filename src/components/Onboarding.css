@@ -54,7 +54,8 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 
@@ -112,7 +113,8 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--text-display-weight);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 

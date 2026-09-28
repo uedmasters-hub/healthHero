@@ -39,7 +39,7 @@
   display: -webkit-box;
   overflow: hidden;
   font-size: var(--text-title-size);
-  line-height: 1.25;
+  line-height: var(--leading-snug);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   -webkit-line-clamp: 2;
@@ -50,7 +50,7 @@
 .dir-entity__meta,
 .dir-entity__stack-line {
   margin: 0;
-  line-height: 1.35;
+  line-height: var(--leading-dense);
 }
 
 .dir-entity__subtitle {
@@ -82,7 +82,7 @@
   align-items: flex-start;
   gap: var(--space-1-5);
   font-size: var(--text-caption-size);
-  line-height: 1.35;
+  line-height: var(--leading-dense);
   color: var(--text-secondary);
 }
 
@@ -137,7 +137,7 @@
 .dir-entity__price {
   margin: 0;
   font-size: var(--text-caption-size);
-  line-height: 1.3;
+  line-height: var(--leading-snug);
   color: var(--text-tertiary);
 }
 

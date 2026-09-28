@@ -9,7 +9,7 @@ position those primitives. Live reference: **`/design/components/primitives`**
 
 | Area | Rule |
 | --- | --- |
-| Type | Satoshi. Headings 500, caps labels 700 / 0.04em, body tracking 0.02em. Nothing below 11px. |
+| Type | Satoshi 400 / 500 / 700 only. Sizes 11 · 12 · 13 · 15 · 16 · 18 · 20 · 23 · 26 · 29 · 41 through `--text-*-size` roles. Headings 500 at 1.2 with 0 tracking; body 400 at 1.5 with 0.02em; caps 13px / 700 / 0.04em. Leading only via `--leading-*`; tracking via `--tracking` so each element resolves em against its own size. Nothing below 11px. |
 | Colour | CTA = neutral-800 ink (hover neutral-600). Links and headline ink = primary-950. Eyebrow = primary-600. |
 | Canvas | Lavender page (`--bg` = neutral-100) with **white islands** (cards, lists, fields). |
 | Edges | Hairlines only: primary-800 at 12% (default), 9% (divider), 20% (strong). No resting shadows. |

@@ -100,8 +100,9 @@
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-medium);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--letter-tight);
-  line-height: 1;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-none);
   text-align: center;
   pointer-events: none;
   transform-origin: center;

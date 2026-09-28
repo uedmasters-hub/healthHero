@@ -92,6 +92,8 @@
   --font-size-body-s: 1rem;
   --font-size-body-xs: 0.9375rem;
   --font-size-body-xxs: 0.75rem;
+  /* 13px caps / dense step (PP text-xs, .pp-caps) */
+  --font-size-caps: 0.8125rem;
   /* Floor — PP: nothing below 11px (count badges only) */
   --font-size-floor: 0.6875rem;
 
@@ -534,53 +536,57 @@
   /* PP never uses 600/800: "semibold" resolves to medium; bold is caps only */
   --font-weight-semibold: 500;
   --font-weight-bold: 700;
-  --font-weight-black: 900;
+
+  /* Leading scale — PP steps: 1 controls · 1.2 headings · 1.3 titles ·
+     1.35 dense/caps · 1.5 body */
+  --leading-none: 1;
+  --leading-tight: 1.2;
+  --leading-snug: 1.3;
+  --leading-dense: 1.35;
+  --leading-body: 1.5;
 
   --text-display-size: var(--font-size-h5);
-  --text-display-line: 1.2;
+  --text-display-line: var(--leading-tight);
   --text-display-weight: var(--font-weight-medium);
 
   --text-heading-size: var(--font-size-h6);
-  --text-heading-line: 1.2;
+  --text-heading-line: var(--leading-tight);
   --text-heading-weight: var(--font-weight-medium);
 
   --text-title-size: var(--font-size-body-s);
-  --text-title-line: 1.3;
+  --text-title-line: var(--leading-snug);
   --text-title-weight: var(--font-weight-medium);
 
   --text-body-size: var(--font-size-body-s);
-  --text-body-line: 1.5;
+  --text-body-line: var(--leading-body);
   --text-body-weight: var(--font-weight-regular);
 
   --text-body-lg-size: var(--font-size-body-m);
-  --text-body-lg-line: 1.5;
-
-  --text-body-sm-size: var(--font-size-body-xs);
-  --text-small-size: var(--font-size-body-xs);
+  --text-body-lg-line: var(--leading-body);
 
   --text-label-size: var(--font-size-body-xs);
-  --text-label-line: 1.35;
+  --text-label-line: var(--leading-dense);
   --text-label-weight: var(--font-weight-medium);
 
   --text-caption-size: var(--font-size-body-xxs);
-  --text-caption-line: 1.5;
-  --text-caption-weight: var(--font-weight-medium);
+  --text-caption-line: var(--leading-body);
+  --text-caption-weight: var(--font-weight-regular);
 
-  --text-overline-size: 0.8125rem;
-  --text-overline-line: 1.35;
+  --text-overline-size: var(--font-size-caps);
+  --text-overline-line: var(--leading-dense);
   --text-overline-weight: var(--font-weight-bold);
   --text-overline-tracking: 0.04em;
 
   --text-subtitle-size: var(--font-size-body-m);
-  --text-subtitle-line: 1.2;
+  --text-subtitle-line: var(--leading-tight);
   --text-subtitle-weight: var(--font-weight-medium);
 
-  --text-dense-size: 0.8125rem;
+  --text-dense-size: var(--font-size-caps);
   --text-micro-size: var(--font-size-floor);
-  --text-micro-line: 1.3;
-
-  --text-lead-size: var(--font-size-body-l);
+  --text-micro-line: var(--leading-snug);
   --text-hero-size: var(--font-size-h4);
+  /* Large figures — amounts, ratings (h3 / h2 steps) */
+  --text-figure-size: var(--font-size-h3);
   --text-stat-size: var(--font-size-h2);
   --text-badge-size: var(--font-size-floor);
 

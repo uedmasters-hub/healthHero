@@ -124,15 +124,16 @@
 .notif-island__title {
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
-  line-height: 1.25;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-snug);
   color: var(--island-fg);
 }
 
 .notif-island__body {
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-regular);
-  line-height: 1.35;
+  line-height: var(--leading-dense);
   color: var(--island-fg-muted);
   display: -webkit-box;
   -webkit-line-clamp: 2;

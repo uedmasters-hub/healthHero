@@ -59,7 +59,7 @@
 
 .pay-hero-fee-value {
   font-size: var(--text-title-size);
-  line-height: 1.2;
+  line-height: var(--leading-tight);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
@@ -74,8 +74,8 @@
 }
 
 .pay-amount-value {
-  font-size: var(--font-size-h3);
-  line-height: 1.15;
+  font-size: var(--text-figure-size);
+  line-height: var(--leading-tight);
   font-weight: var(--font-weight-medium);
   color: var(--pp-headline);
   font-variant-numeric: tabular-nums;
@@ -107,7 +107,7 @@
 
 .pay-hero-footer-sep {
   color: var(--neutral-300);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .pay-order-id {
@@ -374,7 +374,7 @@
 }
 
 .pay-wallet-balance {
-  font-size: var(--font-size-h5);
+  font-size: var(--text-display-size);
   font-weight: var(--font-weight-medium);
   color: var(--pp-headline);
 }

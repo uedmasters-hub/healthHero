@@ -281,7 +281,7 @@
   width: 100%;
   font-size: var(--text-micro-size);
   line-height: var(--text-micro-line);
-  font-weight: var(--text-caption-weight);
+  font-weight: var(--font-weight-medium);
   text-align: center;
   overflow-wrap: break-word;
   hyphens: auto;

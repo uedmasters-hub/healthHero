@@ -41,7 +41,8 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 
@@ -75,7 +76,8 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--text-display-weight);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 
@@ -128,7 +130,8 @@
   line-height: var(--text-body-line);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: var(--letter-body);
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
 }
 
 .auth-otp-change {
@@ -218,7 +221,8 @@
 .auth-stage[data-stage='otp'] .auth-title,
 .auth-stage[data-stage='verify-otp'] .auth-title {
   font-size: clamp(1.75rem, 5.5vw, 2.125rem);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
 }
 
 .auth-field {

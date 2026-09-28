@@ -19,10 +19,11 @@
 .tab-page-header__title {
   /* Same role as .ds-page-title (PP PageHeader: medium · brand ink) */
   margin: 0;
-  font-size: var(--font-size-h4);
-  line-height: 1.2;
+  font-size: var(--text-hero-size);
+  line-height: var(--leading-tight);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--pp-headline);
 }
 

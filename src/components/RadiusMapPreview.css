@@ -68,7 +68,7 @@
   margin: 0;
   text-align: center;
   font-size: var(--text-micro-size);
-  line-height: 1;
+  line-height: var(--leading-none);
   color: var(--neutral-500);
   opacity: 0.85;
   pointer-events: auto;

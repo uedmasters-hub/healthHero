@@ -264,8 +264,9 @@
   font-family: inherit;
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-body);
-  line-height: 1;
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-none);
   color: var(--pp-headline);
   pointer-events: none;
   user-select: none;
@@ -520,8 +521,9 @@
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-regular);
   color: var(--text-secondary);
-  line-height: 1.35;
-  letter-spacing: var(--letter-body);
+  line-height: var(--leading-dense);
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

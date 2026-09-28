@@ -115,7 +115,7 @@ export default function ProfileHubPage() {
           { token: '--text-title-lg-size', value: '20px', usage: 'Workspace name font size' },
           { token: '--text-title-size', value: '16px', usage: 'Section title font size' },
           { token: '--text-body-size', value: '14px', usage: 'Row value font size' },
-          { token: '--text-body-sm-size', value: '13px', usage: 'Row label font size' },
+          { token: '--text-caption-size', value: '12px', usage: 'Detail-row label above the value' },
           { token: '--text-faint', value: '#9CA3AF', usage: 'Placeholder text color' },
           { token: '--icon-btn-size', value: '44px', usage: 'Row edit icon touch target' },
         ]} />

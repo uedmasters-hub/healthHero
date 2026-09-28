@@ -61,7 +61,8 @@
   line-height: var(--text-body-line);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
 }
 
 .order-card__window {

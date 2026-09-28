@@ -179,7 +179,7 @@
 .vp-key-num {
   font-size: var(--text-display-size);
   font-weight: var(--font-weight-medium);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .vp-page.is-processing .vp-key {

@@ -64,7 +64,8 @@
   font-size: var(--text-heading-size);
   font-weight: var(--font-weight-medium);
   color: var(--pp-headline);
-  letter-spacing: var(--letter-snug);
+  --tracking: var(--letter-snug);
+  letter-spacing: var(--tracking);
   line-height: var(--text-heading-line);
   white-space: nowrap;
   overflow: hidden;

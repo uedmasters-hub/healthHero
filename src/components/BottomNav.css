@@ -47,7 +47,7 @@
   font: inherit;
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-regular);
-  line-height: 1.2;
+  line-height: var(--leading-tight);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: color var(--transition), background-color var(--transition);

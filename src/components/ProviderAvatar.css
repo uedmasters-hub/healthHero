@@ -42,7 +42,8 @@
 .provider-avatar.is-initials .provider-avatar__fallback {
   font-size: 0.72em;
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
 }
 
 .provider-avatar__shine {

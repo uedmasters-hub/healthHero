@@ -170,14 +170,15 @@
   font-size: var(--text-caption-size);
   font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: var(--letter-caps);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   margin: 0 0 var(--space-3);
 }
 
 .profile-about-text {
   font-size: var(--text-body-size);
-  line-height: 1.6;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
@@ -344,7 +345,7 @@
   font-size: var(--text-stat-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .ratings-big-stars {
@@ -448,7 +449,7 @@
 
 .review-text {
   font-size: var(--text-label-size);
-  line-height: 1.5;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
@@ -479,8 +480,9 @@
   font-size: var(--text-display-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: var(--letter-tight);
-  line-height: 1.15;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-tight);
 }
 
 .profile-stat span {
@@ -489,7 +491,7 @@
   font-size: var(--text-overline-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-muted);
-  line-height: 1.3;
+  line-height: var(--leading-snug);
 }
 
 .profile-logos {
