@@ -813,6 +813,16 @@
   stroke-width: var(--icon-stroke);
 }
 
+/* Button that opens a picker but reads as a field (date of birth) */
+button.ds-field,
+.ds-field.is-button {
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+}
+.ds-field__value { flex: 1; min-width: 0; }
+.ds-field__value.is-placeholder { color: var(--text-tertiary); }
+
 textarea.ds-field,
 .ds-field.is-multiline {
   min-height: calc(var(--field-height) * 2);
@@ -1143,7 +1153,7 @@ a.ds-list-row:active,
 }
 
 .ds-choice + .ds-choice,
-.ds-choice-list > * + * > .ds-choice:first-child {
+.ds-choice-list > * + *:not(.ds-choice) {
   border-top: var(--border-width) solid var(--border-divider);
 }
 

@@ -15,6 +15,9 @@
   z-index: 5;
 }
 
+/* Quiet secondary under the flow CTA ("Back to saved patients") */
+.app-flow-footer > .app-flow-secondary { margin-top: var(--space-1); }
+
 /* The flow CTA *is* the large primary button — same tokens, same states */
 .app-flow-cta,
 .sticky-footer-cta__primary {

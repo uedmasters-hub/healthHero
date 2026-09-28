@@ -32,6 +32,9 @@ export const Icon = {
   ChevronRight: (p) => (
     <svg {...iconProps} {...p}><path d="m9 18 6-6-6-6" /></svg>
   ),
+  ChevronLeft: (p) => (
+    <svg {...iconProps} {...p}><path d="m15 18-6-6 6-6" /></svg>
+  ),
   ChevronDown: (p) => (
     <svg {...iconProps} {...p}><path d="m6 9 6 6 6-6" /></svg>
   ),
@@ -427,6 +430,21 @@ export function FormGroup({ label, htmlFor, as, hint, className = '', children }
       {children}
       {hint ? <p className="ds-field-hint">{hint}</p> : null}
     </As>
+  )
+}
+
+/* ── Choice chips — labelled single-select chip set (gender, blood group) */
+export function ChoiceChips({ label, options, value, onChange, className = '' }) {
+  return (
+    <FormGroup as="div" label={label} className={className}>
+      <ChipRow className="is-wrap" label={label}>
+        {options.map((option) => (
+          <Chip key={option} soft selected={value === option} onClick={() => onChange(option)}>
+            {option}
+          </Chip>
+        ))}
+      </ChipRow>
+    </FormGroup>
   )
 }
 

@@ -18,7 +18,7 @@ import { BirthDateField } from '../DatePicker'
 import { PhoneInput, toE164 } from '../PhoneInput'
 import { useAppSheet } from '../PageTransition'
 import OtpBoxes from '../../features/auth/components/OtpBoxes'
-import { Badge, Button, Chip, ChipRow, FormGroup, Icon, SheetHeader, Skeleton } from '../ui'
+import { Badge, Button, ChoiceChips, FormGroup, Icon, SheetHeader, Skeleton } from '../ui'
 import { InfoCard, InfoRow } from './ProfileChrome'
 
 const GENDERS = ['Male', 'Female', 'Other']
@@ -31,20 +31,6 @@ function sectionConfig(kind) {
     || LIST_SECTIONS.find((item) => item.kind === kind)
 }
 
-function ChipChoice({ label, options, value, onChange }) {
-  return (
-    <FormGroup as="div" label={label}>
-      <ChipRow className="is-wrap" label={label}>
-        {options.map((option) => (
-          <Chip key={option} soft selected={value === option} onClick={() => onChange(option)}>
-            {option}
-          </Chip>
-        ))}
-      </ChipRow>
-    </FormGroup>
-  )
-}
-
 function Field({ field, value, onChange }) {
   if (field.type === 'textarea') {
     return (
@@ -54,7 +40,7 @@ function Field({ field, value, onChange }) {
     )
   }
   if (field.type === 'chips') {
-    return <ChipChoice label={field.label} options={field.options || []} value={value} onChange={onChange} />
+    return <ChoiceChips label={field.label} options={field.options || []} value={value} onChange={onChange} />
   }
   if (field.type === 'phone') {
     return (
@@ -464,7 +450,7 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
                 <input className="ds-field" inputMode="numeric" value={form.age} onChange={(e) => update('age', e.target.value.replace(/\D/g, '').slice(0, 3))} />
               </FormGroup>
             </div>
-            <ChipChoice label="Gender" options={GENDERS} value={form.gender} onChange={(item) => update('gender', item)} />
+            <ChoiceChips label="Gender" options={GENDERS} value={form.gender} onChange={(item) => update('gender', item)} />
             <div className="ds-form-row is-even">
               <FormGroup label="Height">
                 <input className="ds-field" value={form.height} onChange={(e) => update('height', e.target.value)} placeholder="e.g. 168 cm" />
@@ -476,7 +462,7 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
           </>
         ) : null}
         {showPassport ? (
-          <ChipChoice label="Blood group" options={BLOOD_GROUPS} value={form.bloodGroup} onChange={(item) => update('bloodGroup', item)} />
+          <ChoiceChips label="Blood group" options={BLOOD_GROUPS} value={form.bloodGroup} onChange={(item) => update('bloodGroup', item)} />
         ) : null}
         {showContact ? (
           <>
