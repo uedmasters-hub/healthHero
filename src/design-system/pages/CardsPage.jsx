@@ -1,4 +1,4 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, PropsTable, StatesTable, Section } from '../shared'
+import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, Section } from '../shared'
 
 export default function CardsPage() {
   return (

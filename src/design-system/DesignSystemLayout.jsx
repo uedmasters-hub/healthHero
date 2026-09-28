@@ -21,6 +21,7 @@ import ElevationPage from './pages/ElevationPage'
 import BorderPage from './pages/BorderPage'
 import RadiusPage from './pages/RadiusPage'
 import ButtonsPage from './pages/ButtonsPage'
+import PrimitivesPage from './pages/PrimitivesPage'
 import InputsPage from './pages/InputsPage'
 import CardsPage from './pages/CardsPage'
 import ModalsPage from './pages/ModalsPage'
@@ -84,6 +85,7 @@ const sections = [
   {
     title: 'Components',
     items: [
+      { label: 'Primitives', path: '/design/components/primitives', badge: 'Live' },
       { label: 'Buttons', path: '/design/components/buttons' },
       { label: 'Inputs', path: '/design/components/inputs' },
       { label: 'Cards', path: '/design/components/cards' },
@@ -228,6 +230,7 @@ export default function DesignSystemLayout() {
             <Route path="foundations/elevation" element={<ElevationPage />} />
             <Route path="foundations/border" element={<BorderPage />} />
             <Route path="foundations/radius" element={<RadiusPage />} />
+            <Route path="components/primitives" element={<PrimitivesPage />} />
             <Route path="components/buttons" element={<ButtonsPage />} />
             <Route path="components/inputs" element={<InputsPage />} />
             <Route path="components/cards" element={<CardsPage />} />

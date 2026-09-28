@@ -1,4 +1,4 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function AuthFlowPage() {
   return (
@@ -60,34 +60,27 @@ await requireAuth({ message: 'Sign in to save your progress' })`} />
           decorative label (positioned above the input), input with pill border-radius,
           optional show/hide password toggle, and a primary CTA.
         </p>
-        <CodeBlock title="AuthField component" code={`function AuthField({ label, error, inputProps, type = 'text', ...rest }) {
-  const [isPassword, setIsPassword] = useState(type === 'password')
-
-  return (
-    <div className="auth-field">
-      {label && <label className="auth-field-label">{label}</label>}
-      <div className="auth-field-row">
-        <input className="auth-field-input" type={isPassword ? 'password' : type} {...inputProps} />
-        {type === 'password' && (
-          <button className="auth-field-eye" onClick={() => setIsPassword(p => !p)}>
-            {isPassword ? <EyeClosed /> : <EyeOpen />}
-          </button>
-        )}
-      </div>
-      {error && <p className="auth-field-error">{error}</p>}
-    </div>
-  )
-}`} />
+        <CodeBlock title="AuthField (on the shared field)" code={`<div className="auth-field">
+  <label className="ds-field-label" htmlFor={id}>{label}</label>
+  <span className="auth-field-control">
+    <input id={id} className={\`ds-field\${error ? ' is-error' : ''}\`} aria-invalid={Boolean(error)} />
+    {isPassword && (
+      <button type="button" className="ds-icon-btn is-muted auth-field-toggle" aria-label="Show password">
+        <EyeIcon />
+      </button>
+    )}
+  </span>
+  {error ? <span className="ds-field-error">{error}</span> : <span className="ds-field-hint">{hint}</span>}
+</div>`} />
       </Section>
 
       <Section title="Auth tokens">
         <TokenTable tokens={[
-          { token: '--radius-full', value: '999px', usage: 'Auth input border-radius (pill)' },
-          { token: '--border-focus', value: 'var(--primary)', usage: 'Input focus border color' },
-          { token: '--text-body-size', value: '14px', usage: 'Input font size' },
-          { token: '--app-flow-cta-height', value: '52px', usage: 'Auth CTA button height' },
-          { token: '--page-padding', value: '20px', usage: 'Auth page horizontal padding' },
-          { token: '--space-4', value: '16px', usage: 'Auth field spacing' },
+          { token: '--field-height / --field-radius', value: '48px / 16px', usage: 'Shared input size and corners' },
+          { token: '--border-default', value: 'primary-800 @ 12%', usage: 'Field hairline' },
+          { token: 'focus', value: 'border primary-600', usage: 'Field focus edge (ring on buttons)' },
+          { token: '--btn-height-lg', value: '56px', usage: 'Auth CTA (ds-btn--lg)' },
+          { token: '--content-padding', value: '20px', usage: 'Auth page horizontal padding' },
         ]} />
       </Section>
 

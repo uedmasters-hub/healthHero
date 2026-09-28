@@ -1,4 +1,4 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function ProfileHubPage() {
   return (
@@ -55,20 +55,19 @@ export default function ProfileHubPage() {
           back button, avatar, workspace title, and description. This creates visual consistency
           across all profile workspaces.
         </p>
-        <CodeBlock title="WorkspaceHeader structure" code={`<div className="profile-workspace-header">
-  <div className="profile-workspace-cover" style={{ backgroundImage: \`url(\${coverUrl})\` }}>
-    <button className="profile-workspace-back" aria-label="Back">
-      <BackIcon />
-    </button>
-  </div>
-  <div className="profile-workspace-avatar-row">
-    <img className="profile-workspace-avatar" src={avatar} />
-    <div className="profile-workspace-info">
-      <h1 className="profile-workspace-name">{name}</h1>
-      <p className="profile-workspace-meta">{meta}</p>
-    </div>
-  </div>
-</div>`} />
+        <CodeBlock title="Workspace structure (ProfileChrome)" code={`<ProfilePage title="Personal">              {/* ds-page + AppBar + pull-to-refresh */}
+  <section>
+    <SectionHead title="Basic details" action="Edit" onAction={edit} />   {/* caps group head */}
+    <InfoCard>                                  {/* ds-list */}
+      <InfoRow label="Name" value={name} />     {/* DetailRow: caption over value */}
+      <InfoRow label="Height" emptyLabel="Add height" />
+    </InfoCard>
+  </section>
+  <NavGroup>
+    <NavRow icon={ProfileIcons.medical} label="Medical" progress={medical} />  {/* ListRow + Progress */}
+  </NavGroup>
+  <GuidedEmpty title="Add your insurance" cta="Add policy" />               {/* EmptyState card */}
+</ProfilePage>`} />
       </Section>
 
       <Section title="PersonalWorkspace">

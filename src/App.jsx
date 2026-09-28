@@ -266,7 +266,12 @@ function AppProviders() {
 function DesignSystemGate() {
   const location = useLocation()
   if (!location.pathname.startsWith('/design')) return null
-  return <DesignSystemLayout />
+  // Nested <Routes> in the docs resolve relative to this parent route
+  return (
+    <Routes>
+      <Route path="/design/*" element={<DesignSystemLayout />} />
+    </Routes>
+  )
 }
 
 function ConfigErrorScreen({ message }) {

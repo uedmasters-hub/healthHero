@@ -1,4 +1,5 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, Preview, Section } from '../shared'
+import { Icon } from '../../components/ui'
 
 export default function NavigationPage() {
   return (
@@ -22,62 +23,41 @@ export default function NavigationPage() {
 
       <Section title="Live preview">
         <h3>Bottom navigation</h3>
-        <Preview code={`<nav className="bottom-nav">
-  <div className="bottom-nav-inner">
-    <div className="bottom-nav-bar">
-      <div className="bottom-nav-pill" />
-      {tabs.map(tab => (
-        <button className="bottom-nav-tab" aria-label={tab.label}>
-          <span className="bottom-nav-tab-icon">{tab.icon}</span>
-        </button>
-      ))}
-    </div>
+        <Preview code={`<nav className="bottom-nav" aria-label="Main">
+  <div className="bottom-nav-bar">
+    {tabs.map((tab) => (
+      <button className={\`bottom-nav-tab \${active ? 'is-active' : ''}\`} aria-current={active ? 'page' : undefined}>
+        <span className="bottom-nav-tab-icon">{icon}</span>
+        <span className="bottom-nav-tab-label">{tab.label}</span>
+      </button>
+    ))}
   </div>
 </nav>`}>
-          <div style={{ background: 'white', borderRadius: 12, border: '1px solid var(--border)', padding: '8px 0', width: '100%', maxWidth: 440 }}>
-            <div style={{ display: 'flex', gap: 0, justifyContent: 'space-around', position: 'relative' }}>
+          <div className="ds-card" style={{ width: '100%', maxWidth: 440, overflow: 'hidden' }}>
+            <div className="bottom-nav-bar">
               {[
-                { label: 'Home', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4' },
-                { label: 'Book', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-                { label: 'Treat', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-                { label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+                { label: 'Home', icon: <Icon.User /> },
+                { label: 'Treat', icon: <Icon.Heart /> },
+                { label: 'Pharmacy', icon: <Icon.Pill /> },
+                { label: 'Centers', icon: <Icon.Pin /> },
+                { label: 'Settings', icon: <Icon.Info /> },
               ].map((tab, i) => (
-                <div key={tab.label} style={{ textAlign: 'center', padding: '4px 20px', position: 'relative' }}>
-                  {i === 0 && (
-                    <div style={{
-                      position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
-                      width: 56, height: 48, background: 'var(--cta)', borderRadius: 14,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={tab.icon}/></svg>
-                    </div>
-                  )}
-                  <div style={{ position: 'relative', zIndex: 2 }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={i === 0 ? 'transparent' : 'var(--text-faint)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto' }}><path d={tab.icon}/></svg>
-                    <div style={{ fontSize: 10, fontWeight: i === 0 ? 600 : 400, color: i === 0 ? 'var(--primary-950)' : 'var(--text-faint)', marginTop: 2 }}>{tab.label}</div>
-                  </div>
-                </div>
+                <button key={tab.label} type="button" className={`bottom-nav-tab ${i === 0 ? 'is-active' : ''}`} aria-current={i === 0 ? 'page' : undefined}>
+                  <span className="bottom-nav-tab-icon" aria-hidden="true">{tab.icon}</span>
+                  <span className="bottom-nav-tab-label">{tab.label}</span>
+                </button>
               ))}
             </div>
           </div>
         </Preview>
       </Section>
 
-      <Section title="Bottom nav animation">
+      <Section title="Bottom nav states">
         <p>
-          The active tab uses an animated pill that slides between tabs using the Web Animations API.
-          The pill uses <code>--primary</code> background with <code>--radius-card</code> corners
-          and 420ms <code>--ease-emphasized</code> timing.
+          PocketPills tab pattern: icon tile + label. The active tab changes colour only — the icon tile fills
+          lavender and the label turns CTA ink — with the shared 200ms <code>--interact-transition</code>.
+          No sliding pill and no scale; state is also exposed through <code>aria-current="page"</code>.
         </p>
-        <CodeBlock title="Pill animation" code={`// Web Animations API — smooth pill transition
-pill.animate([
-  { transform: \`translateX(\${prevLeft}px) scaleX(\${prevScale})\` },
-  { transform: \`translateX(\${newLeft}px) scaleX(\${newScale})\` },
-], {
-  duration: 420,
-  easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-  fill: 'forwards',
-})`} />
       </Section>
 
       <Section title="Tokens">

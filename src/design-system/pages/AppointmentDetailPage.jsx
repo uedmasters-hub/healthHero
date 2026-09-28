@@ -1,4 +1,4 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function AppointmentDetailPage() {
   return (

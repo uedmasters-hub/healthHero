@@ -1,4 +1,4 @@
-import { SwatchGrid, TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, Section } from '../shared'
+import { SwatchGrid, TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 const brandColors = [
   { name: '--accent / --primary-950', value: '#4e2a84', hex: '#4e2a84' },

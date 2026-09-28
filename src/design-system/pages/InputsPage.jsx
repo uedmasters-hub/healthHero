@@ -1,4 +1,5 @@
 import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, PropsTable, StatesTable, Section } from '../shared'
+import { FormGroup } from '../../components/ui'
 
 export default function InputsPage() {
   return (
@@ -42,11 +43,14 @@ export default function InputsPage() {
         </Preview>
 
         <h3>Textarea (appointment notes)</h3>
-        <Preview code={`<textarea className="appointment-notes-input"
-  placeholder="Add notes about your visit..."
-  rows={3}
-/>`}>
-          <textarea className="ds-showcase-input" placeholder="Add notes about your visit..." rows={3} style={{ width: 300, resize: 'vertical' }} />
+        <Preview code={`<FormGroup label="Notes for your doctor">
+  <textarea className="ds-field" rows={3} placeholder="Add notes for your doctor…" />
+</FormGroup>`}>
+          <div style={{ width: 300 }}>
+            <FormGroup label="Notes for your doctor">
+              <textarea className="ds-field" rows={3} placeholder="Add notes for your doctor…" />
+            </FormGroup>
+          </div>
         </Preview>
       </Section>
 
@@ -105,10 +109,8 @@ export default function InputsPage() {
 <SearchBar active={isSearch} query={query} onQueryChange={setQuery} onCancel={closeSearch} />
 {isSearch && <SearchSuggestions query={query} active={isSearch} />}
 
-// Treat page: inline search with cancel
-<div className="treat-search">
-  <SearchField value={query} onChange={setQuery} showClear onClear={() => setQuery('')} />
-</div>`} />
+// Any page: the shared search field
+<SearchField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search doctors" />`} />
       </Section>
 
       <DoDont
