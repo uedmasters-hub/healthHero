@@ -1120,6 +1120,27 @@ a.ds-list-row:active,
 }
 .ds-list-row__title.is-wrap { white-space: normal; overflow-wrap: anywhere; }
 
+/* Disclosure rows inside a .ds-list */
+.ds-disclosure + .ds-disclosure,
+.ds-list > .ds-disclosure + *,
+.ds-list > * + .ds-disclosure { border-top: var(--border-width) solid var(--border-divider); }
+.ds-disclosure__chevron {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+  color: var(--icon-color-muted);
+  transition: transform var(--duration-normal) var(--ease-standard);
+}
+.ds-disclosure.is-open .ds-disclosure__chevron { transform: rotate(180deg); }
+.ds-disclosure__panel {
+  padding: 0 var(--card-padding) var(--space-4);
+  font-size: var(--text-label-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+  animation: fadeIn var(--duration-normal) var(--ease-standard);
+}
+.ds-disclosure__panel > p { margin: 0; }
+
 /* Stacked cards with the list gap (timeline, saved items) */
 .ds-card-stack { display: flex; flex-direction: column; gap: var(--space-sm); }
 

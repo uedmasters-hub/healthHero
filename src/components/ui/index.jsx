@@ -56,6 +56,12 @@ export const Icon = {
   ArrowRight: (p) => (
     <svg {...iconProps} {...p}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
   ),
+  Refresh: (p) => (
+    <svg {...iconProps} {...p}><path d="M23 4v6h-6M1 20v-6h6" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
+  ),
+  Heart: (p) => (
+    <svg {...iconProps} {...p}><path d="M12 21s-6.5-4.35-9.33-8.5C.5 9.5 2.2 5 6.5 5c2.1 0 3.4 1.1 4.5 2.5C12.1 6.1 13.4 5 15.5 5c4.3 0 6 4.5 3.83 7.5C18.5 16.65 12 21 12 21z" /></svg>
+  ),
   Plus: (p) => (
     <svg {...iconProps} {...p}><path d="M12 5v14M5 12h14" /></svg>
   ),
@@ -502,6 +508,27 @@ export function CheckboxMark({ className = '' }) {
     <span className={cx('ds-checkbox', className)} aria-hidden="true">
       <Icon.Check />
     </span>
+  )
+}
+
+/* ── Disclosure — row that expands a panel (FAQ, urgent-care guidance) ── */
+export function Disclosure({ title, icon = null, open = false, onToggle, id, className = '', children }) {
+  const panelId = id ? `${id}-panel` : undefined
+  return (
+    <div className={cx('ds-disclosure', open && 'is-open', className)}>
+      <button
+        type="button"
+        className="ds-list-row ds-disclosure__trigger"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={onToggle}
+      >
+        {icon}
+        <span className="ds-list-row__body"><span className="ds-list-row__title">{title}</span></span>
+        <Icon.ChevronDown className="ds-disclosure__chevron" />
+      </button>
+      {open ? <div className="ds-disclosure__panel" id={panelId}>{children}</div> : null}
+    </div>
   )
 }
 

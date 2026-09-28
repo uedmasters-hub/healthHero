@@ -29,6 +29,10 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshAppointmentData } from '../features/sync/pageRefresh'
 import { resolveSmartRelay } from '../booking/smartRelay'
+import {
+  AppBar, Badge, Button, Callout, CheckboxMark, Disclosure, EmptyState, FormGroup, Icon, IconButton,
+  InfoCell, InfoGrid, List, ListRow, QuickAction, SectionHead, SheetHeader, cx,
+} from './ui'
 import './AppointmentDetail.css'
 
 const checklistItems = [
@@ -63,24 +67,24 @@ const defaultPayment = {
 
 const recordIcons = {
   reports: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <polyline points="14 2 14 8 20 8" />
     </svg>
   ),
   prescriptions: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
       <rect x="9" y="3" width="6" height="4" rx="1" />
     </svg>
   ),
   medications: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
     </svg>
   ),
   history: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
       <circle cx="12" cy="7" r="4" />
     </svg>
@@ -371,190 +375,77 @@ export default function AppointmentDetail() {
 
   return (
     <div
-      className={`appointment-page ${sharedFlow ? 'is-shared-hero' : ''} ${contentReady ? 'is-content-ready' : ''}`}
+      className={cx('ds-page', 'appointment-page', sharedFlow && 'is-shared-hero', contentReady && 'is-content-ready')}
       ref={scrollRef}
     >
+      <AppBar
+        className="appointment-header-bar"
+        title="Appointment details"
+        lead={null}
+        actions={(
+          <IconButton className="appointment-menu-btn" label="More" onClick={() => openSheet({ type: 'menu' })}>
+            <Icon.More />
+          </IconButton>
+        )}
+      />
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-      <div className="appointment-header-bar">
-        <div className="appointment-header-spacer" aria-hidden="true" />
-        <h1 className="appointment-header-title">Appointment Details</h1>
-        <button type="button" className="appointment-menu-btn" aria-label="More" onClick={() => openSheet({ type: 'menu' })}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="5" r="2" />
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="12" cy="19" r="2" />
-          </svg>
-        </button>
-      </div>
 
-      <div className="appointment-body">
-        <div className={`appointment-countdown ${isLocked ? 'is-soon' : ''}`}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
+      <div className="ds-page__body has-fixed-footer appointment-body">
+        <Badge tone={isLocked ? 'warning' : 'ready'} className="appointment-countdown">
+          <Icon.Clock />
           {formatCountdown(appointmentStart, now)}
-        </div>
+        </Badge>
 
         {relay ? (
-          <div className={`appointment-relay is-${relay.accent}`} role="status">
-            <span className="appointment-relay-label">{relay.label}</span>
-            <p className="appointment-relay-message">{relay.message}</p>
-          </div>
+          <Callout className={cx('relay-panel', `is-${relay.accent}`)} title={relay.label} role="status">
+            {relay.message}
+          </Callout>
         ) : null}
 
         {isLocked && (
-          <div className="appointment-lock-banner">
-            <span className="appointment-mode-chip">Editing locked</span>
-            <p>{PREP_LOCK_MESSAGE}</p>
-          </div>
+          <Callout tone="warning" icon={<Icon.Alert />} title="Editing locked">{PREP_LOCK_MESSAGE}</Callout>
         )}
 
         {wasRescheduled && (
-          <div className="appointment-reschedule-banner">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--info)" strokeWidth="2">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
-            <div className="appointment-reschedule-banner-text">
-              <span className="appointment-reschedule-banner-title">Rescheduled Appointment</span>
-              <span className="appointment-reschedule-banner-desc">
-                Changed from {lastReschedule.oldDate}, {lastReschedule.oldTime}
-              </span>
-            </div>
-          </div>
+          <Callout tone="info" icon={<Icon.Refresh />} title="Rescheduled appointment">
+            Changed from {lastReschedule.oldDate}, {lastReschedule.oldTime}
+          </Callout>
         )}
 
-        <div className={`appointment-summary-card ds-card ${hideHero ? 'is-morphing' : ''}`} ref={heroRef}>
-        <DoctorCard doctor={doctor} context="identity" className="appointment-doctor-row" origin="appointment" />
+        <div className={cx('ds-card', 'is-padded', 'appointment-summary-card', hideHero && 'is-morphing')} ref={heroRef}>
+          <DoctorCard doctor={doctor} context="identity" className="appointment-doctor-row" origin="appointment" />
 
-        <div className="appointment-info-grid">
-          {booking.patient ? (
-            <>
-              <div className="appointment-info-cell">
-                <span className="appointment-info-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="appointment-info-label">Patient</div>
-                  <div className="appointment-info-value">{booking.patient.name}</div>
-                </div>
-              </div>
-              <div className="appointment-info-cell">
-                <span className="appointment-info-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="appointment-info-label">Relationship</div>
-                  <div className="appointment-info-value">{booking.patient.relationship}</div>
-                </div>
-              </div>
-            </>
-          ) : null}
-          <div className="appointment-info-cell">
-            <span className="appointment-info-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-            </span>
-            <div>
-              <div className="appointment-info-label">Date</div>
-              <div className="appointment-info-value">{dateStr}</div>
-            </div>
-          </div>
-          <div className="appointment-info-cell">
-            <span className="appointment-info-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </span>
-            <div>
-              <div className="appointment-info-label">Time</div>
-              <div className="appointment-info-value">{formatTimeRange()}</div>
-            </div>
-          </div>
-          <div className="appointment-info-cell">
-            <span className="appointment-info-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </span>
-            <div>
-              <div className="appointment-info-label">Type</div>
+          <InfoGrid className="appointment-info-grid">
+            {booking.patient ? (
+              <>
+                <InfoCell icon={<Icon.User />} label="Patient" value={booking.patient.name} />
+                <InfoCell icon={<Icon.Users />} label="Relationship" value={booking.patient.relationship} />
+              </>
+            ) : null}
+            <InfoCell icon={<Icon.Calendar />} label="Date" value={dateStr} />
+            <InfoCell icon={<Icon.Clock />} label="Time" value={formatTimeRange()} />
+            <InfoCell icon={visitType === 'Video' ? <Icon.Video /> : <Icon.User />} label="Type">
               {isLocked ? (
-                <div className="appointment-info-value">{visitType || 'In-Person'} Visit</div>
+                `${visitType || 'In-Person'} Visit`
               ) : (
-                <button type="button" className="appointment-info-edit" onClick={() => openSheet({ type: 'visitType' })}>
+                <button type="button" className="ds-link appointment-info-edit" onClick={() => openSheet({ type: 'visitType' })}>
                   {visitType || 'In-Person'} Visit
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <Icon.ChevronDown />
                 </button>
               )}
-            </div>
-          </div>
-          <div className="appointment-info-cell">
-            <span className="appointment-info-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-            </span>
-            <div>
-              <div className="appointment-info-label">Location</div>
-              <div className="appointment-info-value">{doctor.address}</div>
-            </div>
-          </div>
-        </div>
+            </InfoCell>
+            <InfoCell className="is-wide" icon={<Icon.Pin />} label="Location" value={doctor.address} />
+          </InfoGrid>
 
-        <div className="appointment-action-row">
-          <button
-            type="button"
-            className="appointment-action-item"
-            onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(doctor.address || '')}`, '_blank')}
-          >
-            <span className="appointment-action-icon-wrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 2L11 13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </span>
-            <span className="appointment-action-label">Get Directions</span>
-          </button>
-          <button type="button" className="appointment-action-item" onClick={addToCalendar}>
-            <span className="appointment-action-icon-wrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-            </span>
-            <span className="appointment-action-label">Add to Calendar</span>
-          </button>
-          <button type="button" className="appointment-action-item" onClick={() => openSheet({ type: 'contact' })}>
-            <span className="appointment-action-icon-wrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </span>
-            <span className="appointment-action-label">Contact Clinic</span>
-          </button>
-        </div>
+          <div className="ds-action-row appointment-action-row">
+            <QuickAction
+              icon={<Icon.Directions />}
+              label="Directions"
+              onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(doctor.address || '')}`, '_blank')}
+            />
+            <QuickAction icon={<Icon.Calendar />} label="Add to calendar" onClick={addToCalendar} />
+            <QuickAction icon={<Icon.Phone />} label="Contact clinic" onClick={() => openSheet({ type: 'contact' })} />
+          </div>
         </div>
 
         <BookingReveal
@@ -572,239 +463,178 @@ export default function AppointmentDetail() {
             </>
           )}
         >
-        <div className="appointment-section">
-          <h3 className="appointment-section-title">Before your visit</h3>
-          <div className="appointment-checklist">
-            {checklistItems.map((item, i) => (
-              <button type="button" key={item} className="appointment-check-item" onClick={() => setCheckedItems((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i])}>
-                <span className={`appointment-checkbox ${checkedItems.includes(i) ? 'checked' : ''}`}>
-                  {checkedItems.includes(i) && (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  )}
-                </span>
-                <span className="appointment-check-text">{item}</span>
-              </button>
-            ))}
-          </div>
-        </div>
+        <div className="ds-stack is-loose appointment-sections">
+        <section>
+          <SectionHead group as="h3" title="Before your visit" />
+          <List>
+            {checklistItems.map((item, i) => {
+              const checked = checkedItems.includes(i)
+              return (
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={checked}
+                  key={item}
+                  className="ds-list-row appointment-check-item"
+                  onClick={() => setCheckedItems((prev) => (prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]))}
+                >
+                  <CheckboxMark />
+                  <span className="ds-list-row__body"><span className="ds-list-row__title">{item}</span></span>
+                </button>
+              )
+            })}
+          </List>
+        </section>
 
-        <div className="appointment-info-banner">
-          <span className="appointment-info-banner-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </span>
-          <p className="appointment-info-banner-text">Arrive 15 minutes early. Bring recent lab results.</p>
-        </div>
+        <Callout tone="info" icon={<Icon.Clock />}>Arrive 15 minutes early. Bring recent lab results.</Callout>
 
-        <button type="button" className="appointment-urgent-care" onClick={() => setShowUrgentCare((open) => !open)}>
-          <span className="appointment-urgent-care-left">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
-            When to seek urgent care
-          </span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`appointment-urgent-care-chevron ${showUrgentCare ? 'expanded' : ''}`}>
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        {showUrgentCare && (
-          <div className="appointment-urgent-care-content">
-            Seek immediate care if you experience severe chest pain, difficulty breathing, uncontrolled bleeding, or signs of stroke such as sudden numbness or confusion.
-          </div>
-        )}
+        <List>
+          <Disclosure
+            id="appointment-urgent"
+            className="appointment-urgent-care"
+            icon={<span className="ds-icon-well is-warning" aria-hidden="true"><Icon.Alert /></span>}
+            title="When to seek urgent care"
+            open={showUrgentCare}
+            onToggle={() => setShowUrgentCare((open) => !open)}
+          >
+            <p>Seek immediate care if you experience severe chest pain, difficulty breathing, uncontrolled bleeding, or signs of stroke such as sudden numbness or confusion.</p>
+          </Disclosure>
+        </List>
 
-        <div className="appointment-section">
-          <h3 className="appointment-section-title">Medical records {isLocked ? <span className="appointment-view-only">View only</span> : null}</h3>
-          <div className="appointment-records-card">
+        <section>
+          <SectionHead group as="h3" title="Medical records" action={isLocked ? <Badge tone="neutral">View only</Badge> : null} />
+          <List>
             {ATTACH_GROUPS.map((tab) => {
               const groupItems = itemsForAttachGroup(health, tab.key)
               const attachedCount = (booking.attachedRecordIds || []).filter((id) => groupItems.some((item) => item.id === id)).length
               return (
-                <button type="button" key={tab.key} className="appointment-record-row" onClick={() => openSheet({ type: 'records', key: tab.key })}>
-                  <span className="appointment-record-icon">{recordIcons[tab.key]}</span>
-                  <span className="appointment-record-label">{tab.label}</span>
-                  {attachedCount ? <span className="appointment-record-count">{attachedCount}</span> : null}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="appointment-record-chevron">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
+                <ListRow
+                  key={tab.key}
+                  icon={<span className="ds-icon-well" aria-hidden="true">{recordIcons[tab.key]}</span>}
+                  title={tab.label}
+                  trailing={attachedCount ? <Badge tone="solid">{attachedCount}</Badge> : null}
+                  onClick={() => openSheet({ type: 'records', key: tab.key })}
+                />
               )
             })}
-          </div>
-        </div>
+          </List>
+        </section>
 
-        <div className="appointment-section">
-          <div className="appointment-payment-card">
-            <div className="appointment-payment-header">
-              <h3 className="appointment-section-title is-inline">Payment & invoice</h3>
-              <span className="appointment-payment-badge paid">Paid</span>
-            </div>
-
-            <div className="appointment-billing-row">
-              <span className="appointment-billing-label">Consultation Fee</span>
-              <span className="appointment-billing-value">{formatMoney(payment.consultationFee)}</span>
-            </div>
-            {wasRescheduled && (
-              <div className="appointment-billing-row">
-                <span className="appointment-billing-label">Reschedule Fee</span>
-                <span className="appointment-billing-value">{formatMoney(payment.rescheduleFee)}</span>
+        <section>
+          <SectionHead group as="h3" title="Payment & invoice" action={<Badge tone="success">Paid</Badge>} />
+          <div className="ds-card appointment-payment-card">
+            <div className="ds-stack is-tight appointment-billing">
+              <div className="ds-kv">
+                <span className="ds-kv__key">Consultation fee</span>
+                <span className="ds-kv__value tnum">{formatMoney(payment.consultationFee)}</span>
               </div>
-            )}
-            <div className="appointment-billing-row">
-              <span className="appointment-billing-label">Mediclaim Discount</span>
-              <span className="appointment-billing-value discount">-{formatMoney(payment.insuranceCoverage)}</span>
-            </div>
-            <div className="appointment-billing-row">
-              <span className="appointment-billing-label">Amount Payable</span>
-              <span className="appointment-billing-value">{formatMoney(payment.copay)}</span>
-            </div>
-            <div className="appointment-billing-divider" />
-            <div className="appointment-billing-row total">
-              <span className="appointment-billing-label">Total Paid</span>
-              <span className="appointment-billing-value total">{formatMoney(payment.totalPaid)}</span>
-            </div>
-
-            <div className="appointment-payment-meta">
-              <div className="appointment-payment-method">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="1" y="4" width="22" height="16" rx="2" />
-                  <line x1="1" y1="10" x2="23" y2="10" />
-                </svg>
-                {payment.method}
+              {wasRescheduled && (
+                <div className="ds-kv">
+                  <span className="ds-kv__key">Reschedule fee</span>
+                  <span className="ds-kv__value tnum">{formatMoney(payment.rescheduleFee)}</span>
+                </div>
+              )}
+              <div className="ds-kv">
+                <span className="ds-kv__key">Mediclaim discount</span>
+                <span className="ds-kv__value is-positive tnum">-{formatMoney(payment.insuranceCoverage)}</span>
               </div>
-              <div className="appointment-payment-invoice">Invoice #{payment.invoiceId}</div>
+              <div className="ds-kv">
+                <span className="ds-kv__key">Amount payable</span>
+                <span className="ds-kv__value tnum">{formatMoney(payment.copay)}</span>
+              </div>
+              <div className="ds-kv is-total">
+                <span className="ds-kv__key">Total paid</span>
+                <span className="ds-kv__value tnum">{formatMoney(payment.totalPaid)}</span>
+              </div>
+              <p className="ds-caption appointment-payment-meta">
+                <Icon.Card />
+                {payment.method} · Invoice #{payment.invoiceId}
+              </p>
             </div>
-
-            <div className="appointment-payment-actions">
-              <button type="button" className="appointment-payment-action" onClick={() => openSheet({ type: 'invoice' })}>
-                <span className="appointment-payment-action-left">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                  </svg>
-                  View Invoice
-                </span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-              <button type="button" className="appointment-payment-action" onClick={() => openSheet({ type: 'receipt' })}>
-                <span className="appointment-payment-action-left">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Download Receipt (PDF)
-                </span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-              <button type="button" className="appointment-payment-action last" onClick={() => openSheet({ type: 'history' })}>
-                <span className="appointment-payment-action-left">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  Payment History
-                </span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            </div>
+            <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.File /></span>} title="View invoice" onClick={() => openSheet({ type: 'invoice' })} />
+            <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Download /></span>} title="Download receipt (PDF)" onClick={() => openSheet({ type: 'receipt' })} />
+            <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Clock /></span>} title="Payment history" onClick={() => openSheet({ type: 'history' })} />
           </div>
-        </div>
+        </section>
 
-        <div className="appointment-section">
-          <h3 className="appointment-section-title">Notes for your doctor</h3>
-          <textarea
-            className="appointment-notes-input"
-            placeholder={isLocked ? 'Notes can no longer be updated' : 'Add notes for your doctor...'}
-            value={notes}
-            onChange={(e) => { if (isLocked) return; setNotes(e.target.value); setNotesSaved(false) }}
-            rows={3}
-            readOnly={isLocked}
-          />
-          <button
-            type="button"
+        <section>
+          <FormGroup label="Notes for your doctor">
+            <textarea
+              className="ds-field"
+              placeholder={isLocked ? 'Notes can no longer be updated' : 'Add notes for your doctor…'}
+              value={notes}
+              onChange={(e) => { if (isLocked) return; setNotes(e.target.value); setNotesSaved(false) }}
+              rows={3}
+              readOnly={isLocked}
+            />
+          </FormGroup>
+          <Button
+            variant="secondary"
+            size="sm"
             className="appointment-save-notes-btn"
             disabled={isLocked || !notes.trim() || notesSaved}
             onClick={saveNotes}
           >
-            {isLocked ? 'Notes locked' : notesSaved ? 'Notes saved' : 'Save Notes'}
-          </button>
-        </div>
+            {isLocked ? 'Notes locked' : notesSaved ? 'Notes saved' : 'Save notes'}
+          </Button>
+        </section>
 
-        <div className="appointment-section">
-          <h3 className="appointment-section-title">Recommended for you</h3>
-          <div className="appointment-recommended">
+        <section>
+          <SectionHead group as="h3" title="Recommended for you" />
+          <div className="ds-stack is-tight">
             {recommendedArticles.filter((article) => article.type === 'featured').map((article) => (
-              <button type="button" key={article.title} className="appointment-article featured" onClick={() => openSheet({ type: 'article', article })}>
-                <span className="appointment-article-featured-left">
-                  <span className="appointment-article-icon" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 21s-6.5-4.35-9.33-8.5C.5 9.5 2.2 5 6.5 5c2.1 0 3.4 1.1 4.5 2.5C12.1 6.1 13.4 5 15.5 5c4.3 0 6 4.5 3.83 7.5C18.5 16.65 12 21 12 21z" />
-                    </svg>
-                  </span>
-                  <span>
-                    <span className="appointment-article-title">{article.title}</span>
-                    <span className="appointment-article-subtitle">{article.subtitle}</span>
-                  </span>
-                </span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
+              <List key={article.title}>
+                <ListRow
+                  icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Heart /></span>}
+                  title={article.title}
+                  subtitle={article.subtitle}
+                  onClick={() => openSheet({ type: 'article', article })}
+                />
+              </List>
             ))}
             <div className="appointment-article-grid">
               {recommendedArticles.filter((article) => article.type === 'card').map((article) => (
-                <button type="button" key={article.title} className="appointment-article card" onClick={() => openSheet({ type: 'article', article })}>
-                  <span className="appointment-article-thumb">
-                    <img src={article.image} alt="" className="appointment-article-thumb-img" />
-                  </span>
-                  <span className="appointment-article-body">
-                    <span className="appointment-article-title">{article.title}</span>
-                    <span className="appointment-article-subtitle">{article.subtitle}</span>
+                <button
+                  type="button"
+                  key={article.title}
+                  className="ds-card is-interactive appointment-article"
+                  onClick={() => openSheet({ type: 'article', article })}
+                >
+                  <img src={article.image} alt="" className="appointment-article__img" />
+                  <span className="appointment-article__body">
+                    <span className="ds-card__title">{article.title}</span>
+                    <span className="ds-card__meta">{article.subtitle}</span>
                   </span>
                 </button>
               ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="appointment-section">
-          <h3 className="appointment-section-title">Frequently asked questions</h3>
-          <div className="appointment-faq-list">
+        <section>
+          <SectionHead group as="h3" title="Frequently asked questions" />
+          <List>
             {faqItems.map((item, i) => (
-              <div key={item.q} className="appointment-faq-item-wrap">
-                <button type="button" className="appointment-faq-item" onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}>
-                  <span className="appointment-faq-question">{item.q}</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`appointment-faq-chevron ${expandedFaq === i ? 'expanded' : ''}`}>
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </button>
-                {expandedFaq === i && <p className="appointment-faq-answer">{item.a}</p>}
-              </div>
+              <Disclosure
+                key={item.q}
+                id={`appointment-faq-${i}`}
+                title={item.q}
+                open={expandedFaq === i}
+                onToggle={() => setExpandedFaq(expandedFaq === i ? null : i)}
+              >
+                <p>{item.a}</p>
+              </Disclosure>
             ))}
-          </div>
-        </div>
+          </List>
+        </section>
 
-        <div className="appointment-support-bar">
-          <div className="appointment-support-text">
-            <span className="appointment-support-msg">We're here for you every step of the way.</span>
-            <span className="appointment-support-sub">Our clinic support team is available 24/7.</span>
-          </div>
-          <button type="button" className="appointment-help-btn" onClick={() => openSheet({ type: 'help' })}>Need Help?</button>
+        <div className="ds-card is-padded appointment-support-bar">
+          <span className="appointment-support-text">
+            <span className="ds-title">We&apos;re here for you every step of the way.</span>
+            <span className="ds-caption">Our clinic support team is available 24/7.</span>
+          </span>
+          <Button variant="secondary" size="sm" onClick={() => openSheet({ type: 'help' })}>Need help?</Button>
+        </div>
         </div>
         </BookingReveal>
       </div>
@@ -821,128 +651,110 @@ export default function AppointmentDetail() {
 
       {isPresented && sheet && (
         <AppBottomSheet open closing={isClosing} onClose={closeSheet} labelledBy="appointment-sheet-title">
-          <div className="ds-sheet-header">
-            <h3 id="appointment-sheet-title">{sheetTitle}</h3>
-            <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
+          <SheetHeader titleId="appointment-sheet-title" title={sheetTitle} onClose={closeSheet} />
 
-              {sheet.type === 'records' && (
-                <div className="appointment-sheet-list">
-                  {itemsForAttachGroup(health, sheet.key).length === 0 ? (
-                    <p className="appointment-sheet-note">Nothing saved here yet. Add it in My Profile to attach it to visits.</p>
-                  ) : itemsForAttachGroup(health, sheet.key).map((record) => (
-                    <div className="appointment-sheet-row" key={record.id}>
-                      {record.image && <img src={record.image} alt="" className="appointment-sheet-thumb" />}
-                      <div>
-                        <div className="appointment-sheet-row-title">
-                          {record.title}
-                          {(booking.attachedRecordIds || []).includes(record.id) ? ' · Attached' : ''}
-                        </div>
-                        <div className="appointment-sheet-row-meta">{healthItemMeta(record) || [displayHealthDate(record.date), record.doctor].filter(Boolean).join(' · ')}</div>
-                        <p className="appointment-sheet-note">{record.details}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {(sheet.type === 'contact' || sheet.type === 'help') && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">
-                    Reach the clinic care team about this visit with Dr. {doctor.name}. They typically reply within a few hours.
-                  </p>
-                  {doctor.phone && (
-                    <a className="appointment-sheet-cta" href={`tel:${doctor.phone.replace(/\s/g, '')}`}>Call clinic</a>
-                  )}
-                </div>
-              )}
-
-              {sheet.type === 'invoice' && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">Invoice #{payment.invoiceId} · {payment.method}</p>
-                  <div className="appointment-billing-row total">
-                    <span className="appointment-billing-label">Total Paid</span>
-                    <span className="appointment-billing-value total">{formatMoney(payment.totalPaid)}</span>
+          {sheet.type === 'records' && (
+            itemsForAttachGroup(health, sheet.key).length === 0 ? (
+              <EmptyState compact card title="Nothing saved here yet" message="Add it in My Profile to attach it to visits." />
+            ) : (
+              <List className="appointment-sheet-list">
+                {itemsForAttachGroup(health, sheet.key).map((record) => (
+                  <div className="ds-list-row" key={record.id}>
+                    {record.image ? <img src={record.image} alt="" className="appointment-sheet-thumb" /> : null}
+                    <span className="ds-list-row__body">
+                      <span className="ds-list-row__title">{record.title}</span>
+                      <span className="ds-list-row__sub">{healthItemMeta(record) || [displayHealthDate(record.date), record.doctor].filter(Boolean).join(' · ')}</span>
+                      {record.details ? <span className="ds-list-row__sub">{record.details}</span> : null}
+                    </span>
+                    {(booking.attachedRecordIds || []).includes(record.id) ? <Badge tone="success">Attached</Badge> : null}
                   </div>
-                </div>
-              )}
+                ))}
+              </List>
+            )
+          )}
 
-              {sheet.type === 'receipt' && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">Your receipt PDF is ready to download for invoice #{payment.invoiceId}.</p>
-                </div>
+          {(sheet.type === 'contact' || sheet.type === 'help') && (
+            <div className="ds-stack appointment-sheet-body">
+              <p className="ds-body">
+                Reach the clinic care team about this visit with Dr. {doctor.name}. They typically reply within a few hours.
+              </p>
+              {doctor.phone && (
+                <Button as="a" size="lg" block icon={<Icon.Phone />} href={`tel:${doctor.phone.replace(/\s/g, '')}`}>Call clinic</Button>
               )}
+            </div>
+          )}
 
-              {sheet.type === 'history' && (
-                <div className="appointment-sheet-list">
-                  <div className="appointment-sheet-row">
-                    <div>
-                      <div className="appointment-sheet-row-title">Consultation paid</div>
-                      <div className="appointment-sheet-row-meta">{dateStr} · {payment.method}</div>
-                    </div>
-                    <span className="appointment-billing-value total">{formatMoney(payment.totalPaid)}</span>
-                  </div>
-                </div>
-              )}
+          {sheet.type === 'invoice' && (
+            <div className="ds-stack appointment-sheet-body">
+              <p className="ds-body">Invoice #{payment.invoiceId} · {payment.method}</p>
+              <div className="ds-kv is-total">
+                <span className="ds-kv__key">Total paid</span>
+                <span className="ds-kv__value tnum">{formatMoney(payment.totalPaid)}</span>
+              </div>
+            </div>
+          )}
 
-              {sheet.type === 'article' && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">{sheet.article.subtitle}. This reading is tailored to your upcoming visit with Dr. {doctor.name}.</p>
-                </div>
-              )}
+          {sheet.type === 'receipt' && (
+            <p className="ds-body appointment-sheet-body">Your receipt PDF is ready to download for invoice #{payment.invoiceId}.</p>
+          )}
 
-              {sheet.type === 'menu' && (
-                <AppointmentMenuOptions
-                  className="appointment-sheet-options"
-                  items={menuItems}
-                  onAction={handleMenuAction}
-                />
-              )}
+          {sheet.type === 'history' && (
+            <List className="appointment-sheet-list">
+              <ListRow
+                title="Consultation paid"
+                subtitle={`${dateStr} · ${payment.method}`}
+                trailing={<strong className="tnum appointment-sheet-amount">{formatMoney(payment.totalPaid)}</strong>}
+              />
+            </List>
+          )}
 
-              {sheet.type === 'locked' && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">{lockMessage || PREP_LOCK_MESSAGE}</p>
-                </div>
-              )}
+          {sheet.type === 'article' && (
+            <p className="ds-body appointment-sheet-body">{sheet.article.subtitle}. This reading is tailored to your upcoming visit with Dr. {doctor.name}.</p>
+          )}
 
-              {sheet.type === 'visitType' && (
-                <div className="appointment-sheet-options">
-                  {VISIT_TYPES.map((item) => (
-                    <button
-                      type="button"
-                      key={item.id}
-                      className={`ds-sheet-option ${visitType === item.id ? 'is-active' : ''}`}
-                      onClick={() => changeVisitType(item.id)}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              )}
+          {sheet.type === 'menu' && (
+            <AppointmentMenuOptions
+              className="appointment-sheet-options"
+              items={menuItems}
+              onAction={handleMenuAction}
+            />
+          )}
 
-              {sheet.type === 'cancel' && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">
-                    Cancel this appointment with Dr. {doctor.name}? The slot may be offered to another patient.
-                  </p>
-                  <button type="button" className="appointment-sheet-cta is-danger" onClick={confirmCancel}>Yes, cancel appointment</button>
-                </div>
-              )}
+          {sheet.type === 'locked' && (
+            <p className="ds-body appointment-sheet-body">{lockMessage || PREP_LOCK_MESSAGE}</p>
+          )}
 
-              {(sheet.type === 'shared' || sheet.type === 'calendar' || sheet.type === 'notes') && (
-                <div className="appointment-sheet-body">
-                  <p className="appointment-sheet-note">
-                    {sheet.type === 'shared' && 'Appointment details were copied so you can share them with family or your care team.'}
-                    {sheet.type === 'calendar' && 'A calendar file was downloaded. Open it to add this visit to your device calendar.'}
-                    {sheet.type === 'notes' && 'Your notes will be shared with the clinic before your visit.'}
-                  </p>
-                </div>
-              )}
+          {sheet.type === 'visitType' && (
+            <div className="appointment-sheet-options">
+              {VISIT_TYPES.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={cx('ds-sheet-option', visitType === item.id && 'is-active')}
+                  onClick={() => changeVisitType(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {sheet.type === 'cancel' && (
+            <div className="ds-stack appointment-sheet-body">
+              <p className="ds-body">
+                Cancel this appointment with Dr. {doctor.name}? The slot may be offered to another patient.
+              </p>
+              <Button variant="danger" size="lg" block onClick={confirmCancel}>Yes, cancel appointment</Button>
+            </div>
+          )}
+
+          {(sheet.type === 'shared' || sheet.type === 'calendar' || sheet.type === 'notes') && (
+            <p className="ds-body appointment-sheet-body">
+              {sheet.type === 'shared' && 'Appointment details were copied so you can share them with family or your care team.'}
+              {sheet.type === 'calendar' && 'A calendar file was downloaded. Open it to add this visit to your device calendar.'}
+              {sheet.type === 'notes' && 'Your notes will be shared with the clinic before your visit.'}
+            </p>
+          )}
         </AppBottomSheet>
       )}
     </div>

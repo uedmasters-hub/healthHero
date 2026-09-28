@@ -221,3 +221,13 @@
 .relay-chip {
   margin-top: var(--space-1-5);
 }
+
+/* Relay panel (Appointment details) — same light-surface tones as .relay-chip */
+.relay-panel.is-upcoming, .relay-panel.is-waiting, .relay-panel.is-missed { background: var(--color-warning-subtle); color: var(--warning-900); }
+.relay-panel.is-visit, .relay-panel.is-referral { background: var(--primary-300); color: var(--primary-950); }
+.relay-panel.is-checkin { background: var(--badge-ready-bg); color: var(--badge-ready-fg); }
+.relay-panel.is-reported, .relay-panel.is-prescription, .relay-panel.is-confirmed { background: var(--color-success-subtle); color: var(--success-900); }
+.relay-panel.is-tests, .relay-panel.is-follow { background: var(--color-wellness-subtle); color: var(--secondary-900); }
+.relay-panel.is-cancelled { background: var(--neutral-200); color: var(--neutral-700); }
+.relay-panel .ds-callout__title,
+.relay-panel .ds-callout__body { color: inherit; }
