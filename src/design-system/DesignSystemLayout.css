@@ -414,10 +414,7 @@
 .ds-showcase-chip-brand { background: var(--primary-300); color: var(--primary-950); border-color: var(--primary-400); }
 .ds-showcase-chip-success { background: var(--success-300); color: var(--success-900); border-color: var(--secondary-600); }
 .ds-showcase-chip-warning { background: var(--warning-500); color: var(--warning-900); border-color: var(--warning-700); }
-.ds-showcase-chip-danger { background: var(--danger-bg); color: var(--error-900); border-color: var(--error-700); }@keyframes ds-skel-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+.ds-showcase-chip-danger { background: var(--danger-bg); color: var(--error-900); border-color: var(--error-700); }
 /* Modal showcase */
 .ds-showcase-modal-overlay {
   position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);

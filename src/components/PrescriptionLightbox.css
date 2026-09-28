@@ -7,11 +7,11 @@
   display: flex;
   flex-direction: column;
   background: var(--overlay-lightbox);
-  animation: rxFadeIn var(--duration-dialog) var(--ease-standard);
+  animation: fadeIn var(--duration-dialog) var(--ease-standard);
 }
 
 .rx-overlay.is-closing {
-  animation: rxFadeOut var(--duration-normal) var(--ease-standard) forwards;
+  animation: fadeOut var(--duration-normal) var(--ease-standard) forwards;
 }
 
 .rx-header {
@@ -40,7 +40,7 @@
 .rx-close {
   border: none;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--glass-on-dark);
   color: var(--white);
   display: flex;
   align-items: center;
@@ -223,7 +223,7 @@
   gap: var(--space-2-5);
   padding: var(--space-3) var(--space-4);
   padding-bottom: var(--bottom-bar-pad);
-  background: linear-gradient(180deg, rgba(8, 10, 18, 0) 0%, rgba(8, 10, 18, 0.55) 18%, rgba(8, 10, 18, 0.92) 100%);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--overlay-lightbox) 55%, transparent) 18%, color-mix(in srgb, var(--overlay-lightbox) 92%, transparent) 100%);
 }
 
 .rx-action {
@@ -251,12 +251,4 @@
   opacity: var(--opacity-muted);
 }
 
-@keyframes rxFadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
 
-@keyframes rxFadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
-}

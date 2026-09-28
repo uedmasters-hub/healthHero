@@ -391,6 +391,7 @@
   --overlay: color-mix(in srgb, var(--neutral-900) 12%, transparent);
   --overlay-strong: color-mix(in srgb, var(--neutral-900) 18%, transparent);
   --overlay-dark: var(--overlay);
+  --overlay-scrim-soft: color-mix(in srgb, var(--neutral-900) 15%, transparent);
   --overlay-media: color-mix(in srgb, var(--neutral-900) 55%, transparent);
   --overlay-lightbox: #0c0e14;
   --surface-lightbox: #1c1d22;
@@ -410,6 +411,12 @@
   --shadow-md: var(--shadow-float);
   --shadow-sheet: 0 8px 28px color-mix(in srgb, var(--neutral-900) 12%, transparent);
   --shadow-modal: 0 16px 48px color-mix(in srgb, var(--neutral-900) 16%, transparent);
+  /* Pushed page edge — the layer sliding over the one below */
+  --shadow-push-edge: -6px 0 24px color-mix(in srgb, var(--neutral-900) 12%, transparent);
+  --shadow-push-edge-strong: -10px 0 28px color-mix(in srgb, var(--neutral-900) 16%, transparent);
+  /* Glass on dark media (lightboxes, gallery, avatar shine) */
+  --glass-on-dark: color-mix(in srgb, var(--neutral-0) 14%, transparent);
+  --glass-on-dark-strong: color-mix(in srgb, var(--neutral-0) 28%, transparent);
   --shadow-chrome-up: 0 -6px 24px color-mix(in srgb, var(--neutral-900) 8%, transparent);
   --shadow-focus: 0 0 0 3px var(--primary-500);
   --shadow-ring-soft: 0 0 0 8px var(--primary-300);

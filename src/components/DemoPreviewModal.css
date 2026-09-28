@@ -67,15 +67,7 @@
   cursor: pointer;
 }
 
-@keyframes demoPreviewFadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
 
-@keyframes demoPreviewFadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
-}
 
 @keyframes demoPreviewRise {
   from {

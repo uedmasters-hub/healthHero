@@ -7,7 +7,7 @@
   position: absolute;
   inset: 0;
   z-index: var(--z-scrim, 8000);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--overlay-scrim-soft);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--duration-sheet) var(--ease-sheet);

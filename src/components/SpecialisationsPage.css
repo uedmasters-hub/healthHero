@@ -154,10 +154,6 @@
   border-radius: var(--radius-xs);
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
 
 .specialisations-footer {
   text-align: center;

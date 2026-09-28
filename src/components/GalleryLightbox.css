@@ -5,13 +5,9 @@
   background: var(--overlay-lightbox);
   display: flex;
   flex-direction: column;
-  animation: galleryLightboxIn var(--duration-moderate) var(--ease-emphasized);
+  animation: fadeIn var(--duration-moderate) var(--ease-emphasized);
 }
 
-@keyframes galleryLightboxIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
 
 .gallery-lightbox-close {
   position: absolute;
@@ -22,7 +18,7 @@
   height: 40px;
   border: none;
   border-radius: var(--radius-xl);
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--glass-on-dark);
   color: var(--white);
   display: flex;
   align-items: center;

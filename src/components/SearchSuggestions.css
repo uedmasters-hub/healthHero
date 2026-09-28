@@ -84,7 +84,7 @@
 }
 
 .search-suggest-text b {
-  font-weight: 650;
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 

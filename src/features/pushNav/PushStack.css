@@ -39,12 +39,12 @@
   transform: none;
   filter: none;
   border-radius: 0;
-  box-shadow: -6px 0 24px rgba(15, 18, 28, 0.12);
+  box-shadow: var(--shadow-push-edge);
   overflow: hidden;
 }
 
 .push-stack__layer.is-top.is-exiting {
-  box-shadow: -6px 0 24px rgba(15, 18, 28, 0.12);
+  box-shadow: var(--shadow-push-edge);
   overflow: hidden;
   pointer-events: none;
 }
@@ -70,7 +70,7 @@
 }
 
 .push-stack.is-swiping > .push-stack__layer.is-top {
-  box-shadow: -10px 0 28px rgba(15, 18, 28, 0.16);
+  box-shadow: var(--shadow-push-edge-strong);
 }
 
 @keyframes pushStackEnter {

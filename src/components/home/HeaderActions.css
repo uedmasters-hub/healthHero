@@ -44,7 +44,7 @@
   height: var(--ha-slot);
   border-radius: var(--radius-full);
   background: var(--surface-2);
-  box-shadow: 0 0 0 1px #eeeff3;
+  box-shadow: 0 0 0 var(--border-width) var(--border-default);
   transform-origin: right center;
   pointer-events: none;
   will-change: transform, opacity;

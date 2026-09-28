@@ -8,7 +8,7 @@
   flex-shrink: 0;
   overflow: hidden;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--glass-on-dark);
 }
 
 .provider-avatar__img {
@@ -51,9 +51,9 @@
   border-radius: inherit;
   background: linear-gradient(
     110deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.28) 45%,
-    rgba(255, 255, 255, 0.12) 90%
+    var(--glass-on-dark) 0%,
+    var(--glass-on-dark-strong) 45%,
+    var(--glass-on-dark) 90%
   );
   background-size: 200% 100%;
   animation: provider-avatar-shine 1.1s ease-in-out infinite;
