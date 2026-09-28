@@ -1,4 +1,5 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, Section } from '../shared'
+import { DoDont, RelatedLinks, Preview, Section, TokenTable } from '../shared'
+import { Card, Icon, List, ListRow } from '../../components/ui'
 
 export default function CardsPage() {
   return (
@@ -7,120 +8,63 @@ export default function CardsPage() {
         <div className="ds-page-breadcrumb">Components / Cards</div>
         <h1 className="ds-doc-title">Cards</h1>
         <p className="ds-page-description">
-          Surface containers that group related content — the primary content unit in eMedicalls.
-          Includes standard cards, doctor cards with 4 variants, and appointment cards.
+          White islands on the lavender canvas — the primary content unit. One primitive, a few modifiers.
         </p>
       </div>
 
-      <Section title="Overview">
+      <Section title="Card">
         <p>
-          eMedicalls uses two card primitives defined in <code>src/index.css</code>:
-          <code>.ds-card</code> (elevated with shadow) and <code>.ds-card-flat</code> (no shadow).
-          The <code>DoctorCard</code> component extends these with 4 layout variants:
-          <code>row</code>, <code>grid</code>, <code>list</code>, and <code>profile</code>.
+          <code>.ds-card</code> (React: <code>Card</code>) is white with a 12% primary-800 hairline and 24px corners.
+          No resting shadow. Modifiers: <code>is-padded</code>, <code>is-compact</code> (16px corners),
+          <code>is-interactive</code> (button with hover/pressed tint), <code>is-selected</code>,
+          <code>is-tinted</code> (lavender) and <code>is-muted</code>.
         </p>
-      </Section>
-
-      <Section title="Live preview">
-        <h3>Standard card (.ds-card)</h3>
-        <Preview code={`<div className="ds-card" style={{ padding: 16, borderRadius: 22 }}>
-  <h3 style={{ fontSize: 16, fontWeight: 600 }}>Card Title</h3>
-  <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Card description text.</p>
-</div>`}>
-          <div className="ds-card" style={{ padding: 20, maxWidth: 320 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Card Title</div>
-            <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Card description text with supporting content.</div>
-          </div>
-        </Preview>
-
-        <h3>Flat card (.ds-card-flat)</h3>
-        <Preview code={`<div className="ds-card-flat" style={{ padding: 16, borderRadius: 16 }}>
-  <h3 style={{ fontSize: 16, fontWeight: 600 }}>Flat Card</h3>
-  <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>No shadow, subtle border.</p>
-</div>`}>
-          <div className="ds-card-flat" style={{ padding: 20, maxWidth: 320 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Flat Card</div>
-            <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>No shadow, subtle border.</div>
-          </div>
+        <Preview code={`<Card padded>…</Card>
+<Card padded compact>…</Card>
+<Card interactive padded onClick={open}>…</Card>
+<div className="ds-card is-padded is-tinted">…</div>`}>
+          <Card padded style={{ width: 200 }}><strong>Card</strong><p className="ds-caption">Default surface</p></Card>
+          <Card padded compact style={{ width: 200 }}><strong>Compact</strong><p className="ds-caption">16px corners</p></Card>
+          <Card interactive padded style={{ width: 200 }}><strong>Interactive</strong><p className="ds-caption">Hover me</p></Card>
+          <div className="ds-card is-padded is-tinted" style={{ width: 200 }}><strong>Tinted</strong><p className="ds-caption">Hero / callout</p></div>
         </Preview>
       </Section>
 
-      <Section title="Card tokens">
+      <Section title="Grouped list">
+        <p>
+          Settings-style groups use <code>List</code> (<code>.ds-list</code>) — a card whose rows share hairline dividers.
+        </p>
+        <Preview code={`<List>
+  <ListRow icon={…} title="Personal" onClick={…} />
+  <ListRow icon={…} title="Medical" onClick={…} />
+</List>`}>
+          <div style={{ width: 320 }}>
+            <List>
+              <ListRow icon={<span className="ds-icon-well"><Icon.User /></span>} title="Personal" onClick={() => {}} />
+              <ListRow icon={<span className="ds-icon-well"><Icon.Heart /></span>} title="Medical" onClick={() => {}} />
+            </List>
+          </div>
+        </Preview>
+      </Section>
+
+      <Section title="Tokens">
         <TokenTable tokens={[
-          { token: '--card-bg', value: '#ffffff', usage: 'Card background (neutral-0)' },
-          { token: '--border', value: 'primary-800 @ 12%', usage: 'Hairline lavender card edge' },
-          { token: '--border-width', value: '1px', usage: 'Card border width' },
-          { token: '--radius-card', value: '24px', usage: 'Card border radius' },
-          { token: '--shadow-card', value: '0 1px 3px / 0 1px 2px', usage: 'Optional elevated card' },
-          { token: '--shadow-hover', value: '0 10px 15px / 0 4px 6px', usage: 'Hover float' },
-          { token: '--card-padding', value: '1rem', usage: 'Internal card padding' },
-          { token: '--card-gap', value: '1rem', usage: 'Gap between adjacent cards' },
-          { token: '--radius-lg', value: '1rem', usage: 'Flat card border radius' },
+          { token: '--card-bg', value: 'neutral-0', usage: 'Card and list surface' },
+          { token: '--card-border', value: '1px primary-800 @ 12%', usage: 'Hairline edge' },
+          { token: '--card-radius / --card-radius-sm', value: '24px / 16px', usage: 'Default / compact corners' },
+          { token: '--card-padding', value: '16px', usage: 'is-padded inset' },
+          { token: '--state-hover / --state-pressed', value: 'primary-300 / mix', usage: 'Interactive cards and rows' },
         ]} />
       </Section>
 
-      <Section title="Card anatomy">
-        <ul>
-          <li><strong>Container</strong> — The card surface (background, border, radius, shadow).</li>
-          <li><strong>Media</strong> — Optional image or illustration at the top of the card.</li>
-          <li><strong>Title</strong> — Primary text, usually the card's subject.</li>
-          <li><strong>Description</strong> — Supporting text that provides context.</li>
-          <li><strong>Actions</strong> — Buttons, links, or interactive elements at the bottom.</li>
-        </ul>
-      </Section>
-
-      <Section title="Card variants">
-        <h3>Elevated card (.ds-card)</h3>
-        <p>Used for doctor cards, feature panels, and primary content containers. Has shadow and border.</p>
-
-        <h3>Flat card (.ds-card-flat)</h3>
-        <p>Used for secondary content, nested containers, and list items within elevated cards.</p>
-
-        <CodeBlock title="CSS" code={`/* Elevated card — primary surfaces */
-.ds-card {
-  background: var(--card-bg);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);      /* 24px */
-  box-shadow: var(--shadow-card);         /* 0 4px 16px rgba(17,24,39,0.05) */
-}
-
-/* Flat card — secondary surfaces */
-.ds-card-flat {
-  background: var(--card-bg);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-lg);        /* 16px */
-  box-shadow: none;
-}`} />
-      </Section>
-
-      <Section title="Usage guidelines">
-        <DoDont
-          dos={[
-            'Use cards to group related content. A card should represent one concept or item.',
-            'Use .ds-card for primary content that needs elevation and visual prominence.',
-            'Use .ds-card-flat for secondary content or nested containers.',
-            'Maintain consistent padding (--card-padding) across all card instances.',
-          ]}
-          donts={[
-            'Nest cards inside cards. This creates confusing visual hierarchy and wasted space.',
-            'Use heavy shadows on cards that are already elevated. This looks muddy.',
-            'Use different border radii for cards. Stick to --radius-card for consistency.',
-          ]}
-        />
-      </Section>
-
-      <Callout type="info">
-        Cards are used extensively in the app: <code>DoctorCard</code> (4 variants),
-        <code>AppointmentDetail</code> (summary card), <code>InsightCard</code>,
-        <code>PostVisitSummary</code> (doctor card, care summary, follow-up, resources).
-        Each adapts the card primitive to its specific context.
-      </Callout>
+      <DoDont
+        dos={['Put cards on the lavender canvas (--bg) so the hairline reads.', 'Use List for grouped rows instead of stacking tiny cards.']}
+        donts={['Add drop shadows to resting cards.', 'Restyle .ds-card from a page stylesheet — add a modifier to the primitive instead.']}
+      />
 
       <RelatedLinks links={[
+        { label: 'Primitives', path: '/design/components/primitives' },
         { label: 'Elevation', path: '/design/foundations/elevation' },
-        { label: 'Radius', path: '/design/foundations/radius' },
-        { label: 'Border', path: '/design/foundations/border' },
-        { label: 'Buttons', path: '/design/components/buttons' },
       ]} />
     </>
   )

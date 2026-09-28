@@ -336,15 +336,6 @@
 .ds-card.is-tinted { background: var(--primary-300); border-color: transparent; }
 .ds-card.is-clip { overflow: hidden; }
 
-.ds-card.is-elevated,
-.ds-card-elevated { box-shadow: var(--shadow-card); }
-
-.ds-card-flat {
-  background: var(--card-bg);
-  border: var(--card-border);
-  border-radius: var(--card-radius-sm);
-  box-shadow: none;
-}
 
 /* :where() keeps the defaults overridable by a screen's layout rule */
 .ds-card:where(.is-interactive) {
@@ -517,64 +508,9 @@
 .ds-callout.is-danger > svg { color: var(--color-danger); }
 .ds-callout.is-neutral { background: var(--surface-1); border: var(--card-border); }
 
-/*
-  Interactive surface language (legacy names — same behaviour as Card).
-  Hover = tint · pressed = deeper tint · selected = lavender + ink edge.
-*/
-.ds-interact {
-  border: var(--border-width) solid var(--border);
-  background: var(--card-bg);
-  box-shadow: none;
-  transition: var(--interact-transition);
-}
-
-.ds-interact:hover:not(:disabled):not([aria-disabled='true']):not(.is-selected):not(.is-active):not([aria-selected='true']):not([aria-pressed='true']) {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.ds-interact:active:not(:disabled):not([aria-disabled='true']) {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-}
-
-.ds-interact.is-selected,
-.ds-interact.is-active,
-.ds-interact[aria-selected='true'],
-.ds-interact[aria-pressed='true'] {
-  background: var(--interact-selected-bg);
-  border-color: var(--interact-selected-border);
-  box-shadow: none;
-}
-
-/* Borderless rows (sheet options, nav rows) — tint only */
-.ds-interact-row {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  transition: var(--interact-transition);
-}
-
-.ds-interact-row:hover:not(:disabled):not([aria-disabled='true']):not(.is-selected):not(.is-active):not([aria-selected='true']):not(.active) {
-  background: var(--interact-hover-bg);
-}
-
-.ds-interact-row:active:not(:disabled):not([aria-disabled='true']) {
-  background: var(--interact-pressed-bg);
-}
-
-.ds-interact-row.is-selected,
-.ds-interact-row.is-active,
-.ds-interact-row.active,
-.ds-interact-row[aria-selected='true'],
-.ds-interact-row[aria-pressed='true'] {
-  background: var(--interact-selected-bg);
-}
-
 /* ── Chip (filter / choice) ────────────────────────────────────────────────
    PP toggle: pill · 500 · idle white + hairline · selected = brand-ink fill */
-.ds-chip,
-.ds-interact-chip {
+.ds-chip{
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -604,13 +540,11 @@
 
 .ds-chip--sm { min-height: var(--chip-height-sm); padding: 0 var(--space-md); font-size: var(--text-caption-size); }
 
-.ds-chip:hover:not(:disabled):not(.is-active):not(.is-selected):not([aria-pressed='true']):not([aria-selected='true']),
-.ds-interact-chip:hover:not(:disabled):not(.is-active):not(.is-selected):not([aria-pressed='true']) {
+.ds-chip:hover:not(:disabled):not(.is-active):not(.is-selected):not([aria-pressed='true']):not([aria-selected='true']){
   background: var(--state-hover);
 }
 
-.ds-chip:active:not(:disabled),
-.ds-interact-chip:active:not(:disabled) {
+.ds-chip:active:not(:disabled){
   background: var(--state-pressed);
 }
 
@@ -618,10 +552,7 @@
 .ds-chip.is-selected,
 .ds-chip[aria-pressed='true'],
 .ds-chip[aria-selected='true'],
-.ds-chip[aria-checked='true'],
-.ds-interact-chip.is-active,
-.ds-interact-chip.is-selected,
-.ds-interact-chip[aria-pressed='true'] {
+.ds-chip[aria-checked='true']{
   background: var(--chip-selected-bg);
   border-color: var(--chip-selected-bg);
   color: var(--chip-selected-fg);

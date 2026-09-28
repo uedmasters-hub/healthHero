@@ -3,11 +3,6 @@
   /* the footer carries a note line under its two actions */
   padding-bottom: calc(var(--sticky-footer-clearance) + var(--space-12));
 }
-
-.crsch-records .confirm-section-label {
-  margin-top: var(--space-2);
-}
-
 .crsch-payment-meta {
   display: flex;
   align-items: center;

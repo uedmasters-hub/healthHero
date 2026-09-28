@@ -390,21 +390,6 @@
   background: var(--primary-200); color: var(--primary-950); padding: var(--space-3) var(--space-4);
 }
 .ds-showcase-btn-ghost:hover { background: var(--state-hover); }.ds-showcase-btn:disabled { background: var(--cta-disabled-bg); color: var(--cta-disabled-fg); opacity: 1; cursor: not-allowed; }
-
-/* Input showcase */
-.ds-showcase-input {
-  padding: 0 var(--field-pad-x); border: var(--border-width) solid var(--border);
-  border-radius: var(--field-radius);
-  min-height: var(--field-height);
-  font-family: inherit; font-size: var(--font-size-body-s); color: var(--text-primary);
-  background: var(--surface-2); width: 260px; transition: border-color var(--transition), background var(--transition);
-}
-.ds-showcase-input:hover { background: var(--state-hover); }
-.ds-showcase-input:focus {
-  outline: none; border-color: var(--primary-600);
-}
-.ds-showcase-input::placeholder { color: var(--text-disabled); }
-
 /* Chip showcase */
 .ds-showcase-chip {
   display: inline-flex; align-items: center; gap: var(--space-1-5);
