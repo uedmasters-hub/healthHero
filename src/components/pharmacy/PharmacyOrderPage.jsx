@@ -48,11 +48,11 @@ export default function PharmacyOrderPage() {
       <ProfileHeader title="Order" onBack={goBack} />
       <div className="shop-page__scroll">
         {!detail && !error ? <EntityCardSkeletonStack count={3} /> : null}
-        {error ? <p className="shop-error">{error}</p> : null}
+        {error ? <p className="ds-page__error shop-error" role="alert">{error}</p> : null}
         {detail?.missing ? <p className="shop-copy">This order is not on your account.</p> : null}
         {order ? (
           <>
-            <h2 className="shop-title">{order.status.replace('_', ' ')}</h2>
+            <h2 className="ds-heading shop-title">{order.status.replace('_', ' ')}</h2>
             <p className="shop-copy">
               {order.estimated_delivery
                 ? `Estimated delivery ${when(order.estimated_delivery)}`

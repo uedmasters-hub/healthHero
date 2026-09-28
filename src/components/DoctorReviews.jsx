@@ -15,6 +15,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshDoctorsData } from '../features/sync/pageRefresh'
 import './DoctorReviews.css'
+import { AppBar, Badge, Button } from './ui'
 
 function StarPick({ value, onChange }) {
   return (
@@ -37,19 +38,19 @@ function StarPick({ value, onChange }) {
 function ReviewItem({ item, onEdit, onDelete }) {
   const mine = isOwnReview(item)
   return (
-    <article className="reviews-item">
+    <article className="ds-card is-padded reviews-item">
       <div className="reviews-item-top">
         <div>
           <div className="reviews-item-author">
             {item.author}
-            {mine ? <span className="reviews-you">You</span> : null}
+            {mine ? <Badge tone="primary">You</Badge> : null}
           </div>
           <div className="reviews-item-date">{item.date}</div>
         </div>
         {mine && (
           <div className="reviews-item-actions">
-            <button type="button" onClick={() => onEdit(item)}>Edit</button>
-            <button type="button" onClick={() => onDelete(item)}>Delete</button>
+            <Button variant="text" size="sm" onClick={() => onEdit(item)}>Edit</Button>
+            <Button variant="text" size="sm" className="reviews-delete" onClick={() => onDelete(item)}>Delete</Button>
           </div>
         )}
       </div>
@@ -117,27 +118,12 @@ export default function DoctorReviews() {
   }
 
   return (
-    <div className="reviews-page">
-      <div className="reviews-header">
-        <button
-          type="button"
-          className="reviews-back"
-          data-push-back
-          aria-label="Back"
-          onClick={goBack}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1>Reviews</h1>
-        <div className="reviews-header-spacer" />
-      </div>
+    <div className="ds-page reviews-page">
+      <AppBar title="Reviews" onBack={goBack} />
 
       <div className="reviews-scroll" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-        <div className="reviews-summary">
+        <div className="ds-card is-padded reviews-summary">
           <div className="reviews-summary-score">{summary.rating || '—'}</div>
           <div>
             <div className="reviews-summary-stars" aria-hidden="true">
@@ -149,18 +135,20 @@ export default function DoctorReviews() {
           </div>
         </div>
 
-        <section className="reviews-compose">
-          <div className="reviews-compose-title">{mine ? 'Your review' : 'Write a review'}</div>
+        <section className="ds-card is-padded reviews-compose">
+          <h2 className="ds-card__title reviews-compose-title">{mine ? 'Your review' : 'Write a review'}</h2>
           <StarPick value={draftRating} onChange={setDraftRating} />
           <textarea
+            className="ds-field is-multiline"
+            aria-label="Your review"
             value={draftText}
             onChange={(e) => setDraftText(e.target.value)}
             rows={4}
             placeholder="Share how your visit went"
           />
-          <button type="button" className="reviews-save" onClick={save} disabled={!draftText.trim()}>
+          <Button size="lg" block className="reviews-save" onClick={save} disabled={!draftText.trim()}>
             {mine ? 'Save changes' : 'Post review'}
-          </button>
+          </Button>
         </section>
 
         <div className="reviews-list">

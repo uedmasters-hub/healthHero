@@ -95,10 +95,10 @@ export default function PharmacyProductPage() {
       <ProfileHeader title="Product" onBack={goBack} />
       <div className="shop-page__scroll">
         {loading ? <EntityCardSkeleton /> : null}
-        {!loading && error ? <p className="shop-error">{error}</p> : null}
+        {!loading && error ? <p className="ds-page__error shop-error" role="alert">{error}</p> : null}
         {product ? (
           <>
-            <h2 className="shop-title">{product.name}</h2>
+            <h2 className="ds-heading shop-title">{product.name}</h2>
             <p className="shop-copy">
               {[product.genericName, product.strength, product.form, product.manufacturer].filter(Boolean).join(' · ')}
             </p>
@@ -106,7 +106,7 @@ export default function PharmacyProductPage() {
             <p className="shop-card__price">{product.price == null ? 'Price at checkout' : formatRupees(product.price)}</p>
             <p className="shop-copy">{stockLabel(product.stockQty)} · {formatEta(product.etaMinutes)}</p>
             {product.requiresPrescription ? (
-              <p className="shop-pill">Prescription required</p>
+              <p className="ds-badge is-warning shop-pill">Prescription required</p>
             ) : (
               <p className="shop-copy">Over the counter. You can buy this now.</p>
             )}

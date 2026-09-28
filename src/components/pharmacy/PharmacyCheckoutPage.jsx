@@ -95,7 +95,7 @@ export default function PharmacyCheckoutPage() {
         ))}
         {cart ? <p className="shop-copy">Items {formatRupees(cart.subtotal)}. A delivery fee is added when the order is placed.</p> : null}
         <label className="shop-copy" htmlFor="delivery-note">Delivery note</label>
-        <textarea id="delivery-note" className="shop-field" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Landmark or phone for the rider" />
+        <textarea id="delivery-note" className="ds-field is-multiline shop-field" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Landmark or phone for the rider" />
         {needsRx ? (
           <section className="shop-actions" aria-label="Prescription">
             <p className="shop-copy">
@@ -114,7 +114,7 @@ export default function PharmacyCheckoutPage() {
             ) : null}
           </section>
         ) : null}
-        {error ? <p className="shop-error" role="alert">{error}</p> : null}
+        {error ? <p className="ds-page__error shop-error" role="alert">{error}</p> : null}
         <button type="button" className="app-flow-cta" disabled={busy || !cart?.items.length || (needsRx && !prescriptionId)} onClick={pay}>
           Pay and place order
         </button>

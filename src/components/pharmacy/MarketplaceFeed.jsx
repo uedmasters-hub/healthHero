@@ -71,7 +71,7 @@ function ProductTile({ product, onOpen }) {
   }
 
   return (
-    <article className="shop-tile ds-card-flat">
+    <article className="shop-tile ds-card is-compact">
       <button type="button" className="shop-tile__open" onClick={() => onOpen(product.id)}>
         <span className="shop-tile__art" aria-hidden="true">
           <PharmacyIcon name={product.category === 'equipment' ? 'device' : 'pill'} size={28} />
