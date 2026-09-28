@@ -7,7 +7,7 @@
  * Wrappers only compose class names and forward props/refs; they own no
  * business logic, so swapping one in never changes behaviour.
  */
-import { forwardRef } from 'react'
+import { forwardRef, useLayoutEffect, useRef } from 'react'
 
 export const cx = (...parts) => parts.filter(Boolean).join(' ')
 
@@ -67,6 +67,12 @@ export const Icon = {
   ),
   Pill: (p) => (
     <svg {...iconProps} {...p}><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" /><path d="m8.5 8.5 7 7" /></svg>
+  ),
+  Minus: (p) => (
+    <svg {...iconProps} {...p}><path d="M5 12h14" /></svg>
+  ),
+  Bag: (p) => (
+    <svg {...iconProps} {...p}><path d="M6 7h12l-1 13H7L6 7z" /><path d="M9 7V6a3 3 0 0 1 6 0v1" /></svg>
   ),
   Plus: (p) => (
     <svg {...iconProps} {...p}><path d="M12 5v14M5 12h14" /></svg>
@@ -299,6 +305,113 @@ export function ChipRow({ bleed = false, className = '', label, children, ...res
     >
       {children}
     </div>
+  )
+}
+
+/* ── Quantity stepper ─────────────────────────────────────────────────── */
+/**
+ * "Add" pill that morphs into [− n +] once the quantity is above zero, and
+ * back to "Add" when it returns to zero. Stateless: bind `value`/`onChange`
+ * to the cart. Focus follows the morph so keyboard users never lose their
+ * place (Add → +, last − → Add).
+ *
+ * @param {'sm'|'md'|'lg'} size
+ */
+export function QuantityStepper({
+  value = 0,
+  onChange,
+  min = 0,
+  max = 99,
+  addLabel = 'Add',
+  itemLabel = 'item',
+  size = 'md',
+  block = false,
+  disabled = false,
+  disabledLabel,
+  className = '',
+}) {
+  const active = value > 0
+  const addRef = useRef(null)
+  const incRef = useRef(null)
+  const decRef = useRef(null)
+  const wasActive = useRef(active)
+
+  useLayoutEffect(() => {
+    if (wasActive.current === active) return
+    const focused = document.activeElement
+    if (active && focused === addRef.current) incRef.current?.focus()
+    if (!active && (focused === decRef.current || focused === incRef.current)) addRef.current?.focus()
+    wasActive.current = active
+  }, [active])
+
+  const set = (next) => onChange?.(Math.min(max, Math.max(min, next)))
+
+  return (
+    <div
+      role="group"
+      aria-label={`Quantity of ${itemLabel}`}
+      className={cx(
+        'ds-qty',
+        `ds-qty--${size}`,
+        block && 'ds-qty--block',
+        active && 'is-active',
+        disabled && !active && 'is-disabled',
+        className,
+      )}
+    >
+      <button
+        ref={addRef}
+        type="button"
+        className="ds-qty__add"
+        onClick={() => set(Math.max(1, min))}
+        disabled={disabled || active}
+        aria-hidden={active || undefined}
+        tabIndex={active ? -1 : undefined}
+        aria-label={disabled ? undefined : `${addLabel} ${itemLabel}`}
+      >
+        {disabled && disabledLabel ? disabledLabel : (
+          <>
+            <Icon.Plus />
+            <span>{addLabel}</span>
+          </>
+        )}
+      </button>
+      <div className="ds-qty__stepper" aria-hidden={!active || undefined} inert={!active}>
+        <button
+          ref={decRef}
+          type="button"
+          className="ds-qty__btn is-dec"
+          onClick={() => set(value - 1)}
+          aria-label={value <= 1 ? `Remove ${itemLabel}` : `Decrease ${itemLabel}`}
+        >
+          <Icon.Minus />
+        </button>
+        <span className="ds-qty__value" aria-live="polite" aria-atomic="true">
+          <span key={value} className="ds-qty__num">{value}</span>
+          <span className="sr-only"> in cart</span>
+        </span>
+        <button
+          ref={incRef}
+          type="button"
+          className="ds-qty__btn is-inc"
+          onClick={() => set(value + 1)}
+          disabled={value >= max}
+          aria-label={`Increase ${itemLabel}`}
+        >
+          <Icon.Plus />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* ── Count badge on an icon button (cart, bell) ───────────────────────── */
+export function CountBadge({ count = 0, max = 9, className = '' }) {
+  if (!count) return null
+  return (
+    <span key={count} className={cx('ds-count is-anchored', className)} aria-hidden="true">
+      {count > max ? `${max}+` : count}
+    </span>
   )
 }
 

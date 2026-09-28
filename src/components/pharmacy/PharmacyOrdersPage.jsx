@@ -4,6 +4,7 @@ import { usePushBack } from '../../features/pushNav'
 import { formatRupees, listOrders } from '../../features/pharmacy/shopApi'
 import { EntityCardSkeletonStack } from '../directory'
 import { ProfileHeader } from '../profile/placeProfile'
+import CartButton from './CartButton'
 import '../DoctorProfile.css'
 import './PharmacyShop.css'
 import { EmptyState } from '../ui'
@@ -22,7 +23,7 @@ export default function PharmacyOrdersPage() {
 
   return (
     <div className="shop-page">
-      <ProfileHeader title="Orders" onBack={goBack} />
+      <ProfileHeader title="Orders" onBack={goBack} actions={<CartButton />} />
       <div className="shop-page__scroll">
         {!orders && !error ? <EntityCardSkeletonStack count={3} /> : null}
         {error ? <p className="ds-page__error shop-error" role="alert">{error}</p> : null}

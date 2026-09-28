@@ -1,52 +1,118 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePushBack } from '../../features/pushNav'
-import { formatRupees, getCart, setCartQuantity } from '../../features/pharmacy/shopApi'
-import { EntityCardSkeletonStack } from '../directory'
+import { flushCart, refreshCart, useCart } from '../../features/pharmacy/cartStore'
+import { formatRupees } from '../../features/pharmacy/shopApi'
 import { ProfileHeader } from '../profile/placeProfile'
+import { Badge, Button, Callout, Card, EmptyState, Icon, SectionHead, Skeleton, SkeletonText } from '../ui'
+import { CartStepper, PriceTag, ProductArt } from './ProductBits'
 import '../DoctorProfile.css'
 import './PharmacyShop.css'
-import { EmptyState } from '../ui'
+
+function CartSkeleton() {
+  return (
+    <Card padded className="shop-line" aria-hidden="true">
+      <Skeleton width="3.5rem" height="3.5rem" />
+      <SkeletonText lines={2} />
+    </Card>
+  )
+}
 
 export default function PharmacyCartPage() {
   const navigate = useNavigate()
   const goBack = usePushBack('/pharmacy')
-  const [cart, setCart] = useState(null)
-  const [error, setError] = useState('')
+  const cart = useCart()
+  const [leaving, setLeaving] = useState(false)
 
-  const load = () => {
-    getCart()
-      .then((next) => { setCart(next); setError('') })
-      .catch((err) => setError(err.message))
+  useEffect(() => { refreshCart() }, [])
+
+  const lines = cart.lines
+  const loading = !lines.length && (cart.status === 'idle' || cart.status === 'loading')
+  const mrpTotal = lines.reduce((sum, line) => sum + (line.product?.mrp ?? line.product?.price ?? 0) * line.quantity, 0)
+  const saving = Math.max(0, mrpTotal - cart.subtotal)
+  const needsRx = lines.some((line) => line.product?.requiresPrescription)
+
+  const checkout = async () => {
+    setLeaving(true)
+    await flushCart()
+    navigate('/pharmacy/checkout')
   }
-
-  useEffect(() => { load() }, [])
 
   return (
     <div className="shop-page">
       <ProfileHeader title="Cart" onBack={goBack} />
-      <div className="shop-page__scroll">
-        {!cart && !error ? <EntityCardSkeletonStack count={2} /> : null}
-        {error ? <p className="ds-page__error shop-error" role="alert">{error}</p> : null}
-        {cart && !cart.items.length ? <EmptyState title="Your cart is empty" message="Add medicines from a pharmacy to start an order." /> : null}
-        {cart?.items.map((line) => (
-          <article key={line.id} className="shop-card ds-card is-compact">
-            <span className="shop-card__name">{line.product?.name || 'Medicine'}</span>
-            <span className="shop-card__price">{formatRupees(line.lineTotal)}</span>
-            <div className="shop-qty">
-              <button type="button" className="ds-icon-btn is-subtle" aria-label="Decrease quantity" onClick={() => setCartQuantity(line.id, line.quantity - 1).then(load)}>−</button>
-              <span>{line.quantity}</span>
-              <button type="button" className="ds-icon-btn is-subtle" aria-label="Increase quantity" onClick={() => setCartQuantity(line.id, line.quantity + 1).then(load)}>+</button>
-            </div>
-          </article>
-        ))}
-        {cart?.items.length ? (
-          <>
-            <p className="shop-copy">Subtotal {formatRupees(cart.subtotal)}. Delivery is added at checkout.</p>
-            <button type="button" className="app-flow-cta" onClick={() => navigate('/pharmacy/checkout')}>Checkout</button>
-          </>
+      <div className="shop-page__scroll has-footer">
+        {loading ? <><CartSkeleton /><CartSkeleton /></> : null}
+        {cart.status === 'error' && !lines.length ? (
+          <p className="ds-page__error" role="alert">{cart.error?.message || 'Your cart could not be loaded.'}</p>
+        ) : null}
+        {!loading && cart.status !== 'error' && !lines.length ? (
+          <EmptyState
+            card
+            icon={<Icon.Bag />}
+            title="Your cart is empty"
+            message="Add medicines from a pharmacy to start an order."
+            action={<Button variant="secondary" onClick={() => navigate('/pharmacy')}>Browse medicines</Button>}
+          />
+        ) : null}
+
+        {lines.length ? (
+          <section aria-label="Items in your cart" className="shop-stack">
+            <SectionHead group as="h2" title={`${cart.count} ${cart.count === 1 ? 'item' : 'items'}`} />
+            {lines.map((line) => (
+              <Card padded key={line.drugId} className="shop-line ds-enter">
+                <button
+                  type="button"
+                  className="shop-line__open"
+                  onClick={() => navigate(`/pharmacy/product/${line.drugId}`)}
+                >
+                  <ProductArt product={line.product} size="sm" />
+                  <span className="shop-line__body">
+                    <span className="shop-line__name">{line.product?.name || 'Medicine'}</span>
+                    <span className="shop-line__meta">
+                      {[line.product?.strength, line.product?.packLabel].filter(Boolean).join(' · ')}
+                    </span>
+                    {line.product?.requiresPrescription ? <Badge tone="warning">Rx</Badge> : null}
+                  </span>
+                </button>
+                <div className="shop-line__foot">
+                  <PriceTag product={line.product} quantity={line.quantity} />
+                  <CartStepper product={line.product || { id: line.drugId, stockQty: 99 }} size="sm" />
+                </div>
+              </Card>
+            ))}
+          </section>
+        ) : null}
+
+        {needsRx ? (
+          <Callout tone="warning" icon={<Icon.File />} title="Prescription needed">
+            Upload a prescription or consult a doctor at checkout. We bring you back here afterwards.
+          </Callout>
+        ) : null}
+
+        {lines.length ? (
+          <Card as="section" padded className="shop-stack is-tight" aria-label="Bill summary">
+            <SectionHead group as="h2" title="Bill summary" />
+            <div className="ds-kv"><span className="ds-kv__key">Item total (MRP)</span><span className="ds-kv__value">{formatRupees(mrpTotal)}</span></div>
+            {saving ? (
+              <div className="ds-kv"><span className="ds-kv__key">Discount</span><span className="ds-kv__value is-positive">−{formatRupees(saving)}</span></div>
+            ) : null}
+            <div className="ds-kv"><span className="ds-kv__key">Delivery</span><span className="ds-kv__value is-muted">At checkout</span></div>
+            <div className="ds-kv is-total"><span className="ds-kv__key">To pay</span><span className="ds-kv__value">{formatRupees(cart.subtotal)}</span></div>
+          </Card>
         ) : null}
       </div>
+      {lines.length ? (
+        <div className="app-flow-footer shop-buybar">
+          <span className="shop-buybar__price">
+            <span className="shop-buybar__label">{cart.count} {cart.count === 1 ? 'item' : 'items'}</span>
+            <span className="shop-price is-md"><span className="shop-price__now">{formatRupees(cart.subtotal)}</span></span>
+          </span>
+          <Button size="lg" onClick={checkout} loading={leaving} disabled={leaving} trailingIcon={<Icon.ArrowRight />}>
+            Checkout
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

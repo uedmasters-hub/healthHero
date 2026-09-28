@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageSearchHeader from './PageSearchHeader'
+import CartButton from './pharmacy/CartButton'
 import AppFooter from './AppFooter'
 import { useDemoPreview } from './DemoPreviewModal'
 import { clearLock } from '../lib/scrollLock'
@@ -215,6 +216,7 @@ export default function PharmacyPage() {
         query={nearbySearch}
         onQueryChange={setNearbySearch}
         dockClassName="pharmacy-search-dock"
+        trailing={<CartButton />}
       />
 
       <div className="pharmacy-scroll" ref={scrollRef}>

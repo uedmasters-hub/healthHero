@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { usePushBack } from '../../features/pushNav'
 import { fetchPharmacyById } from '../../features/providers/pharmaciesRepository'
-import { getCart, rememberStore } from '../../features/pharmacy/shopApi'
+import { rememberStore } from '../../features/pharmacy/shopApi'
 import { flowState } from '../../lib/careFlow'
 import useSearchScrollCompact from '../../hooks/useSearchScrollCompact'
 import { PharmacyHeroCard, ProfileHeader } from '../profile/placeProfile'
@@ -11,10 +11,9 @@ import { HeaderSearchButton } from '../home/SharedSearchIcon'
 import SearchBar from '../SearchBar'
 import { PHARMACY_SEARCH_PLACEHOLDER } from '../../data/pharmacy'
 import MarketplaceFeed from './MarketplaceFeed'
-import { PharmacyIcon } from './PharmacyIcons'
+import CartButton from './CartButton'
 import '../DoctorCard.css'
 import '../DoctorProfile.css'
-import '../../features/notifications/components/NotificationButton.css'
 import './PharmacyShop.css'
 import './PharmacyPage.css'
 
@@ -29,7 +28,6 @@ export default function PharmacyStorePage() {
   const [pharmacy, setPharmacy] = useState(null)
   const [cardReady, setCardReady] = useState(false)
   const [query, setQuery] = useState('')
-  const [cartCount, setCartCount] = useState(0)
   const {
     progress,
     fieldStyle,
@@ -80,21 +78,6 @@ export default function PharmacyStorePage() {
     return () => { cancelled = true }
   }, [storeId])
 
-  useEffect(() => {
-    let cancelled = false
-    const load = () => {
-      getCart()
-        .then((cart) => { if (!cancelled) setCartCount(cart.count) })
-        .catch(() => { if (!cancelled) setCartCount(0) })
-    }
-    load()
-    window.addEventListener('pharmacy-cart-changed', load)
-    return () => {
-      cancelled = true
-      window.removeEventListener('pharmacy-cart-changed', load)
-    }
-  }, [])
-
   return (
     <div className="pharmacy-page shop-store">
       <ProfileHeader
@@ -107,19 +90,7 @@ export default function PharmacyStorePage() {
               interactive={iconInteractive}
               onClick={focusSearch}
             />
-            <button
-              type="button"
-              className="ds-icon-btn is-subtle is-md shop-cart-btn"
-              onClick={() => navigate('/pharmacy/cart')}
-              aria-label={cartCount ? `Cart, ${cartCount} items` : 'Cart'}
-            >
-              <PharmacyIcon name="bag" size={20} />
-              {cartCount ? (
-                <span className="notif-btn__badge is-sm" aria-hidden="true">
-                  {cartCount > 9 ? '9+' : cartCount}
-                </span>
-              ) : null}
-            </button>
+            <CartButton />
           </>
         )}
       />

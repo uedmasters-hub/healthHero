@@ -51,6 +51,8 @@ position those primitives. Live reference: **`/design/components/primitives`**
 | `Chip`, `ChipRow`, `ChoiceChips` | `.ds-chip` (`--soft`, `--sm`), `.ds-chip-row` (`is-bleed`, `is-wrap`) | Selected via `aria-pressed` |
 | — | `.ds-segmented` / `__item` | Visit type, tabs |
 | `Badge` | `.ds-badge is-{neutral,primary,info,success,warning,danger,ready,solid,glass,muted}` | `caps` |
+| `QuantityStepper` | `.ds-qty` `--{sm,md,lg}` `--block` `is-{active,disabled}` | "Add" morphs into `[− n +]` and back at 0; stateless (`value`/`onChange`); focus follows the morph |
+| `CountBadge` | `.ds-count.is-anchored` on `.ds-icon-btn--count` | Header cart / bell count; re-keyed so each change bumps (`ds-bump`) |
 | `TextField`, `FormGroup` | `.ds-field` (`is-multiline`, `is-button`), `.ds-field-label/-hint/-error`, `.ds-form`, `.ds-form-row` | Inputs/textarea take `className="ds-field"` directly |
 | `SearchField` | `.ds-search` | |
 | `Switch`, `CheckboxMark`, `Choice`, `ChoiceList` | `.ds-switch`, `.ds-checkbox`, `.ds-choice`, `.ds-radio` | Rows carry `role`/`aria-checked` |
@@ -66,6 +68,22 @@ position those primitives. Live reference: **`/design/components/primitives`**
 
 Page shell: `.ds-page` + `AppBar` + `.ds-page__body` (`has-fixed-footer` above
 `StickyFooterCta`). Tab roots clear the nav with `--tab-root-clearance`.
+
+## Pharmacy commerce
+
+- **Cart state** lives in `src/features/pharmacy/cartStore.js` — one store for every
+  pharmacy screen (`useCart`, `useCartCount`, `useCartItem`, `setCartQuantity`,
+  `flushCart`). Taps update the UI immediately; writes are coalesced per product and
+  upserted to Supabase (`setDrugQuantity`), with rollback on failure.
+- **Header cart**: `components/pharmacy/CartButton` — add it to the header actions of
+  any new pharmacy screen (not Cart or Checkout). It appears once the cart has items.
+- **Product bits** (`components/pharmacy/ProductBits.jsx`): `ProductArt`, `PriceTag`,
+  `CartStepper` (a `QuantityStepper` bound to the cart), `ProductMiniCard` (rails) and
+  `TrustStrip`. Shop tiles, the medicine page, cart and checkout all use these.
+- **Medicine content** comes from `drugs.monograph` (jsonb; keys `dosage`,
+  `side_effects`, `uses`, `warnings`, `precautions`, `interactions`, `how_to_take`,
+  `storage`) and `drugs.salt_composition`. Missing entries show neutral guidance —
+  never invent clinical detail in the UI.
 
 ## Rules for screen stylesheets
 

@@ -66,6 +66,19 @@
   to { transform: scale(1); opacity: 1; }
 }
 
+/* Count badge change — overshoots once, then settles */
+@keyframes ds-bump {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Stepper digit change — rises into place */
+@keyframes ds-tick {
+  from { transform: translateY(40%); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
 @keyframes ds-spin {
   to { transform: rotate(360deg); }
 }

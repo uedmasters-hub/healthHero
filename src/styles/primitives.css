@@ -690,6 +690,163 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Icon button that carries a count */
+.ds-icon-btn--count { position: relative; overflow: visible; }
+
+/* Count anchored to an icon button's corner (cart, bell). Re-keyed on every
+   change, so each new count pops in. */
+.ds-count.is-anchored {
+  position: absolute;
+  top: calc(-1 * var(--space-0-5));
+  right: calc(-1 * var(--space-0-5));
+  z-index: 1;
+  box-shadow: 0 0 0 2px var(--surface-2);
+  pointer-events: none;
+  animation: ds-bump var(--duration-moderate) var(--ease-spring) both;
+}
+
+/* ── Quantity stepper ──────────────────────────────────────────────────────
+   One pill, two faces: "Add" (secondary) morphs into [− n +] (CTA ink).
+   Both faces share a grid cell; the container never changes size, so tiles
+   and buy bars do not reflow when the quantity appears.                    */
+.ds-qty {
+  --_h: var(--btn-height-md);
+  --_fs: var(--btn-font-md);
+  --_w: 7.5rem;
+  position: relative;
+  display: inline-grid;
+  width: var(--_w);
+  height: var(--_h);
+  flex-shrink: 0;
+  border: var(--border-width) solid var(--btn-secondary-border);
+  border-radius: var(--btn-radius);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  overflow: hidden;
+  isolation: isolate;
+  font-size: var(--_fs);
+  font-weight: var(--btn-weight);
+  line-height: var(--leading-none);
+  transition: background-color var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    color var(--duration-normal) var(--ease-standard);
+}
+
+.ds-qty--sm { --_h: var(--btn-height-sm); --_fs: var(--btn-font-sm); --_w: 6.5rem; }
+.ds-qty--lg { --_h: var(--btn-height-lg); --_fs: var(--btn-font-lg); --_w: 9.5rem; }
+.ds-qty--block { --_w: 100%; }
+
+.ds-qty.is-active {
+  border-color: var(--btn-primary-bg);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+}
+
+.ds-qty.is-disabled {
+  border-color: transparent;
+  background: var(--btn-disabled-bg);
+  color: var(--btn-disabled-fg);
+}
+
+.ds-qty > * { grid-area: 1 / 1; min-width: 0; }
+
+.ds-qty__add,
+.ds-qty__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ds-qty__add {
+  width: 100%;
+  height: 100%;
+  padding-inline: var(--space-md);
+  transition: opacity var(--duration-normal) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-emphasized),
+    background-color var(--duration-normal) var(--ease-standard);
+}
+
+.ds-qty__add svg,
+.ds-qty__btn svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+
+.ds-qty:not(.is-active):not(.is-disabled) .ds-qty__add:hover { background: var(--state-hover); }
+.ds-qty__add:disabled { cursor: not-allowed; }
+.ds-qty.is-disabled .ds-qty__add svg { display: none; }
+
+.ds-qty__stepper {
+  display: grid;
+  grid-template-columns: var(--_h) minmax(0, 1fr) var(--_h);
+  align-items: stretch;
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-emphasized);
+}
+
+.ds-qty__btn {
+  transition: background-color var(--duration-normal) var(--ease-standard),
+    transform var(--duration-reveal) var(--ease-emphasized);
+}
+
+.ds-qty__btn.is-dec { transform: translateX(35%); }
+.ds-qty__btn.is-inc { transform: translateX(-35%); }
+.ds-qty__btn:hover:not(:disabled) { background: var(--glass-on-dark); }
+.ds-qty__btn:active:not(:disabled) { background: var(--glass-on-dark-strong); }
+.ds-qty__btn:disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
+
+.ds-qty__value {
+  display: grid;
+  place-items: center;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+}
+
+.ds-qty__num { animation: ds-tick var(--duration-normal) var(--ease-enter) both; }
+
+.ds-qty.is-active .ds-qty__add {
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+}
+
+.ds-qty.is-active .ds-qty__stepper {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.ds-qty.is-active .ds-qty__btn { transform: none; }
+
+.ds-qty :focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -3px;
+  border-radius: var(--btn-radius);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-qty,
+  .ds-qty__add,
+  .ds-qty__stepper,
+  .ds-qty__btn { transition: none; }
+  .ds-qty__num,
+  .ds-count.is-anchored { animation: none; }
+}
+
 /* ── Field / input ─────────────────────────────────────────────────────────
    PP Field: h-12 · rounded-xl · hairline · white · focus → primary-600 edge */
 .ds-field {

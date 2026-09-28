@@ -14,6 +14,7 @@ import PullToRefreshIndicator from './PullToRefreshIndicator'
 import GalleryLightbox from './GalleryLightbox'
 import EmptyState from './EmptyState'
 import { galleryFor, mapEmbedUrl } from './profile/placeMedia'
+import CartButton from './pharmacy/CartButton'
 import { PharmacyHeroCard, ProfileGallery, ProfileHeader, ProfileMap, ProfileRatings } from './profile/placeProfile'
 import './DoctorProfile.css'
 import './DoctorCard.css'
@@ -153,6 +154,7 @@ export default function PharmacyDetailPage() {
 
   const headerActions = (
     <>
+      <CartButton />
       <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share" onClick={shareProfile}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <circle cx="18" cy="5" r="3" />
@@ -185,7 +187,7 @@ export default function PharmacyDetailPage() {
   if (status === 'loading') {
     return (
       <div className="doctor-profile is-skeleton has-cta">
-        <ProfileHeader title="Pharmacy Profile" onBack={goBack} />
+        <ProfileHeader title="Pharmacy Profile" onBack={goBack} actions={<CartButton />} />
         <div className="profile-scroll is-loading">
           <ProfileSkeletons />
         </div>
@@ -196,7 +198,7 @@ export default function PharmacyDetailPage() {
   if (status === 'error' || !pharmacy) {
     return (
       <div className="doctor-profile">
-        <ProfileHeader title="Pharmacy Profile" onBack={goBack} />
+        <ProfileHeader title="Pharmacy Profile" onBack={goBack} actions={<CartButton />} />
         <div className="profile-scroll">
           <div className="profile-section">
             <EmptyState

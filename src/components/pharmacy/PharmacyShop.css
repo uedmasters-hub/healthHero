@@ -1,14 +1,145 @@
 /*
-  Pharmacy shop — composes shared primitives (ProfileHeader, SearchBar,
-  PharmacyHeroCard, .ds-card-flat, .ds-interact, .ds-icon-btn, .ds-icon-well,
-  .dc-book, .app-flow-cta, .section-title). Only layout lives here.
+  Pharmacy shop — composes shared primitives (AppBar, Card, Chip, Badge,
+  QuantityStepper, Callout, Skeleton, InfoGrid, .ds-kv, .app-flow-footer).
+  Only layout and the shared commerce bits (art, price, mini card) live here.
 */
 
-.shop-store {
-  position: relative;
+/* —— Commerce bits (ProductBits.jsx) ————————————————————————————————— */
+.shop-art {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  background: var(--media-bg);
+  color: var(--icon-color-muted);
+  overflow: hidden;
 }
 
-.shop-cart-btn {
+.shop-art.is-sm { width: 3.5rem; border-radius: var(--radius-sm); }
+.shop-art.is-lg { width: 100%; max-width: 13rem; border-radius: var(--card-radius); }
+
+.shop-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.shop-price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  row-gap: var(--space-0-5);
+  font-variant-numeric: tabular-nums;
+}
+
+.shop-price__now {
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.shop-price__mrp {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.shop-price__off {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-success);
+}
+
+.shop-price.is-sm .shop-price__now { font-size: var(--text-label-size); line-height: var(--text-label-line); }
+.shop-price.is-lg .shop-price__now { font-size: var(--text-figure-size); line-height: var(--leading-tight); }
+.shop-price.is-lg .shop-price__mrp,
+.shop-price.is-lg .shop-price__off { font-size: var(--text-label-size); }
+
+.shop-inline-error {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--danger);
+}
+
+/* Compact rail card */
+.shop-mini {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 11.5rem;
+  flex-shrink: 0;
+  padding: var(--space-3);
+}
+
+.shop-mini__open {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.shop-mini__open:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+.shop-mini__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.shop-mini__name {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.shop-mini__meta {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.shop-mini__foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.shop-rail-row {
+  display: flex;
+  gap: var(--card-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: calc(-1 * var(--content-padding));
+  padding: var(--space-0-5) var(--content-padding);
+  scroll-padding-inline: var(--content-padding);
+}
+
+.shop-rail-row::-webkit-scrollbar { display: none; }
+.shop-rail-row > * { scroll-snap-align: start; }
+
+.shop-store {
   position: relative;
 }
 
@@ -342,15 +473,18 @@
   outline-offset: 2px;
 }
 
-.shop-tile__art {
-  width: 100%;
-  aspect-ratio: 1;
+.shop-tile__media {
+  position: relative;
+  display: block;
   margin-bottom: var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--media-bg);
-  color: var(--icon-color-muted);
-  display: grid;
-  place-items: center;
+}
+
+.shop-tile__media .shop-art { width: 100%; }
+
+.shop-tile__flag {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
 }
 
 .shop-tile__name {
@@ -371,23 +505,7 @@
   color: var(--text-tertiary);
 }
 
-.shop-tile__price {
-  margin-top: auto;
-  font-size: var(--text-title-size);
-  line-height: var(--text-title-line);
-  font-weight: var(--text-title-weight);
-  color: var(--text-primary);
-}
-
-.shop-tile__add {
-  flex: none;
-  width: 100%;
-}
-
-.shop-tile__add:disabled {
-  opacity: var(--opacity-disabled);
-  cursor: not-allowed;
-}
+.shop-tile__price { margin-top: auto; padding-top: var(--space-1); }
 
 .shop-aisle__empty {
   margin: 0;
@@ -462,12 +580,6 @@
   line-height: var(--text-body-line);
 }
 
-.shop-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
 .shop-list {
   list-style: none;
   margin: 0;
@@ -506,15 +618,6 @@
   color: var(--text-primary);
 }
 
-.shop-qty {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: var(--text-title-size);
-  font-weight: var(--text-title-weight);
-  color: var(--text-primary);
-}
-
 .shop-timeline {
   list-style: none;
   margin: 0;
@@ -539,4 +642,277 @@
   }
 }
 
-.shop-pill { align-self: flex-start; margin: 0; }
+
+/* —— Scroll above an in-flow footer (cart, medicine page) ——————————————— */
+.shop-page__scroll.has-footer { padding-top: var(--space-2); padding-bottom: var(--space-6); }
+
+.shop-stack { display: flex; flex-direction: column; gap: var(--card-gap); }
+.shop-stack.is-tight { gap: var(--space-3); }
+.shop-stack > .ds-section-head { margin: 0; }
+
+/* —— Buy bar: price on the left, stepper / CTA on the right —————————————— */
+.shop-buybar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.shop-buybar__price {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.shop-buybar__label {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.shop-buybar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* —— Cart lines ———————————————————————————————————————————————————— */
+.shop-line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.shop-line[aria-hidden='true'] { flex-direction: row; align-items: center; }
+
+.shop-line__open {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.shop-line__open:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+.shop-line__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.shop-line__name {
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.shop-line__meta {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.shop-line__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* —— Medicine detail page ————————————————————————————————————————————— */
+.shop-pdp__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+}
+
+.shop-pdp__hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.shop-pdp__media {
+  display: grid;
+  place-items: center;
+  padding-block: var(--space-6);
+}
+
+.shop-pdp__badges { gap: var(--space-2); }
+
+.shop-pdp__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.shop-pdp__name {
+  margin: 0;
+  font-size: var(--text-display-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-medium);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  color: var(--pp-headline);
+}
+
+.shop-pdp__salt {
+  margin: 0;
+  font-size: var(--text-body-lg-size);
+  line-height: var(--leading-snug);
+  color: var(--text-secondary);
+}
+
+.shop-pdp__maker {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-link);
+}
+
+.shop-pdp__price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.shop-pdp__per,
+.shop-pdp__note,
+.shop-pdp__disclaimer,
+.shop-pdp__maker-meta {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.shop-pdp__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shop-pdp__eta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  color: var(--text-secondary);
+}
+
+.shop-pdp__eta svg { color: var(--icon-color-muted); }
+
+.shop-pdp__section {
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-pdp__rx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.shop-pdp__rx-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.shop-pdp__copy {
+  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+.shop-pdp__notice {
+  margin: calc(-1 * var(--space-4)) 0 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  color: var(--text-secondary);
+}
+
+/* Drug information — head, chip tabs, tinted panel */
+.shop-pdp__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--card-padding);
+  overflow: hidden;
+}
+
+.shop-pdp__info-head {
+  padding: var(--card-padding) var(--card-padding) var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-divider);
+}
+
+.shop-pdp__info-head .ds-section-head { margin: 0; }
+
+.shop-pdp__tabs {
+  padding-inline: var(--card-padding);
+  scroll-padding-inline: var(--card-padding);
+}
+
+.shop-pdp__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-inline: var(--card-padding);
+}
+
+.shop-pdp__panel-title {
+  margin: 0;
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.shop-pdp__points {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+.shop-pdp__maker-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.shop-pdp__maker-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+}
+
+.shop-pdp__maker-name {
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.shop-pdp__trust { margin-top: 0; }
+.shop-pdp__disclaimer { text-align: center; }
+.shop-line__open.is-static { cursor: default; }

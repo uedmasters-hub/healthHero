@@ -37,6 +37,7 @@ export default function DirectoryShell({
   scrollRef: externalScrollRef,
   className = '',
   headerExtra = null,
+  headerTrailing = null,
   radiusMode = false,
   bare = false,
   children,
@@ -70,6 +71,7 @@ export default function DirectoryShell({
         showAvatar={!quietHeader}
         className={quietHeader ? 'is-radius-chrome' : ''}
         dockClassName="dir-shell__search-dock"
+        trailing={headerTrailing}
       />
 
       {headerExtra}

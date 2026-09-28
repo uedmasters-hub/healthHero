@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import CartButton from './pharmacy/CartButton'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
@@ -226,6 +227,7 @@ export default function PharmacyBrowsePage() {
         onBack={goBack}
         showBack
         searchScope="pharmacy"
+        headerTrailing={<CartButton />}
         searchPlaceholder="Search pharmacies…"
         searchQuery={search}
         onSearchChange={setSearch}

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Section, Preview, TokenTable, Callout as DocCallout } from '../shared'
 import {
-  AppBar, Badge, Button, Callout, Card, CheckboxMark, Chip, ChipRow, Choice, ChoiceChips, ChoiceList,
+  AppBar, Badge, Button, CountBadge, Callout, Card, CheckboxMark, Chip, ChipRow, Choice, ChoiceChips, ChoiceList,
   DetailRow, Disclosure, EmptyState, FormGroup, Icon, IconButton, InfoCell, InfoGrid, List, ListRow,
-  Progress, QuickAction, SearchField, SectionHead, SheetHeader, Skeleton, SkeletonText, Steps, Switch,
+  Progress, QuantityStepper, QuickAction, SearchField, SectionHead, SheetHeader, Skeleton, SkeletonText, Steps, Switch,
 } from '../../components/ui'
 
 /**
@@ -17,6 +17,7 @@ export default function PrimitivesPage() {
   const [on, setOn] = useState(true)
   const [checked, setChecked] = useState(true)
   const [open, setOpen] = useState(false)
+  const [qty, setQty] = useState(0)
 
   return (
     <>
@@ -74,6 +75,24 @@ export default function PrimitivesPage() {
             {['neutral', 'primary', 'info', 'success', 'warning', 'danger', 'ready', 'solid'].map((tone) => (
               <Badge key={tone} tone={tone}>{tone}</Badge>
             ))}
+          </div>
+        </Preview>
+      </Section>
+
+      <Section title="Quantity stepper and count">
+        <Preview code={`<QuantityStepper value={qty} onChange={setQty} itemLabel="Paracetamol" />
+<QuantityStepper block size="sm" value={qty} onChange={setQty} />
+<QuantityStepper size="lg" addLabel="Add to cart" value={qty} onChange={setQty} />
+<IconButton tone="subtle" className="ds-icon-btn--count" label="Cart, 3 items">
+  <Icon.Bag /><CountBadge count={3} />
+</IconButton>`} vertical>
+          <div className="ds-stack" style={{ width: '100%', maxWidth: 360 }}>
+            <QuantityStepper value={qty} onChange={setQty} itemLabel="Paracetamol" />
+            <QuantityStepper size="lg" addLabel="Add to cart" value={qty} onChange={setQty} itemLabel="Paracetamol" />
+            <QuantityStepper block size="sm" value={0} disabled disabledLabel="Out of stock" itemLabel="Vitamin D3" />
+            <IconButton tone="subtle" className="ds-icon-btn--count" label={`Cart, ${qty} items`}>
+              <Icon.Bag /><CountBadge count={qty} />
+            </IconButton>
           </div>
         </Preview>
       </Section>
