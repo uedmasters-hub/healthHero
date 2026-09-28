@@ -500,6 +500,8 @@
 }
 
 .ds-callout__body { display: block; color: var(--text-secondary); }
+/* Default callout is info (lavender); .is-info is the explicit name */
+.ds-callout.is-info { background: var(--primary-300); }
 .ds-callout.is-success { background: var(--color-success-subtle); }
 .ds-callout.is-success > svg { color: var(--success-900); }
 .ds-callout.is-warning { background: var(--warning-300); }
