@@ -741,8 +741,8 @@
   height: 1.125rem;
   padding: 0 var(--space-1);
   border-radius: var(--radius-full);
-  background: var(--color-danger);
-  color: var(--neutral-0);
+  background: var(--count-bg);
+  color: var(--count-fg);
   font-size: var(--text-badge-size);
   font-weight: var(--font-weight-bold);
   line-height: 1;

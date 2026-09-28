@@ -1,212 +1,27 @@
-.notifications-page {
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--bg);
-  padding-bottom: 96px;
-}
-
-.notifications-header {
-  display: flex;
-  align-items: center;
-  padding: var(--space-4) var(--content-padding) var(--space-3);
-  background: var(--surface-2);
-  border-bottom: var(--border-width) solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  gap: var(--space-2);
-}
-
-.notifications-back {
-  background: none;
-  border: none;
-  padding: var(--space-1);
-  cursor: pointer;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-}
-
-.notifications-title {
-  flex: 1;
-  text-align: center;
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.notifications-mark-all {
-  border: none;
-  background: none;
-  color: var(--primary);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  cursor: pointer;
-  padding: var(--space-1) 0;
-  white-space: nowrap;
-}
-
-.notifications-header-spacer {
-  width: 88px;
-}
+/* Notifications — layout only; AppBar, cards, icon wells, icon buttons,
+   badges and the empty state are shared primitives. */
+.notifications-page { padding-bottom: var(--space-10); }
 
 .notifications-list {
-  padding: var(--space-3) var(--space-5) var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-2-5);
+  padding: var(--space-4) var(--content-padding) var(--space-6);
 }
 
-/* ── Notification card ─────────────────────────────────────────────── */
+.notifications-empty { padding-top: var(--space-10); }
 
-.notification-card {
-  position: relative;
-  width: 100%;
-}
-
-.notification-card .reveal-body {
-  width: 100%;
-}
+.notification-card { position: relative; width: 100%; }
+.notification-card .reveal-body { width: 100%; }
 
 .notification-card-inner {
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  width: 100%;
-  text-align: left;
-  padding: var(--space-3-5);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--surface-2);
-  cursor: pointer;
-  font-family: inherit;
-  box-shadow: none;
-  transition: var(--interact-transition);
+  padding: var(--card-padding);
 }
 
-.notification-card-inner:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.notification-card-inner:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-}
-
-.notification-card.unread .notification-card-inner {
-  background: var(--interact-selected-bg);
-  border-color: var(--interact-selected-border);
-}
-
-/* ── Dismiss button ────────────────────────────────────────────────── */
-
-.notification-card-dismiss {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  opacity: 0;
-  transition: var(--interact-transition);
-  z-index: 1;
-}
-
-.notification-card:hover .notification-card-dismiss,
-.notification-card:focus-within .notification-card-dismiss {
-  opacity: 1;
-}
-
-.notification-card-dismiss:hover {
-  background: var(--interact-hover-bg);
-  color: var(--text-primary);
-}
-
-.notification-card-dismiss:active {
-  background: var(--interact-pressed-bg);
-}
-
-/* ── Icon ──────────────────────────────────────────────────────────── */
-
-.notification-card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--primary);
-  background: var(--service-icon-bg);
-}
-
-.notification-card-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.notification-card-icon.results {
-  color: var(--success-text);
-  background: var(--success-bg-light);
-}
-
-.notification-card-icon.booking {
-  color: var(--success-text);
-  background: var(--success-bg);
-}
-
-.notification-card-icon.prescription {
-  color: var(--info);
-  background: var(--info-bg);
-}
-
-.notification-card-icon.vaccination {
-  color: var(--primary);
-  background: var(--primary-soft);
-}
-
-.notification-card-icon.insurance {
-  color: var(--info);
-  background: var(--info-bg);
-}
-
-.notification-card-icon.health_tip {
-  color: var(--success-text);
-  background: var(--success-bg-light);
-}
-
-.notification-card-icon.telehealth {
-  color: var(--primary);
-  background: var(--primary-soft);
-}
-
-.notification-card-icon.emergency {
-  color: var(--urgent);
-  background: var(--urgent-bg);
-}
-
-.notification-card-icon.profile {
-  color: var(--text-secondary);
-  background: var(--surface-muted);
-}
-
-/* ── Body ──────────────────────────────────────────────────────────── */
-
-.notification-card-body {
-  flex: 1;
-  min-width: 0;
-}
+.notification-card-body { flex: 1; min-width: 0; }
 
 .notification-card-top {
   display: flex;
@@ -214,61 +29,54 @@
   justify-content: space-between;
   gap: var(--space-2-5);
   margin-bottom: var(--space-1);
+  padding-right: var(--space-6);
 }
 
 .notification-card-top h2 {
   margin: 0;
-  font-size: var(--text-body-lg-size);
+  font-size: var(--text-body-size);
+  line-height: var(--text-title-line);
   font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
+  color: var(--pp-headline);
 }
 
 .notification-card-top span {
-  font-size: var(--text-caption-size);
-  color: var(--text-muted);
   flex-shrink: 0;
+  font-size: var(--text-caption-size);
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
 }
 
 .notification-card-body p {
   margin: 0;
   font-size: var(--text-label-size);
-  line-height: 1.45;
+  line-height: var(--text-body-line);
   color: var(--text-secondary);
 }
 
 .notification-unread-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  background: var(--urgent);
+  width: 0.5rem;
+  height: 0.5rem;
   flex-shrink: 0;
   margin-top: var(--space-2);
-}
-
-/* ── Empty state ───────────────────────────────────────────────────── */
-
-.notifications-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px var(--space-5);
-  color: var(--text-muted);
-  gap: var(--space-3);
-}
-
-.notifications-empty-icon {
-  width: 72px;
-  height: 72px;
   border-radius: var(--radius-full);
-  background: var(--surface-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
+  background: var(--indicator-unread);
 }
 
-.notifications-empty p {
-  margin: 0;
-  font-size: var(--text-body-lg-size);
+/* Dismiss — revealed on hover / focus, always reachable by keyboard */
+.notification-card-dismiss {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  z-index: 1;
+  opacity: 0;
+}
+
+.notification-card-dismiss svg { width: var(--icon-sm); height: var(--icon-sm); }
+
+.notification-card:hover .notification-card-dismiss,
+.notification-card:focus-within .notification-card-dismiss { opacity: 1; }
+
+@media (hover: none) {
+  .notification-card-dismiss { opacity: 1; }
 }

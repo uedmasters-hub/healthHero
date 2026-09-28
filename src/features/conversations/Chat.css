@@ -113,7 +113,7 @@
   width: 0.5rem;
   height: 0.5rem;
   border-radius: var(--radius-full);
-  background: var(--primary-600);
+  background: var(--indicator-unread);
 }
 
 /* New conversation */

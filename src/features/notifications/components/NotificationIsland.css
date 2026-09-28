@@ -16,21 +16,20 @@
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  width: calc(100% - 28px);
-  max-width: 360px;
+  width: calc(100% - var(--space-7));
+  max-width: 22.5rem;
   margin: 0;
   padding: var(--space-3) var(--space-3-5);
   border: 0;
   border-radius: var(--radius-card);
-  background: rgba(22, 24, 32, 0.96);
-  color: #f5f6fa;
+  background: var(--island-bg);
+  color: var(--island-fg);
   text-align: left;
   font: inherit;
   cursor: pointer;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 14px 36px rgba(15, 18, 28, 0.32),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-float), 0 0 0 var(--border-width) var(--island-edge);
   transform: translate3d(-50%, -12px, 0) scale(0.92);
   transform-origin: center center;
   opacity: 0;
@@ -65,13 +64,13 @@
 }
 
 .notif-island__card--dismiss {
-  animation: notif-island-dismiss var(--duration-moderate) cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: notif-island-dismiss var(--duration-moderate) var(--ease-exit) both;
   pointer-events: none;
 }
 
 /* Non-home: reverse the entrance — slide up, no shrink-to-nothing */
 .notif-island__card--toast-exit {
-  animation: notif-island-toast-exit var(--duration-slow) cubic-bezier(0.33, 1, 0.68, 1) both;
+  animation: notif-island-toast-exit var(--duration-slow) var(--ease-exit) both;
   pointer-events: none;
 }
 
@@ -80,62 +79,61 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  margin-top: 1px;
+  width: var(--icon-well-size);
+  height: var(--icon-well-size);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: var(--island-glyph);
+  color: var(--island-fg);
 }
 
 .notif-island__glyph svg {
-  width: 18px;
-  height: 18px;
+  width: var(--icon-md);
+  height: var(--icon-md);
   display: block;
 }
 
 .notif-island__glyph--appointment,
 .notif-island__glyph--booking,
 .notif-island__glyph--telehealth {
-  background: rgba(79, 91, 213, 0.35);
+  background: var(--island-glyph-brand);
 }
 
 .notif-island__glyph--results,
 .notif-island__glyph--prescription {
-  background: rgba(16, 185, 129, 0.28);
+  background: var(--island-glyph-success);
 }
 
 .notif-island__glyph--emergency,
 .notif-island__glyph--vaccination {
-  background: rgba(194, 65, 12, 0.32);
+  background: var(--island-glyph-warning);
 }
 
 .notif-island__glyph--insurance,
 .notif-island__glyph--profile,
 .notif-island__glyph--health_tip {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--island-glyph);
 }
 
 .notif-island__copy {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: var(--space-0-5);
 }
 
 .notif-island__title {
   font-size: var(--text-label-size);
-  font-weight: 650;
+  font-weight: var(--font-weight-medium);
   letter-spacing: var(--letter-tight);
   line-height: 1.25;
-  color: #fff;
+  color: var(--island-fg);
 }
 
 .notif-island__body {
   font-size: var(--text-caption-size);
-  font-weight: 450;
+  font-weight: var(--font-weight-regular);
   line-height: 1.35;
-  color: rgba(245, 246, 250, 0.72);
+  color: var(--island-fg-muted);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
