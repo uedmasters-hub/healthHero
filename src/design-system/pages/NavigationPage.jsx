@@ -5,7 +5,7 @@ export default function NavigationPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Navigation</div>
-        <h1 className="ds-page-title">Navigation</h1>
+        <h1 className="ds-doc-title">Navigation</h1>
         <p className="ds-page-description">
           Patterns for moving between screens — the animated bottom navigation bar, screen headers
           with back actions, and contextual overlays.

@@ -14,7 +14,7 @@ export default function ElevationPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Elevation</div>
-        <h1 className="ds-page-title">Elevation</h1>
+        <h1 className="ds-doc-title">Elevation</h1>
         <p className="ds-page-description">
           PocketPills elevation: edge-first surfaces with soft shadows reserved for true lift
           (menus, sheets, modals).

@@ -5,7 +5,7 @@ export default function ProfileHubPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Profile Hub</div>
-        <h1 className="ds-page-title">Profile Hub</h1>
+        <h1 className="ds-doc-title">Profile Hub</h1>
         <p className="ds-page-description">
           Patient profile management with workspace-based navigation — personal details, medical
           history, records, insurance, and support.

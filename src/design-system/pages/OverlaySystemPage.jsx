@@ -5,7 +5,7 @@ export default function OverlaySystemPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Overlay System</div>
-        <h1 className="ds-page-title">Overlay System</h1>
+        <h1 className="ds-doc-title">Overlay System</h1>
         <p className="ds-page-description">
           Bottom sheets, modals, lightboxes, and full-screen overlays — the spatial layering
           system for contextual content in eMedicalls.

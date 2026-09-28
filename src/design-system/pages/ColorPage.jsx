@@ -41,7 +41,7 @@ export default function ColorPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Color</div>
-        <h1 className="ds-page-title">Color</h1>
+        <h1 className="ds-doc-title">Color</h1>
         <p className="ds-page-description">
           PocketPills tonal scale with a clear accent hierarchy — one brand accent for primary
           actions, muted secondary chrome, and calm featured surfaces.

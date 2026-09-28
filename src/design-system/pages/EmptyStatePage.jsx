@@ -5,7 +5,7 @@ export default function EmptyStatePage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Empty States</div>
-        <h1 className="ds-page-title">Empty States</h1>
+        <h1 className="ds-doc-title">Empty States</h1>
         <p className="ds-page-description">
           Placeholder content shown when a section has no data — providing context and clear next steps.
         </p>

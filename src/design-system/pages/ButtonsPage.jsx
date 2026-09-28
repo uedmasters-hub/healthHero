@@ -5,7 +5,7 @@ export default function ButtonsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Buttons</div>
-        <h1 className="ds-page-title">Buttons</h1>
+        <h1 className="ds-doc-title">Buttons</h1>
         <p className="ds-page-description">
           Interactive elements that trigger actions — the primary way users interact with eMedicalls.
           Used across booking flows, appointment details, navigation, and more.

@@ -14,7 +14,7 @@ export default function HomePage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">eMedicalls</div>
-        <h1 className="ds-page-title">Design System</h1>
+        <h1 className="ds-doc-title">Design System</h1>
         <p className="ds-page-description">
           The single source of truth for designers and developers building eMedicalls products.
           Clean, scalable, and documentation-first.
@@ -55,8 +55,8 @@ export default function HomePage() {
         as the single source of truth for both designers and developers.
       </p>
 
-      <div className="ds-callout ds-callout-info">
-        <span className="ds-callout-icon">ℹ</span>
+      <div className="ds-doc-callout ds-doc-callout-info">
+        <span className="ds-doc-callout-icon">ℹ</span>
         <div>
           This documentation site is an internal tool. It is completely isolated from the main
           eMedicalls application and uses the full browser width for optimal reading experience.

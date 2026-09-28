@@ -14,7 +14,7 @@ export default function RadiusPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Radius</div>
-        <h1 className="ds-page-title">Radius</h1>
+        <h1 className="ds-doc-title">Radius</h1>
         <p className="ds-page-description">
           PocketPills radius ladder — compact chrome, 1rem fields, 1.5rem cards, and pill CTAs.
         </p>

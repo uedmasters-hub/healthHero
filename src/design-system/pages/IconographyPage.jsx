@@ -12,7 +12,7 @@ export default function IconographyPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Iconography</div>
-        <h1 className="ds-page-title">Iconography</h1>
+        <h1 className="ds-doc-title">Iconography</h1>
         <p className="ds-page-description">
           Consistent icon usage across eMedicalls — sizing, styling, and placement guidelines.
         </p>

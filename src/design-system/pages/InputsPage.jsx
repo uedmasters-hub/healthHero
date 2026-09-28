@@ -5,7 +5,7 @@ export default function InputsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Inputs</div>
-        <h1 className="ds-page-title">Inputs</h1>
+        <h1 className="ds-doc-title">Inputs</h1>
         <p className="ds-page-description">
           Form controls for collecting user data — text fields, search inputs, and textareas.
           Used across booking forms, authentication, appointment notes, and city selection.

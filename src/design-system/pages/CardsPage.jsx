@@ -5,7 +5,7 @@ export default function CardsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Cards</div>
-        <h1 className="ds-page-title">Cards</h1>
+        <h1 className="ds-doc-title">Cards</h1>
         <p className="ds-page-description">
           Surface containers that group related content — the primary content unit in eMedicalls.
           Includes standard cards, doctor cards with 4 variants, and appointment cards.

@@ -5,7 +5,7 @@ export default function AppointmentDetailPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Appointment Detail</div>
-        <h1 className="ds-page-title">Appointment Detail</h1>
+        <h1 className="ds-doc-title">Appointment Detail</h1>
         <p className="ds-page-description">
           Comprehensive appointment view with countdown, pre-visit checklist, records, payment,
           and FAQ — the primary screen for managing a specific appointment.
@@ -22,70 +22,64 @@ export default function AppointmentDetailPage() {
       </Section>
 
       <Section title="Screen structure">
-        <CodeBlock title="AppointmentDetail layout" code={`<div className="appointment-detail-page">
-  {/* Skeleton loading */}
-  <AppointmentDetailSkeleton />
+        <p>
+          Built entirely from shared primitives in <code>src/components/ui</code> — the page file only
+          lays out sections. Every section is a caps <code>SectionHead group</code> over a white card or
+          grouped <code>List</code> on the lavender canvas.
+        </p>
+        <CodeBlock title="AppointmentDetail layout" code={`<div className="ds-page appointment-page">
+  <AppBar title="Appointment details" actions={<IconButton label="More"><Icon.More /></IconButton>} />
+  <div className="ds-page__body has-fixed-footer">
+    <Badge tone="ready"><Icon.Clock />Appointment in 52 min</Badge>
+    <Callout className="relay-panel is-checkin" title={relay.label}>{relay.message}</Callout>
 
-  {/* Hero card with doctor image */}
-  <div className="appointment-detail-hero">
-    <img className="appointment-detail-hero-img" src={doctorImage} />
-  </div>
+    <div className="ds-card is-padded">           {/* shared-hero target */}
+      <DoctorCard context="identity" />
+      <InfoGrid>
+        <InfoCell icon={<Icon.Calendar />} label="Date" value={dateStr} />
+        <InfoCell icon={<Icon.Clock />} label="Time" value={time} />
+      </InfoGrid>
+      <div className="ds-action-row">
+        <QuickAction icon={<Icon.Directions />} label="Directions" />
+      </div>
+    </div>
 
-  {/* Main content */}
-  <div className="appointment-detail-content">
-    <AppointmentCountdown />     {/* Countdown or "completed" status */}
-    <PostVisitSummary />         {/* Doctor card + care summary */}
-    <AppointmentChecklist />     {/* Pre-visit checklist with progress */}
-    <AppointmentRecords />       {/* Medical records */}
-    <AppointmentPayment />       {/* Payment details */}
-    <AppointmentFAQ />           {/* Frequently asked questions */}
+    <section>
+      <SectionHead group title="Before your visit" />
+      <List>{/* role="checkbox" rows with <CheckboxMark /> */}</List>
+    </section>
+    <List><Disclosure title="When to seek urgent care">…</Disclosure></List>
   </div>
+  <StickyFooterCta primaryLabel="I'm ready for my visit" />
 </div>`} />
       </Section>
 
-      <Section title="AppointmentCountdown">
+      <Section title="Countdown">
         <p>
-          Shows days, hours, and minutes until the appointment. Uses <code>useCountdown</code>
-          hook with 1-second intervals. Displays "Appointment completed" for past appointments.
+          A single <code>Badge</code> — <code>tone="ready"</code> normally, <code>tone="warning"</code> once
+          editing is locked close to the visit. It re-renders from <code>useNow()</code>; no bespoke countdown markup.
         </p>
-        <CodeBlock title="Countdown display" code={`<div className="countdown-bar">
-  <div className="countdown-item">
-    <span className="countdown-value">3</span>
-    <span className="countdown-label">Days</span>
-  </div>
-  <div className="countdown-separator">:</div>
-  <div className="countdown-item">
-    <span className="countdown-value">14</span>
-    <span className="countdown-label">Hrs</span>
-  </div>
-  <div className="countdown-separator">:</div>
-  <div className="countdown-item">
-    <span className="countdown-value">27</span>
-    <span className="countdown-label">Min</span>
-  </div>
-</div>`} />
       </Section>
 
-      <Section title="AppointmentChecklist">
+      <Section title="Checklist">
         <p>
-          A progress bar with checklist items that patients need to complete before their appointment.
-          Each item is a tappable row with a checkbox and label. Progress is shown as a colored bar.
+          Rows are <code>.ds-list-row</code> buttons with <code>role="checkbox"</code> and
+          <code>aria-checked</code>; the shared <code>CheckboxMark</code> fills in CTA ink when checked.
         </p>
-        <CodeBlock title="Checklist structure" code={`<div className="appointment-checklist">
-  <div className="appointment-checklist-header">
-    <h3>Checklist</h3>
-    <span className="appointment-checklist-count">2 of 4</span>
-  </div>
-  <div className="appointment-checklist-progress">
-    <div className="appointment-checklist-progress-bar" style={{ width: '50%' }} />
-  </div>
-  {items.map(item => (
-    <button className="appointment-checklist-item" onClick={() => toggle(item)}>
-      <div className={\`appointment-checklist-checkbox \${item.checked ? 'checked' : ''}\`} />
-      <span>{item.label}</span>
+        <CodeBlock title="Checklist row" code={`<List>
+  {items.map((item, i) => (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked.includes(i)}
+      className="ds-list-row"
+      onClick={() => toggle(i)}
+    >
+      <CheckboxMark />
+      <span className="ds-list-row__body"><span className="ds-list-row__title">{item}</span></span>
     </button>
   ))}
-</div>`} />
+</List>`} />
       </Section>
 
       <Section title="AppointmentDetailSkeleton">
@@ -97,13 +91,12 @@ export default function AppointmentDetailPage() {
 
       <Section title="Tokens used">
         <TokenTable tokens={[
-          { token: '--countdown-value', value: '22px', usage: 'Countdown number font size' },
-          { token: '--countdown-label', value: '10px', usage: 'Countdown label font size' },
-          { token: '--progress-bar-height', value: '3px', usage: 'Checklist progress bar height' },
-          { token: '--radius-full', value: '999px', usage: 'Checklist checkbox border-radius' },
-          { token: '--icon-btn-size', value: '44px', usage: 'Checklist item touch target' },
-          { token: '--space-4', value: '16px', usage: 'Section spacing' },
-          { token: '--shadow-card', value: '0 4px 16px rgba(17,24,39,0.05)', usage: 'Card shadow' },
+          { token: '--card-radius', value: '24px', usage: 'Summary and payment cards' },
+          { token: '--card-border', value: '1px primary-800 @ 12%', usage: 'Hairline on every card and list' },
+          { token: '--badge-ready-bg', value: 'success-300', usage: 'Countdown badge' },
+          { token: '--state-hover / --state-pressed', value: 'primary-300 / mix', usage: 'Row and card interaction' },
+          { token: '--sticky-footer-clearance', value: 'calc(…)', usage: 'Body padding above the sticky CTA' },
+          { token: '--section-gap', value: '24px', usage: 'Space between sections' },
         ]} />
       </Section>
 

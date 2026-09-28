@@ -14,7 +14,7 @@ export default function TypographyPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Typography</div>
-        <h1 className="ds-page-title">Typography</h1>
+        <h1 className="ds-doc-title">Typography</h1>
         <p className="ds-page-description">
           Satoshi + PocketPills production type scale — 16px body, 1.5 line-height, medium headings.
         </p>

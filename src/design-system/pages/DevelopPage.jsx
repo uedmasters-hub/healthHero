@@ -3,7 +3,7 @@ export default function DevelopPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Get started / Develop</div>
-        <h1 className="ds-page-title">Develop</h1>
+        <h1 className="ds-doc-title">Develop</h1>
         <p className="ds-page-description">
           Technical guidelines for implementing eMedicalls components and patterns.
         </p>
@@ -69,8 +69,8 @@ export default function DevelopPage() {
         <li><strong>Accessibility audits</strong> — Automated checks with axe-core, manual screen reader testing.</li>
       </ul>
 
-      <div className="ds-callout ds-callout-warning">
-        <span className="ds-callout-icon">⚠</span>
+      <div className="ds-doc-callout ds-doc-callout-warning">
+        <span className="ds-doc-callout-icon">⚠</span>
         <div>
           Always run <code>npm run lint</code> before committing. The project uses oxlint for fast,
           strict linting.

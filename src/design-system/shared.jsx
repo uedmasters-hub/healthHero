@@ -96,8 +96,8 @@ export function Preview({ children, code, vertical }) {
 /* Callout — info/warning/success callout box */
 export function Callout({ type = 'info', icon, children }) {
   return (
-    <div className={`ds-callout ds-callout-${type}`}>
-      <span className="ds-callout-icon">{icon || (type === 'info' ? 'ℹ' : type === 'warning' ? '⚠' : '✓')}</span>
+    <div className={`ds-doc-callout ds-doc-callout-${type}`}>
+      <span className="ds-doc-callout-icon">{icon || (type === 'info' ? 'ℹ' : type === 'warning' ? '⚠' : '✓')}</span>
       <div>{children}</div>
     </div>
   )

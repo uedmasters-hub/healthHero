@@ -5,7 +5,7 @@ export default function AuthFlowPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Auth Flow</div>
-        <h1 className="ds-page-title">Authentication Flow</h1>
+        <h1 className="ds-doc-title">Authentication Flow</h1>
         <p className="ds-page-description">
           Login, register, and password reset — with progressive auth gating that requires
           authentication only at the moment of action.

@@ -3,7 +3,7 @@ export default function IllustrationsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Illustrations</div>
-        <h1 className="ds-page-title">Illustrations</h1>
+        <h1 className="ds-doc-title">Illustrations</h1>
         <p className="ds-page-description">
           Illustrative imagery used for empty states, onboarding, and feature promotion.
         </p>

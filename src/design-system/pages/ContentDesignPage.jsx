@@ -3,7 +3,7 @@ export default function ContentDesignPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Get started / Content design</div>
-        <h1 className="ds-page-title">Content design</h1>
+        <h1 className="ds-doc-title">Content design</h1>
         <p className="ds-page-description">
           Writing guidelines for eMedicalls interfaces — clear, compassionate, and action-oriented.
         </p>

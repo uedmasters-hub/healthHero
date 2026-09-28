@@ -3,7 +3,7 @@ export default function GridPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Grid</div>
-        <h1 className="ds-page-title">Grid</h1>
+        <h1 className="ds-doc-title">Grid</h1>
         <p className="ds-page-description">
           Layout structure for responsive, consistent content organization.
         </p>
@@ -66,8 +66,8 @@ export default function GridPage() {
   gap: var(--card-gap);
 }`}</code></pre>
 
-      <div className="ds-callout ds-callout-info">
-        <span className="ds-callout-icon">ℹ</span>
+      <div className="ds-doc-callout ds-doc-callout-info">
+        <span className="ds-doc-callout-icon">ℹ</span>
         <div>
           eMedicalls' phone frame constrains content to 440px. The design system documentation
           site uses full browser width for optimal reading experience.

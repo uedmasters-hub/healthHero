@@ -21,7 +21,7 @@ export default function SpacingPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Spacing</div>
-        <h1 className="ds-page-title">Spacing</h1>
+        <h1 className="ds-doc-title">Spacing</h1>
         <p className="ds-page-description">
           PocketPills spacing ladder (rem) mapped onto eMedicalls step names for rhythm across all surfaces.
         </p>

@@ -5,7 +5,7 @@ export default function SkeletonsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Skeletons</div>
-        <h1 className="ds-page-title">Skeletons</h1>
+        <h1 className="ds-doc-title">Skeletons</h1>
         <p className="ds-page-description">
           Loading placeholders that communicate content is being fetched — part of eMedicalls'
           stagger reveal system that creates seamless content transitions.

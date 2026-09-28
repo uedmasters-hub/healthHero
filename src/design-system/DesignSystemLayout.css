@@ -152,7 +152,7 @@
   font-size: var(--text-caption-size); font-weight: var(--font-weight-medium); color: var(--text-faint);
   text-transform: uppercase; letter-spacing: var(--letter-caps); margin-bottom: var(--space-2);
 }
-.ds-page-title {
+.ds-doc-title {
   font-size: 32px; font-weight: var(--font-weight-medium); color: var(--text-primary);
   line-height: 1.2; letter-spacing: var(--letter-tight); margin-bottom: var(--space-2);
 }
@@ -358,14 +358,14 @@
 }
 
 /* Info / Callout box */
-.ds-callout {
+.ds-doc-callout {
   padding: var(--space-4) var(--space-5); border-radius: var(--radius-sm); margin: 0 0 var(--space-5);
   font-size: var(--text-dense-size); line-height: 1.6; display: flex; gap: var(--space-2-5);
 }
-.ds-callout-info { background: var(--primary-300); color: var(--primary-600); border: 1px solid var(--primary-400); }
-.ds-callout-warning { background: var(--warning-500); color: var(--warning-900); border: 1px solid var(--warning-700); }
-.ds-callout-success { background: var(--success-300); color: var(--success-900); border: 1px solid var(--secondary-600); }
-.ds-callout-icon { font-size: var(--text-body-size); flex-shrink: 0; margin-top: 1px; }
+.ds-doc-callout-info { background: var(--primary-300); color: var(--primary-600); border: 1px solid var(--primary-400); }
+.ds-doc-callout-warning { background: var(--warning-500); color: var(--warning-900); border: 1px solid var(--warning-700); }
+.ds-doc-callout-success { background: var(--success-300); color: var(--success-900); border: 1px solid var(--secondary-600); }
+.ds-doc-callout-icon { font-size: var(--text-body-size); flex-shrink: 0; margin-top: 1px; }
 
 /* Component showcase buttons — PocketPills CTA + accents */
 .ds-showcase-btn {
@@ -442,14 +442,14 @@
   .ds-sidebar-backdrop { display: block; }
   .ds-main { margin-left: 0; }
   .ds-content { padding: var(--space-6) var(--space-5) 60px; }
-  .ds-content .ds-page-title { font-size: var(--text-hero-size); }
+  .ds-content .ds-doc-title { font-size: var(--text-hero-size); }
   .ds-do-dont-grid { grid-template-columns: 1fr; }
   .ds-color-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
 
 @media (max-width: 480px) {
   .ds-content { padding: var(--space-5) var(--space-4) 60px; }
-  .ds-content .ds-page-title { font-size: var(--text-display-size); }
+  .ds-content .ds-doc-title { font-size: var(--text-display-size); }
   .ds-content h2 { font-size: var(--text-body-lg-size); }
   .ds-content h3 { font-size: var(--text-body-size); }
 }
