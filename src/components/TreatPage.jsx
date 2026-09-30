@@ -25,6 +25,7 @@ import { useUser } from '../user'
 import { useSearchQuery } from '../features/search'
 import { ProfileSheets } from './profile/ProfileHealth'
 import './TreatPage.css'
+import { EmptyState, Icon } from './ui'
 
 const historyTabs = ['All', 'Active', 'Upcoming', 'Completed', 'Cancelled']
 const sortOptions = [
@@ -206,29 +207,27 @@ export default function TreatPage() {
           </section>
 
           <section
-            className="treat-history-panel"
+            className="treat-history-panel ds-card"
             ref={historySectionRef}
             id="treat-bookings"
             aria-label="Care history"
           >
-            <div className="treat-history-header">
-              <h2 className="treat-history-title">Care History</h2>
-              <button type="button" className="treat-sort-btn" onClick={() => openSheet({ type: 'sort' })}>
+            <div className="treat-history-header ds-section-head">
+              <h2 className="treat-history-title ds-section-head__title">Care History</h2>
+              <button type="button" className="treat-sort-btn ds-link" onClick={() => openSheet({ type: 'sort' })}>
                 {sortOptions.find((option) => option.id === sort)?.label}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                <Icon.ChevronDown />
               </button>
             </div>
 
-            <div className="treat-history-filters" role="tablist" aria-label="Care history filters">
+            <div className="treat-history-filters ds-chip-row" role="tablist" aria-label="Care history filters">
               {historyTabs.map((item) => (
                 <button
                   key={item}
                   type="button"
                   role="tab"
                   aria-selected={tab === item}
-                  className={`treat-history-filter ${tab === item ? 'is-active' : ''}`}
+                  className="treat-history-filter ds-chip ds-chip--sm"
                   onClick={() => setTab(item)}
                 >
                   {item}
@@ -249,7 +248,7 @@ export default function TreatPage() {
                   <div className="treat-skel-row shimmer" />
                 </>
               ) : filteredHistory.length === 0 ? (
-                <p className="treat-empty">No matching care records.</p>
+                <EmptyState compact message="No matching care records." />
               ) : filteredHistory.map((visit) => {
                 const service = getServiceMeta(resolveServiceType(visit))
                 const photo = visit.doctor?.photo
@@ -279,7 +278,7 @@ export default function TreatPage() {
                               : service.label)}
                         </div>
                       </div>
-                      <span className={`treat-history-badge is-${visit.relayAccent || String(visit.historyTab || '').toLowerCase()}`}>
+                      <span className={`ds-badge treat-history-badge is-${visit.relayAccent || String(visit.historyTab || '').toLowerCase()}`}>
                         {visit.relayLabel || visit.historyTab}
                       </span>
                     </div>
@@ -310,10 +309,7 @@ export default function TreatPage() {
           <div className="ds-sheet-header">
             <h3 id="treat-sheet-title">{sheetTitle}</h3>
             <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <Icon.Close />
             </button>
           </div>
 
@@ -340,7 +336,7 @@ export default function TreatPage() {
               </p>
               <button
                 type="button"
-                className="treat-sheet-cta"
+                className="treat-sheet-cta ds-btn ds-btn--primary ds-btn--lg ds-btn--block"
                 onClick={() => {
                   closeSheet()
                   navigate('/booking', { state: { origin: 'treat', returnTo: '/treat', entryReturnTo: '/treat' } })

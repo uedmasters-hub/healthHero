@@ -106,7 +106,7 @@ export default function DemoPreviewModal({ closing = false, onClose }) {
           <button
             ref={ctaRef}
             type="button"
-            className="demo-preview-cta"
+            className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block demo-preview-cta"
             onClick={onClose}
           >
             {DEMO_PREVIEW_COPY.cta}

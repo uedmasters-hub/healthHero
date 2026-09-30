@@ -3,6 +3,7 @@ import { displayHealthDate, useUser } from '../../user'
 import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, InfoCard, InfoRow, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
+import { Icon, List, ListRow } from '../ui'
 
 export default function InsuranceWorkspace() {
   const { insurancePolicies, saveInsurancePolicy } = useUser()
@@ -26,11 +27,11 @@ export default function InsuranceWorkspace() {
         <>
           <RevealItem revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
             {policy ? (
-              <div className="ins-hero">
-                <p>Active cover</p>
-                <h2>{policy.provider}</h2>
-                <strong>{policy.policyNo}</strong>
-                <div className="ins-hero-meta">
+              <div className="ds-card profile-hero is-feature">
+                <p className="ds-overline">Active cover</p>
+                <h2 className="profile-hero__title">{policy.provider}</h2>
+                <strong className="profile-hero__code tnum">{policy.policyNo}</strong>
+                <div className="profile-hero__meta">
                   <span>{policy.type || 'Health'}</span>
                   <span>{policy.validTill ? `Valid till ${displayHealthDate(policy.validTill) || policy.validTill}` : 'Add expiry'}</span>
                 </div>
@@ -46,7 +47,7 @@ export default function InsuranceWorkspace() {
           </RevealItem>
 
           {policy ? (
-            <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+            <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
               <SectionHead title="Policy details" action="Edit" onAction={() => setSheet({ mode: 'form', kind: 'insurancePolicies', item: policy })} />
               <InfoCard>
                 <InfoRow label="Provider" value={policy.provider} />
@@ -57,29 +58,29 @@ export default function InsuranceWorkspace() {
             </RevealItem>
           ) : null}
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
             <SectionHead title="Coverage" action={policy ? 'Replace' : null} onAction={() => setSheet({ mode: 'form', kind: 'insurancePolicies', item: policy })} />
             {policy ? (
-              <div className="ins-coverage">
-                <p>{policy.coverage || 'In-patient, day care, and cashless treatment as per your policy network. Add notes while editing the policy if you want specifics on file.'}</p>
+              <div className="ds-card is-padded">
+                <p className="ds-body">{policy.coverage || 'In-patient, day care, and cashless treatment as per your policy network. Add notes while editing the policy if you want specifics on file.'}</p>
               </div>
             ) : (
               <GuidedEmpty title="Coverage appears after a policy is saved" />
             )}
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
+          <RevealItem revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
             <SectionHead
               title="Documents"
               action={policy ? 'Add' : null}
               onAction={() => fileRef.current?.click()}
             />
             {policy?.attachments?.length ? (
-              <div className="ins-docs">
+              <List>
                 {policy.attachments.map((name) => (
-                  <div key={name} className="ins-doc-row">{name}</div>
+                  <ListRow key={name} icon={<span className="ds-icon-well" aria-hidden="true"><Icon.File /></span>} title={name} />
                 ))}
-              </div>
+              </List>
             ) : (
               <GuidedEmpty
                 title="Keep e-cards and policy PDFs here"
@@ -91,7 +92,7 @@ export default function InsuranceWorkspace() {
             <input ref={fileRef} type="file" hidden accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" onChange={addDocument} />
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
+          <RevealItem revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
             <SectionHead title="Claims" />
             <GuidedEmpty
               title="No claims yet"

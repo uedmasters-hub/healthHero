@@ -12,6 +12,7 @@ import DuplicateBookingModal from './DuplicateBookingModal'
 import { BirthDateField } from './DatePicker'
 import { PhoneInput, toE164 } from './PhoneInput'
 import { resolveAppointmentPath } from '../lib/appointmentJourney'
+import { Button, Callout, Choice, ChoiceList, ChoiceChips, FormGroup, Icon, cx } from './ui'
 import './SelectPatient.css'
 
 const RELATIONSHIPS = ['Spouse', 'Parent', 'Sibling', 'Child', 'Other']
@@ -44,39 +45,28 @@ function formFromPatient(patient) {
 
 function PatientDetailsForm({ form, updateForm, showRelationship, formError, phoneCountry, onCountryChange }) {
   return (
-    <>
-      {formError ? <p className="patient-form-error" role="alert">{formError}</p> : null}
-      <label className="patient-field">
-        <span>Name</span>
-        <input value={form.name} onChange={(e) => updateForm('name', e.target.value)} placeholder="Full name" />
-      </label>
-      <div className="patient-field-row">
-        <div className="patient-field">
-          <span>Date of Birth</span>
+    <div className="ds-form">
+      {formError ? <p className="ds-page__error" role="alert">{formError}</p> : null}
+      <FormGroup label="Name">
+        <input className="ds-field" value={form.name} onChange={(e) => updateForm('name', e.target.value)} placeholder="Full name" />
+      </FormGroup>
+      <div className="ds-form-row">
+        <FormGroup as="div" label="Date of birth">
           <BirthDateField value={form.dob} onChange={(dob) => updateForm('dob', dob)} />
-        </div>
-        <label className="patient-field">
-          <span>Age</span>
+        </FormGroup>
+        <FormGroup label="Age">
           <input
+            className="ds-field"
             inputMode="numeric"
             value={form.age}
             onChange={(e) => updateForm('age', e.target.value.replace(/\D/g, '').slice(0, 3))}
             placeholder="Years"
           />
-        </label>
+        </FormGroup>
       </div>
-      <div className="patient-field">
-        <span>Gender</span>
-        <div className="patient-chip-row">
-          {GENDERS.map((item) => (
-            <button type="button" key={item} className={form.gender === item ? 'is-on' : ''} onClick={() => updateForm('gender', item)}>
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
+      <ChoiceChips label="Gender" options={GENDERS} value={form.gender} onChange={(item) => updateForm('gender', item)} />
       <PhoneInput
-        label="Contact Number"
+        label="Contact number"
         value={form.phone}
         country={phoneCountry}
         onCountryChange={onCountryChange}
@@ -84,35 +74,25 @@ function PatientDetailsForm({ form, updateForm, showRelationship, formError, pho
         placeholder="98765 43210"
         required
       />
-      <label className="patient-field">
-        <span>Address</span>
-        <textarea rows={3} value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Flat / house, street, city" />
-      </label>
+      <FormGroup label="Address">
+        <textarea className="ds-field" rows={3} value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Flat / house, street, city" />
+      </FormGroup>
       {showRelationship ? (
         <>
-          <div className="patient-field">
-            <span>Relationship</span>
-            <div className="patient-chip-row">
-              {RELATIONSHIPS.map((item) => (
-                <button type="button" key={item} className={form.relationship === item ? 'is-on' : ''} onClick={() => updateForm('relationship', item)}>
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ChoiceChips label="Relationship" options={RELATIONSHIPS} value={form.relationship} onChange={(item) => updateForm('relationship', item)} />
           {form.relationship === 'Other' ? (
-            <label className="patient-field">
-              <span>Custom relationship</span>
+            <FormGroup label="Custom relationship">
               <input
+                className="ds-field"
                 value={form.customRelationship}
                 onChange={(e) => updateForm('customRelationship', e.target.value)}
                 placeholder="e.g. Cousin, Guardian"
               />
-            </label>
+            </FormGroup>
           ) : null}
         </>
       ) : null}
-    </>
+    </div>
   )
 }
 
@@ -297,16 +277,16 @@ export default function SelectPatient() {
       {adding ? (
         <>
           <div className="select-patient-scroll">
-            <p className="select-patient-lead">Add a patient once and reuse them for future appointments.</p>
+            <p className="ds-page__lead select-patient-lead">Add a patient once and reuse them for future appointments.</p>
             <PatientDetailsForm form={form} updateForm={updateForm} showRelationship formError={formError} phoneCountry={phoneCountry} onCountryChange={setPhoneCountry} />
           </div>
           <div className="app-flow-footer">
             <button type="button" className="app-flow-cta" disabled={!canSaveMember} onClick={handleSaveNew}>
               Save & Continue
             </button>
-            <button type="button" className="patient-text-btn" onClick={closeAdd}>
+            <Button variant="text" size="sm" block className="app-flow-secondary" onClick={closeAdd}>
               Back to saved patients
-            </button>
+            </Button>
           </div>
         </>
       ) : (
@@ -324,55 +304,54 @@ export default function SelectPatient() {
                 </>
               )}
             >
-            <p className="select-patient-lead">
+            <p className="ds-page__lead select-patient-lead">
               {selfIncomplete
                 ? 'Complete your profile to continue. These details are saved once and reused for future bookings.'
                 : 'Who is this appointment for?'}
             </p>
             {groups.map((group) => (
               <section key={group.id} className="patient-group">
-                <h2>{group.label}</h2>
-                {group.patients.map((patient) => {
-                  const incomplete = !isPatientProfileComplete(patient)
-                  const isSelf = patient.relationship === 'Self'
-                  const meta = incomplete
-                    ? 'Complete required details'
-                    : `${patient.age != null ? `${patient.age} yrs` : 'Age —'} · ${patient.relationship}`
-                  return (
-                    <div key={patient.id}>
-                      <div className={`patient-card ${selectedId === patient.id ? 'is-selected' : ''} ${incomplete ? 'is-incomplete' : ''}`}>
-                        <button
-                          type="button"
-                          className="patient-card-main"
-                          onClick={() => selectPatientCard(patient)}
-                        >
-                          <span className="patient-card-radio" />
-                          <span className="patient-card-copy">
-                            <strong>{patient.name || 'Your profile'}</strong>
-                            <span>{meta}</span>
-                          </span>
-                        </button>
-                        {isSelf ? (
-                          <button type="button" className="patient-card-edit" onClick={openSelfEditor}>
-                            {incomplete ? 'Complete' : 'Edit'}
-                          </button>
+                <h2 className="ds-section-title">{group.label}</h2>
+                <ChoiceList label={group.label}>
+                  {group.patients.map((patient) => {
+                    const incomplete = !isPatientProfileComplete(patient)
+                    const isSelf = patient.relationship === 'Self'
+                    const selected = selectedId === patient.id
+                    const meta = incomplete
+                      ? 'Complete required details'
+                      : `${patient.age != null ? `${patient.age} yrs` : 'Age —'} · ${patient.relationship}`
+                    return (
+                      <div key={patient.id} className={cx('patient-row', incomplete && 'is-incomplete')}>
+                        <div className="patient-row__main">
+                          <Choice
+                            selected={selected}
+                            title={patient.name || 'Your profile'}
+                            subtitle={meta}
+                            onClick={() => selectPatientCard(patient)}
+                          />
+                          {isSelf ? (
+                            <Button variant="text" size="sm" className="patient-row__edit" onClick={openSelfEditor}>
+                              {incomplete ? 'Complete' : 'Edit'}
+                            </Button>
+                          ) : null}
+                        </div>
+                        {isSelf && showSelfEditor && selectedId === 'self' ? (
+                          <div className="patient-row__panel">
+                            <Callout tone="info" className="patient-row__hint">
+                              Age, gender, and a valid mobile number are required before review.
+                            </Callout>
+                            <PatientDetailsForm form={form} updateForm={updateForm} formError={formError} phoneCountry={phoneCountry} onCountryChange={setPhoneCountry} />
+                          </div>
                         ) : null}
                       </div>
-                      {isSelf && showSelfEditor && selectedId === 'self' ? (
-                        <div className="patient-complete-panel">
-                          <p className="patient-complete-hint">Age, gender, and a valid mobile number are required before review.</p>
-                          <PatientDetailsForm form={form} updateForm={updateForm} formError={formError} phoneCountry={phoneCountry} onCountryChange={setPhoneCountry} />
-                        </div>
-                      ) : null}
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+                </ChoiceList>
               </section>
             ))}
-            <button type="button" className="patient-add" onClick={openAdd}>
-              <span className="patient-add-icon">+</span>
-              Add New Patient
-            </button>
+            <Button variant="outline" size="lg" block icon={<Icon.Plus />} onClick={openAdd}>
+              Add new patient
+            </Button>
             </BookingReveal>
           </div>
           <div className="app-flow-footer">

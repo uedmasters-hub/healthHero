@@ -120,7 +120,7 @@ export default function RegisterPage() {
       )}
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        {formError ? <p className="auth-banner" role="alert">{formError}</p> : null}
+        {formError ? <p className="auth-banner ds-callout is-danger" role="alert">{formError}</p> : null}
         <AuthField
           id="register-name"
           label="Full name"

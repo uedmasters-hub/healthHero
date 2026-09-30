@@ -205,7 +205,7 @@ export default function DoctorCard({
   if (variant === 'profile') {
     return (
       <>
-      <div className={`dc-card dc-card-profile ${className}`}>
+      <div className={`dc-card dc-card-profile ds-card ${className}`}>
         <div className="dc-profile-photo">
           <ProviderAvatar
             doctor={doctorForNav}
@@ -224,7 +224,7 @@ export default function DoctorCard({
           </div>
           <p className="dc-specialty">{specialty}</p>
           <CredentialsLine text={credentials} />
-          {experience ? <span className="dc-exp">{experience}</span> : null}
+          {experience ? <span className="dc-exp ds-badge is-primary">{experience}</span> : null}
           {doctorForNav?.fee != null ? (
             <p className="dc-fee">
               <strong>{formatMoney(doctorForNav.fee)}*</strong> Consultation fee
@@ -234,7 +234,7 @@ export default function DoctorCard({
         {showChat && typeof onChat === 'function' ? (
           <button
             type="button"
-            className="dc-chat"
+            className="dc-chat ds-icon-btn is-subtle"
             onClick={handleChat}
             disabled={chatBusy}
             aria-label={`Message ${name}`}
@@ -255,7 +255,7 @@ export default function DoctorCard({
     .filter((type) => !videoEntry || /video/i.test(String(type)))
     return (
       <>
-      <div className={`dc-card dc-card-list ${className}`} onClick={handleClick}>
+      <div className={`dc-card dc-card-list ds-card is-interactive ${className}`} onClick={handleClick}>
         <div className="dc-list-top">
           <div className="dc-grid-photo">
             <ProviderAvatar doctor={doctorForNav} src={photo} alt="" />
@@ -274,9 +274,9 @@ export default function DoctorCard({
             <CredentialsLine text={credentials} />
             {(experience || recentlyViewed || doctorForNav?.isVerified) ? (
               <div className="dc-list-flags">
-                {experience ? <span className="dc-exp">{experience}</span> : null}
-                {doctorForNav?.isVerified ? <span className="dc-recent">Verified</span> : null}
-                {recentlyViewed ? <span className="dc-recent">Recently viewed</span> : null}
+                {experience ? <span className="dc-exp ds-badge is-primary">{experience}</span> : null}
+                {doctorForNav?.isVerified ? <span className="dc-recent ds-badge is-neutral">Verified</span> : null}
+                {recentlyViewed ? <span className="dc-recent ds-badge is-neutral">Recently viewed</span> : null}
               </div>
             ) : null}
           </div>
@@ -295,7 +295,7 @@ export default function DoctorCard({
           {visitTypes.length > 0 ? (
             <div className="dc-list-tags">
               {doctorForNav?.travelTime || doctor?.travelTime ? (
-                <span className="dc-list-tag">
+                <span className="dc-list-tag ds-badge is-neutral">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
@@ -304,7 +304,7 @@ export default function DoctorCard({
                 </span>
               ) : null}
               {visitTypes.map((type) => (
-                <span className="dc-list-tag" key={type}>
+                <span className="dc-list-tag ds-badge is-neutral" key={type}>
                   {type === 'In-Person' ? (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -332,7 +332,7 @@ export default function DoctorCard({
               <strong>{formatMoney(doctorForNav.fee)}*</strong> Consultation fee
             </p>
           ) : <span />}
-          <button type="button" className="dc-book" onClick={handleBookNow}>
+          <button type="button" className="dc-book ds-btn ds-btn--secondary ds-btn--sm" onClick={handleBookNow}>
             <svg className="dc-book-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
               <path d="M8 3.5v3.2M16 3.5v3.2M3.5 10h17" />
@@ -350,7 +350,7 @@ export default function DoctorCard({
     return (
       <>
       <div
-        className={`dc-card dc-card-grid is-mini ${className}`}
+        className={`dc-card dc-card-grid is-mini ds-card is-interactive ${className}`}
         onClick={handleClick}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -375,7 +375,7 @@ export default function DoctorCard({
           ) : null}
         </p>
         <CredentialsLine text={credentials} />
-        {experience ? <span className="dc-exp">{experience}</span> : null}
+        {experience ? <span className="dc-exp ds-badge is-primary">{experience}</span> : null}
       </div>
       {modal}
       </>
@@ -384,7 +384,7 @@ export default function DoctorCard({
 
   return (
     <>
-    <div className={`dc-card ${isBooking ? 'dc-card-booking' : ''} ${className}`} onClick={handleClick}>
+    <div className={`dc-card ds-card ${isBooking ? 'dc-card-booking' : 'is-interactive'} ${className}`} onClick={handleClick}>
       <div className="dc-media">
         <ProviderAvatar doctor={doctorForNav} src={photo} alt={name} />
       </div>
@@ -399,18 +399,18 @@ export default function DoctorCard({
           </div>
           <p className="dc-specialty">{specialty}</p>
           <CredentialsLine text={credentials} />
-          {experience ? <span className="dc-exp">{experience}</span> : null}
+          {experience ? <span className="dc-exp ds-badge is-primary">{experience}</span> : null}
         </div>
         {!isBooking && (
           <div className="dc-actions">
-            <button type="button" className="dc-book" onClick={handleBookNow}>
+            <button type="button" className="dc-book ds-btn ds-btn--secondary ds-btn--sm" onClick={handleBookNow}>
               <svg className="dc-book-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
                 <path d="M8 3.5v3.2M16 3.5v3.2M3.5 10h17" />
               </svg>
               Book Now
             </button>
-            <button type="button" className="dc-call" onClick={handleCall} aria-label={`Call ${name}`}>
+            <button type="button" className="dc-call ds-icon-btn is-subtle" onClick={handleCall} aria-label={`Call ${name}`}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
               </svg>

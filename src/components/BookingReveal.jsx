@@ -59,7 +59,7 @@ export function BookingReveal({ ready, skeleton, children }) {
 
 export function DoctorHeroSkeleton() {
   return (
-    <div className="dc-card dc-card-profile booking-hero-skel" aria-hidden="true">
+    <div className="dc-card dc-card-profile ds-card booking-hero-skel" aria-hidden="true">
       <div className="dc-profile-photo shimmer" />
       <div className="dc-profile-copy">
         <div className="booking-skel-line is-name shimmer" />

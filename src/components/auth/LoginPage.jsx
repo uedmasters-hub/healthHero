@@ -125,7 +125,7 @@ export default function LoginPage() {
       )}
     >
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        {formError || bootError ? <p className="auth-banner" role="alert">{formError || bootError}</p> : null}
+        {formError || bootError ? <p className="auth-banner ds-callout is-danger" role="alert">{formError || bootError}</p> : null}
         <AuthField
           id="login-identifier"
           label="Email"
@@ -150,7 +150,7 @@ export default function LoginPage() {
             disabled={busy}
             placeholder="Enter your password"
             labelAction={(
-              <Link to="/forgot" className="auth-field-link" state={{ identifier }}>
+              <Link to="/forgot" className="auth-field-link ds-link" state={{ identifier }}>
                 Forgot password?
               </Link>
             )}
@@ -164,7 +164,7 @@ export default function LoginPage() {
         <p className="auth-mode-switch">
           <button
             type="button"
-            className="auth-text-btn"
+            className="auth-text-btn ds-link"
             disabled={busy}
             onClick={() => {
               setFormError('')

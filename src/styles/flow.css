@@ -1,0 +1,234 @@
+/* =============================================================================
+   Flow chrome — bottom CTA bars shared by booking, care and payment flows,
+   plus the care-journey status tones used on cards, history and relays.
+   ============================================================================= */
+
+/* —— App flow footer / primary CTA (booking + care flows) —— */
+.app-flow-footer {
+  flex-shrink: 0;
+  width: 100%;
+  background: var(--surface-chrome);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-top: var(--border-width) solid var(--border-default);
+  padding: var(--app-flow-footer-pad-top) var(--content-padding) var(--bottom-bar-pad);
+  z-index: 5;
+}
+
+/* Quiet secondary under the flow CTA ("Back to saved patients") */
+.app-flow-footer > .app-flow-secondary { margin-top: var(--space-1); }
+
+/* The flow CTA *is* the large primary button — same tokens, same states */
+.app-flow-cta,
+.sticky-footer-cta__primary {
+  width: 100%;
+  min-height: var(--btn-height-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--btn-pad-lg);
+  border: none;
+  border-radius: var(--btn-radius);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+  font-family: inherit;
+  font-size: var(--btn-font-lg);
+  font-weight: var(--btn-weight);
+  --tracking: var(--letter-body);
+  letter-spacing: var(--tracking);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.app-flow-cta:hover:not(:disabled),
+.sticky-footer-cta__primary:hover:not(:disabled) {
+  background: var(--btn-primary-bg-hover);
+}
+
+.app-flow-cta:active:not(:disabled),
+.sticky-footer-cta__primary:active:not(:disabled) {
+  background: var(--btn-primary-bg-pressed);
+}
+
+.app-flow-cta:disabled,
+.sticky-footer-cta__primary:disabled {
+  background: var(--btn-disabled-bg);
+  color: var(--btn-disabled-fg);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.app-flow-cta svg,
+.sticky-footer-cta__primary svg {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  stroke-width: var(--icon-stroke);
+}
+
+/* Sticky footer CTA — Appointment Details, Ready for Visit (SSOT).
+   Bottom CTA owns the safe area; secondary floaters must stay above
+   (var(--fab-cta-gap)) and never use Home-style scroll FAB motion. */
+.sticky-footer-cta {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--phone-width);
+  background: var(--surface-chrome);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  padding: var(--sticky-footer-pad-top) var(--content-padding) var(--sticky-footer-pad-bottom);
+  border-top: var(--border-width) solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--sticky-footer-cta-gap);
+  z-index: var(--z-footer);
+}
+
+.sticky-footer-cta.is-pending {
+  opacity: var(--opacity-soft);
+  pointer-events: none;
+}
+
+.sticky-footer-cta__secondary {
+  display: block;
+  width: 100%;
+  padding: var(--sticky-footer-secondary-pad-y) 0;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--color-link);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: opacity var(--transition);
+}
+
+.sticky-footer-cta__secondary:active {
+  opacity: var(--opacity-strong);
+}
+
+/* —— Care-journey status tones ——
+   Two surfaces, one vocabulary (accents from booking/relayStates.js):
+   · .upcoming-badge  sits on the dark featured gradient (Home relay card)
+   · .treat-history-badge / .relay-chip sit on white cards and lists       */
+
+/* Featured gradient (relay accents + booking statuses) */
+.upcoming-badge.is-upcoming,
+.upcoming-badge.is-visit,
+.upcoming-badge.is-booked,
+.upcoming-badge.is-prepared {
+  background: var(--featured-glass);
+  color: var(--featured-ink);
+  border-color: var(--featured-glass-border);
+}
+
+.upcoming-badge.is-checkin,
+.upcoming-badge.is-checked_in {
+  background: var(--badge-ready-bg);
+  color: var(--badge-ready-fg);
+  border-color: var(--badge-ready-border);
+}
+
+.upcoming-badge.is-waiting,
+.upcoming-badge.is-missed,
+.upcoming-badge.is-payment_pending {
+  background: var(--warning-500);
+  color: var(--warning-900);
+}
+
+.upcoming-badge.is-reported,
+.upcoming-badge.is-prescription,
+.upcoming-badge.is-confirmed {
+  background: var(--success-300);
+  color: var(--success-900);
+}
+
+.upcoming-badge.is-tests,
+.upcoming-badge.is-follow {
+  background: var(--secondary-500);
+  color: var(--secondary-900);
+}
+
+.upcoming-badge.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+}
+
+.upcoming-badge.is-cancelled {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+/* Light surfaces */
+.treat-history-badge.is-upcoming,
+.relay-chip.is-upcoming,
+.treat-history-badge.is-waiting,
+.treat-history-badge.is-missed,
+.relay-chip.is-waiting,
+.relay-chip.is-missed {
+  background: var(--color-warning-subtle);
+  color: var(--warning-900);
+}
+
+.treat-history-badge.is-visit,
+.relay-chip.is-visit,
+.treat-history-badge.is-referral,
+.relay-chip.is-referral {
+  background: var(--primary-300);
+  color: var(--primary-950);
+}
+
+.treat-history-badge.is-active,
+.treat-history-badge.is-checkin,
+.relay-chip.is-checkin {
+  background: var(--badge-ready-bg);
+  color: var(--badge-ready-fg);
+  border-color: var(--badge-ready-border);
+}
+
+.treat-history-badge.is-reported,
+.treat-history-badge.is-prescription,
+.treat-history-badge.is-confirmed,
+.relay-chip.is-reported,
+.relay-chip.is-prescription,
+.relay-chip.is-confirmed {
+  background: var(--color-success-subtle);
+  color: var(--success-900);
+}
+
+.treat-history-badge.is-tests,
+.treat-history-badge.is-follow,
+.relay-chip.is-tests,
+.relay-chip.is-follow {
+  background: var(--color-wellness-subtle);
+  color: var(--secondary-900);
+}
+
+.treat-history-badge.is-completed,
+.treat-history-badge.is-cancelled,
+.relay-chip.is-cancelled {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+.relay-chip {
+  margin-top: var(--space-1-5);
+}
+
+/* Relay panel (Appointment details) — same light-surface tones as .relay-chip */
+.relay-panel.is-upcoming, .relay-panel.is-waiting, .relay-panel.is-missed { background: var(--color-warning-subtle); color: var(--warning-900); }
+.relay-panel.is-visit, .relay-panel.is-referral { background: var(--primary-300); color: var(--primary-950); }
+.relay-panel.is-checkin { background: var(--badge-ready-bg); color: var(--badge-ready-fg); }
+.relay-panel.is-reported, .relay-panel.is-prescription, .relay-panel.is-confirmed { background: var(--color-success-subtle); color: var(--success-900); }
+.relay-panel.is-tests, .relay-panel.is-follow { background: var(--color-wellness-subtle); color: var(--secondary-900); }
+.relay-panel.is-cancelled { background: var(--neutral-200); color: var(--neutral-700); }
+.relay-panel .ds-callout__title,
+.relay-panel .ds-callout__body { color: inherit; }

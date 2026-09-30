@@ -5,6 +5,7 @@ import { useFetchSession } from './FetchSession'
 import { useTransition } from './PageTransition'
 import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './SpecialisationsPage.css'
+import { SheetHeader } from './ui'
 
 const FAST_STAGGER = 28
 const CACHE_KEY = 'overlay:specialisations'
@@ -147,16 +148,7 @@ export default function ExploreSpecialisationsPage() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="ds-sheet-handle" aria-hidden="true" />
-        <div className="specialisations-header">
-        <button className="specialisations-back-btn" onClick={handleClose} aria-label="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 id="specialisations-title" className="specialisations-title">All Specialisations</h1>
-        <div className="specialisations-header-placeholder" />
-      </div>
+        <SheetHeader as="h2" className="sheet-page-header" titleId="specialisations-title" title="All Specialisations" onClose={handleClose} />
 
       <div className="specialisations-page" ref={contentRef}>
       <div className="specialisations-grid">
@@ -165,7 +157,7 @@ export default function ExploreSpecialisationsPage() {
           return (
             <button
               type="button"
-              className={`specialisation-card ${isRevealed ? 'revealed' : ''}`}
+              className={`ds-card is-interactive specialisation-card ${isRevealed ? 'revealed' : ''}`}
               key={spec.name}
               ref={(el) => { itemRefs.current[i] = el }}
               onClick={() => openSpecialty(spec.name)}

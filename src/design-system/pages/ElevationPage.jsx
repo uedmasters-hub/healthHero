@@ -14,7 +14,7 @@ export default function ElevationPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Elevation</div>
-        <h1 className="ds-page-title">Elevation</h1>
+        <h1 className="ds-doc-title">Elevation</h1>
         <p className="ds-page-description">
           PocketPills elevation: edge-first surfaces with soft shadows reserved for true lift
           (menus, sheets, modals).
@@ -27,8 +27,8 @@ export default function ElevationPage() {
         Shadows escalate only when a surface floats above the lavender page canvas — sheets, modals, and transient menus.
       </p>
       <p>
-        Default <code>.ds-card</code> uses border only. Add <code>.ds-card-elevated</code> (or <code>.is-elevated</code>)
-        when a soft card shadow is intentional.
+        <code>.ds-card</code> is always border-only. Floating surfaces take their shadow from the surface itself
+        (<code>--shadow-sheet</code>, <code>--shadow-modal</code>, <code>--shadow-float</code>) — never from a card modifier.
       </p>
 
       <h2>Elevation levels</h2>

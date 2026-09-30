@@ -25,6 +25,7 @@ import {
   issueConsultPrescription,
   readPharmacyResume,
 } from '../features/pharmacy/shopApi'
+import { AppBar, Badge, Button, DetailRow, FormGroup, Icon, IconButton, List, SectionHead, SheetHeader, Steps, Switch } from './ui'
 import './ConfirmBooking.css'
 
 export default function ConfirmBooking() {
@@ -377,114 +378,53 @@ export default function ConfirmBooking() {
         <DoctorCard doctor={doctor} variant="profile" disableNavigate />
       </div>
 
-      <div className="confirm-section-label">
-        Patient
-        <button
-          type="button"
-          className="confirm-change-patient"
-          onClick={editPatient}
-        >
-          Change Patient
-        </button>
-      </div>
-      <div className="confirm-summary-card confirm-patient-card ds-card">
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span className="confirm-summary-label">Name</span>
-          <span className="confirm-summary-value">{patient.name}</span>
-        </div>
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-          <span className="confirm-summary-label">Age</span>
-          <span className="confirm-summary-value">{patient.age != null ? `${patient.age} yrs` : '—'}</span>
-        </div>
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          <span className="confirm-summary-label">Relationship</span>
-          <span className="confirm-summary-value">{patient.relationship}</span>
-        </div>
-        {patient.phone ? (
-          <div className="confirm-summary-row">
-            <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 16 16 0 0 0 .95 3.32 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 16 16 0 0 0 3.32.95A2 2 0 0 1 22 16.92z" />
-            </svg>
-            <span className="confirm-summary-label">Contact</span>
-            <span className="confirm-summary-value">{patient.phone}</span>
-          </div>
-        ) : null}
-      </div>
+      <section>
+        <SectionHead
+          group
+          as="h3"
+          title="Patient"
+          action={<Button variant="text" size="sm" onClick={editPatient}>Change patient</Button>}
+        />
+        <List>
+          <DetailRow icon={<Icon.User />} label="Name" value={patient.name} />
+          <DetailRow icon={<Icon.Info />} label="Age" value={patient.age != null ? `${patient.age} yrs` : '—'} />
+          <DetailRow icon={<Icon.Users />} label="Relationship" value={patient.relationship} />
+          {patient.phone ? <DetailRow icon={<Icon.Phone />} label="Contact" value={patient.phone} /> : null}
+        </List>
+      </section>
 
-      <div className="confirm-section-label">Appointment Summary</div>
-      <div className="confirm-summary-card ds-card">
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          <span className="confirm-summary-label">Date</span>
-          <span className="confirm-summary-value">{dateStr}</span>
-        </div>
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <span className="confirm-summary-label">Time</span>
-          <span className="confirm-summary-value">{formatTimeRange()}</span>
-        </div>
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span className="confirm-summary-label">Type</span>
-          <span className="confirm-summary-value">{visitType || 'In-Person'} Visit</span>
-        </div>
-        <div className="confirm-summary-row">
-          <svg className="confirm-summary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-          </svg>
-          <span className="confirm-summary-label">Duration</span>
-          <span className="confirm-summary-value">{duration || '30 min'}</span>
-        </div>
-      </div>
+      <section>
+        <SectionHead group as="h3" title="Appointment summary" />
+        <List>
+          <DetailRow icon={<Icon.Calendar />} label="Date" value={dateStr} />
+          <DetailRow icon={<Icon.Clock />} label="Time" value={formatTimeRange()} />
+          <DetailRow icon={visitType === 'Video' ? <Icon.Video /> : <Icon.User />} label="Type" value={`${visitType || 'In-Person'} Visit`} />
+          <DetailRow icon={<Icon.Clock />} label="Duration" value={duration || '30 min'} />
+        </List>
+      </section>
 
-      <div className="confirm-section-label">{isQuickBook ? 'Reason for visit' : 'Note for the Doctor'}</div>
-      <textarea
-        className="confirm-note-input"
-        placeholder={isQuickBook ? 'Add a brief reason (optional)...' : 'Add symptoms or a note for the doctor (optional)...'}
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        rows={isQuickBook ? 2 : 4}
-      />
+      <section>
+        <FormGroup label={isQuickBook ? 'Reason for visit' : 'Note for the doctor'}>
+          <textarea
+            className="ds-field"
+            placeholder={isQuickBook ? 'Add a brief reason (optional)…' : 'Add symptoms or a note for the doctor (optional)…'}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={isQuickBook ? 2 : 4}
+          />
+        </FormGroup>
+      </section>
 
       {!isQuickBook && (
-      <div className="confirm-toggle-row" onClick={() => setSmsReminder(!smsReminder)}>
-        <div className="confirm-toggle-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
-          <span>Send me an SMS reminder</span>
-        </div>
-        <div className={`confirm-toggle ${smsReminder ? 'active' : ''}`}>
-          <div className="confirm-toggle-thumb" />
-        </div>
-      </div>
+        <List>
+          <div className="ds-list-row">
+            <span className="ds-icon-well" aria-hidden="true"><Icon.Bell /></span>
+            <span className="ds-list-row__body">
+              <span className="ds-list-row__title" id="confirm-sms-label">Send me an SMS reminder</span>
+            </span>
+            <Switch checked={smsReminder} onChange={setSmsReminder} aria-labelledby="confirm-sms-label" />
+          </div>
+        </List>
       )}
 
       <MedicalRecordsPicker selectedRecords={selectedRecords} onChange={setSelectedRecords} />
@@ -492,38 +432,32 @@ export default function ConfirmBooking() {
       </div>
 
       <div className="app-flow-footer">
-        <button className="app-flow-cta" disabled={!ready} onClick={handleConfirm}>
+        <button type="button" className="app-flow-cta" disabled={!ready} onClick={handleConfirm}>
           Pay & Confirm · {formatMoney(consultAmount)}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
+          <Icon.ArrowRight />
         </button>
       </div>
       </>)}
 
       {showSuccess && (
         <div className={`confirm-success-page is-${phase}`}>
-          <div className="confirm-success-header">
-            <div className="confirm-success-header-spacer" aria-hidden="true" />
-            <h1 className="confirm-success-header-title">Confirmation</h1>
-            <button
-              type="button"
-              className="confirm-success-menu-btn ds-icon-btn is-md"
-              aria-label="More"
-              onClick={() => {
-                setMenuView('menu')
-                openMenu()
-              }}
-              disabled={phase !== 'actions'}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="2" />
-                <circle cx="12" cy="12" r="2" />
-                <circle cx="12" cy="19" r="2" />
-              </svg>
-            </button>
-          </div>
+          <AppBar
+            className="confirm-success-header"
+            title="Confirmation"
+            lead={null}
+            actions={(
+              <IconButton
+                label="More"
+                onClick={() => {
+                  setMenuView('menu')
+                  openMenu()
+                }}
+                disabled={phase !== 'actions'}
+              >
+                <Icon.More />
+              </IconButton>
+            )}
+          />
 
           <div className="confirm-success-body">
           <div className="confirm-success-stage">
@@ -553,169 +487,86 @@ export default function ConfirmBooking() {
           </div>
 
           <div className={`confirm-success-details ${phase === 'details' || phase === 'actions' ? 'is-visible' : ''}`}>
-          <div className="confirm-section-label">Appointment Summary</div>
-          <div className="confirm-summary-card confirm-hero-card ds-card" ref={heroRef}>
-            <div className="confirm-status-chip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
+          <SectionHead group as="h3" title="Appointment summary" />
+          <div className="ds-card confirm-hero-card" ref={heroRef}>
+            <Badge tone="ready" className="confirm-status-chip">
+              <Icon.Calendar />
               {formatCountdown(getAppointmentStart(date, time))}
-            </div>
+            </Badge>
 
             <DoctorCard doctor={doctor} context="identity" className="confirm-success-doctor" disableNavigate />
 
-            <div className="confirm-success-row">
-              <svg className="confirm-success-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              <span className="confirm-success-row-label">Date</span>
-              <span className="confirm-success-row-value">{dateStr}</span>
-            </div>
-            <div className="confirm-success-row">
-              <svg className="confirm-success-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-              <span className="confirm-success-row-label">Time</span>
-              <span className="confirm-success-row-value">{formatTimeRange()}</span>
-            </div>
-            <div className="confirm-success-row">
-              <svg className="confirm-success-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <span className="confirm-success-row-label">Type</span>
-              <span className="confirm-success-row-value">{visitType || 'In-Person'} Visit</span>
+            <DetailRow icon={<Icon.Calendar />} label="Date" value={dateStr} />
+            <DetailRow icon={<Icon.Clock />} label="Time" value={formatTimeRange()} />
+            <DetailRow icon={visitType === 'Video' ? <Icon.Video /> : <Icon.User />} label="Type" value={`${visitType || 'In-Person'} Visit`} />
+
+            <div className="ds-list-row confirm-payment-row">
+              <Badge tone="success">Paid</Badge>
+              <span className="ds-list-row__body">
+                <span className="ds-list-row__sub">{paidPayment?.method || 'Card'}</span>
+              </span>
+              <strong className="confirm-payment-amount tnum">{formatMoney(paidPayment?.amount ?? consultAmount)}</strong>
+              <Button variant="text" size="sm" trailingIcon={<Icon.ChevronRight />} onClick={() => runMenuAction('invoice')}>
+                Invoice
+              </Button>
             </div>
 
-            <div className="confirm-payment-row">
-              <span className="confirm-payment-badge">Paid</span>
-              <span className="confirm-payment-method">{paidPayment?.method || 'Card'}</span>
-              <span className="confirm-payment-amount">{formatMoney(paidPayment?.amount ?? consultAmount)}</span>
-              <button type="button" className="confirm-payment-invoice" onClick={() => runMenuAction('invoice')}>
-                View Invoice
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="confirm-success-row confirm-success-row-last">
-              <svg className="confirm-success-row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span className="confirm-success-row-address">{doctor.address}</span>
-            </div>
+            <DetailRow icon={<Icon.Pin />} value={doctor.address} />
           </div>
           </div>
 
           <div className={`confirm-success-actions ${phase === 'actions' ? 'is-visible' : ''}`}>
           {note && (
-            <>
-              <div className="confirm-section-label">Shared Symptoms</div>
-              <div className="confirm-symptoms-card">
-                <div className="confirm-symptoms-label">Symptoms You Shared</div>
-                <p className="confirm-symptoms-text">{note}</p>
-                <button className="confirm-symptoms-action">
-                  View full symptoms
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
+            <section>
+              <SectionHead group as="h3" title="Shared symptoms" />
+              <div className="ds-card is-padded confirm-symptoms-card">
+                <p className="ds-caption">Symptoms you shared</p>
+                <p className="ds-body confirm-symptoms-text">{note}</p>
               </div>
-            </>
+            </section>
           )}
 
           <AttachedRecordsSummary selectedRecords={attachedRecordIds} />
 
-          <div className="confirm-section-label">What's Next</div>
-          <div className="confirm-next-card">
-            <div className="confirm-next-row">
-              <div className="confirm-next-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                  <line x1="9" y1="14" x2="15" y2="14" />
-                  <line x1="9" y1="18" x2="13" y2="18" />
-                </svg>
-              </div>
-              <div className="confirm-next-text">
-                <div className="confirm-next-title">Review Appointment Details</div>
-                <div className="confirm-next-desc">Confirm your visit information and prepare any questions</div>
-              </div>
+          <section>
+            <SectionHead group as="h3" title="What's next" />
+            <div className="ds-card is-padded">
+              <Steps
+                items={[
+                  { key: 'review', title: 'Review appointment details', body: 'Confirm your visit information and prepare any questions' },
+                  { key: 'checkin', title: 'Complete pre-visit check-in', body: 'Save time at the clinic by filling out forms online' },
+                  { key: 'arrive', title: 'Arrive 15 minutes early', body: 'Bring citizenship ID or photo ID and your health insurance card for check-in' },
+                ]}
+              />
             </div>
-            <div className="confirm-next-row">
-              <div className="confirm-next-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <path d="M9 12l2 2 4-4" />
-                </svg>
-              </div>
-              <div className="confirm-next-text">
-                <div className="confirm-next-title">Complete Pre-Visit Check-In</div>
-                <div className="confirm-next-desc">Save time at the clinic by filling out forms online</div>
-              </div>
-            </div>
-            <div className="confirm-next-row confirm-next-row-last">
-              <div className="confirm-next-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </div>
-              <div className="confirm-next-text">
-                <div className="confirm-next-title">Arrive 15 Minutes Early</div>
-                <div className="confirm-next-desc">Bring citizenship ID or photo ID and your health insurance card for check-in</div>
-              </div>
-            </div>
-          </div>
+          </section>
 
-          <div className="confirm-section-label">Need help before your visit?</div>
-          <div className="confirm-support-card">
-            <p className="confirm-support-text">Our care team can help with any questions or appointment updates before your visit.</p>
-            <button className="confirm-support-action" onClick={handleContactClinic}>
-              Contact Clinic
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </button>
-          </div>
+          <section>
+            <SectionHead group as="h3" title="Need help before your visit?" />
+            <div className="ds-card is-padded confirm-support-card">
+              <p className="ds-body">Our care team can help with any questions or appointment updates before your visit.</p>
+              <Button variant="secondary" size="sm" trailingIcon={<Icon.ArrowRight />} onClick={handleContactClinic}>
+                Contact clinic
+              </Button>
+            </div>
+          </section>
           </div>
           </div>
 
-          <div className={`confirm-bottom-bar ${phase === 'actions' ? 'is-visible' : 'is-pending'}`}>
-            <button className="confirm-btn" onClick={handleCheckIn}>
+          <div className={`sticky-footer-cta confirm-bottom-bar ${phase === 'actions' ? 'is-visible' : 'is-pending'}`}>
+            <button type="button" className="sticky-footer-cta__primary" onClick={handleCheckIn}>
               {actions.primaryCta.label}
             </button>
-            <button className="confirm-bottom-link" onClick={handleDone}>Back to Home</button>
+            <button type="button" className="sticky-footer-cta__secondary" onClick={handleDone}>Back to Home</button>
           </div>
         </div>
       )}
 
       <AppBottomSheet open={showMenu} closing={menuClosing} onClose={closeMenu} labelledBy="confirm-menu-title">
-        <div className="ds-sheet-header">
-          <h3 id="confirm-menu-title">{menuView === 'cancel' ? 'Cancel appointment' : 'Appointment'}</h3>
-          <button type="button" className="ds-sheet-close" onClick={closeMenu} aria-label="Close">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+        <SheetHeader titleId="confirm-menu-title" title={menuView === 'cancel' ? 'Cancel appointment' : 'Appointment'} onClose={closeMenu} />
         {menuView === 'cancel' ? (
           <div className="confirm-menu-options">
-            <p className="confirm-sheet-note">
+            <p className="ds-body confirm-sheet-note">
               Cancel this appointment with Dr. {doctor.name}? The slot may be offered to another patient.
             </p>
             <button type="button" className="ds-sheet-option is-danger" onClick={confirmCancelAppointment}>

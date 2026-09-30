@@ -29,6 +29,10 @@ import {
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshAppointmentData } from '../features/sync/pageRefresh'
+import {
+  AppBar, Badge, Button, Callout, Disclosure, Icon, IconButton, InfoCell, InfoGrid, List, ListRow,
+  SectionHead, SheetHeader, Steps, cx,
+} from './ui'
 import './PreVisitCheckIn.css'
 
 const faqItems = [
@@ -38,18 +42,6 @@ const faqItems = [
   { q: 'How to access lab reports?', a: 'Open Appointment Details → Medical Records → Lab Reports to view or download your files.' },
   { q: 'When to seek urgent care?', a: 'Seek immediate care for severe chest pain, difficulty breathing, uncontrolled bleeding, or sudden numbness or confusion.' },
 ]
-
-function InfoCell({ label, value, children }) {
-  return (
-    <div className="previsit-info-cell">
-      <span className="previsit-info-icon">{children}</span>
-      <div>
-        <div className="previsit-info-label">{label}</div>
-        <div className="previsit-info-value">{value}</div>
-      </div>
-    </div>
-  )
-}
 
 export default function PreVisitCheckIn() {
   const navigate = useNavigate()
@@ -273,36 +265,25 @@ export default function PreVisitCheckIn() {
   }[sheet?.type] || 'Appointment'
 
   return (
-    <div className={`previsit-page ${sharedFlow ? 'is-shared-hero' : ''} ${contentReady ? 'is-content-ready' : ''}`}>
-      <div className="previsit-header-bar">
-        <div className="previsit-header-spacer" aria-hidden="true" />
-        <h1 className="previsit-header-title">Ready for Visit</h1>
-        <button type="button" className="previsit-menu-btn" aria-label="More" onClick={() => openSheet({ type: 'menu' })}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="5" r="2" />
-            <circle cx="12" cy="12" r="2" />
-            <circle cx="12" cy="19" r="2" />
-          </svg>
-        </button>
-      </div>
+    <div className={cx('previsit-page', sharedFlow && 'is-shared-hero', contentReady && 'is-content-ready')}>
+      <AppBar
+        className="previsit-header-bar"
+        title="Ready for visit"
+        lead={null}
+        actions={(
+          <IconButton className="previsit-menu-btn" label="More" onClick={() => openSheet({ type: 'menu' })}>
+            <Icon.More />
+          </IconButton>
+        )}
+      />
 
       <div className="previsit-body" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-        <div className="previsit-success-banner">
-          <div className="previsit-success-check" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="previsit-success-title">Successfully checked in</h2>
-            <p className="previsit-success-desc">
-              The clinic team is preparing for your visit with {doctorName}. Review the details below, then head in.
-            </p>
-          </div>
-        </div>
+        <Callout tone="success" icon={<Icon.Check />} title="Successfully checked in" className="previsit-success-banner">
+          The clinic team is preparing for your visit with {doctorName}. Review the details below, then head in.
+        </Callout>
 
-        <div className={`booking-hero ${hideHero ? 'is-morphing' : ''}`} ref={heroRef}>
+        <div className={cx('booking-hero', hideHero && 'is-morphing')} ref={heroRef}>
           <DoctorCard
             doctor={doctor}
             variant="profile"
@@ -314,7 +295,7 @@ export default function PreVisitCheckIn() {
         </div>
 
         {chatError ? (
-          <p className="previsit-chat-error" role="alert">{chatError}</p>
+          <p className="ds-page__error" role="alert">{chatError}</p>
         ) : null}
 
         <BookingReveal
@@ -328,118 +309,73 @@ export default function PreVisitCheckIn() {
             </>
           )}
         >
-          <div className="previsit-card">
-            <h3 className="previsit-card-title">Your appointment</h3>
-            <div className="previsit-info-grid">
-              <InfoCell label="Date" value={dateStr}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-              </InfoCell>
-              <InfoCell label="Time" value={time}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </InfoCell>
-              <InfoCell label="Type" value={`${visitType || 'In-Person'} Visit`}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </InfoCell>
-              <InfoCell label="Location" value={doctor.address}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </InfoCell>
+          <div className="ds-stack is-loose">
+          <section>
+            <SectionHead group as="h3" title="Your appointment" />
+            <div className="ds-card is-padded">
+              <InfoGrid>
+                <InfoCell icon={<Icon.Calendar />} label="Date" value={dateStr} />
+                <InfoCell icon={<Icon.Clock />} label="Time" value={time} />
+                <InfoCell icon={visitType === 'Video' ? <Icon.Video /> : <Icon.User />} label="Type" value={`${visitType || 'In-Person'} Visit`} />
+                <InfoCell icon={<Icon.Pin />} label="Location" value={doctor.address} />
+              </InfoGrid>
             </div>
-          </div>
+          </section>
 
-          <div className="previsit-card">
-            <h3 className="previsit-card-title">What to expect next</h3>
-            <div className="previsit-timeline">
-              {steps.map((step, i) => (
-                <div key={step.id} className={`previsit-step ${step.status}`}>
-                  <div className="previsit-step-left">
-                    <div className="previsit-step-icon">
-                      {step.status === 'completed' ? (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      ) : (
-                        <span className="previsit-step-num">{step.id}</span>
-                      )}
-                    </div>
-                    {i < steps.length - 1 && <div className="previsit-step-line" />}
-                  </div>
-                  <div className="previsit-step-content">
-                    <div className="previsit-step-label">{step.label}</div>
-                    <div className="previsit-step-detail">{step.detail}</div>
-                  </div>
-                </div>
-              ))}
+          <section>
+            <SectionHead group as="h3" title="What to expect next" />
+            <div className="ds-card is-padded">
+              <Steps
+                items={steps.map((step) => ({
+                  key: step.id,
+                  title: step.label,
+                  body: step.detail,
+                  state: step.status === 'completed' ? 'done' : step.status === 'current' ? 'active' : undefined,
+                  marker: step.status === 'completed' ? <Icon.Check /> : step.id,
+                }))}
+              />
             </div>
-          </div>
+          </section>
 
-          <div className="previsit-card">
-            <div className="previsit-card-header">
-              <h3 className="previsit-card-title">Clinic location</h3>
-              <span className="previsit-floor-badge">3rd Floor</span>
-            </div>
-            <div className="previsit-clinic-row">
-              <div className="previsit-map-thumb" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </div>
-              <div className="previsit-clinic-info">
-                <div className="previsit-clinic-address">{doctor.address}</div>
-                <div className="previsit-clinic-floor">Suite 302 · 3rd Floor</div>
-                <button type="button" className="previsit-directions-link" onClick={openMaps}>
-                  View Directions
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
+          <section>
+            <SectionHead group as="h3" title="Clinic location" action={<Badge tone="neutral">3rd Floor</Badge>} />
+            <List>
+              <ListRow
+                icon={<span className="ds-icon-well is-lg" aria-hidden="true"><Icon.Pin /></span>}
+                title={doctor.address}
+                subtitle="Suite 302 · 3rd Floor"
+                trailing={<span className="ds-link">Directions</span>}
+                onClick={openMaps}
+              />
+            </List>
+          </section>
 
-          <div className="previsit-card">
-            <h3 className="previsit-card-title">Important reminders</h3>
-            <div className="previsit-reminders">
-              <div className="previsit-reminder-item">
-                <div className="previsit-reminder-dot" />
-                <span>Have citizenship ID or photo ID and your health insurance card ready at the desk.</span>
-              </div>
-              <div className="previsit-reminder-item">
-                <div className="previsit-reminder-dot" />
-                <span>Wear accessible clothing in case lab work is needed.</span>
-              </div>
-            </div>
-          </div>
+          <section>
+            <SectionHead group as="h3" title="Important reminders" />
+            <Callout tone="neutral" icon={<Icon.Info />}>
+              <ul className="previsit-reminders">
+                <li>Have citizenship ID or photo ID and your health insurance card ready at the desk.</li>
+                <li>Wear accessible clothing in case lab work is needed.</li>
+              </ul>
+            </Callout>
+          </section>
 
-          <div className="previsit-section">
-            <h3 className="previsit-section-title">Frequently asked questions</h3>
-            <div className="previsit-faq-list">
+          <section>
+            <SectionHead group as="h3" title="Frequently asked questions" />
+            <List>
               {faqItems.map((item, i) => (
-                <div key={item.q} className="previsit-faq-item-wrap">
-                  <button type="button" className="previsit-faq-item" onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}>
-                    <span className="previsit-faq-question">{item.q}</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`previsit-faq-chevron ${expandedFaq === i ? 'expanded' : ''}`}>
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                  {expandedFaq === i ? <p className="previsit-faq-answer">{item.a}</p> : null}
-                </div>
+                <Disclosure
+                  key={item.q}
+                  id={`previsit-faq-${i}`}
+                  title={item.q}
+                  open={expandedFaq === i}
+                  onToggle={() => setExpandedFaq(expandedFaq === i ? null : i)}
+                >
+                  <p>{item.a}</p>
+                </Disclosure>
               ))}
-            </div>
+            </List>
+          </section>
           </div>
         </BookingReveal>
       </div>
@@ -453,15 +389,7 @@ export default function PreVisitCheckIn() {
 
       {isPresented && sheet && (
         <AppBottomSheet open closing={isClosing} onClose={closeSheet} labelledBy="previsit-sheet-title">
-          <div className="ds-sheet-header">
-            <h3 id="previsit-sheet-title">{sheetTitle}</h3>
-            <button type="button" className="ds-sheet-close" onClick={closeSheet} aria-label="Close">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
+          <SheetHeader titleId="previsit-sheet-title" title={sheetTitle} onClose={closeSheet} />
 
           {sheet.type === 'menu' && (
             <AppointmentMenuOptions
@@ -472,22 +400,20 @@ export default function PreVisitCheckIn() {
           )}
 
           {sheet.type === 'cancel' && (
-            <div className="previsit-sheet-body">
-              <p className="previsit-sheet-note">
+            <div className="ds-stack previsit-sheet-body">
+              <p className="ds-body">
                 Cancel this appointment with Dr. {doctor.name}? The slot may be offered to another patient.
               </p>
-              <button type="button" className="ds-sheet-option is-danger" onClick={confirmCancelAppointment}>
+              <Button variant="danger" size="lg" block onClick={confirmCancelAppointment}>
                 Yes, cancel appointment
-              </button>
+              </Button>
             </div>
           )}
 
           {sheet.type === 'calendar' && (
-            <div className="previsit-sheet-body">
-              <p className="previsit-sheet-note">
-                A calendar file was downloaded. Open it to add this visit to your device calendar.
-              </p>
-            </div>
+            <p className="ds-body previsit-sheet-body">
+              A calendar file was downloaded. Open it to add this visit to your device calendar.
+            </p>
           )}
         </AppBottomSheet>
       )}

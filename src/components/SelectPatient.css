@@ -1,3 +1,5 @@
+/* Select patient — booking step 2. Rows, radios, fields and chips are the
+   shared primitives; this file only lays out the step. */
 .select-patient {
   flex: 1;
   min-height: 0;
@@ -17,261 +19,33 @@
   padding: 0 var(--content-padding) var(--space-6);
 }
 
-.select-patient-lead {
-  margin: 0 0 18px;
-  font-size: var(--text-body-lg-size);
-  line-height: 1.45;
-  color: var(--text-secondary);
-}
+.select-patient-lead { margin-bottom: var(--space-4); }
 
-.patient-group {
-  margin-bottom: 18px;
-}
+.patient-group { margin-bottom: var(--section-gap); }
 
-.patient-group h2 {
-  margin: 0 0 var(--space-2-5);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.patient-card {
-  width: 100%;
+/* Choice + optional Edit action share one divided row */
+.patient-row__main {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  text-align: left;
-  padding: var(--space-3-5) var(--space-4);
-  margin-bottom: var(--space-2);
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius-card);
-  background: var(--white);
-  font-family: inherit;
-  box-shadow: none;
-  transition: var(--interact-transition);
 }
 
-.patient-card:hover:not(.is-selected) {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
+.patient-row__main > .ds-choice { flex: 1; min-width: 0; }
 
-.patient-card:active:not(.is-selected) {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
-}
-
-.patient-card-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  text-align: left;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.patient-card.is-selected {
-  border-color: var(--interact-selected-border);
-  background: var(--interact-selected-bg);
-}
-
-.patient-card.is-incomplete {
-  border-style: dashed;
-}
-
-.patient-card-edit {
+.patient-row__edit {
   flex-shrink: 0;
-  margin: 0;
-  padding: var(--space-1) var(--space-2);
-  border: none;
-  background: none;
-  color: var(--primary);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-bold);
-  font-family: inherit;
-  cursor: pointer;
+  margin-right: var(--space-2);
 }
 
-.patient-complete-panel {
-  margin: -4px 0 var(--space-4);
-  padding: var(--space-3) var(--space-4) var(--space-1);
-  border: var(--border-width) dashed var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--white);
+.patient-row.is-incomplete .ds-choice__sub { color: var(--warning-900); }
+
+.patient-row__panel {
+  padding: var(--space-1) var(--card-padding) var(--card-padding);
+  border-top: var(--border-width) solid var(--border-divider);
 }
 
-.patient-complete-hint {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-label-size);
-  line-height: 1.45;
-  color: var(--text-secondary);
-}
+.patient-row__hint { margin: var(--space-3) 0 var(--space-4); }
 
-.patient-form-error {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--danger, #c0392b);
-}
-
-.patient-card-radio {
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
-  border: var(--border-width-strong) solid var(--border);
-  flex-shrink: 0;
-}
-
-.patient-card.is-selected .patient-card-radio {
-  border-color: var(--primary);
-  box-shadow: inset 0 0 0 4px var(--primary);
-}
-
-.patient-card-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-0-5);
-  min-width: 0;
-}
-
-.patient-card-copy strong {
-  font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-}
-
-.patient-card-copy span {
-  font-size: var(--text-label-size);
-  color: var(--text-secondary);
-}
-
-.patient-add {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: 52px;
-  margin-top: var(--space-1);
-  border: 1.5px dashed var(--primary);
-  border-radius: var(--radius-lg);
-  background: var(--service-icon-bg);
-  color: var(--primary);
-  font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.patient-add-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-full);
-  background: var(--cta);
-  color: var(--white);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--text-title-size);
-  line-height: 1;
-}
-
-.patient-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3-5);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-secondary);
-}
-
-.patient-field input,
-.patient-field textarea {
-  width: 100%;
-  border: var(--border-width) solid var(--border);
-  border-radius: var(--radius);
-  padding: var(--space-3) var(--space-3-5);
-  font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-medium);
-  font-family: inherit;
-  color: var(--text-primary);
-  background: var(--white);
-  outline: none;
-  box-shadow: none;
-}
-
-.patient-field input:focus,
-.patient-field input:focus-visible,
-.patient-field textarea:focus,
-.patient-field textarea:focus-visible {
-  outline: none;
-  box-shadow: none;
-  border-color: var(--border);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.patient-field-row {
-  display: grid;
-  grid-template-columns: 1.4fr 0.8fr;
-  gap: var(--space-2-5);
-}
-
-.patient-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.patient-chip-row button {
-  border: var(--border-width) solid var(--border);
-  background: var(--white);
-  color: var(--text-primary);
-  border-radius: var(--radius-full);
-  padding: var(--space-2) var(--space-3-5);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-semibold);
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.patient-chip-row button.is-on {
-  border-color: var(--primary);
-  background: var(--service-icon-bg);
-  color: var(--primary);
-}
-
-.patient-text-btn {
-  width: 100%;
-  margin-top: var(--space-2);
-  border: none;
-  background: none;
-  color: var(--primary);
-  font-size: var(--text-label-size);
-  font-weight: var(--font-weight-bold);
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.select-patient .app-flow-footer .patient-text-btn {
-  min-height: 36px;
+/* Selected tint spans the whole row, including the Edit action */
+.patient-row:has(> .patient-row__main > .ds-choice[aria-checked='true']) > .patient-row__main {
+  background: var(--primary-200);
 }

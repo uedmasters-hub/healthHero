@@ -14,9 +14,11 @@ import PullToRefreshIndicator from './PullToRefreshIndicator'
 import GalleryLightbox from './GalleryLightbox'
 import EmptyState from './EmptyState'
 import { galleryFor, mapEmbedUrl } from './profile/placeMedia'
+import CartButton from './pharmacy/CartButton'
 import { PharmacyHeroCard, ProfileGallery, ProfileHeader, ProfileMap, ProfileRatings } from './profile/placeProfile'
 import './DoctorProfile.css'
 import './DoctorCard.css'
+import { EndOfPage } from './ui'
 
 const TAG_BACKGROUNDS = ['#DBEAFE', '#D1FAE5', '#EDE9FE', '#FFEDD5']
 
@@ -152,6 +154,7 @@ export default function PharmacyDetailPage() {
 
   const headerActions = (
     <>
+      <CartButton />
       <button className="ds-icon-btn is-subtle is-md" type="button" aria-label="Share" onClick={shareProfile}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <circle cx="18" cy="5" r="3" />
@@ -184,7 +187,7 @@ export default function PharmacyDetailPage() {
   if (status === 'loading') {
     return (
       <div className="doctor-profile is-skeleton has-cta">
-        <ProfileHeader title="Pharmacy Profile" onBack={goBack} />
+        <ProfileHeader title="Pharmacy Profile" onBack={goBack} actions={<CartButton />} />
         <div className="profile-scroll is-loading">
           <ProfileSkeletons />
         </div>
@@ -194,8 +197,8 @@ export default function PharmacyDetailPage() {
 
   if (status === 'error' || !pharmacy) {
     return (
-      <div className="doctor-profile page-push-in">
-        <ProfileHeader title="Pharmacy Profile" onBack={goBack} />
+      <div className="doctor-profile">
+        <ProfileHeader title="Pharmacy Profile" onBack={goBack} actions={<CartButton />} />
         <div className="profile-scroll">
           <div className="profile-section">
             <EmptyState
@@ -204,7 +207,7 @@ export default function PharmacyDetailPage() {
               title="Pharmacy unavailable"
               message={error || 'We could not load this pharmacy from the registry.'}
             />
-            <button type="button" className="view-all-reviews" onClick={load}>Try again</button>
+            <button type="button" className="ds-btn ds-btn--secondary ds-btn--md ds-btn--block view-all-reviews" onClick={load}>Try again</button>
           </div>
         </div>
       </div>
@@ -212,7 +215,7 @@ export default function PharmacyDetailPage() {
   }
 
   return (
-    <div className="doctor-profile page-push-in has-cta">
+    <div className="doctor-profile has-cta">
       <ProfileHeader title="Pharmacy Profile" onBack={goBack} actions={headerActions} />
 
       <div className="profile-scroll" ref={scrollRef}>
@@ -332,7 +335,7 @@ export default function PharmacyDetailPage() {
             })}
           />
 
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
       </div>
 

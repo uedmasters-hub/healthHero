@@ -3,7 +3,7 @@ export default function ReleasePhasesPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Release phases</div>
-        <h1 className="ds-page-title">Release phases</h1>
+        <h1 className="ds-doc-title">Release phases</h1>
         <p className="ds-page-description">
           How design system components move from experimental to stable — our lifecycle process.
         </p>
@@ -69,8 +69,8 @@ MAJOR.MINOR.PATCH
 1.1.0 → 1.1.1 (fixed chip focus ring)
 1.1.1 → 2.0.0 (removed deprecated chip API)`}</code></pre>
 
-      <div className="ds-callout ds-callout-warning">
-        <span className="ds-callout-icon">⚠</span>
+      <div className="ds-doc-callout ds-doc-callout-warning">
+        <span className="ds-doc-callout-icon">⚠</span>
         <div>
           Always check the release phase before adopting a component. Experimental components
           may change without notice and should not be used in production.

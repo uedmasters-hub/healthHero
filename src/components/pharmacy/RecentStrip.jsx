@@ -16,8 +16,8 @@ export default function RecentStrip({
 
   return (
     <section className={`recent-strip ${className}`.trim()} aria-label={title}>
-      <div className="section-header recent-strip__header">
-        <h2 className="section-title">{title}</h2>
+      <div className="ds-section-head recent-strip__header">
+        <h2 className="ds-section-head__title">{title}</h2>
       </div>
       <div className="recent-strip__scroll" ref={containerRef}>
         {items.map((item, index) => (
@@ -25,7 +25,7 @@ export default function RecentStrip({
             as="button"
             type="button"
             key={item.id}
-            className="recent-card"
+            className="recent-card ds-card is-interactive"
             revealed={isRevealed(index)}
             cached={isCached}
             ref={setItemRef(index)}

@@ -266,30 +266,19 @@ function AppProviders() {
 function DesignSystemGate() {
   const location = useLocation()
   if (!location.pathname.startsWith('/design')) return null
-  return <DesignSystemLayout />
+  // Nested <Routes> in the docs resolve relative to this parent route
+  return (
+    <Routes>
+      <Route path="/design/*" element={<DesignSystemLayout />} />
+    </Routes>
+  )
 }
 
 function ConfigErrorScreen({ message }) {
   return (
-    <div
-      style={{
-        minHeight: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 12,
-        padding: 24,
-        textAlign: 'center',
-        background: '#fff',
-        color: 'var(--text-primary)',
-        fontFamily: 'inherit',
-      }}
-    >
-      <h1 style={{ margin: 0, fontSize: 22 }}>Configuration needed</h1>
-      <p style={{ margin: 0, maxWidth: 320, lineHeight: 1.45, color: '#5c5c70', fontSize: 14 }}>
-        {message}
-      </p>
+    <div className="ds-empty" style={{ minHeight: '100%', justifyContent: 'center', background: 'var(--surface-2)' }}>
+      <h1 className="ds-heading">Configuration needed</h1>
+      <p className="ds-empty__copy">{message}</p>
     </div>
   )
 }

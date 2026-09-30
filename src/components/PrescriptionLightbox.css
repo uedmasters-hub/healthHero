@@ -7,11 +7,11 @@
   display: flex;
   flex-direction: column;
   background: var(--overlay-lightbox);
-  animation: rxFadeIn 0.22s ease;
+  animation: fadeIn var(--duration-dialog) var(--ease-standard);
 }
 
 .rx-overlay.is-closing {
-  animation: rxFadeOut 0.2s ease forwards;
+  animation: fadeOut var(--duration-normal) var(--ease-standard) forwards;
 }
 
 .rx-header {
@@ -22,30 +22,15 @@
 }
 
 .rx-header-spacer,
-.rx-close {
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-}
+.rx-close { flex-shrink: 0; }
 
 .rx-title {
   flex: 1;
   margin: 0;
   text-align: center;
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--white);
-}
-
-.rx-close {
-  border: none;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 
 .rx-preview-scroll {
@@ -61,7 +46,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-card);
   padding: var(--space-5) 18px var(--space-4);
   color: var(--text-primary);
@@ -76,10 +61,10 @@
 }
 
 .rx-clinic-mark {
-  width: 36px;
-  height: 36px;
+  width: var(--icon-well-size);
+  height: var(--icon-well-size);
   border-radius: var(--radius-sm);
-  background: var(--info);
+  background: var(--primary-600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,14 +73,14 @@
 
 .rx-clinic-name {
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .rx-clinic-meta {
   font-size: var(--text-caption-size);
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: var(--leading-body);
 }
 
 .rx-parties {
@@ -108,7 +93,8 @@
 .rx-kicker {
   font-size: var(--text-overline-size);
   font-weight: var(--font-weight-bold);
-  letter-spacing: 0.06em;
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--text-faint);
   margin-bottom: var(--space-1-5);
@@ -119,34 +105,34 @@
   display: flex;
   align-items: center;
   gap: var(--space-1-5);
-  color: var(--info);
+  color: var(--primary-600);
   margin-bottom: var(--space-2);
 }
 
 .rx-party-name {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .rx-party-meta {
   font-size: var(--text-caption-size);
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: var(--leading-body);
 }
 
 .rx-note-text {
   margin: 0 0 var(--space-4);
   font-size: var(--text-label-size);
-  line-height: 1.55;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
 .rx-symbol {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: var(--font-rx-glyph);
   font-style: italic;
   font-size: var(--text-subtitle-size);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .rx-meds-block {
@@ -160,7 +146,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-bottom: 22px;
+  margin-bottom: var(--space-5-5);
 }
 
 .rx-med {
@@ -171,7 +157,7 @@
 
 .rx-med-name {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin-bottom: 3px;
 }
@@ -192,7 +178,7 @@
 .rx-legal {
   margin: 0;
   font-size: var(--text-overline-size);
-  line-height: 1.45;
+  line-height: var(--leading-body);
   color: var(--text-faint);
   max-width: 58%;
 }
@@ -205,12 +191,12 @@
   width: 72px;
   height: 28px;
   display: block;
-  margin: 0 0 2px auto;
+  margin: 0 0 var(--space-0-5) auto;
 }
 
 .rx-sign-name {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   border-top: var(--border-width) solid var(--border);
   padding-top: var(--space-1);
@@ -223,40 +209,33 @@
   gap: var(--space-2-5);
   padding: var(--space-3) var(--space-4);
   padding-bottom: var(--bottom-bar-pad);
-  background: linear-gradient(180deg, rgba(8, 10, 18, 0) 0%, rgba(8, 10, 18, 0.55) 18%, rgba(8, 10, 18, 0.92) 100%);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--overlay-lightbox) 55%, transparent) 18%, color-mix(in srgb, var(--overlay-lightbox) 92%, transparent) 100%);
 }
 
 .rx-action {
-  min-height: 64px;
+  min-height: 4rem;
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--card-radius-sm);
   background: var(--surface-lightbox-bar);
-  color: var(--white);
+  color: var(--neutral-0);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   font-family: inherit;
   cursor: pointer;
 }
 
 .rx-action.is-primary {
-  background: var(--info);
+  background: var(--neutral-0);
+  color: var(--color-cta);
 }
 
 .rx-action:disabled {
   opacity: var(--opacity-muted);
 }
 
-@keyframes rxFadeIn {
-  from { opacity: var(--opacity-hidden); }
-  to { opacity: var(--opacity-visible); }
-}
 
-@keyframes rxFadeOut {
-  from { opacity: var(--opacity-visible); }
-  to { opacity: var(--opacity-hidden); }
-}

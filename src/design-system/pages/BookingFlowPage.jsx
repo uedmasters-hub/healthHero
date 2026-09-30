@@ -1,11 +1,11 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function BookingFlowPage() {
   return (
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Booking Flow</div>
-        <h1 className="ds-page-title">Booking Flow</h1>
+        <h1 className="ds-doc-title">Booking Flow</h1>
         <p className="ds-page-description">
           A 4-step wizard for booking doctor appointments — provider selection, slot picker,
           patient selection, and confirmation with payment.
@@ -52,22 +52,15 @@ export default function BookingFlowPage() {
           Displays a list of available doctors with the <code>DoctorCard</code> component
           in <code>row</code> variant. Users can filter by specialty and search by name.
         </p>
-        <CodeBlock title="SelectProvider structure" code={`<div className="booking-page">
-  <div className="booking-header">
-    <button className="booking-back-btn" />
-    <h1 className="booking-title">Select Provider</h1>
+        <CodeBlock title="Booking step shell (BookingFlow)" code={`<div className="booking-layout">
+  <AppBar title="Choose Date & Time" onBack={goBack} />   {/* + Steps progress */}
+  <div className="select-slot-scroll">
+    <DoctorCard variant="profile" disableNavigate />
+    <WeeklySchedule />                                   {/* ds-segmented + ds-chip slots */}
   </div>
-  <div className="booking-body">
-    <SearchField placeholder="Search Doctor" />
-    <div className="booking-doctor-list">
-      {doctors.map(doctor => (
-        <DoctorCard key={doctor.id} doctor={doctor} variant="row" context="booking" />
-      ))}
-    </div>
-  </div>
-  <AppFlowFooter>
+  <div className="app-flow-footer">
     <button className="app-flow-cta" disabled={!selected}>Continue</button>
-  </AppFlowFooter>
+  </div>
 </div>`} />
       </Section>
 
@@ -90,20 +83,24 @@ export default function BookingFlowPage() {
           Shows a summary of all booking details with the doctor card, slot, patient info,
           and payment details. Includes a notes textarea and the final CTA.
         </p>
-        <CodeBlock title="ConfirmBooking structure" code={`<div className="booking-page">
-  <BookingHero />                    {/* DoctorCard with shared hero transition */}
-  <div className="booking-confirm-body">
-    <ConfirmSummaryRow label="Date" value={date} />
-    <ConfirmSummaryRow label="Time" value={time} />
-    <ConfirmSummaryRow label="Patient" value={patient.name} />
-    <ConfirmSummaryRow label="Type" value={visitType} />
-    <textarea className="booking-notes" placeholder="Add notes..." />
+        <CodeBlock title="ConfirmBooking structure" code={`<div className="confirm-page">
+  <div className="confirm-scroll">
+    <DoctorCard variant="profile" disableNavigate />
+    <section>
+      <SectionHead group title="Patient" action={<Button variant="text" size="sm">Change patient</Button>} />
+      <List>
+        <DetailRow icon={<Icon.User />} label="Name" value={patient.name} />
+        <DetailRow icon={<Icon.Calendar />} label="Date" value={dateStr} />
+      </List>
+    </section>
+    <FormGroup label="Note for the doctor">
+      <textarea className="ds-field" rows={4} />
+    </FormGroup>
+    <MedicalRecordsPicker />                              {/* chip tabs + CheckboxMark rows */}
   </div>
-  <AppFlowFooter>
-    <button className="app-flow-cta" onClick={confirm}>
-      Confirm Booking — Rs. {fee}
-    </button>
-  </AppFlowFooter>
+  <div className="app-flow-footer">
+    <button className="app-flow-cta">Pay & Confirm · Rs. {fee}<Icon.ArrowRight /></button>
+  </div>
 </div>`} />
       </Section>
 

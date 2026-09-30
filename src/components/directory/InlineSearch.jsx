@@ -30,7 +30,7 @@ export default function InlineSearch({
       {typeof onDismiss === 'function' ? (
         <button
           type="button"
-          className="dir-inline-search__dismiss"
+          className="dir-inline-search__dismiss ds-icon-btn is-sm-size is-subtle"
           onClick={onDismiss}
           aria-label="Close search"
         >

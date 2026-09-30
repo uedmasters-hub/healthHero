@@ -30,10 +30,10 @@ export default function Categories() {
 
   return (
     <div className="categories">
-      <div className="categories-scroll" ref={containerRef}>
+      <div className="categories-scroll ds-chip-row" ref={containerRef}>
         {categories.map((cat, i) => (
           <RevealItem
-            className="category-card"
+            className="category-card ds-card is-interactive"
             key={cat.name}
             revealed={isRevealed(i)}
             cached={isCached}
@@ -49,7 +49,7 @@ export default function Categories() {
         <RevealItem
           as="button"
           type="button"
-          className="category-card view-all-card"
+          className="category-card view-all-card ds-card is-interactive"
           revealed={isRevealed(moreIdx)}
           cached={isCached}
           ref={setItemRef(moreIdx)}

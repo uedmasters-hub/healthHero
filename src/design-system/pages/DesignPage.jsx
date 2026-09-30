@@ -3,7 +3,7 @@ export default function DesignPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Get started / Design</div>
-        <h1 className="ds-page-title">Design</h1>
+        <h1 className="ds-doc-title">Design</h1>
         <p className="ds-page-description">
           Principles, guidelines, and workflows for designing eMedicalls products.
         </p>

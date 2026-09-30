@@ -3,7 +3,7 @@ export default function AccessibilityPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Accessibility</div>
-        <h1 className="ds-page-title">Accessibility</h1>
+        <h1 className="ds-doc-title">Accessibility</h1>
         <p className="ds-page-description">
           Building inclusive interfaces that work for everyone — our baseline is WCAG 2.1 AA.
         </p>

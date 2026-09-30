@@ -6,7 +6,7 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-5) var(--space-2);
-  background: var(--white);
+  background: var(--surface-2);
   flex-shrink: 0;
   z-index: 2;
 }
@@ -17,24 +17,27 @@
 }
 
 .tab-page-header__title {
-  font-size: var(--text-hero-size);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  /* Same role as .ds-page-title (PP PageHeader: medium · brand ink) */
   margin: 0;
-  letter-spacing: -0.4px;
+  font-size: var(--text-hero-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-medium);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  color: var(--pp-headline);
 }
 
 .tab-page-header__actions-spacer {
-  width: 44px;
-  height: 44px;
+  width: var(--touch-min);
+  height: var(--touch-min);
   flex-shrink: 0;
 }
 
 .tab-page-header__actions {
-  --tph-avatar: 36px;
-  --tph-search: 36px;
-  --tph-gap: 8px;
-  --tph-slot: 44px;
+  --tph-avatar: var(--btn-height-sm);
+  --tph-search: var(--btn-height-sm);
+  --tph-gap: var(--space-2);
+  --tph-slot: var(--touch-min);
   position: relative;
   display: flex;
   flex-shrink: 0;
@@ -51,8 +54,8 @@
   margin-top: 0;
 }
 
-/* Borderless Home-style search — absolute left of avatar */
-.tab-page-header__actions .header-search-btn {
+/* Child-page chrome (no global bell): borderless search, absolute left of avatar */
+.tab-page-header__actions > .header-search-btn {
   position: absolute;
   top: 50%;
   right: calc(var(--tph-slot) + var(--tph-gap));
@@ -64,17 +67,11 @@
   min-height: var(--tph-search);
   border: none;
   background: transparent;
-  color: var(--text-secondary);
   transition: none;
 }
 
-.tab-page-header__actions .header-search-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-.tab-page-header__actions .profile-avatar,
-.tab-page-header__actions .tab-page-header__avatar {
+.tab-page-header__actions > .profile-avatar,
+.tab-page-header__actions > .tab-page-header__avatar {
   position: absolute;
   right: 0;
   top: 50%;
@@ -84,7 +81,7 @@
   min-width: var(--tph-avatar);
   min-height: var(--tph-avatar);
   margin: calc(var(--tph-avatar) / -2) 0 0 0;
-  transform: scale(calc(44 / 36));
+  transform: scale(1.2222); /* 44 / 36 — avatar grows to the touch slot */
   transform-origin: right center;
 }
 
@@ -96,8 +93,8 @@
 
 .tab-page-header__leading .dir-shell__icon-btn,
 .tab-page-header__leading .ds-icon-btn {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
 }

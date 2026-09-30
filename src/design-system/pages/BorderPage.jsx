@@ -3,14 +3,14 @@ export default function BorderPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Border</div>
-        <h1 className="ds-page-title">Border</h1>
+        <h1 className="ds-doc-title">Border</h1>
         <p className="ds-page-description">
           Border colors, widths, and usage patterns for surfaces and interactive elements.
         </p>
       </div>
 
-      <div className="ds-callout ds-callout-info">
-        <span className="ds-callout-icon">ℹ</span>
+      <div className="ds-doc-callout ds-doc-callout-info">
+        <span className="ds-doc-callout-icon">ℹ</span>
         <div>This foundation is in <strong>Beta</strong>. API may change in future releases.</div>
       </div>
 

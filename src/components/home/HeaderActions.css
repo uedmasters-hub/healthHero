@@ -42,12 +42,30 @@
   box-sizing: border-box;
   width: var(--ha-shell-full);
   height: var(--ha-slot);
-  border-radius: 9999px;
-  background: var(--white);
-  box-shadow: 0 0 0 1px #eeeff3;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 var(--border-width) var(--border-default);
   transform-origin: right center;
   pointer-events: none;
   will-change: transform, opacity;
+}
+
+/* Search + page extras (e.g. cart) — left of the avatar slot, clears the shell */
+.header-actions__lead {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--ha-slot) + var(--space-3));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--ha-gap);
+  transform: translateY(-50%);
+  transition: right var(--duration-reveal) var(--ease-emphasized);
+  will-change: right;
+}
+
+.header-actions--has-shell .header-actions__lead {
+  right: calc(var(--ha-shell-full) - var(--ha-pad) + var(--space-3));
 }
 
 /* Invisible fly-to target — same geometry as the bell slot */
@@ -77,7 +95,7 @@
 }
 
 .header-actions__bell.is-island-land {
-  animation: ha-bell-island-land 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ha-bell-island-land var(--duration-enter) var(--ease-emphasized) both;
 }
 
 @keyframes ha-bell-island-land {
@@ -115,7 +133,7 @@
 .header-actions .profile-avatar__ring {
   width: 100%;
   height: 100%;
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
 }
 
 .header-actions .profile-avatar-pro {
@@ -153,7 +171,7 @@
 
 /* Collapse shell toward avatar (right origin) */
 .header-actions--exit-collapse .header-actions__shell {
-  animation: ha-shell-collapse 340ms var(--ha-spring) forwards;
+  animation: ha-shell-collapse var(--duration-reveal) var(--ha-spring) forwards;
 }
 
 /* Absorb: avatar grows left from pinned right edge */
@@ -165,14 +183,14 @@
 }
 
 .header-actions--exit-absorb .profile-avatar {
-  animation: ha-avatar-absorb 300ms var(--ha-spring) forwards;
+  animation: ha-avatar-absorb var(--duration-moderate) var(--ha-spring) forwards;
 }
 
 /* Dissolve shell — avatar already enlarged, still pinned */
 .header-actions--exit-dissolve .header-actions__shell {
   width: var(--ha-shell-tight);
   right: calc(var(--ha-pad) * -1);
-  animation: ha-shell-dissolve 220ms var(--ha-soft) forwards;
+  animation: ha-shell-dissolve var(--duration-dialog) var(--ha-soft) forwards;
 }
 
 .header-actions--exit-dissolve .profile-avatar {
@@ -182,11 +200,11 @@
 /* ═══════════════ ENTER ═══════════════ */
 
 .header-actions--enter-shell .header-actions__shell {
-  animation: ha-shell-enter 380ms var(--ha-spring) forwards;
+  animation: ha-shell-enter var(--duration-reveal) var(--ha-spring) forwards;
 }
 
 .header-actions--avatar-shrinking .profile-avatar {
-  animation: ha-avatar-shrink 380ms var(--ha-spring) forwards;
+  animation: ha-avatar-shrink var(--duration-reveal) var(--ha-spring) forwards;
 }
 
 .header-actions--enter-bell .header-actions__shell,
@@ -252,6 +270,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .header-actions__lead,
   .header-actions__shell,
   .header-actions .profile-avatar,
   .header-actions--exit-collapse .header-actions__shell,
@@ -259,8 +278,8 @@
   .header-actions--exit-dissolve .header-actions__shell,
   .header-actions--enter-shell .header-actions__shell,
   .header-actions--avatar-shrinking .profile-avatar {
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--duration-instant) !important;
     animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: var(--duration-instant) !important;
   }
 }

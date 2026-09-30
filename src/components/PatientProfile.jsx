@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileCompletion, useUser } from '../user'
 import { HOME_VISIBLE_STATUSES, useBookingStore } from '../booking'
-import { CARE_SUPPORT, NavGroup, NavRow, ProfileIcons, ProfilePage } from './profile/ProfileChrome'
+import { CARE_SUPPORT, NavGroup, NavRow, ProfileIcons, ProfilePage, SectionHead } from './profile/ProfileChrome'
+import { Badge, Button, List, ListRow, Progress } from './ui'
 import ProfileCompletionRing from './home/ProfileCompletionRing'
 import RevealItem from './RevealItem'
 import { useOriginBack } from '../features/pushNav'
@@ -52,15 +53,15 @@ export default function PatientProfile() {
       onBack={goBack}
       dataset="profile-hub"
       action={(
-        <button type="button" className="profile-header-edit" onClick={() => openChild('/profile/personal')}>
+        <Button variant="text" size="sm" onClick={() => openChild('/profile/personal')}>
           Edit
-        </button>
+        </Button>
       )}
     >
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="profile-hub-hero" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
-            {isDemo ? <span className="profile-hub-pro">PRO</span> : null}
+          <RevealItem className="ds-card profile-hub-hero" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+            {isDemo ? <Badge tone="solid" caps className="profile-hub-pro">PRO</Badge> : null}
             <ProfileCompletionRing percent={completion.percent} className="profile-hub-avatar-ring" size={72}>
               {profile.avatar ? (
                 <img src={profile.avatar} alt="" className="profile-hub-avatar profile-hub-avatar--photo" />
@@ -76,12 +77,7 @@ export default function PatientProfile() {
                 <span>Profile Completion</span>
                 <strong>{completion.percent}%</strong>
               </div>
-              <div className="profile-hub-completion-track" aria-hidden="true">
-                <span
-                  className="profile-hub-completion-fill"
-                  style={{ width: `${completion.percent}%` }}
-                />
-              </div>
+              <Progress thin tone="brand" value={completion.percent} />
               <p className="profile-hub-completion-summary">{completion.summary}</p>
             </div>
 
@@ -101,8 +97,8 @@ export default function PatientProfile() {
             </div>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
-            <h3 className="user-profile-section-title">Personal</h3>
+          <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+            <SectionHead title="Personal" />
             <NavGroup>
               <NavRow
                 icon={ProfileIcons.person}
@@ -125,8 +121,8 @@ export default function PatientProfile() {
             </NavGroup>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
-            <h3 className="user-profile-section-title">Health</h3>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+            <SectionHead title="Health" />
             <NavGroup>
               <NavRow
                 icon={ProfileIcons.medical}
@@ -149,8 +145,8 @@ export default function PatientProfile() {
             </NavGroup>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
-            <h3 className="user-profile-section-title">Support</h3>
+          <RevealItem revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
+            <SectionHead title="Support" />
             <NavGroup>
               <NavRow icon={ProfileIcons.message} label="Message" onClick={() => openChild('/profile/support')} />
               <NavRow icon={ProfileIcons.call} label="Call Support" href={`tel:${CARE_SUPPORT.phone}`} />
@@ -158,10 +154,10 @@ export default function PatientProfile() {
             </NavGroup>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
-            <div className="user-profile-info-card">
-              <button type="button" className="user-profile-logout" onClick={signOut}>Log out</button>
-            </div>
+          <RevealItem revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
+            <List>
+              <ListRow className="is-centered" danger chevron={false} title="Log out" onClick={signOut} />
+            </List>
           </RevealItem>
         </>
       )}

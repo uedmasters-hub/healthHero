@@ -1,6 +1,6 @@
 .app-footer {
   background: var(--bg);
-  padding: var(--space-8) var(--content-padding) calc(var(--nav-height) + var(--frame-footer) + var(--space-6));
+  padding: var(--space-8) var(--content-padding) var(--tab-root-clearance);
   display: flex;
   flex-direction: column;
 }
@@ -46,23 +46,14 @@
   margin: 0;
   font-size: var(--text-heading-size);
   line-height: var(--text-heading-line);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-snug);
+  font-weight: var(--font-weight-medium);
+  --tracking: var(--letter-snug);
+  letter-spacing: var(--tracking);
   color: var(--text-primary);
   white-space: nowrap;
 }
 
-.app-footer-badge {
-  flex-shrink: 0;
-  font-size: var(--text-overline-size);
-  line-height: var(--text-overline-line);
-  font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
-  color: var(--info);
-  background: var(--info-bg);
-  border-radius: var(--radius-sm);
-  padding: var(--space-1) var(--space-2);
-}
+.app-footer-badge { flex-shrink: 0; }
 
 .app-footer-tagline {
   margin: 0;
@@ -78,7 +69,8 @@
   font-size: var(--text-overline-size);
   line-height: var(--text-overline-line);
   font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
+  --tracking: var(--text-overline-tracking);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--text-primary);
 }
@@ -153,9 +145,9 @@
   height: var(--icon-well-size-lg);
   min-width: var(--icon-well-size-lg);
   min-height: var(--icon-well-size-lg);
-  border-radius: var(--radius-full);
-  background: var(--info-bg);
-  color: var(--info);
+  border-radius: var(--icon-btn-radius);
+  background: var(--icon-surface-brand);
+  color: var(--icon-color-brand);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -176,13 +168,6 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-4);
-}
-
-.app-footer-social-btn {
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font: inherit;
 }
 
 .app-footer-social-btn svg {

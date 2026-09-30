@@ -18,7 +18,7 @@ function clamp01(n) {
 /**
  * Coordinated Home-style search collapse.
  *
- * Drives a smoothed 0→1 `progress` from stage scroll so the large 52px field
+ * Drives a smoothed 0→1 `progress` from stage scroll so the large search field
  * and the header search icon can crossfade around the same threshold.
  *
  * Works for:

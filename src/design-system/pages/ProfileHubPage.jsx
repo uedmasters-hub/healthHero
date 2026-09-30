@@ -1,11 +1,11 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function ProfileHubPage() {
   return (
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Profile Hub</div>
-        <h1 className="ds-page-title">Profile Hub</h1>
+        <h1 className="ds-doc-title">Profile Hub</h1>
         <p className="ds-page-description">
           Patient profile management with workspace-based navigation — personal details, medical
           history, records, insurance, and support.
@@ -55,20 +55,19 @@ export default function ProfileHubPage() {
           back button, avatar, workspace title, and description. This creates visual consistency
           across all profile workspaces.
         </p>
-        <CodeBlock title="WorkspaceHeader structure" code={`<div className="profile-workspace-header">
-  <div className="profile-workspace-cover" style={{ backgroundImage: \`url(\${coverUrl})\` }}>
-    <button className="profile-workspace-back" aria-label="Back">
-      <BackIcon />
-    </button>
-  </div>
-  <div className="profile-workspace-avatar-row">
-    <img className="profile-workspace-avatar" src={avatar} />
-    <div className="profile-workspace-info">
-      <h1 className="profile-workspace-name">{name}</h1>
-      <p className="profile-workspace-meta">{meta}</p>
-    </div>
-  </div>
-</div>`} />
+        <CodeBlock title="Workspace structure (ProfileChrome)" code={`<ProfilePage title="Personal">              {/* ds-page + AppBar + pull-to-refresh */}
+  <section>
+    <SectionHead title="Basic details" action="Edit" onAction={edit} />   {/* caps group head */}
+    <InfoCard>                                  {/* ds-list */}
+      <InfoRow label="Name" value={name} />     {/* DetailRow: caption over value */}
+      <InfoRow label="Height" emptyLabel="Add height" />
+    </InfoCard>
+  </section>
+  <NavGroup>
+    <NavRow icon={ProfileIcons.medical} label="Medical" progress={medical} />  {/* ListRow + Progress */}
+  </NavGroup>
+  <GuidedEmpty title="Add your insurance" cta="Add policy" />               {/* EmptyState card */}
+</ProfilePage>`} />
       </Section>
 
       <Section title="PersonalWorkspace">
@@ -116,7 +115,7 @@ export default function ProfileHubPage() {
           { token: '--text-title-lg-size', value: '20px', usage: 'Workspace name font size' },
           { token: '--text-title-size', value: '16px', usage: 'Section title font size' },
           { token: '--text-body-size', value: '14px', usage: 'Row value font size' },
-          { token: '--text-body-sm-size', value: '13px', usage: 'Row label font size' },
+          { token: '--text-caption-size', value: '12px', usage: 'Detail-row label above the value' },
           { token: '--text-faint', value: '#9CA3AF', usage: 'Placeholder text color' },
           { token: '--icon-btn-size', value: '44px', usage: 'Row edit icon touch target' },
         ]} />

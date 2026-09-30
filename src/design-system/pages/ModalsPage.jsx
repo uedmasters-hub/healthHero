@@ -7,7 +7,7 @@ export default function ModalsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Modals</div>
-        <h1 className="ds-page-title">Modals</h1>
+        <h1 className="ds-doc-title">Modals</h1>
         <p className="ds-page-description">
           Overlay dialogs that require user attention or confirmation before proceeding.
         </p>

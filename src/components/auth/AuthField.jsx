@@ -41,11 +41,12 @@ export default function AuthField({
   return (
     <div className={`auth-field ${isPassword ? 'has-toggle' : ''} ${error ? 'is-invalid' : ''} ${value ? 'has-value' : ''}`}>
       <span className="auth-field-head">
-        <label className="auth-field-label" htmlFor={id}>{label}</label>
+        <label className="auth-field-label ds-field-label" htmlFor={id}>{label}</label>
         {labelAction}
       </span>
       <span className="auth-field-control">
         <input
+          className={`ds-field${error ? ' is-error' : ''}`}
           id={id}
           name={name || id}
           type={inputType}
@@ -63,7 +64,7 @@ export default function AuthField({
         {isPassword ? (
           <button
             type="button"
-            className="auth-field-toggle"
+            className="auth-field-toggle ds-icon-btn is-muted"
             onClick={() => setVisible((open) => !open)}
             aria-label={visible ? 'Hide password' : 'Show password'}
             tabIndex={disabled ? -1 : 0}
@@ -73,9 +74,9 @@ export default function AuthField({
         ) : null}
       </span>
       {error ? (
-        <span className="auth-field-error" id={`${id}-error`}>{error}</span>
+        <span className="auth-field-error ds-field-error" id={`${id}-error`}>{error}</span>
       ) : hint ? (
-        <span className="auth-field-hint" id={`${id}-hint`}>{hint}</span>
+        <span className="auth-field-hint ds-field-hint" id={`${id}-hint`}>{hint}</span>
       ) : null}
     </div>
   )

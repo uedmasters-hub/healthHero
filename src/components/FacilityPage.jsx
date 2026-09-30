@@ -15,6 +15,7 @@ import { galleryFor, mapEmbedUrl } from './profile/placeMedia'
 import { ProfileGallery, ProfileHeader, ProfileMap, ProfileRatings } from './profile/placeProfile'
 import './DoctorProfile.css'
 import './DoctorCard.css'
+import { EndOfPage } from './ui'
 
 const TAG_BACKGROUNDS = ['#DBEAFE', '#D1FAE5', '#EDE9FE', '#FFEDD5']
 
@@ -208,7 +209,7 @@ export default function FacilityPage() {
 
   if (status === 'error' || !facility) {
     return (
-      <div className="doctor-profile page-push-in">
+      <div className="doctor-profile">
         <ProfileHeader title="Healthcare Profile" onBack={goBack} />
         <div className="profile-scroll">
           <div className="profile-section">
@@ -218,7 +219,7 @@ export default function FacilityPage() {
               title="Facility unavailable"
               message={error || 'We could not load this healthcare center from the registry.'}
             />
-            <button type="button" className="view-all-reviews" onClick={load}>Try again</button>
+            <button type="button" className="ds-btn ds-btn--secondary ds-btn--md ds-btn--block view-all-reviews" onClick={load}>Try again</button>
           </div>
         </div>
       </div>
@@ -226,14 +227,14 @@ export default function FacilityPage() {
   }
 
   return (
-    <div className="doctor-profile page-push-in has-cta">
+    <div className="doctor-profile has-cta">
       <ProfileHeader title="Healthcare Profile" onBack={goBack} actions={headerActions} />
 
       <div className="profile-scroll" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing || status === 'refreshing'} />
 
         <div className="profile-hero-card">
-          <div className="dc-card dc-card-profile">
+          <div className="dc-card dc-card-profile ds-card">
             <div className="dc-profile-photo">
               <ProviderAvatar
                 name={facility.name}
@@ -405,7 +406,7 @@ export default function FacilityPage() {
             )}
           </div>
 
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
       </div>
 

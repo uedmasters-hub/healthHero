@@ -11,7 +11,19 @@ import { useOriginBack } from '../features/pushNav'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshNotificationsData } from '../features/sync/pageRefresh'
+import { AppBar, Button, EmptyState, Icon, cx } from './ui'
 import './NotificationsPage.css'
+
+/* Icon-well tone per notification type (same tones as the rest of the app) */
+const NOTIFICATION_TONE = {
+  results: 'is-success',
+  booking: 'is-success',
+  health_tip: 'is-success',
+  prescription: 'is-info',
+  insurance: 'is-info',
+  emergency: 'is-warning',
+  profile: 'is-muted',
+}
 
 const typeIcon = {
   appointment: (
@@ -118,35 +130,23 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="notifications-page page-push-in" ref={pageRef}>
+    <div className="ds-page notifications-page" ref={pageRef}>
+      <AppBar
+        title="Notifications"
+        onBack={goBack}
+        actions={unreadCount > 0 ? (
+          <Button variant="text" size="sm" onClick={markAllRead}>Mark all read</Button>
+        ) : null}
+      />
       <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
-      <div className="notifications-header">
-        <button className="notifications-back" data-push-back type="button" onClick={goBack} aria-label="Back">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-        <h1 className="notifications-title">Notifications</h1>
-        {unreadCount > 0 ? (
-          <button className="notifications-mark-all" type="button" onClick={markAllRead}>
-            Mark all read
-          </button>
-        ) : (
-          <span className="notifications-header-spacer" />
-        )}
-      </div>
 
       {notifications.length === 0 ? (
-        <div className="notifications-empty">
-          <div className="notifications-empty-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-          </div>
-          <p>No notifications yet</p>
-        </div>
+        <EmptyState
+          className="notifications-empty"
+          icon={<Icon.Bell />}
+          title="No notifications yet"
+          message="Visit updates, results and reminders will appear here."
+        />
       ) : (
         <div className="notifications-list" ref={containerRef}>
           {notifications.map((item, i) => {
@@ -158,17 +158,17 @@ export default function NotificationsPage() {
             <RevealItem
               as="div"
               key={item.id}
-              className={`notification-card ${item.unread ? 'unread' : ''}`}
+              className={cx('notification-card', item.unread && 'is-unread')}
               revealed={isRevealed(i)}
               cached={isCached}
               ref={setItemRef(i)}
             >
               <button
                 type="button"
-                className="notification-card-inner"
+                className={cx('ds-card', 'is-interactive', 'notification-card-inner', item.unread && 'is-selected')}
                 onClick={() => openItem(item)}
               >
-                <div className={`notification-card-icon ${item.type}`}>
+                <div className={cx('ds-icon-well', 'is-tile', 'notification-card-icon', NOTIFICATION_TONE[item.type])} aria-hidden="true">
                   {typeIcon[item.type] || typeIcon.booking}
                 </div>
                 <div className="notification-card-body">
@@ -177,19 +177,17 @@ export default function NotificationsPage() {
                     <span>{item.time}</span>
                   </div>
                   <p>{relay?.message || item.body}</p>
-                  {relay ? <span className={`relay-chip is-${relay.accent}`}>{relay.label}</span> : null}
+                  {relay ? <span className={`ds-badge relay-chip is-${relay.accent}`}>{relay.label}</span> : null}
                 </div>
-                {item.unread && <span className="notification-unread-dot" />}
+                {item.unread && <span className="notification-unread-dot" aria-label="Unread" />}
               </button>
               <button
                 type="button"
-                className="notification-card-dismiss"
+                className="ds-icon-btn is-sm-size notification-card-dismiss"
                 onClick={(e) => { e.stopPropagation(); clearNotification(item.id) }}
                 aria-label="Dismiss notification"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <Icon.Close />
               </button>
             </RevealItem>
             )

@@ -5,9 +5,7 @@ import {
   ageFromDob,
   ageToDob,
   displayHealthDate,
-  healthItemMeta,
   isValidPhone,
-  listItemMeta,
   listItemTitle,
   normalizeHeight,
   normalizeWeight,
@@ -19,6 +17,9 @@ import AppBottomSheet from '../AppBottomSheet'
 import { BirthDateField } from '../DatePicker'
 import { PhoneInput, toE164 } from '../PhoneInput'
 import { useAppSheet } from '../PageTransition'
+import OtpBoxes from '../../features/auth/components/OtpBoxes'
+import { Badge, Button, ChoiceChips, FormGroup, Icon, SheetHeader, Skeleton } from '../ui'
+import { InfoCard, InfoRow } from './ProfileChrome'
 
 const GENDERS = ['Male', 'Female', 'Other']
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
@@ -30,44 +31,16 @@ function sectionConfig(kind) {
     || LIST_SECTIONS.find((item) => item.kind === kind)
 }
 
-function itemsFor(kind, userState) {
-  if (HEALTH_SECTIONS.some((item) => item.kind === kind)) return userState.health?.[kind] || []
-  if (kind === 'emergencyContacts') return userState.emergencyContacts || []
-  if (kind === 'insurancePolicies') return userState.insurancePolicies || []
-  if (kind === 'addresses') return userState.addresses || []
-  return []
-}
-
 function Field({ field, value, onChange }) {
   if (field.type === 'textarea') {
     return (
-      <label className="health-field">
-        <span>{field.label}</span>
-        <textarea rows={3} value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} />
-      </label>
+      <FormGroup label={field.label}>
+        <textarea className="ds-field" rows={3} value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} />
+      </FormGroup>
     )
   }
   if (field.type === 'chips') {
-    return (
-      <div className="health-field">
-        <span>{field.label}</span>
-        <div className="health-chip-row">
-          {(field.options || []).map((option) => (
-            <button type="button" key={option} className={value === option ? 'is-on' : ''} onClick={() => onChange(option)}>
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
-    )
-  }
-  if (field.type === 'date') {
-    return (
-      <label className="health-field">
-        <span>{field.label}</span>
-        <input type="date" value={value || ''} onChange={(e) => onChange(e.target.value)} />
-      </label>
-    )
+    return <ChoiceChips label={field.label} options={field.options || []} value={value} onChange={onChange} />
   }
   if (field.type === 'phone') {
     return (
@@ -81,10 +54,15 @@ function Field({ field, value, onChange }) {
     )
   }
   return (
-    <label className="health-field">
-      <span>{field.label}</span>
-      <input value={value || ''} onChange={(e) => onChange(e.target.value)} placeholder={field.placeholder} />
-    </label>
+    <FormGroup label={field.label}>
+      <input
+        className="ds-field"
+        type={field.type === 'date' ? 'date' : undefined}
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={field.placeholder}
+      />
+    </FormGroup>
   )
 }
 
@@ -102,44 +80,6 @@ function canSave(section, form) {
     if (field.type === 'phone') return isValidPhone(form[field.key])
     return String(form[field.key] || '').trim().length > 0
   })
-}
-
-export function HealthSection({ kind, onAdd, onOpen }) {
-  const userState = useUser()
-  const section = sectionConfig(kind)
-  const items = itemsFor(kind, userState)
-  if (!section) return null
-
-  return (
-    <section className="user-profile-section">
-      <div className="health-section-head">
-        <h3 className="user-profile-section-title">{section.title}</h3>
-        <button type="button" className="health-add-btn" onClick={() => onAdd(kind)}>
-          {section.addLabel}
-        </button>
-      </div>
-      {items.length === 0 ? (
-        <div className="health-empty">
-          <p>{section.empty}</p>
-          <button type="button" className="health-empty-cta" onClick={() => onAdd(kind)}>Add {section.singular}</button>
-        </div>
-      ) : (
-        <div className="health-card-list">
-          {items.map((item) => (
-            <button type="button" key={item.id} className="health-item-card" onClick={() => onOpen(kind, item)}>
-              <span className="health-item-copy">
-                <strong>{listItemTitle(kind, item) || item.title}</strong>
-                <span>{listItemMeta(kind, item) || healthItemMeta(item) || 'Tap to view'}</span>
-              </span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-          ))}
-        </div>
-      )}
-    </section>
-  )
 }
 
 export function RecordEditorSheet({ kind, item, onClose }) {
@@ -178,18 +118,15 @@ export function RecordEditorSheet({ kind, item, onClose }) {
 
   return (
     <AppBottomSheet open={isPresented} closing={isClosing} onClose={close} keyboardAware labelledBy="health-editor-title">
-      <div className="health-sheet-head">
-        <h2 id="health-editor-title">{item ? `Edit ${section.singular}` : section.addLabel}</h2>
-        <button type="button" className="health-sheet-close" onClick={close} aria-label="Close">×</button>
-      </div>
-      <div className="health-sheet-body">
+      <SheetHeader titleId="health-editor-title" title={item ? `Edit ${section.singular}` : section.addLabel} onClose={close} />
+      <div className="ds-form profile-sheet-body">
         {section.fields.map((field) => (
           <Field key={field.key} field={field} value={form[field.key]} onChange={(value) => update(field.key, value)} />
         ))}
       </div>
-      <button type="button" className="health-sheet-save" disabled={!canSave(section, form)} onClick={save}>
+      <Button size="lg" block disabled={!canSave(section, form)} onClick={save}>
         Save
-      </button>
+      </Button>
     </AppBottomSheet>
   )
 }
@@ -221,32 +158,21 @@ export function RecordViewSheet({ kind, item, onEdit, onClose }) {
 
   return (
     <AppBottomSheet open={isPresented} closing={isClosing} onClose={close} labelledBy="health-view-title">
-      <div className="health-sheet-head">
-        <h2 id="health-view-title">{listItemTitle(kind, item) || item.title}</h2>
-        <button type="button" className="health-sheet-close" onClick={close} aria-label="Close">×</button>
-      </div>
-      <div className="health-sheet-body">
+      <SheetHeader titleId="health-view-title" title={listItemTitle(kind, item) || item.title} onClose={close} />
+      <InfoCard className="profile-sheet-body">
         {section.fields.map((field) => {
           const raw = item[field.key]
           const value = field.type === 'date' ? displayHealthDate(raw) : raw
           if (!value) return null
-          return (
-            <div key={field.key} className="health-view-row">
-              <span>{field.label}</span>
-              <strong>{value}</strong>
-            </div>
-          )
+          return <InfoRow key={field.key} label={field.label} value={value} />
         })}
         {item.details && !section.fields.some((field) => field.key === 'details') ? (
-          <div className="health-view-row">
-            <span>Notes</span>
-            <strong>{item.details}</strong>
-          </div>
+          <InfoRow label="Notes" value={item.details} />
         ) : null}
-      </div>
-      <div className="health-sheet-actions">
-        <button type="button" className="health-sheet-save" onClick={() => hide(() => onEdit?.(kind, item))}>Edit</button>
-        <button type="button" className="health-sheet-delete" onClick={remove}>Delete</button>
+      </InfoCard>
+      <div className="ds-btn-row">
+        <Button variant="danger-quiet" size="lg" onClick={remove}>Delete</Button>
+        <Button size="lg" onClick={() => hide(() => onEdit?.(kind, item))}>Edit</Button>
       </div>
     </AppBottomSheet>
   )
@@ -261,7 +187,6 @@ function OtpFlow({ phone, onSuccess, onBack }) {
   const [verifying, setVerifying] = useState(false)
   const [error, setError] = useState('')
   const [resent, setResent] = useState(false)
-  const otpRef = useRef(null)
   const mountedRef = useRef(true)
 
   useEffect(() => {
@@ -290,13 +215,6 @@ function OtpFlow({ phone, onSuccess, onBack }) {
     run()
     return () => clearTimeout(timer)
   }, [phone, checkPhone])
-
-  // Auto-focus OTP input when not sending
-  useEffect(() => {
-    if (!sending && otpRef.current) {
-      otpRef.current.focus()
-    }
-  }, [sending])
 
   const handleOtpChange = (value) => {
     const digits = value.replace(/\D/g, '').slice(0, OTP_LENGTH)
@@ -342,58 +260,44 @@ function OtpFlow({ phone, onSuccess, onBack }) {
 
   return (
     <>
-      <div className="health-sheet-head">
-        <h2>Verify phone number</h2>
-        <button type="button" className="health-sheet-close" onClick={onBack} aria-label="Go back">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-      </div>
-      <div className="health-sheet-body">
-        {error ? <p className="health-form-error" role="alert">{error}</p> : null}
+      <SheetHeader
+        titleId="otp-verify-title"
+        title="Verify phone number"
+        onClose={onBack}
+        closeLabel="Go back"
+        closeIcon={<Icon.Back />}
+      />
+      <div className="ds-form profile-sheet-body">
+        {error ? <p className="ds-page__error" role="alert">{error}</p> : null}
         {sending ? (
-          <div className="otp-loading">
-            <div className="otp-loading-icon shimmer" />
-            <div className="otp-loading-text shimmer" />
-            <div className="otp-loading-text-sm shimmer" />
+          <div className="profile-otp-loading" aria-busy="true" aria-label="Sending code">
+            <Skeleton shape="circle" width="3rem" height="3rem" />
+            <Skeleton width="10rem" height="0.875rem" />
+            <Skeleton width="7.5rem" height="0.75rem" />
           </div>
         ) : (
           <>
-            <p className="otp-instructions">
-              Enter the {OTP_LENGTH}-digit code sent to <strong>{phone}</strong>
+            <p className="ds-body">
+              Enter the {OTP_LENGTH}-digit code sent to <strong className="tnum">{phone}</strong>
             </p>
-            <label className="health-field">
-              <span>Verification code</span>
-              <input
-                ref={otpRef}
-                inputMode="numeric"
-                maxLength={OTP_LENGTH}
+            <FormGroup as="div" label="Verification code">
+              <OtpBoxes
+                id="profile-phone-otp"
                 value={otp}
-                onChange={(e) => handleOtpChange(e.target.value)}
-                placeholder={`${OTP_LENGTH}-digit code`}
-                className="otp-input"
+                length={OTP_LENGTH}
+                invalid={Boolean(error)}
+                onChange={handleOtpChange}
               />
-            </label>
-            <button
-              type="button"
-              className="otp-resend-btn"
-              onClick={handleResend}
-              disabled={sending}
-            >
-              {resent ? 'Code resent' : 'Resend OTP'}
-            </button>
+            </FormGroup>
+            <Button variant="text" size="sm" className="profile-inline-action" onClick={handleResend} disabled={sending}>
+              {resent ? 'Code resent' : 'Resend code'}
+            </Button>
           </>
         )}
       </div>
-      <button
-        type="button"
-        className="health-sheet-save"
-        disabled={!otpReady}
-        onClick={handleVerify}
-      >
-        {verifying ? 'Verifying...' : 'Verify'}
-      </button>
+      <Button size="lg" block disabled={!otpReady} loading={verifying} onClick={handleVerify}>
+        {verifying ? 'Verifying…' : 'Verify'}
+      </Button>
     </>
   )
 }
@@ -530,67 +434,44 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
 
   return (
     <AppBottomSheet open={isPresented} closing={isClosing} onClose={close} keyboardAware labelledBy="profile-edit-title">
-      <div className="health-sheet-head">
-        <h2 id="profile-edit-title">{title}</h2>
-        <button type="button" className="health-sheet-close" onClick={close} aria-label="Close">×</button>
-      </div>
-      <div className="health-sheet-body">
-        {error ? <p className="health-form-error" role="alert">{error}</p> : null}
+      <SheetHeader titleId="profile-edit-title" title={title} onClose={close} />
+      <div className="ds-form profile-sheet-body">
+        {error ? <p className="ds-page__error" role="alert">{error}</p> : null}
         {showBasic ? (
           <>
-            <label className="health-field">
-              <span>Name</span>
-              <input value={form.name} onChange={(e) => update('name', e.target.value)} />
-            </label>
-            <div className="health-field-row">
-              <div className="health-field">
-                <span>Date of birth</span>
+            <FormGroup label="Name">
+              <input className="ds-field" value={form.name} onChange={(e) => update('name', e.target.value)} />
+            </FormGroup>
+            <div className="ds-form-row">
+              <FormGroup as="div" label="Date of birth">
                 <BirthDateField value={form.dob} onChange={(dob) => update('dob', dob)} />
-              </div>
-              <label className="health-field">
-                <span>Age</span>
-                <input inputMode="numeric" value={form.age} onChange={(e) => update('age', e.target.value.replace(/\D/g, '').slice(0, 3))} />
-              </label>
+              </FormGroup>
+              <FormGroup label="Age">
+                <input className="ds-field" inputMode="numeric" value={form.age} onChange={(e) => update('age', e.target.value.replace(/\D/g, '').slice(0, 3))} />
+              </FormGroup>
             </div>
-            <div className="health-field">
-              <span>Gender</span>
-              <div className="health-chip-row">
-                {GENDERS.map((item) => (
-                  <button type="button" key={item} className={form.gender === item ? 'is-on' : ''} onClick={() => update('gender', item)}>{item}</button>
-                ))}
-              </div>
-            </div>
-            <div className="health-field-row">
-              <label className="health-field">
-                <span>Height</span>
-                <input value={form.height} onChange={(e) => update('height', e.target.value)} placeholder="e.g. 168 cm" />
-              </label>
-              <label className="health-field">
-                <span>Weight</span>
-                <input value={form.weight} onChange={(e) => update('weight', e.target.value)} placeholder="e.g. 65 kg" />
-              </label>
+            <ChoiceChips label="Gender" options={GENDERS} value={form.gender} onChange={(item) => update('gender', item)} />
+            <div className="ds-form-row is-even">
+              <FormGroup label="Height">
+                <input className="ds-field" value={form.height} onChange={(e) => update('height', e.target.value)} placeholder="e.g. 168 cm" />
+              </FormGroup>
+              <FormGroup label="Weight">
+                <input className="ds-field" value={form.weight} onChange={(e) => update('weight', e.target.value)} placeholder="e.g. 65 kg" />
+              </FormGroup>
             </div>
           </>
         ) : null}
         {showPassport ? (
-          <div className="health-field">
-            <span>Blood group</span>
-            <div className="health-chip-row">
-              {BLOOD_GROUPS.map((item) => (
-                <button type="button" key={item} className={form.bloodGroup === item ? 'is-on' : ''} onClick={() => update('bloodGroup', item)}>{item}</button>
-              ))}
-            </div>
-          </div>
+          <ChoiceChips label="Blood group" options={BLOOD_GROUPS} value={form.bloodGroup} onChange={(item) => update('bloodGroup', item)} />
         ) : null}
         {showContact ? (
           <>
-            <label className="health-field contact-email-field">
-              <span>Email</span>
-              <div className="contact-email-row">
-                <input value={profile?.email || ''} readOnly tabIndex={-1} />
-                {emailVerified ? <span className="phone-verified-badge">Verified</span> : null}
+            <FormGroup as="div" label="Email">
+              <div className="ds-field is-disabled">
+                <input className="ds-field__input" value={profile?.email || ''} readOnly tabIndex={-1} aria-label="Email" />
+                {emailVerified ? <Badge tone="success">Verified</Badge> : null}
               </div>
-            </label>
+            </FormGroup>
             <PhoneInput
               label="Mobile number"
               value={form.phone}
@@ -601,17 +482,15 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
               verified={profile?.phoneVerified}
             />
             {!profile?.phoneVerified && phoneValid && (
-              <button type="button" className="phone-verify-btn" onClick={handleVerify}>Verify</button>
+              <Button variant="outline" size="sm" className="profile-inline-action" onClick={handleVerify}>Verify number</Button>
             )}
-            <div className="contact-section-divider"><span>Emergency contact</span></div>
-            <label className="health-field">
-              <span>Name</span>
-              <input value={form.emergencyName} onChange={(e) => update('emergencyName', e.target.value)} placeholder="Contact name" />
-            </label>
-            <label className="health-field">
-              <span>Relation</span>
-              <input value={form.emergencyRelation} onChange={(e) => update('emergencyRelation', e.target.value)} placeholder="e.g. Parent, Spouse" />
-            </label>
+            <p className="ds-rule-label">Emergency contact</p>
+            <FormGroup label="Name">
+              <input className="ds-field" value={form.emergencyName} onChange={(e) => update('emergencyName', e.target.value)} placeholder="Contact name" />
+            </FormGroup>
+            <FormGroup label="Relation">
+              <input className="ds-field" value={form.emergencyRelation} onChange={(e) => update('emergencyRelation', e.target.value)} placeholder="e.g. Parent, Spouse" />
+            </FormGroup>
             <PhoneInput
               label="Phone"
               value={form.emergencyPhone}
@@ -621,15 +500,14 @@ export function ProfileEditSheet({ onClose, scope = 'all' }) {
               placeholder="98765 43210"
             />
             {scope === 'all' ? (
-              <label className="health-field">
-                <span>Address</span>
-                <textarea rows={3} value={form.address} onChange={(e) => update('address', e.target.value)} />
-              </label>
+              <FormGroup label="Address">
+                <textarea className="ds-field" rows={3} value={form.address} onChange={(e) => update('address', e.target.value)} />
+              </FormGroup>
             ) : null}
           </>
         ) : null}
       </div>
-      <button type="button" className="health-sheet-save" disabled={!ready} onClick={save}>Save</button>
+      <Button size="lg" block disabled={!ready} onClick={save}>Save</Button>
     </AppBottomSheet>
   )
 }

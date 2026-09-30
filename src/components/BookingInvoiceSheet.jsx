@@ -7,6 +7,7 @@ import {
   formatInvoiceDateTime,
   shareInvoice,
 } from '../lib/invoice'
+import { Badge, Button, Callout, DetailRow, Icon, InfoCell, InfoGrid, List, SheetHeader } from './ui'
 import './BookingInvoiceSheet.css'
 
 export default function BookingInvoiceSheet({
@@ -42,94 +43,60 @@ export default function BookingInvoiceSheet({
       className="is-blurred"
       dismissOnSwipe
     >
-      <div className="ds-sheet-header">
-        <h3 id="invoice-sheet-title">Invoice</h3>
-        <button type="button" className="ds-sheet-close" onClick={onClose} aria-label="Close">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
+      <SheetHeader titleId="invoice-sheet-title" title="Invoice" onClose={onClose} />
 
       <div className="invoice-sheet-body">
         <div className="invoice-status-row">
-          <span className={`invoice-status is-${String(invoice.status).toLowerCase()}`}>{invoice.status}</span>
-          <span className="invoice-paid-at">{formatInvoiceDateTime(invoice.paidAt)}</span>
+          <Badge tone={String(invoice.status).toLowerCase() === 'paid' ? 'success' : 'neutral'}>{invoice.status}</Badge>
+          <span className="ds-caption tnum">{formatInvoiceDateTime(invoice.paidAt)}</span>
         </div>
 
-        <div className="invoice-ids">
-          <div>
-            <span className="invoice-label">Booking ID</span>
-            <strong>{invoice.bookingId}</strong>
-          </div>
-          <div>
-            <span className="invoice-label">Payment ID</span>
-            <strong>{invoice.paymentId}</strong>
-          </div>
-        </div>
+        <InfoGrid className="invoice-ids">
+          <InfoCell label="Booking ID" value={invoice.bookingId} />
+          <InfoCell label="Payment ID" value={invoice.paymentId} />
+        </InfoGrid>
 
-        <section className="invoice-section">
-          <h4>Doctor</h4>
-          <p className="invoice-primary">{invoice.doctor.name}</p>
-          <p className="invoice-secondary">{invoice.doctor.specialty}</p>
-          {invoice.doctor.address ? <p className="invoice-secondary">{invoice.doctor.address}</p> : null}
-        </section>
+        <List className="invoice-parties">
+          <DetailRow label="Doctor" value={invoice.doctor.name}>
+            <span className="ds-list-row__sub">{[invoice.doctor.specialty, invoice.doctor.address].filter(Boolean).join(' · ')}</span>
+          </DetailRow>
+          <DetailRow label="Patient" value={invoice.patient.name}>
+            <span className="ds-list-row__sub">
+              {[invoice.patient.relationship, invoice.patient.age != null ? `${invoice.patient.age} yrs` : null, invoice.patient.phone].filter(Boolean).join(' · ')}
+            </span>
+          </DetailRow>
+          <DetailRow
+            label="Visit"
+            value={[invoice.visit?.dateLabel, invoice.visit?.time].filter(Boolean).join(' · ') || 'Scheduled visit'}
+          >
+            <span className="ds-list-row__sub">{[invoice.visit?.visitType, invoice.visit?.duration].filter(Boolean).join(' · ')}</span>
+          </DetailRow>
+          <DetailRow label="Payment method" value={invoice.method} />
+        </List>
 
-        <section className="invoice-section">
-          <h4>Patient</h4>
-          <p className="invoice-primary">{invoice.patient.name}</p>
-          <p className="invoice-secondary">
-            {invoice.patient.relationship}
-            {invoice.patient.age != null ? ` · ${invoice.patient.age} yrs` : ''}
-          </p>
-          {invoice.patient.phone ? <p className="invoice-secondary">{invoice.patient.phone}</p> : null}
-        </section>
-
-        <section className="invoice-section">
-          <h4>Visit</h4>
-          <p className="invoice-primary">
-            {[invoice.visit?.dateLabel, invoice.visit?.time].filter(Boolean).join(' · ') || 'Scheduled visit'}
-          </p>
-          <p className="invoice-secondary">
-            {[invoice.visit?.visitType, invoice.visit?.duration].filter(Boolean).join(' · ')}
-          </p>
-        </section>
-
-        <section className="invoice-section">
-          <h4>Payment method</h4>
-          <p className="invoice-primary">{invoice.method}</p>
-        </section>
-
-        <section className="invoice-section">
-          <h4>Fee breakdown</h4>
-          <div className="invoice-breakdown">
+        <section className="ds-card is-padded invoice-breakdown">
+          <h4 className="ds-section-title">Fee breakdown</h4>
+          <div className="ds-stack is-tight">
             {invoice.breakdown.map((row) => (
-              <div key={row.label} className="invoice-row">
-                <span>{row.label}</span>
-                <strong>{formatMoney(row.amount, invoice.currency)}</strong>
+              <div key={row.label} className="ds-kv">
+                <span className="ds-kv__key">{row.label}</span>
+                <span className="ds-kv__value tnum">{formatMoney(row.amount, invoice.currency)}</span>
               </div>
             ))}
-            <div className="invoice-row is-total">
-              <span>Total amount paid</span>
-              <strong>{formatMoney(invoice.total, invoice.currency)}</strong>
+            <div className="ds-kv is-total">
+              <span className="ds-kv__key">Total amount paid</span>
+              <span className="ds-kv__value tnum">{formatMoney(invoice.total, invoice.currency)}</span>
             </div>
           </div>
         </section>
 
-        {shareNote ? <p className="invoice-toast" role="status">{shareNote}</p> : null}
+        {shareNote ? <Callout tone="success" role="status" className="invoice-toast">{shareNote}</Callout> : null}
       </div>
 
-      <div className="invoice-actions">
-        <button type="button" className="invoice-btn is-primary" onClick={handleDownload}>
-          Download
-        </button>
-        <button type="button" className="invoice-btn is-secondary" onClick={handleShare}>
-          Share
-        </button>
-        <button type="button" className="invoice-btn is-ghost" onClick={onClose}>
-          Close
-        </button>
+      <div className="ds-btn-row invoice-actions">
+        <Button variant="ghost" onClick={onClose}>Close</Button>
+        <Button variant="secondary" icon={<Icon.Share />} onClick={handleShare}>Share</Button>
+        <Button icon={<Icon.Download />} onClick={handleDownload}>Download</Button>
       </div>
     </AppBottomSheet>
   )

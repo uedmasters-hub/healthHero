@@ -4,6 +4,7 @@ import { usePushBack } from '../../features/pushNav'
 import { formatRupees, getOrder, reorder } from '../../features/pharmacy/shopApi'
 import { EntityCardSkeletonStack } from '../directory'
 import { ProfileHeader } from '../profile/placeProfile'
+import CartButton from './CartButton'
 import '../DoctorProfile.css'
 import '../Services.css'
 import './PharmacyShop.css'
@@ -45,14 +46,14 @@ export default function PharmacyOrderPage() {
 
   return (
     <div className="shop-page">
-      <ProfileHeader title="Order" onBack={goBack} />
+      <ProfileHeader title="Order" onBack={goBack} actions={<CartButton />} />
       <div className="shop-page__scroll">
         {!detail && !error ? <EntityCardSkeletonStack count={3} /> : null}
-        {error ? <p className="shop-error">{error}</p> : null}
+        {error ? <p className="ds-page__error shop-error" role="alert">{error}</p> : null}
         {detail?.missing ? <p className="shop-copy">This order is not on your account.</p> : null}
         {order ? (
           <>
-            <h2 className="shop-title">{order.status.replace('_', ' ')}</h2>
+            <h2 className="ds-heading shop-title">{order.status.replace('_', ' ')}</h2>
             <p className="shop-copy">
               {order.estimated_delivery
                 ? `Estimated delivery ${when(order.estimated_delivery)}`
@@ -75,7 +76,7 @@ export default function PharmacyOrderPage() {
             <p className="shop-copy">Total {formatRupees(order.total_amount)} including delivery {formatRupees(order.delivery_fee)}</p>
             {detail.invoice ? (
               <section>
-                <h2 className="section-title">Invoice</h2>
+                <h2 className="ds-section-head__title">Invoice</h2>
                 <p className="shop-copy">{detail.invoice.invoice_number} · {detail.invoice.status} · {formatRupees(detail.invoice.total_amount)}</p>
               </section>
             ) : null}

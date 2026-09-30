@@ -3,7 +3,7 @@ export default function ChipsPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Chips</div>
-        <h1 className="ds-page-title">Chips</h1>
+        <h1 className="ds-doc-title">Chips</h1>
         <p className="ds-page-description">
           Compact elements for labels, tags, filters, and status indicators.
         </p>

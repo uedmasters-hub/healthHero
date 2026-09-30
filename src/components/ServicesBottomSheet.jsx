@@ -6,6 +6,7 @@ import { useDemoPreview } from './DemoPreviewModal'
 import { runServiceAction } from '../lib/serviceActions'
 import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './Services.css'
+import { EndOfPage, SheetHeader } from './ui'
 
 const LineIcon = ({ d, children }) => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -463,17 +464,9 @@ export default function ServicesBottomSheet() {
   return (
     <>
     <div className={`services-bottom-sheet-overlay ${isServicesSlidingOut ? 'closing' : ''}`} onClick={handleClose}>
-      <div className="services-bottom-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="services-bottom-sheet-handle" />
-        <div className="services-bottom-sheet-header">
-          <h2 className="services-bottom-sheet-title">All Services</h2>
-          <button className="services-bottom-sheet-close" onClick={handleClose}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+      <div className="services-bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="services-sheet-title" onClick={(e) => e.stopPropagation()}>
+        <div className="ds-sheet-handle" aria-hidden="true" />
+        <SheetHeader as="h2" className="sheet-page-header" titleId="services-sheet-title" title="All Services" onClose={handleClose} />
         <div className="services-bottom-sheet-content" ref={contentRef}>
           {allServices.map((section) => (
             <div key={section.title} className="services-bottom-sheet-section">
@@ -486,7 +479,7 @@ export default function ServicesBottomSheet() {
                     <button
                       type="button"
                       key={item.name}
-                      className={`services-bottom-sheet-item ${isRevealed ? 'revealed' : ''}`}
+                      className={`ds-card is-interactive services-bottom-sheet-item ${isRevealed ? 'revealed' : ''}`}
                       ref={el => { itemRefs.current[idx] = el }}
                       onClick={() => handleService(item.name)}
                     >
@@ -505,7 +498,7 @@ export default function ServicesBottomSheet() {
               </div>
             </div>
           ))}
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
       </div>
     </div>

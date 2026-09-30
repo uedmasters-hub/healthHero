@@ -15,7 +15,7 @@ export default function MotionPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Motion</div>
-        <h1 className="ds-page-title">Motion</h1>
+        <h1 className="ds-doc-title">Motion</h1>
         <p className="ds-page-description">
           Animation principles that add life to interfaces without sacrificing performance or accessibility.
         </p>
@@ -27,8 +27,8 @@ export default function MotionPage() {
         and creates spatial relationships. Every animation should feel purposeful — never decorative.
       </p>
 
-      <div className="ds-callout ds-callout-warning">
-        <span className="ds-callout-icon">⚠</span>
+      <div className="ds-doc-callout ds-doc-callout-warning">
+        <span className="ds-doc-callout-icon">⚠</span>
         <div>
           All animations respect <code>prefers-reduced-motion</code>. Users who have requested
           reduced motion will see instant state changes instead of animations.

@@ -4,7 +4,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--white);
+  background: var(--bg);
 }
 
 .profile-scroll {
@@ -29,55 +29,9 @@
   flex-shrink: 0;
 }
 
-.doctor-profile.page-push-in {
-  animation: doctorPushIn var(--duration-page) var(--ease-page) both;
-}
-
-.doctor-profile.is-under-overlay {
-  animation: none;
-}
-
-@keyframes doctorPushIn {
-  from {
-    transform: translate3d(18%, 0, 0);
-    opacity: var(--opacity-muted);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-    opacity: var(--opacity-visible);
-  }
-}
-
 .profile-header {
-  display: flex;
-  align-items: center;
-  padding: var(--space-4) var(--content-padding) var(--space-3);
-  position: relative;
+  /* Chrome from .ds-app-bar; stays above the morphing hero */
   z-index: 3;
-  flex-shrink: 0;
-}
-
-.profile-header-actions {
-  display: flex;
-  gap: var(--icon-gap);
-  position: relative;
-  z-index: 4;
-  /* Header actions stay in chrome — never ride scroll/FAB motion */
-  transform: none;
-}
-
-.profile-back-btn {
-  margin-left: calc(var(--space-2-5) * -1);
-  position: relative;
-  z-index: 6;
-}
-
-.profile-header-title {
-  flex: 1;
-  text-align: center;
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
 }
 
 /* Hero Card */
@@ -103,7 +57,7 @@
 .doctor-profile.is-shared-hero.is-content-ready .profile-header {
   opacity: var(--opacity-visible);
   pointer-events: auto;
-  transition: opacity 0.32s ease 0.08s;
+  transition: opacity var(--duration-reveal) var(--ease-standard) 0.08s;
 }
 
 .profile-skeletons {
@@ -117,15 +71,15 @@
 .profile-stack {
   position: relative;
   min-height: 52vh;
-  background: var(--white);
+  background: var(--surface-2);
 }
 
 .profile-skeletons-layer {
   position: relative;
   z-index: 2;
   opacity: var(--opacity-visible);
-  background: var(--white);
-  transition: opacity 0.4s ease;
+  background: var(--surface-2);
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .profile-skeletons-layer.is-gone {
@@ -136,7 +90,7 @@
 }
 
 .profile-body {
-  background: var(--white);
+  background: var(--surface-2);
   opacity: var(--opacity-hidden);
   pointer-events: none;
   transform: none;
@@ -155,7 +109,7 @@
   z-index: 1;
   opacity: var(--opacity-visible);
   pointer-events: auto;
-  transition: opacity 0.42s ease;
+  transition: opacity var(--duration-slow) var(--ease-standard);
 }
 
 .profile-skel-label {
@@ -190,18 +144,6 @@
   height: 44px;
   border-radius: var(--radius-md);
 }
-
-.profile-skel-chiprow {
-  height: 40px;
-  border-radius: var(--radius);
-  margin-bottom: var(--space-2-5);
-}
-
-.profile-skel-chiprow.is-small {
-  height: 36px;
-  width: 88%;
-}
-
 .profile-skel-dates {
   height: 72px;
   border-radius: var(--radius-md);
@@ -226,16 +168,17 @@
 
 .profile-section-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.06em;
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   margin: 0 0 var(--space-3);
 }
 
 .profile-about-text {
   font-size: var(--text-body-size);
-  line-height: 1.6;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
@@ -251,7 +194,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   font-size: var(--text-label-size);
@@ -276,7 +219,7 @@
   gap: var(--space-3);
   width: 100%;
   padding: var(--space-3-5);
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border);
   border-radius: var(--radius);
   margin-bottom: var(--space-2-5);
@@ -311,19 +254,19 @@
 
 .center-name {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
 .center-address {
   font-size: var(--text-caption-size);
   color: var(--text-secondary);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 .center-distance {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   flex-shrink: 0;
 }
@@ -381,7 +324,7 @@
   display: inline-block;
   margin-top: var(--space-3);
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--primary);
   text-decoration: none;
 }
@@ -400,9 +343,9 @@
 
 .ratings-big-num {
   font-size: var(--text-stat-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  line-height: 1;
+  line-height: var(--leading-none);
 }
 
 .ratings-big-stars {
@@ -456,7 +399,7 @@
   height: 100%;
   background: var(--cta);
   border-radius: var(--radius-2xs);
-  transition: width 0.3s ease;
+  transition: width var(--duration-moderate) var(--ease-standard);
 }
 
 .rating-bar-percent {
@@ -489,7 +432,7 @@
 
 .review-author {
   font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -506,31 +449,11 @@
 
 .review-text {
   font-size: var(--text-label-size);
-  line-height: 1.5;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
-.view-all-reviews {
-  display: block;
-  text-align: center;
-  padding: var(--space-3-5);
-  margin-top: var(--space-2);
-  border-radius: var(--radius);
-  border: var(--border-width) solid var(--border);
-  background: var(--white);
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--primary);
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--transition);
-  width: 100%;
-}
-
-.view-all-reviews:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
+.view-all-reviews { margin-top: var(--space-2); }
 
 .view-all-reviews:active {
   background: var(--interact-pressed-bg);
@@ -555,10 +478,11 @@
 .profile-stat strong {
   display: block;
   font-size: var(--text-display-size);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  letter-spacing: -0.4px;
-  line-height: 1.15;
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-tight);
 }
 
 .profile-stat span {
@@ -567,7 +491,7 @@
   font-size: var(--text-overline-size);
   font-weight: var(--font-weight-medium);
   color: var(--text-muted);
-  line-height: 1.3;
+  line-height: var(--leading-snug);
 }
 
 .profile-logos {
@@ -575,7 +499,7 @@
   align-items: center;
   gap: var(--space-3);
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: var(--space-0-5);
   scrollbar-width: none;
 }
 

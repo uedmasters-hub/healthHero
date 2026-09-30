@@ -22,7 +22,7 @@ export function ResultsSortButton({ onSort, sortActive = false }) {
   return (
     <button
       type="button"
-      className={`dir-results__icon-btn${sortActive ? ' is-active' : ''}`}
+      className={`dir-results__icon-btn ds-icon-btn${sortActive ? ' is-selected' : ''}`}
       onClick={onSort}
       aria-label="Sort"
       aria-pressed={sortActive}

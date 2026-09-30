@@ -2,24 +2,25 @@ import { requireSupabase } from '../../lib/supabase'
 
 const RESUME_KEY = 'emedicalls.pharmacyResume'
 const STORE_KEY = 'emedicalls.pharmacyStore'
-const CATALOG_COLUMNS = [
-  'id',
-  'slug',
-  'name',
-  'generic_name',
-  'manufacturer',
-  'drug_class',
-  'dosage_form',
-  'strength',
-  'category',
-  'description',
-  'pack_label',
-  'requires_prescription',
-  'stock_qty',
-  'price',
-  'mrp',
-  'eta_minutes',
-].join(', ')
+export const CART_EVENT = 'pharmacy-cart-changed'
+
+/*
+ * `*` keeps the app working before and after the medicine-detail migration
+ * (image_url, salt_composition, monograph): new columns simply appear.
+ */
+const CATALOG_COLUMNS = '*'
+
+/** Keys of `drugs.monograph` — one per tab on the medicine page. */
+export const MONOGRAPH_KEYS = [
+  'dosage',
+  'side_effects',
+  'uses',
+  'warnings',
+  'precautions',
+  'interactions',
+  'how_to_take',
+  'storage',
+]
 
 export function formatRupees(value) {
   const amount = Number(value)
@@ -57,6 +58,20 @@ async function currentUser() {
   return { supabase, user: data.user }
 }
 
+function mapMonograph(value) {
+  const source = value && typeof value === 'object' ? value : {}
+  return MONOGRAPH_KEYS.reduce((out, key) => {
+    const entry = source[key]
+    if (Array.isArray(entry)) {
+      const items = entry.map((item) => String(item || '').trim()).filter(Boolean)
+      if (items.length) out[key] = items
+    } else if (typeof entry === 'string' && entry.trim()) {
+      out[key] = [entry.trim()]
+    }
+    return out
+  }, {})
+}
+
 function mapCatalogRow(row) {
   if (!row) return null
   return {
@@ -76,7 +91,16 @@ function mapCatalogRow(row) {
     price: row.price == null ? null : Number(row.price),
     mrp: row.mrp == null ? null : Number(row.mrp),
     etaMinutes: row.eta_minutes == null ? null : Number(row.eta_minutes),
+    imageUrl: row.image_url || null,
+    saltComposition: row.salt_composition || row.generic_name || null,
+    monograph: mapMonograph(row.monograph),
   }
+}
+
+/** Percent saved against MRP, or 0 when there is no discount. */
+export function discountPercent(product) {
+  if (!product || product.mrp == null || product.price == null || product.mrp <= product.price) return 0
+  return Math.round(((product.mrp - product.price) / product.mrp) * 100)
 }
 
 async function listStoreCatalog(supabase, pharmacyId, { q = '', category = 'all' } = {}) {
@@ -88,7 +112,7 @@ async function listStoreCatalog(supabase, pharmacyId, { q = '', category = 'all'
   if (pharmacyError) throw pharmacyError
   let query = supabase
     .from('pharmacy_inventory')
-    .select('quantity, unit_price, mrp, drugs!inner(id, slug, name, generic_name, manufacturer, drug_class, dosage_form, strength, category, description, pack_label, requires_prescription)')
+    .select('quantity, unit_price, mrp, drugs!inner(*)')
     .eq('pharmacy_id', pharmacyId)
     .eq('is_active', true)
     .gt('quantity', 0)
@@ -147,7 +171,89 @@ export async function getProduct(id) {
   return mapCatalogRow(data)
 }
 
+function normalise(value) {
+  return String(value || '').trim().toLowerCase()
+}
+
+/**
+ * Pulls "Frequently bought together" from past orders (RPC added by the
+ * medicine-detail migration). Falls back to same-shelf products when the
+ * RPC is missing or there is no order history yet.
+ */
+async function frequentlyBoughtTogether(supabase, product, pool) {
+  const { data, error } = await supabase.rpc('pharmacy_frequently_bought_together', {
+    p_drug_id: product.id,
+    p_limit: 6,
+  })
+  if (!error && Array.isArray(data) && data.length) {
+    return { source: 'orders', rows: data.map(mapCatalogRow).filter((row) => row && row.id !== product.id) }
+  }
+  return {
+    source: 'suggested',
+    rows: pool
+      .filter((row) => row.id !== product.id && row.category !== product.category && row.stockQty > 0)
+      .slice(0, 6),
+  }
+}
+
+/**
+ * Everything the medicine page shows: the product, the other strengths and
+ * brands of the same salt, alternatives in the same class, and items that
+ * are often ordered with it.
+ */
+export async function getProductDetail(id) {
+  const supabase = requireSupabase()
+  const product = await getProduct(id)
+  if (!product) return null
+  const { data, error } = await supabase.from('pharmacy_catalog').select(CATALOG_COLUMNS).order('name').limit(200)
+  const pool = error ? [] : (data || []).map(mapCatalogRow).filter(Boolean)
+  const salt = normalise(product.saltComposition || product.genericName)
+  const klass = normalise(product.drugClass)
+  const others = pool.filter((row) => row.id !== product.id)
+  const sameSalt = salt ? others.filter((row) => normalise(row.saltComposition || row.genericName) === salt) : []
+  // One chip per strength of the same salt; this brand wins a tie.
+  const byStrength = new Map()
+  for (const row of [product, ...sameSalt.filter((r) => normalise(r.manufacturer) === normalise(product.manufacturer)), ...sameSalt]) {
+    const key = normalise(row.strength)
+    if (key && !byStrength.has(key)) byStrength.set(key, row)
+  }
+  const strengths = [...byStrength.values()]
+  const otherBrands = sameSalt.filter((row) => normalise(row.manufacturer) !== normalise(product.manufacturer))
+  const taken = new Set([product.id, ...sameSalt.map((row) => row.id)])
+  const alternatives = klass
+    ? others.filter((row) => !taken.has(row.id) && normalise(row.drugClass) === klass).slice(0, 8)
+    : []
+  let together = { source: 'suggested', rows: [] }
+  try {
+    together = await frequentlyBoughtTogether(supabase, product, others)
+  } catch {
+    /* keep the empty rail */
+  }
+  const maker = normalise(product.manufacturer)
+  const fromMaker = maker
+    ? others.filter((row) => !taken.has(row.id) && normalise(row.manufacturer) === maker).slice(0, 8)
+    : []
+  return {
+    product,
+    fromMaker,
+    strengths: strengths.length > 1 ? strengths.sort((a, b) => parseFloat(a.strength) - parseFloat(b.strength)) : [],
+    otherBrands,
+    alternatives,
+    together: together.rows.filter((row) => !taken.has(row.id)).slice(0, 6),
+    togetherSource: together.source,
+  }
+}
+
+const cartIds = new Map()
+
 async function ownCart(supabase, userId) {
+  if (cartIds.has(userId)) return cartIds.get(userId)
+  const id = await findOrCreateCart(supabase, userId)
+  cartIds.set(userId, id)
+  return id
+}
+
+async function findOrCreateCart(supabase, userId) {
   const { data, error } = await supabase
     .from('pharmacy_carts')
     .select('id')
@@ -162,6 +268,10 @@ async function ownCart(supabase, userId) {
     .single()
   if (created.error) throw created.error
   return created.data.id
+}
+
+function announceCart(source) {
+  window.dispatchEvent(new CustomEvent(CART_EVENT, { detail: { source } }))
 }
 
 export async function getCart() {
@@ -221,7 +331,32 @@ export async function addToCart(drugId, quantity = 1) {
       .insert({ cart_id: cartId, drug_id: drugId, quantity: nextQty })
     if (error) throw error
   }
-  window.dispatchEvent(new Event('pharmacy-cart-changed'))
+  announceCart('api')
+}
+
+/**
+ * Sets the absolute quantity of one medicine in the signed-in user's cart —
+ * an upsert on (cart_id, drug_id), or a delete at zero. Idempotent, so the
+ * cart store can retry or coalesce rapid taps safely.
+ */
+export async function setDrugQuantity(drugId, quantity, { source = 'api' } = {}) {
+  const { supabase, user } = await currentUser()
+  const cartId = await ownCart(supabase, user.id)
+  const qty = Math.max(0, Math.floor(Number(quantity) || 0))
+  if (qty === 0) {
+    const { error } = await supabase
+      .from('pharmacy_cart_items')
+      .delete()
+      .eq('cart_id', cartId)
+      .eq('drug_id', drugId)
+    if (error) throw error
+  } else {
+    const { error } = await supabase
+      .from('pharmacy_cart_items')
+      .upsert({ cart_id: cartId, drug_id: drugId, quantity: qty }, { onConflict: 'cart_id,drug_id' })
+    if (error) throw error
+  }
+  announceCart(source)
 }
 
 export async function setCartQuantity(itemId, quantity) {
@@ -236,7 +371,7 @@ export async function setCartQuantity(itemId, quantity) {
       .eq('id', itemId)
     if (error) throw error
   }
-  window.dispatchEvent(new Event('pharmacy-cart-changed'))
+  announceCart('api')
 }
 
 export async function listOrders() {
@@ -295,7 +430,7 @@ export async function placeOrder({ note, prescriptionId }) {
     p_pharmacy_id: readStore(),
   })
   if (error) throw error
-  window.dispatchEvent(new Event('pharmacy-cart-changed'))
+  announceCart('api')
   return data
 }
 

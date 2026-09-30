@@ -1,11 +1,11 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, PropsTable, StatesTable, Section } from '../shared'
+import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, StatesTable, Section } from '../shared'
 
 export default function ButtonsPage() {
   return (
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Buttons</div>
-        <h1 className="ds-page-title">Buttons</h1>
+        <h1 className="ds-doc-title">Buttons</h1>
         <p className="ds-page-description">
           Interactive elements that trigger actions — the primary way users interact with eMedicalls.
           Used across booking flows, appointment details, navigation, and more.

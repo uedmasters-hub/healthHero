@@ -3,7 +3,7 @@ export default function ContentPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Content</div>
-        <h1 className="ds-page-title">Content</h1>
+        <h1 className="ds-doc-title">Content</h1>
         <p className="ds-page-description">
           Patterns and guidelines for content structure across eMedicalls surfaces.
         </p>

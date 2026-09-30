@@ -1,60 +1,21 @@
+/* Verify & Pay — AppBar · Card · ds-otp · Badge · Callout · Button.
+   The numeric keypad is the only bespoke control. */
 .vp-page {
-  background: var(--white);
   height: 100%;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-
-.vp-header-bar {
-  display: flex;
-  align-items: center;
-  padding: var(--space-3) var(--content-padding);
-  background: var(--white);
-  flex-shrink: 0;
-}
-
-.vp-back-btn {
-  width: var(--touch-min);
-  height: var(--touch-min);
-  border-radius: var(--radius-full);
-  border: none;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-primary);
-}
-
-.vp-header-title {
-  flex: 1;
-  text-align: center;
-  font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.vp-header-spacer {
-  width: 36px;
+  overflow: hidden;
+  background: var(--bg);
 }
 
 .vp-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--space-2) var(--content-padding) var(--space-4);
+  padding: var(--space-4) var(--content-padding);
 }
 
-.vp-empty {
-  padding: var(--space-8) var(--content-padding);
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.vp-hero-card.ds-card {
-  padding: var(--card-padding);
+.vp-hero-card {
   margin-bottom: var(--space-5);
 }
 
@@ -68,6 +29,7 @@
 .vp-hero-doctor {
   flex: 1;
   min-width: 0;
+  padding: 0;
 }
 
 .vp-hero-fee {
@@ -77,39 +39,40 @@
 .vp-hero-fee-label {
   display: block;
   font-size: var(--text-caption-size);
-  color: var(--text-muted);
+  color: var(--text-tertiary);
 }
 
 .vp-hero-fee-value {
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
 }
 
 .vp-hero-meta {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--border);
   color: var(--text-secondary);
-  font-size: var(--text-body-size);
+  font-size: var(--text-label-size);
 }
 
 .vp-hero-meta svg {
-  width: 16px;
-  height: 16px;
-  color: var(--primary);
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  color: var(--pp-headline);
 }
 
 .vp-hero-method {
   margin-top: var(--space-2);
   font-size: var(--text-caption-size);
-  color: var(--text-muted);
+  color: var(--text-tertiary);
 }
 
 .vp-pin-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
   text-align: center;
   padding: var(--space-2) 0 var(--space-4);
 }
@@ -118,201 +81,108 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  color: var(--primary);
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  margin-bottom: var(--space-3);
+  margin: 0;
+}
+
+.vp-lock-icon svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
 }
 
 .vp-pin-title {
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-1);
   font-size: var(--text-heading-size);
-  color: var(--text-primary);
-}
-
-.vp-pin-boxes {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-2-5);
-  margin-bottom: var(--space-3);
-}
-
-.vp-pin-box {
-  width: 52px;
-  height: 56px;
-  border-radius: var(--radius);
-  border: var(--border-width) solid var(--border);
-  background: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
-  box-shadow: none;
-}
-
-.vp-pin-box.is-focus {
-  border-color: var(--border);
-  box-shadow: none;
-}
-
-.vp-pin-box.is-focus:not(.is-filled)::after {
-  content: '';
-  width: 1.5px;
-  height: 22px;
-  border-radius: 1px;
-  background: var(--text-primary);
-  animation: vpCaret 1.05s steps(1) infinite;
-}
-
-@keyframes vpCaret {
-  50% { opacity: var(--opacity-hidden); }
-}
-
-.vp-pin-box.is-filled {
-  border-color: var(--primary);
-}
-
-.vp-pin-box.is-error {
-  border-color: var(--danger);
-}
-
-.vp-pin-mask {
-  width: 12px;
-  height: 12px;
-  border-radius: var(--radius-full);
-  background: var(--cta);
 }
 
 .vp-pin-note {
-  margin: 0 0 var(--space-4);
+  margin: 0;
+  max-width: 18rem;
   font-size: var(--text-caption-size);
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.vp-timer-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  background: var(--danger-bg);
-  color: var(--danger);
-  font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-3);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
 }
 
 .vp-timer-badge.is-urgent {
-  animation: vpPulse 1s ease infinite;
+  animation: ds-pulse 1s var(--ease-standard) infinite;
 }
 
 .vp-timer-dot {
-  width: 7px;
-  height: 7px;
+  width: 0.4375rem;
+  height: 0.4375rem;
   border-radius: var(--radius-full);
-  background: var(--danger);
+  background: currentColor;
 }
 
 .vp-error {
-  color: var(--danger);
-  background: var(--danger-bg);
-  border-radius: var(--radius);
-  padding: var(--space-2-5) var(--space-3);
-  font-size: var(--text-body-size);
-  margin-bottom: var(--space-2);
+  width: 100%;
+  text-align: left;
 }
 
 .vp-processing,
 .vp-success {
-  font-size: var(--text-body-size);
+  font-size: var(--text-label-size);
   font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-2);
 }
 
-.vp-processing {
-  color: var(--primary);
-}
+.vp-processing { color: var(--pp-headline); }
+.vp-success { color: var(--success-text); }
 
-.vp-success {
-  color: var(--success-text);
-}
-
-.vp-help-link {
-  border: none;
-  background: none;
-  color: var(--primary);
-  font: inherit;
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  padding: var(--space-2);
-}
-
-.vp-help-link:disabled {
-  opacity: var(--opacity-soft);
-  cursor: not-allowed;
-}
-
+/* Numeric keypad */
 .vp-keypad {
-  background: var(--media-bg);
-  padding: var(--space-3) var(--content-padding) calc(var(--space-4) + var(--safe-bottom));
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--content-padding) calc(var(--space-4) + var(--safe-bottom));
+  background: var(--surface-1);
+  border-top: var(--border-width) solid var(--border-default);
 }
 
 .vp-keypad-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-2-5);
-  margin-bottom: var(--space-2-5);
+  gap: var(--space-2);
 }
 
 .vp-key {
-  min-height: 56px;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--white);
+  min-height: 3.5rem;
+  display: grid;
+  place-items: center;
+  border: var(--card-border);
+  border-radius: var(--card-radius-sm);
+  background: var(--surface-2);
   color: var(--text-primary);
   font-family: inherit;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard);
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
 }
 
-.vp-key:hover {
-  background: var(--active-bg);
-}
-
-.vp-key:active {
-  transform: scale(0.97);
-}
+.vp-key:hover { background: var(--state-hover); }
+.vp-key:active { background: var(--state-pressed); }
 
 .vp-key.is-blank {
   background: transparent;
+  border-color: transparent;
   pointer-events: none;
 }
 
 .vp-key.is-action {
-  color: var(--text-secondary);
+  color: var(--icon-color-default);
+}
+
+.vp-key.is-action svg {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
 }
 
 .vp-key-num {
-  font-size: 22px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 1;
+  font-size: var(--text-display-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-none);
 }
 
 .vp-page.is-processing .vp-key {
   pointer-events: none;
-  opacity: 0.7;
-}
-
-@keyframes vpPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  opacity: var(--opacity-muted);
 }

@@ -3,7 +3,7 @@ export default function AboutPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Get started / About</div>
-        <h1 className="ds-page-title">About the design system</h1>
+        <h1 className="ds-doc-title">About the design system</h1>
         <p className="ds-page-description">
           History, goals, and governance of the eMedicalls Design System.
         </p>
@@ -57,8 +57,8 @@ export default function AboutPage() {
         to tokens or component APIs. Minor versions add features. Patch versions fix bugs.
       </p>
 
-      <div className="ds-callout ds-callout-info">
-        <span className="ds-callout-icon">ℹ</span>
+      <div className="ds-doc-callout ds-doc-callout-info">
+        <span className="ds-doc-callout-icon">ℹ</span>
         <div>
           This documentation site is the canonical source of truth. Figma files and Storybook
           are kept in sync, but this site always reflects the latest state.

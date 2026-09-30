@@ -1,11 +1,11 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function OverlaySystemPage() {
   return (
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Overlay System</div>
-        <h1 className="ds-page-title">Overlay System</h1>
+        <h1 className="ds-doc-title">Overlay System</h1>
         <p className="ds-page-description">
           Bottom sheets, modals, lightboxes, and full-screen overlays — the spatial layering
           system for contextual content in eMedicalls.
@@ -46,41 +46,20 @@ export default function OverlaySystemPage() {
           and backdrop overlay. Used for city picker, sort/filter, appointments list, and
           member management.
         </p>
-        <CodeBlock title="AppBottomSheet" code={`function AppBottomSheet({ open, onClose, title, children }) {
-  if (!open) return null
+        <CodeBlock title="AppBottomSheet usage" code={`const { isPresented, isClosing, show, hide } = useAppSheet()
 
-  return (
-    <div className="app-bottom-sheet-overlay" onClick={onClose}>
-      <div className="app-bottom-sheet" onClick={e => e.stopPropagation()}>
-        <div className="app-bottom-sheet-drag-handle" />
-        {title && <h2 className="app-bottom-sheet-title">{title}</h2>}
-        <div className="app-bottom-sheet-body">{children}</div>
-      </div>
-    </div>
-  )
-}`} />
+<AppBottomSheet open={isPresented} closing={isClosing} onClose={hide} labelledBy="invoice-title">
+  <SheetHeader titleId="invoice-title" title="Invoice" onClose={hide} />
+  <List>…</List>
+  <Button size="lg" block>Download</Button>
+</AppBottomSheet>`} />
 
-        <CodeBlock title="CSS" code={`.app-bottom-sheet-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 900;
-  display: flex; align-items: flex-end;
-  animation: fadeIn 0.2s ease;
-}
-
-.app-bottom-sheet {
-  width: 100%;
-  background: var(--surface);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: var(--space-5) var(--space-4) var(--space-8);
-  animation: slideUp 0.25s var(--ease-emphasized);
-}
-
-.app-bottom-sheet-drag-handle {
-  width: 36px; height: 4px;
-  background: var(--border); border-radius: 2px;
-  margin: 0 auto var(--space-3);
-}`} />
+        <CodeBlock title="Styles (src/styles/overlays.css)" code={`.ds-sheet-overlay   /* scrim, fadeIn / fadeOut */
+.ds-sheet           /* white, 24px top corners, dsSheetSlideUp / Down */
+.ds-sheet-handle    /* 36×4 neutral-300 grab handle */
+.ds-sheet-header    /* SheetHeader: .ds-sheet-title + .ds-sheet-close */
+.ds-sheet-option    /* menu rows (AppointmentMenuOptions) */
+.ds-dialog-overlay / .ds-dialog   /* centred confirm dialogs */`} />
       </Section>
 
       <Section title="CityPickerSheet">
@@ -88,19 +67,12 @@ export default function OverlaySystemPage() {
           A specialized bottom sheet for selecting a city. Includes a search field,
           "Use current location" option, and a scrollable list of cities with radio selection.
         </p>
-        <CodeBlock title="CityPickerSheet" code={`<AppBottomSheet open={open} onClose={onClose} title="Select City">
-  <SearchField placeholder="Search for a city" value={query} onChange={setQuery} />
-  <button className="city-current-location" onClick={useCurrentLocation}>
-    <LocationIcon /> Use current location
-  </button>
-  <div className="city-list">
-    {filteredCities.map(city => (
-      <button key={city} className="city-item" onClick={() => select(city)}>
-        <span>{city}</span>
-        {selected === city && <RadioIcon />}
-      </button>
-    ))}
-  </div>
+        <CodeBlock title="Location sheet" code={`<AppBottomSheet open={open} onClose={close} labelledBy="location-title">
+  <SheetHeader titleId="location-title" title="Choose location" onClose={close} />
+  <SearchField placeholder="Search for a city" value={query} onChange={onQuery} />
+  <button className="ds-card is-interactive">…Use current location</button>
+  <h3 className="ds-section-title">Recent</h3>
+  <List>{cities.map((city) => <ListRow title={city} onClick={() => select(city)} />)}</List>
 </AppBottomSheet>`} />
       </Section>
 
@@ -121,9 +93,9 @@ const { performSharedHeroTransition } = useSharedHeroTransition(
   location.state?.sharedHeroTransition
 )
 
-// DoctorHero — animate
-<div className="doctor-hero" ref={heroRef}>
-  <img className="doctor-hero-img" ref={imgRef} src={image} />
+// Target card hides while the ghost morphs into it
+<div className={\`ds-card appointment-summary-card \${hideHero ? 'is-morphing' : ''}\`} ref={heroRef}>
+  <DoctorCard context="identity" />
 </div>`} />
       </Section>
 

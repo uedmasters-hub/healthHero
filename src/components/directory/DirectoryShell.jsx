@@ -37,6 +37,7 @@ export default function DirectoryShell({
   scrollRef: externalScrollRef,
   className = '',
   headerExtra = null,
+  headerTrailing = null,
   radiusMode = false,
   bare = false,
   children,
@@ -49,7 +50,7 @@ export default function DirectoryShell({
   const quietHeader = bare || radiusMode
   const leading = showBack ? (
     <div className="tab-page-header__leading">
-      <button type="button" className="dir-shell__icon-btn" data-push-back onClick={onBack} aria-label="Back">
+      <button type="button" className="dir-shell__icon-btn ds-icon-btn is-ink" data-push-back onClick={onBack} aria-label="Back">
         <BackIcon />
       </button>
     </div>
@@ -70,6 +71,7 @@ export default function DirectoryShell({
         showAvatar={!quietHeader}
         className={quietHeader ? 'is-radius-chrome' : ''}
         dockClassName="dir-shell__search-dock"
+        trailing={headerTrailing}
       />
 
       {headerExtra}

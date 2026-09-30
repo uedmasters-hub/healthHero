@@ -3,7 +3,7 @@ export default function LogosPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Logos</div>
-        <h1 className="ds-page-title">Logos</h1>
+        <h1 className="ds-doc-title">Logos</h1>
         <p className="ds-page-description">
           eMedicalls brand mark usage, clear space, and sizing guidelines.
         </p>

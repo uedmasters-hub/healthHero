@@ -29,42 +29,12 @@
 .insights-sheet-overlay.closing .insights-sheet {
   animation: dsSheetSlideDown var(--duration-sheet) var(--ease-sheet) forwards;
 }
-
-.insights-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  margin: var(--space-3) auto;
-  flex-shrink: 0;
-}
-
-.insights-sheet-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--content-padding) var(--space-4);
-  border-bottom: var(--border-width) solid var(--border);
-  flex-shrink: 0;
-}
-
 .insights-sheet-title {
   font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
   margin: 0;
 }
-
-.insights-sheet-close {
-  background: none;
-  border: none;
-  padding: var(--space-1);
-  cursor: pointer;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-}
-
 .insights-sheet-content {
   flex: 1;
   min-height: 0;
@@ -90,7 +60,7 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--card-padding);
-  background: var(--white);
+  background: var(--surface-2);
   border-radius: var(--radius-lg);
   opacity: var(--opacity-visible);
   transition: opacity var(--duration-normal) var(--ease-standard);
@@ -114,7 +84,6 @@
   width: 88%;
   height: 12px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .insights-sheet-skel-line.is-short {
@@ -125,7 +94,6 @@
   width: 36%;
   height: 10px;
   border-radius: var(--radius-xs);
-  background: var(--border);
 }
 
 .insights-sheet-skel-thumb {
@@ -133,7 +101,6 @@
   height: calc(var(--space-10) * 2);
   border-radius: var(--radius);
   flex-shrink: 0;
-  background: var(--border);
 }
 
 .insights-sheet-body {
@@ -144,7 +111,7 @@
   min-height: calc(var(--space-10) * 2);
   opacity: var(--opacity-hidden);
   transform: translateY(10px) scale(0.97);
-  transition: opacity var(--duration-normal) var(--ease-standard), transform 0.2s ease;
+  transition: opacity var(--duration-normal) var(--ease-standard), transform var(--duration-normal) var(--ease-standard);
 }
 
 .insights-sheet-body.is-visible {

@@ -5,7 +5,7 @@ export default function SkeletonStrategyPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI / Skeleton Strategy</div>
-        <h1 className="ds-page-title">Skeleton Strategy</h1>
+        <h1 className="ds-doc-title">Skeleton Strategy</h1>
         <p className="ds-page-description">
           The stagger reveal system that creates seamless content transitions — from shimmer
           skeletons to revealed content with cached loading states.

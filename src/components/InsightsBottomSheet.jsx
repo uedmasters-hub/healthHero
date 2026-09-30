@@ -7,6 +7,7 @@ import { InsightCardBody } from './InsightCard'
 import { isInLoadZone, VIEWPORT_PRELOAD_SCREENS } from './useStaggerReveal'
 import './HealthInsights.css'
 import './InsightsBottomSheet.css'
+import { EndOfPage, SheetHeader } from './ui'
 
 const FAST_STAGGER = 28
 const CACHE_KEY = 'overlay:insights'
@@ -135,16 +136,8 @@ export default function InsightsBottomSheet() {
         aria-labelledby="insights-sheet-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="insights-sheet-handle" />
-        <div className="insights-sheet-header">
-          <h2 id="insights-sheet-title" className="insights-sheet-title">Health Insights</h2>
-          <button type="button" className="insights-sheet-close" onClick={handleClose} aria-label="Close">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+        <div className="ds-sheet-handle" aria-hidden="true" />
+        <SheetHeader as="h2" className="sheet-page-header" titleId="insights-sheet-title" title="Health Insights" onClose={handleClose} />
         <div className="insights-sheet-content" ref={contentRef}>
           {articles.map((article, idx) => {
             const isRevealed = skipFetch || revealedRef.current.has(idx)
@@ -170,7 +163,7 @@ export default function InsightsBottomSheet() {
               </button>
             )
           })}
-          <div className="end-of-page-placeholder">- You've reached the end -</div>
+          <EndOfPage />
         </div>
       </div>
     </div>

@@ -9,8 +9,8 @@ export default function PasswordStrength({ value }) {
   if (!value) return null
   return (
     <div className={`auth-strength is-${label}`} aria-live="polite">
-      <div className="auth-strength-track">
-        <span className="auth-strength-fill" style={{ width: `${percent}%` }} />
+      <div className="auth-strength-track ds-progress">
+        <span className="auth-strength-fill ds-progress__bar" style={{ width: `${percent}%` }} />
       </div>
       <p className="auth-strength-label">{label} password</p>
     </div>

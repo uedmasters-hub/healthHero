@@ -42,7 +42,7 @@ export default function Avatar({
       style={{ width: size, height: size, minWidth: size, minHeight: size }}
       aria-hidden={alt ? undefined : true}
     >
-      {status === 'loading' ? <span className="dir-avatar__shine" aria-hidden="true" /> : null}
+      {status === 'loading' ? <span className="dir-avatar__shine shimmer" aria-hidden="true" /> : null}
       {showImage ? (
         <img
           key={currentSrc}

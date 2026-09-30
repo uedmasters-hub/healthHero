@@ -1,21 +1,11 @@
-.categories {
-  padding: 0;
-}
-
+/* Specialty rail — card surface + states from .ds-card.is-interactive,
+   scroll/snap from .ds-chip-row. Layout only. */
 .categories-scroll {
-  display: flex;
   align-items: stretch;
   gap: var(--card-gap);
-  overflow-x: auto;
   padding: 0 var(--content-padding);
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--content-padding);
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.categories-scroll::-webkit-scrollbar {
-  display: none;
 }
 
 .categories-scroll:has(> :only-child) {
@@ -27,19 +17,10 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--space-0);
   flex: 0 0 calc((100% - var(--card-gap) * 2 - var(--space-8)) / 3);
   min-width: 0;
   padding: var(--card-padding) var(--space-3);
-  background: var(--card-bg);
-  border: var(--border-width) solid var(--border-subtle);
-  border-radius: var(--radius-card);
-  box-shadow: none;
-  cursor: pointer;
   scroll-snap-align: start;
-  transition: var(--interact-transition);
-  font: inherit;
-  color: inherit;
 }
 
 .category-card:only-child {
@@ -56,16 +37,6 @@
   gap: var(--stack-gap);
   width: 100%;
   height: 100%;
-}
-
-.category-card:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.category-card:active {
-  background: var(--interact-pressed-bg);
-  border-color: var(--interact-pressed-border);
 }
 
 .category-icon {
@@ -93,15 +64,4 @@
 
 .view-all-card {
   border-style: dashed;
-  border-color: var(--border-subtle);
-}
-
-.view-all-card:hover {
-  background: var(--interact-hover-bg);
-  border-color: var(--interact-hover-border);
-}
-
-.view-all-icon {
-  background: transparent;
-  border-radius: var(--radius-full);
 }

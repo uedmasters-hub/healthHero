@@ -1,11 +1,11 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, CodeBlock, Section } from '../shared'
+import { Callout, RelatedLinks, CodeBlock, Section } from '../shared'
 
 export default function RovoUIPage() {
   return (
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Rovo UI</div>
-        <h1 className="ds-page-title">Rovo UI patterns</h1>
+        <h1 className="ds-doc-title">Rovo UI patterns</h1>
         <p className="ds-page-description">
           Internal reusable patterns and product-level compositions built on top of the core design system.
           These patterns represent real implementations in the eMedicalls application.

@@ -320,7 +320,7 @@ function Onboarding({ onComplete }) {
               />
             ))}
           </div>
-          <button type="button" className="onboard-cta" onClick={onContinue} aria-label={step >= LAST ? 'Get Started' : 'Continue'}>
+          <button type="button" className="onboard-cta ds-btn ds-btn--primary ds-btn--lg ds-btn--block" onClick={onContinue} aria-label={step >= LAST ? 'Get Started' : 'Continue'}>
             <span className={`onboard-cta-label ${step < LAST ? 'is-on' : ''}`} aria-hidden="true">Continue</span>
             <span className={`onboard-cta-label ${step >= LAST ? 'is-on' : ''}`} aria-hidden="true">Get Started</span>
           </button>

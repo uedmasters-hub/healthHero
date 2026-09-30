@@ -115,7 +115,7 @@ export default function PromoCarousel({
                     {slide.cta ? (
                       <button
                         type="button"
-                        className="promo-card__cta"
+                        className="promo-card__cta ds-btn ds-btn--primary ds-btn--sm"
                         onClick={() => onAction?.(slide)}
                       >
                         <span>{slide.cta}</span>

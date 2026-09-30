@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import CartButton from './pharmacy/CartButton'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
@@ -26,7 +27,6 @@ import {
   EntityCardSkeletonStack,
 } from './directory'
 import './SelectProvider.css'
-import './ExpandRadiusEmpty.css'
 
 const PAGE_SIZE = PHARMACIES_PAGE_SIZE || 24
 
@@ -205,13 +205,13 @@ export default function PharmacyBrowsePage() {
         className={`filter-option ${active ? 'active' : ''}`}
         onClick={onSelect}
       >
-        <div className="filter-option-circle" />
+        <span className="filter-option-circle ds-radio" aria-hidden="true" />
         <span className="filter-option-label">{label}</span>
         <span
           className={`filter-option-count-slot${countReady ? ' is-loaded' : ' is-loading'}`}
           aria-busy={!countReady}
         >
-          <span className="filter-option-count-skel" aria-hidden="true" />
+          <span className="filter-option-count-skel shimmer" aria-hidden="true" />
           <span className="filter-option-count">
             {countLabel || '\u00a0'}
           </span>
@@ -221,12 +221,13 @@ export default function PharmacyBrowsePage() {
   }
 
   return (
-    <div className="page-push-in" style={{ height: '100%', minHeight: 0 }}>
+    <div style={{ height: '100%', minHeight: 0 }}>
       <DirectoryShell
         title="Pharmacies"
         onBack={goBack}
         showBack
         searchScope="pharmacy"
+        headerTrailing={<CartButton />}
         searchPlaceholder="Search pharmacies…"
         searchQuery={search}
         onSearchChange={setSearch}
@@ -243,10 +244,17 @@ export default function PharmacyBrowsePage() {
 
         {!loading && error ? (
           <div className="dir-shell__empty">
-            <EmptyState image="/img/empty_state/pharmacy.png" alt="" title="Couldn’t load pharmacies" message={error} />
-            <button type="button" className="dir-shell__load-more" onClick={() => loadPage({ page: 0 })}>
-              Try again
-            </button>
+            <EmptyState
+              image="/img/empty_state/pharmacy.png"
+              alt=""
+              title="Couldn’t load pharmacies"
+              message={error}
+              action={(
+                <button type="button" className="ds-btn ds-btn--secondary ds-btn--md" onClick={() => loadPage({ page: 0 })}>
+                  Try again
+                </button>
+              )}
+            />
           </div>
         ) : null}
 
@@ -283,7 +291,7 @@ export default function PharmacyBrowsePage() {
               <li>
                 <button
                   type="button"
-                  className="dir-shell__load-more"
+                  className="dir-shell__load-more ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
                   disabled={loadingMore}
                   onClick={() => loadPage({ page: page + 1, append: true })}
                 >

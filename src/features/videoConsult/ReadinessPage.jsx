@@ -446,10 +446,10 @@ export default function ReadinessPage() {
           </li>
         </ul>
         <div className="video-actions">
-          <button type="button" className="video-secondary" disabled={busy} onClick={bookForSomeone}>
+          <button type="button" className="ds-btn ds-btn--secondary ds-btn--lg ds-btn--block" disabled={busy} onClick={bookForSomeone}>
             Booking for someone else
           </button>
-          <button type="button" className="video-primary" disabled={busy} onClick={beginLive}>
+          <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" disabled={busy} onClick={beginLive}>
             {busy ? 'Asking…' : 'Start check'}
           </button>
         </div>
@@ -513,13 +513,13 @@ export default function ReadinessPage() {
         <p className="video-privacy">This preview stays on this device. It is deleted when you continue or leave, and it is never uploaded.</p>
         {passed ? (
           <div className="video-actions">
-            <button type="button" className="video-secondary" onClick={beginLive}>Run test again</button>
-            <button type="button" className="video-primary" onClick={resume}>Continue</button>
+            <button type="button" className="ds-btn ds-btn--secondary ds-btn--lg ds-btn--block" onClick={beginLive}>Run test again</button>
+            <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" onClick={resume}>Continue</button>
           </div>
         ) : (
           <div className="video-actions">
-            <button type="button" className="video-secondary" onClick={leaveForInPerson}>Switch to In-Person</button>
-            <button type="button" className="video-primary" onClick={beginLive}>Retry Test</button>
+            <button type="button" className="ds-btn ds-btn--secondary ds-btn--lg ds-btn--block" onClick={leaveForInPerson}>Switch to In-Person</button>
+            <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" onClick={beginLive}>Retry Test</button>
           </div>
         )}
       </div>

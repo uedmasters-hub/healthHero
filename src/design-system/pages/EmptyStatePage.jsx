@@ -1,11 +1,12 @@
-import { TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, PropsTable, Section } from '../shared'
+import { DoDont, RelatedLinks, Preview, PropsTable, Section } from '../shared'
+import { Button, EmptyState, Icon } from '../../components/ui'
 
 export default function EmptyStatePage() {
   return (
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Components / Empty States</div>
-        <h1 className="ds-page-title">Empty States</h1>
+        <h1 className="ds-doc-title">Empty States</h1>
         <p className="ds-page-description">
           Placeholder content shown when a section has no data — providing context and clear next steps.
         </p>
@@ -21,71 +22,41 @@ export default function EmptyStatePage() {
 
       <Section title="Live preview">
         <Preview code={`<EmptyState
-  image="/img/empty-appointments.svg"
-  alt="No appointments"
+  card
+  icon={<Icon.Calendar />}
   title="No upcoming appointments"
   message="Book your first appointment to get started."
+  action={<Button size="sm">Book appointment</Button>}
 />`}>
-          <div style={{ padding: 20, textAlign: 'center', width: '100%' }}>
-            <div style={{ width: 160, height: 120, margin: '0 auto 18px', background: 'var(--neutral-100)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            </div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)' }}>No upcoming appointments</div>
-            <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 6, maxWidth: 240, margin: '6px auto 0' }}>
-              Book your first appointment to get started.
-            </div>
+          <div style={{ width: '100%', maxWidth: 360 }}>
+            <EmptyState
+              card
+              icon={<Icon.Calendar />}
+              title="No upcoming appointments"
+              message="Book your first appointment to get started."
+              action={<Button size="sm">Book appointment</Button>}
+            />
           </div>
         </Preview>
       </Section>
 
       <Section title="Props">
         <PropsTable props={[
-          { name: 'image', type: 'string', default: '—', description: 'Image source URL' },
-          { name: 'alt', type: 'string', default: "''", description: 'Image alt text for accessibility' },
-          { name: 'title', type: 'string', default: "'Coming soon'", description: 'Primary heading text' },
-          { name: 'message', type: 'string', default: '—', description: 'Optional description text' },
+          { name: 'icon', type: 'node', default: '—', description: 'Icon rendered in a large icon well' },
+          { name: 'image', type: 'string', default: '—', description: 'Illustration URL (takes precedence over icon)' },
+          { name: 'title', type: 'string', default: '—', description: 'Primary line — medium, brand ink' },
+          { name: 'message', type: 'string', default: '—', description: 'Supporting copy — secondary text' },
+          { name: 'action', type: 'node', default: '—', description: 'Usually one Button' },
+          { name: 'card / compact', type: 'boolean', default: 'false', description: 'White hairline card / tighter spacing' },
         ]} />
       </Section>
 
       <Section title="Implementation">
-        <CodeBlock title="Component" code={`function EmptyState({ image, alt = '', title = 'Coming soon', message }) {
-  return (
-    <div className="empty-state">
-      {image && <img className="empty-state-image" src={image} alt={alt} />}
-      <p className="empty-state-title">{title}</p>
-      {message && <p className="empty-state-copy">{message}</p>}
-    </div>
-  )
-}`} />
-
-        <CodeBlock title="CSS" code={`.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 100%;
-  padding: var(--space-3) var(--space-2);
-}
-
-.empty-state-image {
-  width: min(220px, 68vw);
-  height: auto;
-  object-fit: contain;
-  margin-bottom: 18px;
-}
-
-.empty-state-title {
-  font-size: var(--text-title-size);      /* 16px */
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-secondary);
-}
-
-.empty-state-copy {
-  font-size: var(--text-body-size);       /* 14px */
-  color: var(--text-secondary);
-  margin-top: var(--space-1-5);           /* 6px */
-  max-width: 240px;
-}`} />
+        <p>
+          <code>EmptyState</code> lives in <code>src/components/ui</code> and renders <code>.ds-empty</code>
+          (<code>__media</code>, <code>__title</code>, <code>__copy</code>, <code>__actions</code>) from
+          <code>primitives.css</code>. The legacy <code>components/EmptyState.jsx</code> adapter forwards to it.
+        </p>
       </Section>
 
       <Section title="Where empty states appear">

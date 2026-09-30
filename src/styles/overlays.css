@@ -1,9 +1,14 @@
-/* Shared bottom-sheet chrome — single geometry, overlay, surface, spacing */
+/* =============================================================================
+   Overlays — bottom sheet + centred dialog. One geometry, one scrim (AppScrim),
+   one motion (sheet: --ease-sheet · dialog: fade + 0.96 → 1 scale).
+   ============================================================================= */
+
+/* ── Bottom sheet ─────────────────────────────────────────────────────── */
 
 .ds-sheet-overlay {
   position: absolute;
   inset: 0;
-  z-index: var(--z-scrim-elevated, 8100);
+  z-index: var(--z-scrim-elevated);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -13,7 +18,7 @@
 }
 
 .ds-sheet-overlay.is-blurred {
-  background: color-mix(in srgb, var(--overlay, rgba(15, 23, 42, 0.28)) 55%, transparent);
+  background: color-mix(in srgb, var(--overlay) 55%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -47,10 +52,7 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   animation: dsSheetSlideUp var(--duration-sheet) var(--ease-sheet) both;
-  transition:
-    transform var(--duration-sheet) var(--ease-sheet),
-    max-height var(--duration-sheet) var(--ease-sheet),
-    padding-bottom var(--duration-sheet) var(--ease-sheet);
+  transition: transform var(--duration-sheet) var(--ease-sheet),max-height var(--duration-sheet) var(--ease-sheet),padding-bottom var(--duration-sheet) var(--ease-sheet);
   touch-action: pan-y;
   will-change: transform;
   /* Keep geometry rectangular — never use radius-pill / radius-full on sheets */
@@ -71,12 +73,16 @@
 .ds-sheet-handle {
   width: var(--sheet-handle-width);
   height: var(--sheet-handle-height);
-  background: var(--border);
-  border-radius: var(--radius-2xs);
+  background: var(--neutral-300);
+  border-radius: var(--radius-full);
   margin: var(--space-1) auto var(--space-3);
   flex-shrink: 0;
   cursor: grab;
   touch-action: none;
+}
+
+.ds-sheet-header.sheet-page-header {
+  padding-inline: var(--content-padding);
 }
 
 .ds-sheet-header {
@@ -91,8 +97,9 @@
 .ds-sheet-header h3,
 .ds-sheet-title {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
+  line-height: var(--text-heading-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
   margin: 0;
 }
 
@@ -124,12 +131,6 @@
   opacity: 1;
 }
 
-.ds-sheet-close:focus-visible {
-  outline: 3px solid var(--primary-500);
-  outline-offset: 2px;
-  box-shadow: none;
-}
-
 .ds-sheet-close svg {
   width: var(--icon-lg);
   height: var(--icon-lg);
@@ -143,7 +144,7 @@
   display: block;
   padding: var(--space-3-5) 0;
   border: none;
-  border-bottom: var(--border-width) solid var(--border);
+  border-bottom: var(--border-width) solid var(--border-divider);
   background: none;
   text-align: left;
   font-family: inherit;
@@ -169,26 +170,89 @@
 .ds-sheet-option.is-active {
   background: var(--interact-selected-bg);
   color: var(--text-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .ds-sheet-option.is-danger {
   color: var(--danger);
 }
 
-@keyframes dsSheetSlideUp {
-  from { transform: translate3d(0, 100%, 0); }
-  to { transform: translate3d(0, 0, 0); }
+
+/* ── Dialog (centred modal) ───────────────────────────────────────────── */
+.ds-dialog-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-scrim-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: transparent;
 }
 
-@keyframes dsSheetSlideDown {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(0, 100%, 0); }
+/* Self-dimmed variant when the global AppScrim is not driving the dim */
+.ds-dialog-overlay.is-dimmed {
+  background: color-mix(in srgb, var(--neutral-900) 40%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: fadeIn var(--duration-normal) var(--ease-standard);
+}
+
+.ds-dialog {
+  width: 100%;
+  max-width: 21.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  background: var(--surface-2);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-modal);
+  text-align: center;
+  animation: dsDialogIn var(--duration-dialog) var(--ease-sheet) both;
+}
+
+.ds-dialog__icon {
+  display: grid;
+  place-items: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  margin: 0 auto var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--primary-300);
+  color: var(--primary-950);
+}
+
+.ds-dialog__icon svg { width: var(--icon-2xl); height: var(--icon-2xl); }
+.ds-dialog__icon.is-danger { background: var(--color-danger-subtle); color: var(--color-danger); }
+.ds-dialog__icon.is-warning { background: var(--color-warning-subtle); color: var(--warning-900); }
+
+.ds-dialog__title {
+  margin: 0;
+  font-size: var(--text-subtitle-size);
+  line-height: var(--text-subtitle-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.ds-dialog__copy {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+.ds-dialog__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ds-sheet,
-  .ds-sheet-overlay.is-closing .ds-sheet {
-    animation-duration: 0.01ms !important;
+  .ds-sheet-overlay.is-closing .ds-sheet,
+  .ds-dialog {
+    animation-duration: var(--duration-instant) !important;
   }
 }

@@ -83,7 +83,7 @@ export default function VerifyEmailPage() {
       onChangeEmail={onChangeEmail}
       confirmationUrl={confirmationUrl}
       openAppLabel="Open eMedicalls"
-      footer={<Link to="/login" className="auth-text-btn">Back to sign in</Link>}
+      footer={<Link to="/login" className="auth-text-btn ds-link">Back to sign in</Link>}
     />
   )
 }

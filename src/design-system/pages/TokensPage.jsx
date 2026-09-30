@@ -3,7 +3,7 @@ export default function TokensPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Tokens</div>
-        <h1 className="ds-page-title">Design tokens</h1>
+        <h1 className="ds-doc-title">Design tokens</h1>
         <p className="ds-page-description">
           PocketPills production primitives adopted as eMedicalls&apos; visual system — colors, spacing,
           typography, radius, elevation, and form foundations. Motion tokens are intentionally preserved.
@@ -17,8 +17,8 @@ export default function TokensPage() {
         we reference semantic tokens like <code>var(--primary)</code> or <code>var(--space-4)</code>.
       </p>
 
-      <div className="ds-callout ds-callout-info">
-        <span className="ds-callout-icon">ℹ</span>
+      <div className="ds-doc-callout ds-doc-callout-info">
+        <span className="ds-doc-callout-icon">ℹ</span>
         <div>
           All tokens are defined as CSS custom properties in <code>src/index.css</code> under the <code>:root</code> selector.
           Motion tokens are intentionally unchanged in visual-system passes.

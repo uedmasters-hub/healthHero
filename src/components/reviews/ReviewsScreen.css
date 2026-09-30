@@ -1,0 +1,110 @@
+/* Doctor reviews — layout only; AppBar, cards, field, badges and buttons
+   are shared primitives. Stars use the rating token. */
+.reviews-page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.reviews-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  padding: var(--space-4) var(--content-padding) calc(var(--space-6) + var(--bottom-bar-pad));
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.reviews-summary-score {
+  font-size: var(--text-stat-size);
+  line-height: var(--leading-none);
+  font-weight: var(--font-weight-medium);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  color: var(--pp-headline);
+  font-variant-numeric: tabular-nums;
+}
+
+.reviews-summary p {
+  margin: var(--space-1-5) 0 0;
+  font-size: var(--text-label-size);
+  color: var(--text-tertiary);
+}
+
+.reviews-summary-stars,
+.reviews-item-stars,
+.reviews-star-pick {
+  display: flex;
+  gap: var(--space-0-5);
+  color: var(--neutral-300);
+}
+
+.reviews-summary-stars .is-on,
+.reviews-item-stars .is-on,
+.reviews-star-btn.is-on { color: var(--rating); }
+
+.reviews-compose-title { margin: 0 0 var(--space-2); }
+
+.reviews-star-btn {
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: var(--text-display-size);
+  color: var(--neutral-300);
+  cursor: pointer;
+}
+
+.reviews-compose .ds-field { margin-top: var(--space-2); }
+.reviews-save { margin-top: var(--space-3); }
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2-5);
+}
+
+.reviews-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.reviews-item-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-body-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+}
+
+.reviews-item-date {
+  margin-top: var(--space-0-5);
+  font-size: var(--text-caption-size);
+  color: var(--text-tertiary);
+}
+
+.reviews-item-actions { display: flex; gap: var(--space-1); }
+.reviews-delete { color: var(--danger); }
+
+.reviews-item-stars {
+  margin: var(--space-2) 0;
+  font-size: var(--text-caption-size);
+}
+
+.reviews-item-text {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}

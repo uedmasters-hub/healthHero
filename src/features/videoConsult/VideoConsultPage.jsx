@@ -27,18 +27,8 @@ import {
   openCameraPreview,
   stopStream,
 } from './tabcomEngine'
+import { AppBar } from '../../components/ui'
 import './VideoConsult.css'
-
-function BackButton({ onClick, label = 'Back' }) {
-  return (
-    <button type="button" className="ds-icon-btn is-xl" onClick={onClick} aria-label={label}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-        <path d="M19 12H5" />
-        <polyline points="12 19 5 12 12 5" />
-      </svg>
-    </button>
-  )
-}
 
 function formatDay(iso) {
   const date = new Date(`${iso}T00:00:00`)
@@ -311,19 +301,18 @@ export default function VideoConsultPage() {
 
   return (
     <div className="video-consult">
-      <header className="video-consult-header">
-        <BackButton
-          onClick={() => {
-            if (step === 'review') setStep('slots')
-            else if (step === 'slots' && !joinAppointmentId) setStep('list')
-            else if (step === 'join') {
-              markEnded(sessionRef.current).catch(() => {})
-              navigate('/')
-            } else navigate(-1)
-          }}
-        />
-        <h1>{title}</h1>
-      </header>
+      <AppBar
+        className="video-consult-header"
+        title={title}
+        onBack={() => {
+          if (step === 'review') setStep('slots')
+          else if (step === 'slots' && !joinAppointmentId) setStep('list')
+          else if (step === 'join') {
+            markEnded(sessionRef.current).catch(() => {})
+            navigate('/')
+          } else navigate(-1)
+        }}
+      />
       <div className="video-consult-body">
         {step === 'list' ? (
           <>
@@ -335,7 +324,7 @@ export default function VideoConsultPage() {
             <ul className="video-doctor-list">
               {rows.map((row) => (
                 <li key={row.doctor.providerUuid || row.doctor.id}>
-                  <button type="button" className="video-doctor" onClick={() => chooseDoctor(row)}>
+                  <button type="button" className="ds-card is-interactive is-padded video-doctor" onClick={() => chooseDoctor(row)}>
                     <strong>{row.doctor.name}</strong>
                     <span>{row.doctor.specialty}</span>
                     <span>{row.slots.length === 1 ? '1 open time' : `${row.slots.length} open times`}</span>
@@ -375,13 +364,13 @@ export default function VideoConsultPage() {
             ) : null}
             {outcome === 'usable' ? (
               <div className="video-actions">
-                <button type="button" className="video-primary" onClick={() => setStep('slots')}>Continue</button>
+                <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" onClick={() => setStep('slots')}>Continue</button>
               </div>
             ) : null}
             {outcome === 'poor' ? (
               <div className="video-actions">
-                <button type="button" className="video-primary" onClick={() => setAttempt((value) => value + 1)}>Try again</button>
-                <button type="button" className="video-secondary" onClick={leaveForInPerson}>Book an in-person visit</button>
+                <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" onClick={() => setAttempt((value) => value + 1)}>Try again</button>
+                <button type="button" className="ds-btn ds-btn--secondary ds-btn--lg ds-btn--block" onClick={leaveForInPerson}>Book an in-person visit</button>
               </div>
             ) : null}
           </section>
@@ -401,7 +390,7 @@ export default function VideoConsultPage() {
                       <li key={`${slot.date}-${slot.time}`}>
                         <button
                           type="button"
-                          className={`video-slot${active ? ' is-selected' : ''}`}
+                          className="ds-card is-interactive is-padded video-slot"
                           aria-pressed={active}
                           onClick={() => setSelected(slot)}
                         >
@@ -414,7 +403,7 @@ export default function VideoConsultPage() {
                 </ul>
               </div>
             ))}
-            <button type="button" className="video-primary" disabled={!selected} onClick={() => setStep('review')}>
+            <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" disabled={!selected} onClick={() => setStep('review')}>
               Continue
             </button>
           </>
@@ -422,13 +411,13 @@ export default function VideoConsultPage() {
 
         {step === 'review' ? (
           <>
-            <div className="video-summary">
+            <div className="ds-card is-padded video-summary">
               <p><strong>{doctor?.name}</strong></p>
               <p>{formatDay(selected?.date)} · {selected?.time}</p>
               <p>Video consultation</p>
             </div>
             {error ? <p className="video-note" role="alert">{error}</p> : null}
-            <button type="button" className="video-primary" disabled={busy} onClick={confirm}>
+            <button type="button" className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block" disabled={busy} onClick={confirm}>
               {busy ? 'Reserving…' : 'Confirm time'}
             </button>
           </>
@@ -437,14 +426,14 @@ export default function VideoConsultPage() {
         {step === 'booked' ? (
           <>
             <p className="video-outcome" role="status">Your consultation is reserved.</p>
-            <div className="video-summary">
+            <div className="ds-card is-padded video-summary">
               <p><strong>{booking?.doctor?.name || doctor?.name}</strong></p>
               <p>{booking?.time || selected?.time}</p>
             </div>
             {error ? <p className="video-note" role="alert">{error}</p> : null}
             <button
               type="button"
-              className="video-primary"
+              className="ds-btn ds-btn--primary ds-btn--lg ds-btn--block"
               onClick={() => {
                 const id = booking?.engineId || booking?.id || joinAppointmentId
                 if (transportRef.current?.url) {
@@ -471,7 +460,7 @@ export default function VideoConsultPage() {
             {error ? <p className="video-note" role="alert">{error}</p> : null}
             <button
               type="button"
-              className="video-secondary"
+              className="ds-btn ds-btn--secondary ds-btn--lg ds-btn--block"
               onClick={() => {
                 const saved = getBooking?.(joinAppointmentId)
                 if (saved) setBooking(saved)

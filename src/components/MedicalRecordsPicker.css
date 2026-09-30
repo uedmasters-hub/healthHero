@@ -1,0 +1,50 @@
+/* Medical records picker (Confirm booking, Pre-visit) — layout only; rows,
+   chips, checkbox, empty states and buttons are shared primitives. */
+.records-picker__hint { margin-top: var(--space-2); }
+
+.ds-sheet.records-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: var(--app-sheet-max-height);
+}
+
+.records-sheet__tabs { flex-shrink: 0; margin-bottom: var(--space-3); }
+
+.records-sheet__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+.records-sheet__body > .ds-section-title { margin: 0; }
+
+.records-item + .records-item { border-top: var(--border-width) solid var(--border-divider); }
+
+.records-item__row { display: flex; align-items: center; }
+.records-item__main { flex: 1; min-width: 0; }
+.records-item__toggle { margin-right: var(--space-2); }
+.records-item__toggle svg { transition: transform var(--duration-normal) var(--ease-standard); }
+.records-item.is-expanded .records-item__toggle svg { transform: rotate(180deg); }
+
+.records-item__image {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.records-item__details {
+  margin: 0;
+  padding: 0 var(--card-padding) var(--space-3) calc(var(--card-padding) + 1.25rem + var(--space-md));
+}
+
+.records-sheet__footer {
+  flex-shrink: 0;
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--border-divider);
+}

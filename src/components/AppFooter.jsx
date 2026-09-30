@@ -127,7 +127,7 @@ export default function AppFooter({ page = 'home' }) {
           <div className="app-footer-wordmark">
             <img src={ONBOARD_LOGO} alt="" className="app-footer-logo" />
             <p className="app-footer-name">{BRAND_NAME}</p>
-            <span className="app-footer-badge">24/7 Care</span>
+            <span className="ds-badge is-primary is-caps app-footer-badge">24/7 Care</span>
           </div>
           <p className="app-footer-tagline">
             Your trusted companion for instant medical advice, digital prescriptions, lab tests, and doorstep pharmacy delivery.
@@ -186,7 +186,7 @@ export default function AppFooter({ page = 'home' }) {
       >
         <div className="app-footer-social" aria-label="Social">
           {SOCIAL.map((item) => (
-            <button key={item.id} type="button" className="app-footer-social-btn" aria-label={item.label}>
+            <button key={item.id} type="button" className="ds-icon-btn is-subtle app-footer-social-btn" aria-label={item.label}>
               {item.icon}
             </button>
           ))}

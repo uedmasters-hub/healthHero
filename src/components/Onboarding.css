@@ -2,7 +2,7 @@
   position: absolute;
   inset: 0;
   z-index: var(--z-overlay);
-  background: var(--white);
+  background: var(--surface-2);
   overflow: hidden;
   touch-action: none;
   user-select: none;
@@ -53,9 +53,10 @@
   margin: 0;
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-tight);
-  color: var(--info);
+  font-weight: var(--font-weight-medium);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  color: var(--pp-headline);
 }
 
 .onboard-journey {
@@ -112,8 +113,9 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--text-display-weight);
-  letter-spacing: var(--letter-tight);
-  color: var(--info);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
+  color: var(--pp-headline);
 }
 
 .onboard-body {
@@ -154,7 +156,7 @@
   width: 78%;
   height: 58%;
   border-radius: var(--radius-full);
-  background: radial-gradient(circle, var(--info-bg) 0%, transparent 72%);
+  background: radial-gradient(circle, var(--primary-300) 0%, transparent 72%);
   z-index: 0;
 }
 
@@ -201,32 +203,18 @@
   width: var(--space-2);
   height: var(--space-2);
   border-radius: var(--radius-full);
-  background: var(--border-strong);
-  transition: width var(--duration-slow) var(--ease-emphasized), background var(--duration-slow) var(--ease-standard);
+  background: var(--neutral-300);
+  transition: width var(--duration-slow) var(--ease-emphasized), background-color var(--duration-slow) var(--ease-standard);
 }
 
 .onboard-dot.is-active {
   width: var(--space-5);
-  background: var(--info);
+  background: var(--pp-headline);
 }
 
 .onboard-cta {
-  position: relative;
-  width: 100%;
-  min-height: var(--app-flow-cta-height);
-  border: none;
-  border-radius: var(--radius-cta);
-  background: var(--cta);
-  color: var(--text-on-primary);
-  font-family: inherit;
-  font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
+  /* .ds-btn.ds-btn--primary.ds-btn--lg — labels cross-fade inside */
   overflow: hidden;
-}
-
-.onboard-cta:active {
-  opacity: var(--opacity-pressed);
 }
 
 .onboard-cta-label {

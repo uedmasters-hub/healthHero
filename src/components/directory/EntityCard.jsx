@@ -59,10 +59,10 @@ export default function EntityCard({
   }) => {
     if (!label && !href) return null
     const classNameAction = [
-      'dir-entity__action',
-      variant === 'solid' ? 'is-solid' : '',
-      variant === 'outline' ? 'is-outline' : '',
-      variant === 'link' ? 'is-link' : '',
+      'dir-entity__action ds-btn ds-btn--sm',
+      variant === 'solid' ? 'is-solid ds-btn--primary' : '',
+      variant === 'outline' ? 'is-outline ds-btn--secondary' : '',
+      variant === 'link' ? 'is-link ds-btn--text' : '',
     ].filter(Boolean).join(' ')
 
     if (href) {
@@ -106,7 +106,7 @@ export default function EntityCard({
 
   return (
     <article
-      className={`dir-entity ${pillFooter ? 'dir-entity--pills' : ''} ${className}`.trim()}
+      className={`dir-entity ds-card ${onClick ? 'is-interactive' : ''} ${pillFooter ? 'dir-entity--pills' : ''} ${className}`.trim()}
       onClick={onClick}
       onKeyDown={(e) => {
         if (!onClick) return
@@ -129,7 +129,7 @@ export default function EntityCard({
         <div className="dir-entity__copy">
           <div className="dir-entity__title-row">
             <h3 className="dir-entity__name">{name}</h3>
-            {badge ? <span className="dir-entity__badge">{badge}</span> : null}
+            {badge ? <span className="dir-entity__badge ds-badge is-primary">{badge}</span> : null}
           </div>
           {subtitle ? <p className="dir-entity__subtitle">{subtitle}</p> : null}
           {meta ? <p className="dir-entity__meta">{meta}</p> : null}
@@ -161,7 +161,7 @@ export default function EntityCard({
           {chips.length > 0 ? (
             <div className="dir-entity__chips">
               {chips.map((chip) => (
-                <span className="dir-entity__chip" key={chip.id || chip.label}>
+                <span className="dir-entity__chip ds-badge is-primary" key={chip.id || chip.label}>
                   {chip.icon || null}
                   {chip.label}
                 </span>
@@ -180,7 +180,7 @@ export default function EntityCard({
             </p>
           ) : null}
           {hasFooterBadge ? (
-            <span className="dir-entity__footer-badge">{footerBadge}</span>
+            <span className="dir-entity__footer-badge ds-badge is-primary">{footerBadge}</span>
           ) : null}
           {hasSecondary ? (
             renderAction({
@@ -206,7 +206,7 @@ export default function EntityCard({
 
 export function EntityCardSkeleton() {
   return (
-    <div className="dir-entity dir-entity--skel dir-entity--pharmacy-list" aria-hidden="true">
+    <div className="dir-entity ds-card dir-entity--skel dir-entity--pharmacy-list" aria-hidden="true">
       <div className="dir-entity__top">
         <span className="dir-entity__avatar-skel shimmer" />
         <div className="dir-entity__copy">

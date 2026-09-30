@@ -22,18 +22,18 @@ export default function HealthInsights() {
 
   return (
     <div className="health-insights">
-      <div className="section-header">
-        <h2 className="section-title">Health Insights</h2>
-        <button type="button" className="view-all-link" onClick={openInsights}>
-          View all &gt;
+      <div className="ds-section-head">
+        <h2 className="ds-section-head__title">Health Insights</h2>
+        <button type="button" className="ds-link" onClick={openInsights}>
+          View all
         </button>
       </div>
-      <div className="insights-scroll" ref={containerRef}>
+      <div className="insights-scroll ds-chip-row" ref={containerRef}>
         {insights.map((insight, i) => (
           <RevealItem
             as="button"
             type="button"
-            className="insight-card"
+            className="insight-card ds-card is-interactive"
             key={insight.id}
             revealed={isRevealed(i)}
             cached={isCached}

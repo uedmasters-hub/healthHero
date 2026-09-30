@@ -4,57 +4,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--white);
-}
-
-.article-page.page-push-in {
-  animation: articlePushIn 0.36s var(--ease-emphasized) both;
-}
-
-@keyframes articlePushIn {
-  from {
-    transform: translate3d(18%, 0, 0);
-    opacity: var(--opacity-muted);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-    opacity: var(--opacity-visible);
-  }
-}
-
-.article-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--content-padding) var(--space-3);
-  background: var(--white);
-  flex-shrink: 0;
-  z-index: 2;
-}
-
-.article-header-side {
-  display: flex;
-  align-items: center;
-  gap: var(--icon-gap);
-  min-width: calc(var(--icon-btn-size) * 2 + var(--icon-gap));
-}
-
-.article-header-side.is-start {
-  justify-content: flex-start;
-}
-
-.article-header-side.is-end {
-  justify-content: flex-end;
-}
-
-.article-header-title {
-  flex: 1;
-  text-align: center;
-  font-size: var(--text-heading-size);
-  line-height: var(--text-heading-line);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin: 0;
+  background: var(--bg);
 }
 
 .article-scroll {
@@ -229,7 +179,8 @@
   font-size: var(--text-overline-size);
   line-height: var(--text-overline-line);
   font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
+  --tracking: var(--text-overline-tracking);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
 }
 
@@ -242,7 +193,8 @@
   font-size: var(--text-hero-size);
   line-height: var(--text-display-line);
   font-weight: var(--text-display-weight);
-  letter-spacing: var(--letter-tight);
+  --tracking: var(--letter-tight);
+  letter-spacing: var(--tracking);
   color: var(--text-primary);
 }
 
@@ -276,7 +228,7 @@
   justify-content: center;
   color: var(--primary);
   font-size: var(--text-title-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 .article-author-copy {
@@ -289,7 +241,7 @@
 .article-author-name {
   font-size: var(--text-body-lg-size);
   line-height: var(--text-body-lg-line);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -309,7 +261,7 @@
 .article-body p {
   margin: 0;
   font-size: var(--text-body-lg-size);
-  line-height: 1.6;
+  line-height: var(--leading-body);
   color: var(--text-secondary);
 }
 
@@ -317,7 +269,7 @@
   margin: var(--space-2) 0 0;
   font-size: var(--text-title-size);
   line-height: var(--text-title-line);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--text-primary);
 }
 
@@ -331,7 +283,8 @@
   font-size: var(--text-overline-size);
   line-height: var(--text-overline-line);
   font-weight: var(--text-overline-weight);
-  letter-spacing: var(--text-overline-tracking);
+  --tracking: var(--text-overline-tracking);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   color: var(--text-secondary);
 }

@@ -72,7 +72,7 @@ export default function ChatComposer({
       />
       <button
         type="button"
-        className="chat-composer-attach"
+        className="ds-icon-btn is-subtle chat-composer-attach"
         aria-label="Attach file"
         disabled={disabled || sending}
         onClick={() => fileRef.current?.click()}
@@ -97,7 +97,7 @@ export default function ChatComposer({
       />
       <button
         type="button"
-        className="chat-composer-send"
+        className="ds-icon-btn is-filled chat-composer-send"
         aria-label="Send"
         disabled={disabled || sending || !text.trim()}
         onClick={submit}

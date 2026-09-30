@@ -6,9 +6,10 @@
 
 .weekly-schedule-label {
   font-size: var(--text-caption-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--text-muted);
-  letter-spacing: 0.06em;
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
   text-transform: uppercase;
   margin: 0 0 var(--space-3);
 }

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { addToCart, formatRupees, listCatalog } from '../../features/pharmacy/shopApi'
+import { discountPercent, listCatalog } from '../../features/pharmacy/shopApi'
+import { Badge } from '../ui'
+import { CartStepper, PriceTag, ProductArt, TrustStrip } from './ProductBits'
 import { PharmacyIcon } from './PharmacyIcons'
-import '../DoctorCard.css'
 import '../Services.css'
 import './PharmacyShop.css'
 
@@ -16,13 +17,6 @@ const RAIL = [
   { id: 'vitamins', label: 'Vitamins & Supplements', icon: 'spark' },
   { id: 'ayurveda', label: 'Ayurveda & Herbal', icon: 'leaf' },
   { id: 'offers', label: 'Offers', icon: 'tag' },
-]
-
-const TRUST = [
-  { icon: 'shield', title: '100% Genuine', detail: 'Medicines' },
-  { icon: 'truck', title: 'Fast Delivery', detail: 'on Time' },
-  { icon: 'return', title: 'Easy Returns', detail: 'Hassle Free' },
-  { icon: 'lock', title: 'Secure Payment', detail: 'Safe & Trusted' },
 ]
 
 function shelfOf(product) {
@@ -45,46 +39,24 @@ function inShelf(product, shelf) {
   return shelfOf(product) === shelf
 }
 
-const ADD_LABEL = 'Add'
-
 function ProductTile({ product, onOpen }) {
-  const [label, setLabel] = useState(product.requiresPrescription ? 'Rx required' : ADD_LABEL)
-  const [busy, setBusy] = useState(false)
-
-  const add = async (event) => {
-    event.stopPropagation()
-    if (product.requiresPrescription) {
-      onOpen(product.id)
-      return
-    }
-    if (busy) return
-    setBusy(true)
-    try {
-      await addToCart(product.id, 1)
-      setLabel('Added')
-      window.setTimeout(() => setLabel(ADD_LABEL), 900)
-    } catch {
-      setLabel(ADD_LABEL)
-    } finally {
-      setBusy(false)
-    }
-  }
-
+  const off = discountPercent(product)
   return (
-    <article className="shop-tile ds-card-flat">
+    <article className="shop-tile ds-card is-compact">
       <button type="button" className="shop-tile__open" onClick={() => onOpen(product.id)}>
-        <span className="shop-tile__art" aria-hidden="true">
-          <PharmacyIcon name={product.category === 'equipment' ? 'device' : 'pill'} size={28} />
+        <span className="shop-tile__media">
+          <ProductArt product={product} />
+          {product.requiresPrescription ? (
+            <Badge tone="warning" className="shop-tile__flag">Rx</Badge>
+          ) : off ? (
+            <Badge tone="success" className="shop-tile__flag">{off}% off</Badge>
+          ) : null}
         </span>
         <span className="shop-tile__name">{product.name}</span>
         {product.packLabel ? <span className="shop-tile__pack">{product.packLabel}</span> : null}
-        <span className="shop-tile__price">
-          {product.price == null ? 'Price at checkout' : formatRupees(product.price)}
-        </span>
+        <PriceTag product={product} showSaving={false} className="shop-tile__price" />
       </button>
-      <button type="button" className="dc-book shop-tile__add" onClick={add} disabled={busy}>
-        {label}
-      </button>
+      <CartStepper product={product} block />
     </article>
   )
 }
@@ -315,7 +287,7 @@ export default function MarketplaceFeed({
         ) : null}
         {!loading && !error && products.length ? groups.map((group) => (
           <section className="shop-shelf" data-section={group.id} key={group.id}>
-            <h2 className="section-title">{group.label}</h2>
+            <h2 className="ds-section-head__title">{group.label}</h2>
             {group.products.length ? (
               <div className="shop-grid">
                 {group.products.map((product) => (
@@ -328,17 +300,7 @@ export default function MarketplaceFeed({
           </section>
         )) : null}
 
-        <ul className="shop-trust">
-          {TRUST.map((item) => (
-            <li key={item.title}>
-              <span className="ds-icon-well shop-trust__icon" aria-hidden="true">
-                <PharmacyIcon name={item.icon} size={16} />
-              </span>
-              <span className="shop-trust__title">{item.title}</span>
-              <span className="shop-trust__detail">{item.detail}</span>
-            </li>
-          ))}
-        </ul>
+        <TrustStrip />
       </div>
       {!railOpen && typeof document !== 'undefined' && document.querySelector('.shop-store')
         ? createPortal(

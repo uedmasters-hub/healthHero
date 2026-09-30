@@ -3,7 +3,7 @@ export default function ContactPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Contact</div>
-        <h1 className="ds-page-title">Contact us</h1>
+        <h1 className="ds-doc-title">Contact us</h1>
         <p className="ds-page-description">
           Reach the eMedicalls Design System team for support, contributions, and feedback.
         </p>
@@ -41,8 +41,8 @@ export default function ContactPage() {
       </ol>
 
       <h2>Office hours</h2>
-      <div className="ds-callout ds-callout-success">
-        <span className="ds-callout-icon">📅</span>
+      <div className="ds-doc-callout ds-doc-callout-success">
+        <span className="ds-doc-callout-icon">📅</span>
         <div>
           <strong>Thursdays, 2:00 - 3:00 PM IST</strong><br />
           Drop in for live support, design reviews, or architecture discussions.

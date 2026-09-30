@@ -13,11 +13,15 @@ import { flowState, isHomePath } from '../../lib/careFlow'
 import './HeaderActions.css'
 
 /**
+ * Global notification chrome for every root screen (Home + tab roots).
  * Avatar is absolutely pinned to the right edge of a fixed 44×44 slot.
  * Capsule + bell animate around it — avatar never participates in layout flow.
- * Optional searchSlot sits outside the capsule (left of shell / avatar).
+ * searchSlot / trailing sit outside the capsule and slide with it.
+ *
+ * settleHide — play the zero-unread exit here. Defaults to "on Home" because
+ * Home stays mounted behind other routes; tab roots are only mounted in front.
  */
-export default function HeaderActions({ searchSlot = null }) {
+export default function HeaderActions({ searchSlot = null, trailing = null, settleHide }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { unreadCount } = useNotifications()
@@ -25,7 +29,7 @@ export default function HeaderActions({ searchSlot = null }) {
   const pendingIsland = islandSnap.pendingCount
   // Badge lags until the island absorbs into the bell.
   const badgeCount = Math.max(0, unreadCount - pendingIsland)
-  const onHome = isHomePath(location.pathname)
+  const onHome = settleHide ?? isHomePath(location.pathname)
   const {
     phase,
     showShell,
@@ -63,7 +67,12 @@ export default function HeaderActions({ searchSlot = null }) {
       ].filter(Boolean).join(' ')}
       data-phase={phase}
     >
-      {searchSlot}
+      {searchSlot || trailing ? (
+        <div className="header-actions__lead">
+          {searchSlot}
+          {trailing}
+        </div>
+      ) : null}
 
       {/* Always-on fly target — layout matches bell slot even when bell is hidden */}
       <div

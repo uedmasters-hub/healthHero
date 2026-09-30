@@ -4,7 +4,7 @@ export default function InsightCard({ article, onClick, className = '' }) {
   return (
     <button
       type="button"
-      className={`insight-card ${className}`.trim()}
+      className={`insight-card ds-card is-interactive ${className}`.trim()}
       onClick={onClick}
     >
       <InsightCardBody article={article} />

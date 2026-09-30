@@ -3,44 +3,51 @@ import { healthItemMeta, listItemMeta, listItemTitle, useUser } from '../../user
 import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
+import { Badge, Button, List, ListRow } from '../ui'
 
 function isActiveStatus(status) {
   const value = String(status || '').toLowerCase()
   return !value || value === 'active' || value === 'managed' || value === 'monitoring'
 }
 
-function MedCard({ item, onOpen }) {
+const STATUS_TONE = { active: 'success', managed: 'success', monitoring: 'info', resolved: 'muted', paused: 'warning', stopped: 'muted' }
+const SEVERITY_TONE = { severe: 'danger', moderate: 'warning', mild: 'info' }
+
+function statusBadge(status, map = STATUS_TONE) {
+  if (!status) return null
+  const tone = map[String(status).toLowerCase()] || 'neutral'
+  return <Badge tone={tone}>{status}</Badge>
+}
+
+function MedRow({ item, onOpen }) {
   return (
-    <button type="button" className="med-now-card" onClick={() => onOpen(item)}>
-      <span className="med-now-mark" aria-hidden="true" />
-      <span className="med-now-copy">
-        <strong>{item.title}</strong>
-        <span>{item.details || item.doctor || 'Tap to review dose and instructions'}</span>
-      </span>
-      {item.status ? <span className={`med-status is-${String(item.status).toLowerCase()}`}>{item.status}</span> : null}
-    </button>
+    <ListRow
+      onClick={() => onOpen(item)}
+      title={item.title}
+      subtitle={item.details || item.doctor || 'Tap to review dose and instructions'}
+      trailing={statusBadge(item.status)}
+    />
   )
 }
 
-function AllergyPill({ item, onOpen }) {
-  const severity = String(item.severity || 'noted').toLowerCase()
+function AllergyRow({ item, onOpen }) {
   return (
-    <button type="button" className={`allergy-pill is-${severity}`} onClick={() => onOpen(item)}>
-      <strong>{item.title}</strong>
-      <span>{item.severity || 'Noted'}</span>
-    </button>
+    <ListRow
+      onClick={() => onOpen(item)}
+      title={item.title}
+      trailing={statusBadge(item.severity || 'Noted', SEVERITY_TONE)}
+    />
   )
 }
 
 function ConditionRow({ kind, item, onOpen }) {
   return (
-    <button type="button" className="condition-row" onClick={() => onOpen(item)}>
-      <span>
-        <strong>{listItemTitle(kind, item)}</strong>
-        <span>{listItemMeta(kind, item) || healthItemMeta(item)}</span>
-      </span>
-      {item.status ? <em>{item.status}</em> : null}
-    </button>
+    <ListRow
+      onClick={() => onOpen(item)}
+      title={listItemTitle(kind, item)}
+      subtitle={listItemMeta(kind, item) || healthItemMeta(item)}
+      trailing={statusBadge(item.status)}
+    />
   )
 }
 
@@ -60,21 +67,25 @@ export default function MedicalWorkspace() {
     <ProfilePage title="Medical" dataset="profile-medical">
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="med-hero" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
-            <p className="med-hero-kicker">Current chart</p>
-            <h2>{activeMeds.length ? `${activeMeds.length} active medicine${activeMeds.length === 1 ? '' : 's'}` : 'No active medicines'}</h2>
-            <p>
+          <RevealItem className="ds-card profile-hero is-tinted" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+            <p className="ds-overline">Current chart</p>
+            <h2 className="profile-hero__title">{activeMeds.length ? `${activeMeds.length} active medicine${activeMeds.length === 1 ? '' : 's'}` : 'No active medicines'}</h2>
+            <p className="profile-hero__copy">
               {allergies.length
                 ? `${allergies.length} allerg${allergies.length === 1 ? 'y' : 'ies'} on file`
                 : 'Add allergies so doctors can prescribe safely.'}
             </p>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+          <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <SectionHead title="Medications" action="Add" onAction={() => open('medications')} />
-            {medications.length ? medications.map((item) => (
-              <MedCard key={item.id} item={item} onOpen={(entry) => open('medications', entry)} />
-            )) : (
+            {medications.length ? (
+              <List>
+                {medications.map((item) => (
+                  <MedRow key={item.id} item={item} onOpen={(entry) => open('medications', entry)} />
+                ))}
+              </List>
+            ) : (
               <GuidedEmpty
                 title="Keep your current medicines here"
                 body="Dose, timing, and status stay with your profile and can be attached when you book."
@@ -84,14 +95,14 @@ export default function MedicalWorkspace() {
             )}
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
             <SectionHead title="Allergies" action="Add" onAction={() => open('allergies')} />
             {allergies.length ? (
-              <div className="allergy-pill-row">
+              <List>
                 {allergies.map((item) => (
-                  <AllergyPill key={item.id} item={item} onOpen={(entry) => open('allergies', entry)} />
+                  <AllergyRow key={item.id} item={item} onOpen={(entry) => open('allergies', entry)} />
                 ))}
-              </div>
+              </List>
             ) : (
               <GuidedEmpty
                 title="Tell us what to avoid"
@@ -102,13 +113,13 @@ export default function MedicalWorkspace() {
             )}
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
+          <RevealItem revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
             <SectionHead title="Diagnoses & conditions" action="Add" onAction={() => open('diagnoses')} />
             {diagnoses.length || conditions.length ? (
-              <div className="condition-stack">
+              <List>
                 {diagnoses.map((item) => <ConditionRow key={item.id} kind="diagnoses" item={item} onOpen={(entry) => open('diagnoses', entry)} />)}
                 {conditions.map((item) => <ConditionRow key={item.id} kind="conditions" item={item} onOpen={(entry) => open('conditions', entry)} />)}
-              </div>
+              </List>
             ) : (
               <GuidedEmpty
                 title="Track what you are managing"
@@ -118,30 +129,36 @@ export default function MedicalWorkspace() {
               />
             )}
             {diagnoses.length || conditions.length ? (
-              <button type="button" className="profile-inline-link" onClick={() => open('conditions')}>Add chronic condition</button>
+              <Button variant="text" size="sm" className="profile-inline-action" onClick={() => open('conditions')}>Add chronic condition</Button>
             ) : null}
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
+          <RevealItem revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
             <SectionHead title="Surgeries" action="Add" onAction={() => open('surgeries')} />
-            {surgeries.length ? surgeries.map((item) => (
-              <ConditionRow key={item.id} kind="surgeries" item={item} onOpen={(entry) => open('surgeries', entry)} />
-            )) : (
+            {surgeries.length ? (
+              <List>
+                {surgeries.map((item) => (
+                  <ConditionRow key={item.id} kind="surgeries" item={item} onOpen={(entry) => open('surgeries', entry)} />
+                ))}
+              </List>
+            ) : (
               <GuidedEmpty title="No surgeries recorded" body="Past procedures help clinicians plan safely." cta="Add surgery" onClick={() => open('surgeries')} />
             )}
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(5)} cached={isCached} ref={setItemRef(5)}>
+          <RevealItem revealed={isRevealed(5)} cached={isCached} ref={setItemRef(5)}>
             <SectionHead title="Vaccinations" action="Add" onAction={() => open('vaccinations')} />
             {vaccinations.length ? (
-              <div className="vax-rail">
+              <List>
                 {vaccinations.map((item) => (
-                  <button type="button" key={item.id} className="vax-chip" onClick={() => open('vaccinations', item)}>
-                    <strong>{item.title}</strong>
-                    <span>{[item.dose, healthItemMeta(item)].filter(Boolean).join(' · ')}</span>
-                  </button>
+                  <ListRow
+                    key={item.id}
+                    onClick={() => open('vaccinations', item)}
+                    title={item.title}
+                    subtitle={[item.dose, healthItemMeta(item)].filter(Boolean).join(' · ')}
+                  />
                 ))}
-              </div>
+              </List>
             ) : (
               <GuidedEmpty title="Keep immunisation history handy" body="Boosters and travel vaccines live with your profile." cta="Add vaccination" onClick={() => open('vaccinations')} />
             )}

@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useUser } from '../../user'
 import { InfoCard, InfoRow, NavGroup, NavRow, ProfileIcons, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
+import { Badge, List, ListRow } from '../ui'
 import { flowState } from '../../lib/careFlow'
 
 export default function AccountWorkspace() {
@@ -18,13 +19,13 @@ export default function AccountWorkspace() {
     <ProfilePage title="Account" dataset="profile-account">
       {({ setItemRef, isRevealed, isCached }) => (
         <>
-          <RevealItem className="account-member" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
-            <p>Membership</p>
-            <h2>{isDemo ? 'eMedicalls PRO' : 'eMedicalls member'}</h2>
-            <span>{profile?.email}</span>
+          <RevealItem className="ds-card profile-hero" revealed={isRevealed(0)} cached={isCached} ref={setItemRef(0)}>
+            <p className="ds-overline">Membership</p>
+            <h2 className="profile-hero__title">{isDemo ? 'eMedicalls PRO' : 'eMedicalls member'}</h2>
+            <p className="profile-hero__copy">{profile?.email}</p>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
+          <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <SectionHead title="Preferences" />
             <NavGroup>
               <NavRow
@@ -40,7 +41,7 @@ export default function AccountWorkspace() {
             </NavGroup>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
+          <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
             <SectionHead title="Privacy & security" />
             <InfoCard>
               <InfoRow label="Sign-in" value={profile?.phone || profile?.email} />
@@ -49,18 +50,18 @@ export default function AccountWorkspace() {
             </InfoCard>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
+          <RevealItem revealed={isRevealed(3)} cached={isCached} ref={setItemRef(3)}>
             <SectionHead title="Devices" />
             <InfoCard>
-              <InfoRow label="This device" value="eMedicalls web" extra="Active" />
+              <InfoRow label="This device" value="eMedicalls web" extra={<Badge tone="success">Active</Badge>} />
             </InfoCard>
           </RevealItem>
 
-          <RevealItem className="user-profile-section" revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
+          <RevealItem revealed={isRevealed(4)} cached={isCached} ref={setItemRef(4)}>
             <SectionHead title="Account management" />
-            <div className="user-profile-info-card">
-              <button type="button" className="user-profile-logout" onClick={signOut}>Log out</button>
-            </div>
+            <List>
+              <ListRow className="is-centered" danger chevron={false} title="Log out" onClick={signOut} />
+            </List>
           </RevealItem>
         </>
       )}

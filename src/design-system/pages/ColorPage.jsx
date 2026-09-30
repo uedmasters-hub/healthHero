@@ -1,4 +1,4 @@
-import { SwatchGrid, TokenTable, DoDont, Callout, RelatedLinks, Preview, CodeBlock, Section } from '../shared'
+import { SwatchGrid, TokenTable, DoDont, RelatedLinks, CodeBlock, Section } from '../shared'
 
 const brandColors = [
   { name: '--accent / --primary-950', value: '#4e2a84', hex: '#4e2a84' },
@@ -14,7 +14,8 @@ const ctaColors = [
   { name: '--featured-mid (status)', value: '#37325d', hex: '#37325d' },
 ]
 const surfaceColors = [
-  { name: '--bg / --pp-page', value: '#f5f4fa', hex: '#f5f4fa' },
+  { name: '--bg (page canvas)', value: '#ffffff', hex: '#ffffff' },
+  { name: '--surface-1 / --pp-page (fills)', value: '#f5f4fa', hex: '#f5f4fa' },
   { name: '--card-bg', value: '#ffffff', hex: '#ffffff' },
   { name: '--avatar-surface', value: '#e5e3ff', hex: '#e5e3ff' },
   { name: '--badge-ready-bg', value: 'sage mix', hex: '#e8f6f8' },
@@ -41,7 +42,7 @@ export default function ColorPage() {
     <>
       <div className="ds-page-header">
         <div className="ds-page-breadcrumb">Foundations / Color</div>
-        <h1 className="ds-page-title">Color</h1>
+        <h1 className="ds-doc-title">Color</h1>
         <p className="ds-page-description">
           PocketPills tonal scale with a clear accent hierarchy — one brand accent for primary
           actions, muted secondary chrome, and calm featured surfaces.

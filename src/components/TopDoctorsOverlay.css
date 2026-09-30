@@ -48,7 +48,7 @@
   visibility: hidden;
   pointer-events: none;
   z-index: 1;
-  transition: opacity 0.24s ease;
+  transition: opacity var(--duration-sheet) var(--ease-standard);
 }
 
 .top-doctors-overlay.is-ghost .top-doctors-sheet {
@@ -58,47 +58,6 @@
 .top-doctor-card.is-shared-placeholder {
   visibility: hidden;
 }
-
-.top-doctors-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--border);
-  border-radius: var(--radius-2xs);
-  margin: var(--space-3) auto;
-  flex-shrink: 0;
-}
-
-.top-doctors-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--content-padding) var(--space-4);
-  background: var(--white);
-  border-bottom: var(--border-width) solid var(--border);
-  flex-shrink: 0;
-  z-index: 10;
-}
-
-.top-doctors-title {
-  flex: 1;
-  text-align: left;
-  font-size: var(--text-subtitle-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.top-doctors-close-btn {
-  background: none;
-  border: none;
-  padding: var(--space-1);
-  cursor: pointer;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
 .top-doctors-list {
   flex: 1;
   min-height: 0;
@@ -138,9 +97,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 18px var(--space-4) 22px;
+  padding: 18px var(--space-4) var(--space-5-5);
   overflow: hidden;
-  background: var(--white);
+  background: var(--surface-2);
   border: var(--border-width) solid var(--border-strong);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
@@ -186,7 +145,7 @@
   height: auto;
   opacity: var(--opacity-hidden);
   transform: translateY(6px);
-  transition: opacity 0.38s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--duration-reveal) var(--ease-standard), transform var(--duration-slow) var(--ease-emphasized);
 }
 
 .top-doctor-content .dc-card-grid {
@@ -216,11 +175,11 @@
   z-index: 20;
   pointer-events: none;
   white-space: nowrap;
-  animation: tdToastIn 0.22s ease;
+  animation: tdToastIn var(--duration-dialog) var(--ease-standard);
 }
 
 .top-doctors-loading-toast.is-leaving {
-  animation: tdToastOut 0.2s ease forwards;
+  animation: tdToastOut var(--duration-normal) var(--ease-standard) forwards;
 }
 
 @keyframes tdToastIn {
@@ -236,12 +195,9 @@
 .top-doctors-pill-spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
+  border: 2px solid var(--glass-on-dark-strong);
   border-top-color: var(--white);
   border-radius: var(--radius-full);
-  animation: tdPillSpin 0.6s linear infinite;
+  animation: ds-spin 0.6s linear infinite;
 }
 
-@keyframes tdPillSpin {
-  to { transform: rotate(360deg); }
-}

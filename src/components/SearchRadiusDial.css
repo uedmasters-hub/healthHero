@@ -29,9 +29,7 @@
 }
 
 .radius-dial.is-spring .radius-dial__coverage {
-  transition:
-    width 0.62s var(--radius-spring),
-    height 0.62s var(--radius-spring);
+  transition: width 0.62s var(--radius-spring),height 0.62s var(--radius-spring);
 }
 
 .radius-dial.is-dragging .radius-dial__coverage {
@@ -40,8 +38,7 @@
 
 .radius-dial.is-map .radius-dial__value,
 .radius-dial.is-map .radius-dial__count {
-  text-shadow:
-    0 0 10px var(--white),
+  text-shadow: 0 0 10px var(--white),
     0 0 3px var(--white);
 }
 
@@ -64,9 +61,7 @@
 }
 
 .radius-dial.is-spring .radius-dial__handle {
-  transition:
-    left 0.62s var(--radius-spring),
-    top 0.62s var(--radius-spring);
+  transition: left 0.62s var(--radius-spring),top 0.62s var(--radius-spring);
 }
 
 .radius-dial.is-dragging .radius-dial__handle {
@@ -85,14 +80,14 @@
   top: 50%;
   width: 16px;
   height: 16px;
-  margin: -8px 0 0 -8px;
+  margin: calc(var(--space-2) * -1) 0 0 calc(var(--space-2) * -1);
   border-radius: var(--radius-full);
   background: var(--primary-400);
   box-shadow: 0 0 0 2px var(--neutral-0);
 }
 
 .radius-dial__handle:focus-visible {
-  outline: 2px solid var(--primary-600);
+  outline: var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -111,16 +106,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--space-0-5);
   pointer-events: none;
   text-align: center;
 }
 
 .radius-dial__value {
   font-size: var(--text-heading-size);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
-  line-height: 1.1;
+  font-weight: var(--font-weight-bold);
+  --tracking: var(--letter-caps);
+  letter-spacing: var(--tracking);
+  line-height: var(--leading-tight);
   text-transform: uppercase;
   animation: radius-dial-count var(--duration-moderate) var(--ease-emphasized);
 }
@@ -150,7 +146,7 @@
   width: 100%;
   min-height: 0;
   height: 100%;
-  animation: radius-fade var(--duration-slow) var(--ease-emphasized);
+  animation: fadeIn var(--duration-slow) var(--ease-emphasized);
 }
 
 .radius-flow__copy,
@@ -170,9 +166,9 @@
 .radius-nepal__copy {
   margin: 0;
   font-size: var(--text-body-lg-size);
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.4;
-  color: var(--primary-800);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-body);
+  color: var(--pp-headline);
   text-wrap: balance;
 }
 
@@ -181,30 +177,18 @@
   margin: 0;
   font-size: var(--text-label-size);
   font-weight: var(--font-weight-regular);
-  line-height: 1.4;
-  color: var(--neutral-500);
+  line-height: var(--leading-body);
+  color: var(--text-tertiary);
   text-wrap: balance;
 }
 
 .radius-flow__action {
-  min-height: var(--touch-min);
-  padding: 0 var(--space-6);
-  border: 1.5px solid var(--primary-600);
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--primary-800);
-  font: inherit;
-  font-size: var(--text-body-size);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
+  /* chrome from .ds-btn.ds-btn--outline.ds-btn--md; reveal only */
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateY(8px);
-  transition:
-    opacity var(--duration-moderate) var(--ease-emphasized),
-    transform var(--duration-moderate) var(--ease-emphasized),
-    visibility 0s linear var(--duration-moderate);
+  transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized),visibility 0s linear var(--duration-moderate);
 }
 
 .radius-flow__action.is-shown {
@@ -212,23 +196,7 @@
   visibility: visible;
   pointer-events: auto;
   transform: none;
-  transition:
-    opacity var(--duration-moderate) var(--ease-emphasized),
-    transform var(--duration-moderate) var(--ease-emphasized),
-    visibility 0s;
-}
-
-.radius-flow__action:hover {
-  background: color-mix(in srgb, var(--primary-400) 12%, transparent);
-}
-
-.radius-flow__action:active {
-  background: color-mix(in srgb, var(--primary-400) 22%, transparent);
-}
-
-.radius-flow__action:focus-visible {
-  outline: 2px solid var(--primary-600);
-  outline-offset: 3px;
+  transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized),visibility 0s;
 }
 
 .radius-nepal {
@@ -242,7 +210,7 @@
   min-height: 0;
   padding: 0 var(--space-4);
   text-align: center;
-  animation: radius-fade var(--duration-slow) var(--ease-emphasized);
+  animation: fadeIn var(--duration-slow) var(--ease-emphasized);
 }
 
 .radius-nepal > .radius-flow__action:not(.is-shown) {
@@ -256,12 +224,12 @@
 
 .radius-reveal {
   width: 100%;
-  animation: radius-fade var(--duration-moderate) var(--ease-emphasized);
+  animation: fadeIn var(--duration-moderate) var(--ease-emphasized);
 }
 
 .doctors-empty:has(.radius-dial) h3 {
   color: var(--primary-800);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
 }
 
 @keyframes radius-dial-count {
@@ -273,11 +241,6 @@
     opacity: 1;
     transform: none;
   }
-}
-
-@keyframes radius-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
