@@ -11,7 +11,7 @@ position those primitives. Live reference: **`/design/components/primitives`**
 | --- | --- |
 | Type | Satoshi 400 / 500 / 700 only. Sizes 11 · 12 · 13 · 15 · 16 · 18 · 20 · 23 · 26 · 29 · 41 through `--text-*-size` roles. Headings 500 at 1.2 with 0 tracking; body 400 at 1.5 with 0.02em; caps 13px / 700 / 0.04em. Leading only via `--leading-*`; tracking via `--tracking` so each element resolves em against its own size. Nothing below 11px. |
 | Colour | CTA = neutral-800 ink (hover neutral-600). Links and headline ink = primary-950. Eyebrow = primary-600. |
-| Canvas | Lavender page (`--bg` = neutral-100) with **white islands** (cards, lists, fields). |
+| Canvas | White page (`--bg` = neutral-0). Cards, lists and fields are white islands separated by hairline edges; lavender (`--surface-1`) is reserved for fills inside components (badges, muted cards, rails, skeletons). |
 | Edges | Hairlines only: primary-800 at 12% (default), 9% (divider), 20% (strong). No resting shadows. |
 | Radius | 8 / 16 / 24 / 36 / full. Cards 24, compact cards 16, fields 16, **every button is a pill**. |
 | Interaction | Colour only: hover primary-300, pressed mix, selected lavender or ink fill. No scale. |

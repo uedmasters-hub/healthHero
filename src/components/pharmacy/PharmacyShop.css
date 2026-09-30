@@ -10,8 +10,10 @@
   place-items: center;
   flex-shrink: 0;
   aspect-ratio: 1;
+  box-sizing: border-box;
+  border: var(--border-width) solid var(--border-default);
   border-radius: var(--radius-md);
-  background: var(--media-bg);
+  background: var(--card-bg);
   color: var(--icon-color-muted);
   overflow: hidden;
 }

@@ -59,27 +59,13 @@
   outline-offset: var(--focus-offset);
 }
 
-/*
-  Home: absolute inside .header-actions so we can clear the full shell width.
-*/
+/* Root headers: placed by .header-actions__lead, which slides with the shell. */
 .header-actions .header-search-btn {
-  position: absolute;
-  top: 50%;
-  z-index: 5;
-  margin: -18px 0 0 0;
-  will-change: opacity, transform, right;
-  /* Left of the 44px avatar slot when capsule is hidden */
-  right: calc(var(--ha-slot) + 12px);
-  transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized),right var(--duration-reveal) var(--ease-emphasized);
+  transition: opacity var(--duration-moderate) var(--ease-emphasized),transform var(--duration-moderate) var(--ease-emphasized);
 }
 
 .header-actions .header-search-btn.is-scroll-driven {
-  transition: right var(--duration-reveal) var(--ease-emphasized);
-}
-
-/* Left of the full Bell+Avatar capsule when shell is present */
-.header-actions--has-shell .header-search-btn {
-  right: calc(var(--ha-shell-full) - var(--ha-pad) + 12px);
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

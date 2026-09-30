@@ -50,6 +50,24 @@
   will-change: transform, opacity;
 }
 
+/* Search + page extras (e.g. cart) — left of the avatar slot, clears the shell */
+.header-actions__lead {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--ha-slot) + var(--space-3));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--ha-gap);
+  transform: translateY(-50%);
+  transition: right var(--duration-reveal) var(--ease-emphasized);
+  will-change: right;
+}
+
+.header-actions--has-shell .header-actions__lead {
+  right: calc(var(--ha-shell-full) - var(--ha-pad) + var(--space-3));
+}
+
 /* Invisible fly-to target — same geometry as the bell slot */
 .header-actions__bell-target {
   position: absolute;
@@ -252,6 +270,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .header-actions__lead,
   .header-actions__shell,
   .header-actions .profile-avatar,
   .header-actions--exit-collapse .header-actions__shell,

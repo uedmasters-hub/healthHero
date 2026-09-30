@@ -14,7 +14,8 @@ const ctaColors = [
   { name: '--featured-mid (status)', value: '#37325d', hex: '#37325d' },
 ]
 const surfaceColors = [
-  { name: '--bg / --pp-page', value: '#f5f4fa', hex: '#f5f4fa' },
+  { name: '--bg (page canvas)', value: '#ffffff', hex: '#ffffff' },
+  { name: '--surface-1 / --pp-page (fills)', value: '#f5f4fa', hex: '#f5f4fa' },
   { name: '--card-bg', value: '#ffffff', hex: '#ffffff' },
   { name: '--avatar-surface', value: '#e5e3ff', hex: '#e5e3ff' },
   { name: '--badge-ready-bg', value: 'sage mix', hex: '#e8f6f8' },

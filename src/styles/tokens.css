@@ -131,8 +131,8 @@
   --color-link: var(--primary-950);
   --color-eyebrow: var(--primary-600);
 
-  /* Surfaces — lavender canvas, white islands */
-  --surface-0: var(--neutral-100);
+  /* Surfaces — white canvas, hairline-bordered white islands, lavender fills */
+  --surface-0: var(--neutral-0);
   --surface-1: var(--neutral-100);
   --surface-2: var(--neutral-0);
   --surface-3: var(--neutral-0);

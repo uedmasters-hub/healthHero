@@ -54,8 +54,8 @@
   margin-top: 0;
 }
 
-/* Borderless Home-style search — absolute left of avatar */
-.tab-page-header__actions .header-search-btn {
+/* Child-page chrome (no global bell): borderless search, absolute left of avatar */
+.tab-page-header__actions > .header-search-btn {
   position: absolute;
   top: 50%;
   right: calc(var(--tph-slot) + var(--tph-gap));
@@ -70,8 +70,8 @@
   transition: none;
 }
 
-.tab-page-header__actions .profile-avatar,
-.tab-page-header__actions .tab-page-header__avatar {
+.tab-page-header__actions > .profile-avatar,
+.tab-page-header__actions > .tab-page-header__avatar {
   position: absolute;
   right: 0;
   top: 50%;

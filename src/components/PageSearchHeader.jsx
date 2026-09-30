@@ -1,16 +1,23 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import TabPageHeader from './TabPageHeader'
 import SearchBar from './SearchBar'
 import useSearchScrollCompact from '../hooks/useSearchScrollCompact'
 import { HeaderSearchButton } from './home/SharedSearchIcon'
 import CollapsingSearchDock from './home/CollapsingSearchDock'
+import HeaderActions from './home/HeaderActions'
 import ProfileAvatar from './home/ProfileAvatar'
+import { isTabRootPath } from '../features/pushNav/config'
 import './TabPageHeader.css'
 
 /**
  * Shared tab-page chrome — Pharmacy / Home reference:
  * large left title, no subtitle, docked search that collapses on scroll
  * into a borderless header search icon beside the shared profile avatar.
+ *
+ * Root screens (tab roots without a back control) carry the global
+ * notification bell via HeaderActions — the same control Home uses.
+ * Child screens keep the avatar-only chrome.
  */
 export default function PageSearchHeader({
   title,
@@ -53,8 +60,33 @@ export default function PageSearchHeader({
     })
   }, [scrollRef, searchBarRef])
 
+  const location = useLocation()
+  // Tab roots unmount on push, so the mount path identifies the screen's role.
+  const [mountedOnRoot] = useState(() => isTabRootPath(location.pathname))
+  const rootChrome = mountedOnRoot && showAvatar && !leading
+
   const shownProgress = locked || !showSearch ? 0 : progress
   const showActions = Boolean(showSearch || showAvatar || trailing)
+  const searchButton = showSearch ? (
+    <HeaderSearchButton
+      progress={shownProgress}
+      interactive={locked ? false : iconInteractive}
+      onClick={focusSearch}
+    />
+  ) : null
+
+  let actions = null
+  if (rootChrome) {
+    actions = <HeaderActions searchSlot={searchButton} trailing={trailing} settleHide />
+  } else if (showActions) {
+    actions = (
+      <>
+        {searchButton}
+        {trailing}
+        {showAvatar ? <ProfileAvatar className="tab-page-header__avatar" /> : null}
+      </>
+    )
+  }
 
   return (
     <>
@@ -62,19 +94,7 @@ export default function PageSearchHeader({
         title={title}
         leading={leading}
         className={className}
-        actions={showActions ? (
-          <>
-            {showSearch ? (
-              <HeaderSearchButton
-                progress={shownProgress}
-                interactive={locked ? false : iconInteractive}
-                onClick={focusSearch}
-              />
-            ) : null}
-            {trailing}
-            {showAvatar ? <ProfileAvatar className="tab-page-header__avatar" /> : null}
-          </>
-        ) : null}
+        actions={actions}
       />
       {showSearch ? (
         <CollapsingSearchDock

@@ -45,8 +45,14 @@ function relativeCenter(el, root) {
   }
 }
 
+/** Home stays mounted behind other roots — target the bell on the front screen. */
+function frontMost(selector) {
+  return Array.from(document.querySelectorAll(selector))
+    .find((el) => !el.closest('[aria-hidden="true"], [inert]')) || null
+}
+
 function resolveBellEl() {
-  return document.querySelector(BELL_VISIBLE) || document.querySelector(BELL_FALLBACK)
+  return frontMost(BELL_VISIBLE) || frontMost(BELL_FALLBACK)
 }
 
 /** Wait until the real bell control is laid out (first-notification dock). */
@@ -54,7 +60,7 @@ function waitForVisibleBell(timeoutMs = ISLAND_MOTION.DOCK_PREP_MS + 200) {
   return new Promise((resolve) => {
     const start = performance.now()
     const tick = () => {
-      const el = document.querySelector(BELL_VISIBLE)
+      const el = frontMost(BELL_VISIBLE)
       if (el) {
         const r = el.getBoundingClientRect()
         if (r.width > 8 && r.height > 8) {

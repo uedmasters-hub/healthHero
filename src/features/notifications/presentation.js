@@ -1,8 +1,8 @@
-import { isHomePath } from '../../lib/careFlow'
+import { isTabRootPath } from '../pushNav/config'
 
 /**
  * In-app notification presentation modes.
- *   dock  — Home: slide in → hold → absorb into header bell
+ *   dock  — root screens (Home + tab roots): slide in → hold → absorb into the header bell
  *   toast — other screens: slide in → hold → slide out the way it entered
  *   quiet — critical flows: no floating UI; queue for later
  */
@@ -58,7 +58,7 @@ export function resolvePresentationMode(pathname, { quietOverride = false } = {}
   if (quietOverride || isCriticalFlowPath(pathname)) {
     return PRESENTATION_MODE.QUIET
   }
-  if (isHomePath(normalizePath(pathname))) {
+  if (isTabRootPath(normalizePath(pathname))) {
     return PRESENTATION_MODE.DOCK
   }
   return PRESENTATION_MODE.TOAST
