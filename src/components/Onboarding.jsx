@@ -99,10 +99,9 @@ export function OnboardingProvider({ children }) {
 
   const active = status === 'needed'
 
-  const onComplete = useCallback(async () => {
-    if (userId) {
-      await persistOnboardingCompleted(userId)
-    }
+  // Local flag is written synchronously inside persist; the remote write must not gate entry.
+  const onComplete = useCallback(() => {
+    if (userId) persistOnboardingCompleted(userId)
     setStatus('done')
   }, [userId])
 

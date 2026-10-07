@@ -7,6 +7,7 @@ import OAuthButtons from '../../features/auth/components/OAuthButtons'
 import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit, AuthTrust } from './AuthScreen'
 import useProgressiveAuth from './useProgressiveAuth'
+import { resolveReturnTo } from '../../features/auth/returnTo'
 
 const OTP_ORDER = ['identifier']
 const OTP_IDS = { identifier: 'login-identifier' }
@@ -63,13 +64,13 @@ export default function LoginPage() {
         const result = await signInWithPassword(identifier, password)
         if (!result.ok) {
           if (result.code === 'email_not_confirmed') {
-            navigate('/verify', { replace: true, state: { email: identifier } })
+            navigate('/verify', { replace: true, state: { email: identifier, from: location.state?.from } })
             return
           }
           setFormError(result.error || AUTH_ERROR.INVALID)
           return
         }
-        navigate('/', { replace: true })
+        navigate(resolveReturnTo(location.state?.from), { replace: true })
         return
       }
 
@@ -79,7 +80,7 @@ export default function LoginPage() {
         setFormError(result.error || AUTH_ERROR.GENERIC)
         return
       }
-      navigate('/otp', { replace: true, state: { email } })
+      navigate('/otp', { replace: true, state: { email, from: location.state?.from } })
     } finally {
       setBusy(false)
     }

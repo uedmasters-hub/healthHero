@@ -1,27 +1,39 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import useStaggerReveal from '../useStaggerReveal'
-import RevealItem from '../RevealItem'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { RxImage } from './PharmacyHome'
 import './PromoCarousel.css'
 
 const AUTO_MS = 4800
 
 /**
- * Horizontal promo carousel — scroll-snap, dots, optional auto-advance.
- * Same motion language as UpcomingBookingsCarousel (scale active slide).
+ * Pharmacy hero carousel — tinted cards with neighbours peeking on both
+ * sides, scroll-snap, pill dots, optional auto-advance. `startIndex` centres
+ * a slide on first paint without animating.
  */
 export default function PromoCarousel({
   slides = [],
   onAction,
+  startIndex = 0,
   autoPlay = true,
+  label = 'Pharmacy highlights',
   className = '',
 }) {
   const trackRef = useRef(null)
   const slideNodes = useRef([])
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(() => Math.min(startIndex, Math.max(0, slides.length - 1)))
+  const startRef = useRef(activeIndex)
   const pauseUntilRef = useRef(0)
-  const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    namespace: `promo-carousel:${slides.length}`,
-  })
+
+  const offsetFor = useCallback((index) => {
+    const node = slideNodes.current[index]
+    const track = trackRef.current
+    if (!node || !track) return null
+    return Math.max(0, node.offsetLeft - (track.clientWidth - node.offsetWidth) / 2)
+  }, [])
+
+  useLayoutEffect(() => {
+    const left = offsetFor(startRef.current)
+    if (left != null) trackRef.current.scrollLeft = left
+  }, [slides.length, offsetFor])
 
   const syncActiveFromScroll = useCallback(() => {
     const track = trackRef.current
@@ -31,8 +43,7 @@ export default function PromoCarousel({
     let bestDist = Infinity
     slideNodes.current.forEach((node, index) => {
       if (!node) return
-      const mid = node.offsetLeft + node.offsetWidth / 2
-      const dist = Math.abs(mid - center)
+      const dist = Math.abs(node.offsetLeft + node.offsetWidth / 2 - center)
       if (dist < bestDist) {
         bestDist = dist
         best = index
@@ -44,27 +55,22 @@ export default function PromoCarousel({
   useEffect(() => {
     const track = trackRef.current
     if (!track) return undefined
-    syncActiveFromScroll()
-    const onScroll = () => syncActiveFromScroll()
-    track.addEventListener('scroll', onScroll, { passive: true })
-    return () => track.removeEventListener('scroll', onScroll)
-  }, [syncActiveFromScroll, slides.length])
+    track.addEventListener('scroll', syncActiveFromScroll, { passive: true })
+    return () => track.removeEventListener('scroll', syncActiveFromScroll)
+  }, [syncActiveFromScroll])
 
   const scrollToIndex = useCallback((index) => {
-    const node = slideNodes.current[index]
-    const track = trackRef.current
-    if (!node || !track) return
-    const left = node.offsetLeft - (track.clientWidth - node.offsetWidth) / 2
-    track.scrollTo({ left: Math.max(0, left), behavior: 'smooth' })
+    const left = offsetFor(index)
+    if (left == null) return
+    trackRef.current.scrollTo({ left, behavior: 'smooth' })
     setActiveIndex(index)
-  }, [])
+  }, [offsetFor])
 
   useEffect(() => {
     if (!autoPlay || slides.length < 2) return undefined
     const id = window.setInterval(() => {
       if (performance.now() < pauseUntilRef.current) return
-      const next = (activeIndex + 1) % slides.length
-      scrollToIndex(next)
+      scrollToIndex((activeIndex + 1) % slides.length)
     }, AUTO_MS)
     return () => window.clearInterval(id)
   }, [autoPlay, slides.length, activeIndex, scrollToIndex])
@@ -83,65 +89,44 @@ export default function PromoCarousel({
         onPointerDown={pauseAuto}
         onTouchStart={pauseAuto}
         aria-roledescription="carousel"
-        aria-label="Pharmacy promotions"
+        aria-label={label}
       >
         <div className="promo-carousel__track">
-          {slides.map((slide, index) => {
-            const isActive = index === activeIndex
-            const isAdjacent = Math.abs(index - activeIndex) === 1
-            return (
-              <div
-                key={slide.id}
-                className="promo-carousel__slide"
-                ref={(node) => { slideNodes.current[index] = node }}
-              >
-                <RevealItem
-                  as="article"
-                  className={[
-                    'promo-card',
-                    `promo-card--${slide.tone || 'refill'}`,
-                    isActive ? 'is-active' : '',
-                    isAdjacent ? 'is-adjacent' : '',
-                  ].filter(Boolean).join(' ')}
-                  revealed={isRevealed(index)}
-                  cached={isCached}
-                  ref={setItemRef(index)}
-                >
-                  <div className="promo-card__copy">
-                    <h2 className="promo-card__title">{slide.title}</h2>
-                    {slide.body ? (
-                      <p className="promo-card__body">{slide.body}</p>
-                    ) : null}
-                    {slide.cta ? (
-                      <button
-                        type="button"
-                        className="promo-card__cta ds-btn ds-btn--primary ds-btn--sm"
-                        onClick={() => onAction?.(slide)}
-                      >
-                        <span>{slide.cta}</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-                          <path d="M5 12h14" />
-                          <path d="M13 6l6 6-6 6" />
-                        </svg>
-                      </button>
-                    ) : null}
-                  </div>
-                  <div className="promo-card__visual" aria-hidden="true">
-                    <div className="promo-card__orb" />
-                    <div className="promo-card__orb is-soft" />
-                    {slide.image ? (
-                      <img className="promo-card__image" src={slide.image} alt="" draggable={false} />
-                    ) : null}
-                  </div>
-                </RevealItem>
+          {slides.map((slide, index) => (
+            <article
+              key={slide.id}
+              ref={(node) => { slideNodes.current[index] = node }}
+              className={[
+                'promo-card',
+                `is-${slide.tone || 'mint'}`,
+                index === activeIndex ? 'is-active' : '',
+              ].filter(Boolean).join(' ')}
+              aria-roledescription="slide"
+              aria-label={`${index + 1} of ${slides.length}`}
+            >
+              <div className="promo-card__copy">
+                <h2 className="promo-card__title">{slide.title}</h2>
+                {slide.body ? <p className="promo-card__body">{slide.body}</p> : null}
+                {slide.cta ? (
+                  <button
+                    type="button"
+                    className="promo-card__cta ds-btn ds-btn--primary ds-btn--md"
+                    onClick={() => onAction?.(slide)}
+                  >
+                    {slide.cta}
+                  </button>
+                ) : null}
               </div>
-            )
-          })}
+              <div className="promo-card__art" aria-hidden="true">
+                <RxImage srcs={slide.images} className="promo-card__image" />
+              </div>
+            </article>
+          ))}
         </div>
       </div>
 
       {slides.length > 1 ? (
-        <div className="promo-carousel__dots" role="tablist" aria-label="Promotion pages">
+        <div className="promo-carousel__dots" role="tablist" aria-label="Highlight pages">
           {slides.map((slide, index) => (
             <button
               key={slide.id}
@@ -153,7 +138,7 @@ export default function PromoCarousel({
                 pauseAuto()
                 scrollToIndex(index)
               }}
-              aria-label={`Go to promotion ${index + 1}`}
+              aria-label={`Go to highlight ${index + 1}`}
             />
           ))}
         </div>

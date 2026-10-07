@@ -3,34 +3,6 @@ import RevealItem from '../RevealItem'
 import { PharmacyIcon } from './PharmacyIcons'
 import './PharmacyModules.css'
 
-export function PharmacyTipCard({ tip, onClick, className = '' }) {
-  const { setItemRef, isRevealed, isCached } = useStaggerReveal({
-    namespace: `pharmacy-tip:${tip?.id || 'tip'}`,
-  })
-  if (!tip) return null
-
-  return (
-    <RevealItem
-      as="button"
-      type="button"
-      className={`pharmacy-tip ds-card is-interactive ${className}`.trim()}
-      revealed={isRevealed(0)}
-      cached={isCached}
-      ref={setItemRef(0)}
-      onClick={onClick}
-    >
-      <span className="pharmacy-tip__icon ds-icon-well is-tile is-lg" aria-hidden="true">
-        <PharmacyIcon name="spark" size={20} />
-      </span>
-      <span className="pharmacy-tip__copy">
-        {tip.eyebrow ? <span className="pharmacy-tip__eyebrow ds-overline">{tip.eyebrow}</span> : null}
-        <span className="pharmacy-tip__title">{tip.title}</span>
-        {tip.body ? <span className="pharmacy-tip__body">{tip.body}</span> : null}
-      </span>
-    </RevealItem>
-  )
-}
-
 export function PharmacySupportCard({
   title = 'Need help with medicines?',
   body = 'Chat with a pharmacist for dosage guidance, interactions, and refill questions.',

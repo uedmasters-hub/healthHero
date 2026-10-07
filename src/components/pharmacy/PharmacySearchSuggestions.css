@@ -1,0 +1,8 @@
+.rx-search-suggest .search-suggest-section {
+  margin-top: var(--space-5);
+  padding: 0 var(--content-padding);
+}
+
+.rx-search-suggest .search-suggest-section:first-child {
+  margin-top: var(--space-3);
+}

@@ -107,7 +107,6 @@ export function PharmacyHeroCard({ pharmacy, onClick }) {
         <ProviderAvatar
           name={displayName}
           src={pharmacy.image || pharmacy.logoUrl || null}
-          useCatalogFallback={false}
           imgClassName="dc-profile-photo-img"
           alt=""
         />

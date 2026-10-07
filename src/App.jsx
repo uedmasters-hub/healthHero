@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 import './App.css'
 import { BookingProvider } from './components/BookingContext'
@@ -57,6 +57,11 @@ import ArticlePage from './components/ArticlePage'
 import { SharedHeroProvider } from './components/SharedHero'
 import { DemoPreviewProvider } from './components/DemoPreviewModal'
 import AppShell from './components/AppShell'
+import AppErrorBoundary from './components/AppErrorBoundary'
+import { SystemState } from './components/system'
+import ConnectionBanner from './features/connection/ConnectionBanner'
+
+const MAINTENANCE_MODE = import.meta.env.VITE_MAINTENANCE_MODE === 'true'
 import BottomNav from './components/BottomNav'
 import { OnboardingProvider } from './components/Onboarding'
 import AuthGate from './components/auth/AuthGate'
@@ -210,6 +215,8 @@ function AppRoutes() {
             <Route path="/booking/slot" element={<BookingFlow><SelectSlot /></BookingFlow>} />
             <Route path="/booking/patient" element={<BookingFlow><SelectPatient /></BookingFlow>} />
             <Route path="/booking/confirm" element={<BookingFlow><ConfirmBooking /></BookingFlow>} />
+            <Route path="/status/:state" element={<StatusPage />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
       </div>
@@ -249,6 +256,7 @@ function AppProviders() {
                       <BottomNav />
                       <NotificationPresentationSync />
                       <NotificationIsland />
+                      <ConnectionBanner />
                     </FabProvider>
                   </SharedHeroProvider>
                 </FetchSessionProvider>
@@ -276,9 +284,40 @@ function DesignSystemGate() {
 
 function ConfigErrorScreen({ message }) {
   return (
-    <div className="ds-empty" style={{ minHeight: '100%', justifyContent: 'center', background: 'var(--surface-2)' }}>
-      <h1 className="ds-heading">Configuration needed</h1>
-      <p className="ds-empty__copy">{message}</p>
+    <div className="phone-app-state">
+      <SystemState
+        state="unavailable"
+        title="eMedicalls is being set up"
+        message="This build is missing its service configuration. Refresh in a moment."
+        actions={['refresh']}
+        details={import.meta.env.DEV ? message : null}
+      />
+    </div>
+  )
+}
+
+function MaintenanceScreen() {
+  return (
+    <div className="phone-app-state">
+      <SystemState state="maintenance" actions={['refresh']} />
+    </div>
+  )
+}
+
+function NotFoundPage() {
+  return (
+    <div className="sys-route-page">
+      <SystemState state="not-found" autoRedirect={{ to: '/', seconds: 10 }} />
+    </div>
+  )
+}
+
+/** /status/:state — preview or deep-link any system state (e.g. /status/503). */
+function StatusPage() {
+  const { state } = useParams()
+  return (
+    <div className="sys-route-page">
+      <SystemState state={state} />
     </div>
   )
 }
@@ -286,6 +325,13 @@ function ConfigErrorScreen({ message }) {
 function AppGate() {
   const location = useLocation()
   if (location.pathname.startsWith('/design')) return null
+  if (MAINTENANCE_MODE) {
+    return (
+      <AppShell>
+        <MaintenanceScreen />
+      </AppShell>
+    )
+  }
   if (!isSupabaseConfigured) {
     return (
       <AppShell>
@@ -295,29 +341,33 @@ function AppGate() {
   }
   return (
     <AppShell>
-      <AuthProvider>
-        <LocationProvider>
-          <SyncProvider>
-            <UserProvider>
-              <I18nProvider>
-                <SearchProvider>
-                  <AppProviders />
-                </SearchProvider>
-              </I18nProvider>
-            </UserProvider>
-          </SyncProvider>
-        </LocationProvider>
-      </AuthProvider>
+      <AppErrorBoundary>
+        <AuthProvider>
+          <LocationProvider>
+            <SyncProvider>
+              <UserProvider>
+                <I18nProvider>
+                  <SearchProvider>
+                    <AppProviders />
+                  </SearchProvider>
+                </I18nProvider>
+              </UserProvider>
+            </SyncProvider>
+          </LocationProvider>
+        </AuthProvider>
+      </AppErrorBoundary>
     </AppShell>
   )
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <DesignSystemGate />
-      <AppGate />
-    </BrowserRouter>
+    <AppErrorBoundary>
+      <BrowserRouter>
+        <DesignSystemGate />
+        <AppGate />
+      </BrowserRouter>
+    </AppErrorBoundary>
   )
 }
 

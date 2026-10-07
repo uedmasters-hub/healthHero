@@ -193,6 +193,99 @@ export function PharmacyIcon({ name, size = 22 }) {
       </svg>
     )
   }
+  if (name === 'clipboard') {
+    return (
+      <svg {...common}>
+        <rect x="5" y="4" width="14" height="17" rx="2" />
+        <path d="M9 4V3h6v1" />
+        <path d="M12 10v6M9 13h6" />
+      </svg>
+    )
+  }
+  if (name === 'capsule') {
+    return (
+      <svg {...common}>
+        <path d="M10.5 20.5a4.95 4.95 0 0 1-7-7l6-6a4.95 4.95 0 0 1 7 7z" />
+        <path d="M7.5 10.5l6 6" />
+      </svg>
+    )
+  }
+  if (name === 'supplement') {
+    return (
+      <svg {...common}>
+        <rect x="5" y="8" width="14" height="13" rx="2" />
+        <path d="M7 8V5h10v3" />
+        <path d="M9.5 13.5a2.5 2.5 0 0 0 5 0" />
+      </svg>
+    )
+  }
+  if (name === 'firstaid') {
+    return (
+      <svg {...common}>
+        <rect x="3" y="7" width="18" height="13" rx="2" />
+        <path d="M9 7V5h6v2" />
+        <path d="M12 11v5M9.5 13.5h5" />
+      </svg>
+    )
+  }
+  if (name === 'heartpulse') {
+    return (
+      <svg {...common}>
+        <path d="M20.4 12.5A5 5 0 0 0 12 6.6a5 5 0 0 0-8.4 5.9L12 21z" />
+        <path d="M3.5 12h4l1.5-2.5 2.5 5 1.5-2.5h7.5" />
+      </svg>
+    )
+  }
+  if (name === 'babybottle') {
+    return (
+      <svg {...common}>
+        <path d="M10 2h4v3h-4z" />
+        <path d="M9 5h6l1 3v11a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8z" />
+        <path d="M8 12h3M8 15h3" />
+      </svg>
+    )
+  }
+  if (name === 'pump') {
+    return (
+      <svg {...common}>
+        <path d="M10 2h4M12 2v4M9 4h3" />
+        <rect x="6" y="9" width="12" height="13" rx="2" />
+        <path d="M9 6h6v3H9z" />
+        <rect x="9.5" y="13" width="5" height="4" rx="1" />
+      </svg>
+    )
+  }
+  if (name === 'heart') {
+    return (
+      <svg {...common}>
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z" />
+      </svg>
+    )
+  }
+  if (name === 'medbox') {
+    return (
+      <svg {...common}>
+        <rect x="4" y="6" width="16" height="15" rx="2" />
+        <path d="M8 6V3h8v3" />
+        <path d="M12 10v7M8.5 13.5h7" />
+      </svg>
+    )
+  }
+  if (name === 'clock') {
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="13" r="8" />
+        <path d="M12 9v4l2.5 2.5M10 2h4" />
+      </svg>
+    )
+  }
+  if (name === 'star') {
+    return (
+      <svg {...common} fill="currentColor" stroke="none">
+        <path d="M12 2.8l2.8 5.7 6.3.9-4.6 4.4 1.1 6.2L12 17l-5.6 3 1.1-6.2L2.9 9.4l6.3-.9z" />
+      </svg>
+    )
+  }
   if (name === 'panel') {
     return (
       <svg {...common}>

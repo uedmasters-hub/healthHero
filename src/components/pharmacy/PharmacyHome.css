@@ -1,0 +1,346 @@
+/*
+  Pharmacy home sections. Surfaces, type, lists and wells come from shared
+  primitives (SectionHead, List/ListRow, ds-card, ds-icon-well, ds-btn).
+  Promo tints are scoped to the Pharmacy page until they graduate to tokens.
+*/
+
+.pharmacy-page {
+  --rx-ink: var(--neutral-900);
+  --rx-tint-mint: #eaf7f4;
+  --rx-tint-peach: #fbefe1;
+  --rx-tint-lavender: var(--primary-200);
+  --rx-tint-sky: #e4effa;
+  --rx-tint-slate: #edf2f5;
+  --rx-teal: color-mix(in srgb, var(--success-700) 70%, var(--success-500));
+  --rx-star: #f5a524;
+}
+
+.rx-section__inset {
+  padding-inline: var(--content-padding);
+}
+
+/* Quiet section heads — regular weight, secondary ink, "See All ›" link */
+.rx-section-head .ds-section-head__title {
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-line);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-secondary);
+}
+
+.rx-section-head__link {
+  gap: var(--space-0-5);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-secondary);
+}
+
+.rx-section-head__link svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.rx-glyph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ds-icon-well .rx-glyph {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+/* Horizontal rails share one scroller recipe */
+.rx-rail {
+  container-type: inline-size;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--content-padding);
+  padding-inline: var(--content-padding);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.rx-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.rx-rail > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* ── Shop-by-category — shared ActionGrid, inset to the content column ─ */
+.rx-cat-grid {
+  margin-inline: var(--content-padding);
+}
+
+/* ── Popular categories — Home specialty rail (Categories.css) ───────── */
+.rx-popular .category-name {
+  white-space: normal;
+  text-wrap: balance;
+}
+
+.rx-category-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rx-category-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.rx-category-art__well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 78%;
+  height: 78%;
+  border-radius: var(--radius-full);
+  background: var(--icon-surface-brand);
+  color: var(--primary-800);
+}
+
+/* All categories sheet — Home's specialisation reveal, CSS-only */
+.rx-categories-sheet .specialisation-card {
+  animation: rxCategoryIn var(--duration-normal) var(--ease-standard) both;
+  animation-delay: calc(var(--item-index, 0) * 28ms);
+}
+
+@keyframes rxCategoryIn {
+  from {
+    opacity: var(--opacity-hidden);
+    transform: translateY(10px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rx-categories-sheet .specialisation-card { animation: none; }
+}
+
+/* ── Offer rail ───────────────────────────────────────────────────────── */
+.rx-offers {
+  gap: var(--space-3);
+}
+
+.rx-offer {
+  position: relative;
+  width: calc(100cqw - var(--content-padding) * 2 - var(--space-10));
+  min-height: 7.25rem;
+  display: flex;
+  align-items: stretch;
+  padding: var(--space-4) var(--space-5);
+  border: 0;
+  border-radius: var(--card-radius-sm);
+  overflow: hidden;
+  background: var(--rx-tint-mint);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rx-offer.is-sky { background: var(--rx-tint-sky); }
+.rx-offer.is-peach { background: var(--rx-tint-peach); }
+
+.rx-offer:focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
+
+.rx-offer__copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  max-width: 62%;
+}
+
+.rx-offer__title {
+  font-size: var(--text-heading-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  color: var(--rx-ink);
+}
+
+.rx-offer__body {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-secondary);
+}
+
+.rx-offer__code {
+  margin-top: auto;
+  padding: var(--space-0-5) var(--space-2-5);
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-secondary);
+}
+
+.rx-offer__art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 1;
+  width: 44%;
+  pointer-events: none;
+}
+
+.rx-offer__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right bottom;
+}
+
+.rx-offer__go {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  right: 34%;
+  display: grid;
+  place-items: center;
+  width: var(--space-7);
+  height: var(--space-7);
+  margin-top: calc(var(--space-7) / -2);
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--rx-teal);
+}
+
+.rx-offer__go svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+  stroke-width: 2.4;
+}
+
+/* ── Pharmacist help list ─────────────────────────────────────────────── */
+.rx-help-row {
+  align-items: flex-start;
+}
+
+.rx-help-row__eyebrow {
+  margin: 0;
+}
+
+.rx-help-row__cta {
+  margin-top: var(--space-1);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+/* ── Trust ────────────────────────────────────────────────────────────── */
+.rx-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.rx-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.rx-stat__value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0-5);
+  font-size: var(--text-heading-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--rx-teal);
+}
+
+.rx-stat__label {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.rx-testimonial {
+  margin: var(--space-3) 0 0;
+  padding: var(--card-padding);
+  border-radius: var(--card-radius-sm);
+  background: var(--rx-tint-slate);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.rx-testimonial__quote {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  color: var(--text-secondary);
+}
+
+.rx-testimonial__by {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.rx-testimonial__avatar {
+  display: grid;
+  place-items: center;
+  width: var(--icon-well-size);
+  height: var(--icon-well-size);
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+}
+
+.rx-testimonial__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rx-testimonial__who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rx-testimonial__name {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.rx-testimonial__place {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.rx-stars {
+  display: inline-flex;
+  gap: var(--space-0-5);
+  color: var(--rx-star);
+}
+
+.rx-stat__value svg {
+  color: var(--rx-teal);
+}
+
+/* ── Commitment list ──────────────────────────────────────────────────── */
+.rx-commit-row .ds-icon-well.is-success {
+  color: var(--rx-teal);
+}

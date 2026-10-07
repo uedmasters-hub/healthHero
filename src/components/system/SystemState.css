@@ -1,0 +1,210 @@
+/*
+  System states — error, connection, empty and loading. One layout in three
+  densities: page (full screen), inline (card inside a feed), compact (row).
+  Art tones map to the icon-surface / icon-color tokens.
+*/
+
+.sys-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.sys-state__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 21rem;
+}
+
+.sys-state__eyebrow {
+  margin: 0;
+}
+
+.sys-state__title {
+  margin: 0;
+  font-size: var(--text-subtitle-size);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-weight-medium);
+  color: var(--pp-headline);
+  text-wrap: balance;
+}
+
+.sys-state__message {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+.sys-state__note {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.sys-state__details {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+
+.sys-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.sys-state__image {
+  display: block;
+  width: 9rem;
+  height: 9rem;
+  object-fit: contain;
+}
+
+/* Full-screen host for page states rendered outside a routed page
+   (session expired, maintenance, config, crash). */
+.phone-app-state {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* Routed page host (404, unavailable content) — fills the push layer. */
+.sys-route-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* ── Page: fills the screen, actions stack full width ─────────────────── */
+.sys-state.is-page {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 100%;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-10) var(--content-padding) calc(var(--space-10) + var(--safe-bottom, 0px));
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.sys-state.is-page .sys-state__title {
+  font-size: var(--text-heading-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+}
+
+.sys-state.is-page .sys-state__actions {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 20rem;
+}
+
+/* ── Inline: card inside a feed or section ────────────────────────────── */
+.sys-state.is-inline {
+  padding: var(--space-6) var(--card-padding);
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+}
+
+/* ── Compact: one row, art left ───────────────────────────────────────── */
+.sys-state.is-compact {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--card-padding);
+  text-align: left;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+}
+
+.sys-state.is-compact .sys-state__body {
+  flex: 1 1 10rem;
+  align-items: flex-start;
+  gap: var(--space-0-5);
+  max-width: none;
+}
+
+.sys-state.is-compact .sys-state__title {
+  font-size: var(--text-body-size);
+}
+
+.sys-state.is-compact .sys-state__message {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+}
+
+.sys-state.is-compact .sys-state__eyebrow { display: none; }
+
+/* ── Illustration ─────────────────────────────────────────────────────── */
+.sys-art {
+  --sys-tone: var(--icon-color-brand);
+  --sys-surface: var(--icon-surface-brand);
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: var(--sys-tone);
+}
+
+.sys-art.is-lg { width: 7.5rem; height: 7.5rem; }
+.sys-art.is-md { width: 5.5rem; height: 5.5rem; }
+.sys-art.is-sm { width: 3rem; height: 3rem; }
+
+.sys-art.is-info { --sys-tone: var(--icon-color-info); --sys-surface: var(--icon-surface-info); }
+.sys-art.is-warning { --sys-tone: var(--icon-color-warning); --sys-surface: var(--icon-surface-warning); }
+.sys-art.is-danger { --sys-tone: var(--icon-color-danger); --sys-surface: var(--icon-surface-danger); }
+.sys-art.is-success { --sys-tone: var(--icon-color-success); --sys-surface: var(--icon-surface-success); }
+.sys-art.is-muted { --sys-tone: var(--icon-color-muted); --sys-surface: var(--icon-surface-muted); }
+
+.sys-art__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sys-art__disc { fill: var(--sys-surface); }
+
+.sys-art__orbit {
+  fill: none;
+  stroke: color-mix(in srgb, var(--sys-tone) 22%, transparent);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 5;
+}
+
+.sys-art__dot { fill: color-mix(in srgb, var(--sys-tone) 40%, transparent); }
+
+.sys-art.is-sm .sys-art__orbit,
+.sys-art.is-sm .sys-art__dot { display: none; }
+
+.sys-art__spin {
+  transform-origin: 24px 24px;
+  animation: sys-spin 0.9s linear infinite;
+}
+
+@keyframes sys-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sys-art__spin { animation-duration: 2.4s; }
+}

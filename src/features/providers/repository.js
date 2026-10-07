@@ -14,6 +14,7 @@ import { formatProviderAddress, formatPlaceParts } from '../geography/formatPlac
 import { isFutureSlotInstant, localIsoDate } from '../../lib/slotAvailability'
 import { availabilityWindow, slotVisitMode } from '../../lib/availabilityWindow'
 import { videoDoctorsWithSlots } from '../videoConsult/catalog'
+import { providerAvatarUrl } from './avatarPlaceholder'
 
 const FEATURED_CAP = 48
 const DEFAULT_PAGE_SIZE = 24
@@ -182,7 +183,7 @@ export function normalizeProviderRow(row) {
     color: '#0F766E',
     initial: `${row.first_name?.[0] || ''}${row.last_name?.[0] || ''}`.toUpperCase() || 'DR',
     about: row.about || '',
-    photo: row.avatar_url || '/img/doctors/new/doctor.png',
+    photo: providerAvatarUrl(row.avatar_url, row.gender),
     phone: row.phone || '',
     languages: row.languages || [],
     nmcNumber: row.nmc_number || null,
@@ -226,7 +227,7 @@ export function getDoctorById(id) {
 
 export function getDoctorPhoto(id) {
   const doctor = getDoctorById(id)
-  return doctor?.photo || '/img/doctors/new/doctor.png'
+  return doctor?.photo || ''
 }
 
 export function getDoctorList() {

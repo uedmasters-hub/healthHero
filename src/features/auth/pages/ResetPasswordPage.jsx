@@ -10,6 +10,7 @@ import { AuthLayout, AuthSubmit, AuthTrust } from '../../../components/auth/Auth
 import useProgressiveAuth from '../../../components/auth/useProgressiveAuth'
 import PasswordStrength from '../components/PasswordStrength'
 import { useAuth } from '../hooks/useAuth'
+import { resolveReturnTo } from '../returnTo'
 
 const RESET_ORDER = ['password', 'confirm']
 const RESET_IDS = { password: 'reset-password', confirm: 'reset-confirm' }
@@ -50,7 +51,7 @@ export default function ResetPasswordPage() {
         return
       }
       setDone(true)
-      window.setTimeout(() => navigate('/', { replace: true }), 900)
+      window.setTimeout(() => navigate(resolveReturnTo(), { replace: true }), 900)
     } finally {
       setBusy(false)
     }

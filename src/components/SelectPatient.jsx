@@ -14,6 +14,7 @@ import { PhoneInput, toE164 } from './PhoneInput'
 import { resolveAppointmentPath } from '../lib/appointmentJourney'
 import { Button, Callout, Choice, ChoiceList, ChoiceChips, FormGroup, Icon, cx } from './ui'
 import './SelectPatient.css'
+import { RedirectingPage } from './system'
 
 const RELATIONSHIPS = ['Spouse', 'Parent', 'Sibling', 'Child', 'Other']
 const GENDERS = ['Male', 'Female', 'Other']
@@ -269,7 +270,7 @@ export default function SelectPatient() {
   }, [doctor, entry, navigate])
 
   if (!doctor || !entry.date || !entry.time) {
-    return null
+    return <RedirectingPage title="Taking you back to pick a time" />
   }
 
   return (

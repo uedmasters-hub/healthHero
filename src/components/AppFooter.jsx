@@ -108,15 +108,20 @@ function FooterLink({ label }) {
   )
 }
 
-export default function AppFooter({ page = 'home' }) {
+/**
+ * `variant="band"` — lavender band without rules, closed by a dark legal bar
+ * (socials left, copyright right). Opt-in per page; default stays unchanged.
+ */
+export default function AppFooter({ page = 'home', variant = 'default' }) {
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
     dataset: `app-footer:${page}`,
     batchSize: 1,
     stagger: 72,
   })
+  const band = variant === 'band'
 
   return (
-    <footer className="app-footer" aria-label={BRAND_NAME}>
+    <footer className={`app-footer${band ? ' app-footer--band' : ''}`} aria-label={BRAND_NAME}>
       <RevealItem
         className="app-footer-block"
         revealed={isRevealed(0)}
@@ -179,7 +184,7 @@ export default function AppFooter({ page = 'home' }) {
       </RevealItem>
 
       <RevealItem
-        className="app-footer-block is-divided"
+        className={band ? 'app-footer-bar' : 'app-footer-block is-divided'}
         revealed={isRevealed(3)}
         cached={isCached}
         ref={setItemRef(3)}
@@ -192,7 +197,9 @@ export default function AppFooter({ page = 'home' }) {
           ))}
         </div>
         <p className="app-footer-legal">© 2026 {BRAND_NAME_LEGAL}.</p>
-        <p className="app-footer-legal">ISO 27001 Certified • Secure Medical Records</p>
+        {band ? null : (
+          <p className="app-footer-legal">ISO 27001 Certified • Secure Medical Records</p>
+        )}
       </RevealItem>
     </footer>
   )

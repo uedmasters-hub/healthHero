@@ -5,6 +5,7 @@
  * host-relative or localhost absolute URL that breaks after deploy).
  */
 import { getDoctorPhoto } from '../features/providers'
+import { isStockAvatar, providerAvatarUrl } from '../features/providers/avatarPlaceholder'
 
 const PROVIDER_PHOTO_KEYS = ['photo', 'avatar', 'image', 'photo_url', 'photoUrl', 'avatar_url']
 
@@ -40,7 +41,9 @@ export function normalizePublicAssetUrl(value) {
 function readPhotoField(source = {}) {
   for (const key of PROVIDER_PHOTO_KEYS) {
     const normalized = normalizePublicAssetUrl(source[key])
-    if (normalized) return normalized
+    if (!normalized) continue
+    if (isStockAvatar(normalized)) return providerAvatarUrl(normalized, source.gender)
+    return normalized
   }
   return ''
 }

@@ -6,12 +6,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { isValidEmail, normalizeEmail } from '../../user'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import EmailOtpVerify from '../../features/auth/components/EmailOtpVerify'
+import { resolveReturnTo } from '../../features/auth/returnTo'
 
 export default function OtpPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { verifyEmailOtp, sendEmailOtp } = useAuth()
   const email = normalizeEmail(location.state?.email || '')
+  const from = location.state?.from
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -26,10 +28,10 @@ export default function OtpPage() {
   const onVerify = useCallback(async (token) => {
     const result = await verifyEmailOtp(email, token, { type: 'email' })
     if (result.ok) {
-      navigate('/', { replace: true })
+      navigate(resolveReturnTo(from), { replace: true })
     }
     return result
-  }, [email, verifyEmailOtp, navigate])
+  }, [email, verifyEmailOtp, navigate, from])
 
   const onResend = useCallback(async () => sendEmailOtp(email), [email, sendEmailOtp])
 

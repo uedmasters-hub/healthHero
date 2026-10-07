@@ -54,7 +54,7 @@ export default function DoctorCard({
   const [, bumpRegistry] = useState(0)
   useEffect(() => subscribeProviders(() => bumpRegistry((n) => n + 1)), [])
 
-  const photo = presented?.photo || '/img/doctors/new/doctor.png'
+  const photo = presented?.photo || ''
   const name = displayName(merged?.name || doctor?.name)
   const specialty = merged?.specialty || doctor?.specialty || 'Specialist'
   const experience = merged?.experience || doctor?.experience || ''
@@ -189,10 +189,12 @@ export default function DoctorCard({
           <h3 className="dc-identity-name">{name}</h3>
           <p className="dc-identity-specialty">
             <span className="dc-identity-specialty-text">{specialty}</span>
-            <span className="dc-rating">
-              <span className="dc-star" aria-hidden="true">★</span>
-              {rating}
-            </span>
+            {hasRating ? (
+              <span className="dc-rating">
+                <span className="dc-star" aria-hidden="true">★</span>
+                {rating}
+              </span>
+            ) : null}
           </p>
           <CredentialsLine text={credentials} className="dc-degree dc-identity-degree" />
         </div>
@@ -217,10 +219,12 @@ export default function DoctorCard({
         <div className="dc-profile-copy">
           <div className="dc-title-row">
             <h3 className="dc-name">{name}</h3>
-            <span className="dc-rating">
-              <span className="dc-star" aria-hidden="true">★</span>
-              {rating}
-            </span>
+            {hasRating ? (
+              <span className="dc-rating">
+                <span className="dc-star" aria-hidden="true">★</span>
+                {rating}
+              </span>
+            ) : null}
           </div>
           <p className="dc-specialty">{specialty}</p>
           <CredentialsLine text={credentials} />
@@ -392,10 +396,12 @@ export default function DoctorCard({
         <div className="dc-info">
           <div className="dc-title-row">
             <h3 className="dc-name">{name}</h3>
-            <span className="dc-rating">
-              <span className="dc-star" aria-hidden="true">★</span>
-              {rating}
-            </span>
+            {hasRating ? (
+              <span className="dc-rating">
+                <span className="dc-star" aria-hidden="true">★</span>
+                {rating}
+              </span>
+            ) : null}
           </div>
           <p className="dc-specialty">{specialty}</p>
           <CredentialsLine text={credentials} />

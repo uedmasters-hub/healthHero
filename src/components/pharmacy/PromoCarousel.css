@@ -1,13 +1,17 @@
+/* Pharmacy hero carousel — tinted cards, neighbours peek on both sides */
+
 .promo-carousel {
+  --promo-peek: var(--space-3);
+  --promo-gap: var(--space-4);
   padding: 0;
 }
 
 .promo-carousel__scroller {
+  container-type: inline-size;
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  scroll-padding-left: var(--content-padding);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -24,139 +28,95 @@
 .promo-carousel__track {
   display: flex;
   align-items: stretch;
-  gap: var(--card-gap);
-  padding-left: var(--content-padding);
-  padding-right: var(--content-padding);
+  gap: var(--promo-gap);
+  padding-inline: calc(var(--promo-peek) + var(--promo-gap));
 }
 
-.promo-carousel__slide {
-  flex: 0 0 min(88%, calc(var(--phone-width) - var(--space-10) * 2.5));
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-  min-width: 0;
-}
-
-.promo-carousel__scroller.is-single .promo-carousel__slide {
-  flex: 1 1 auto;
-  width: 100%;
-  max-width: none;
-}
-
-/* Lavender feature island — the only expressive surface on the page */
 .promo-card {
   position: relative;
+  flex: 0 0 calc(100cqw - (var(--promo-peek) + var(--promo-gap)) * 2);
+  min-height: 12.5rem;
   display: flex;
   align-items: stretch;
-  justify-content: space-between;
-  gap: var(--space-3);
-  min-height: 10.5rem;
   padding: var(--space-5);
   border-radius: var(--card-radius);
   overflow: hidden;
-  border: var(--card-border);
-  background: var(--surface-feature);
-  box-shadow: none;
-  transform: scale(0.96);
-  transform-origin: center center;
-  opacity: 0.9;
-  transition: transform var(--duration-reveal) var(--ease-emphasized),opacity var(--duration-reveal) var(--ease-standard),border-color var(--transition),background var(--transition);
+  background: var(--rx-tint-mint);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
 }
 
-.promo-card.is-active {
-  transform: scale(1);
-  opacity: 1;
+.promo-carousel__scroller.is-single .promo-card {
+  flex: 1 1 auto;
 }
+
+.promo-card.is-mint { background: var(--rx-tint-mint); }
+.promo-card.is-peach { background: var(--rx-tint-peach); }
+.promo-card.is-lavender { background: var(--rx-tint-lavender); }
+.promo-card.is-sky { background: var(--rx-tint-sky); }
 
 .promo-card__copy {
   position: relative;
   z-index: 2;
-  flex: 1 1 auto;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-2);
-  max-width: 58%;
+  max-width: 56%;
 }
 
 .promo-card__title {
   margin: 0;
-  font-size: var(--text-heading-size);
-  line-height: var(--leading-snug);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--text-hero-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
   --tracking: var(--letter-tight);
   letter-spacing: var(--tracking);
-  color: var(--pp-headline);
+  color: var(--rx-ink);
+  text-wrap: balance;
 }
 
 .promo-card__body {
   margin: 0;
-  font-size: var(--text-caption-size);
-  line-height: var(--text-caption-line);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
   color: var(--text-secondary);
 }
 
 .promo-card__cta {
-  /* .ds-btn.ds-btn--primary.ds-btn--sm */
   margin-top: auto;
 }
 
-.promo-card__visual {
+.promo-card__art {
   position: absolute;
-  right: -4%;
-  bottom: -8%;
-  width: 48%;
-  height: 108%;
+  inset: 0 0 0 auto;
   z-index: 1;
+  width: 48%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
   pointer-events: none;
 }
 
-.promo-card__orb {
-  position: absolute;
-  right: 12%;
-  top: 18%;
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--primary-500) 10%, transparent);
-  filter: blur(2px);
-}
-
-.promo-card__orb.is-soft {
-  right: 28%;
-  top: 48%;
-  width: var(--space-12);
-  height: var(--space-12);
-  background: color-mix(in srgb, var(--neutral-0) 70%, transparent);
-}
-
 .promo-card__image {
-  position: absolute;
-  right: 4%;
-  bottom: 6%;
-  width: 86%;
-  height: auto;
-  max-height: 92%;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 10px 20px color-mix(in srgb, var(--neutral-900) 10%, transparent));
-  transform: translate3d(0, 0, 0) scale(1);
-  transition: transform var(--duration-enter) var(--ease-emphasized);
-}
-
-.promo-card.is-active .promo-card__image {
-  transform: translate3d(-2%, -2%, 0) scale(1.04);
+  object-position: right bottom;
 }
 
 .promo-carousel__dots {
   display: flex;
   justify-content: center;
-  gap: var(--space-1-5);
+  align-items: center;
+  gap: var(--space-1);
   padding: var(--space-3) var(--content-padding) 0;
 }
 
 .promo-carousel__dot {
-  width: var(--space-2);
-  height: var(--space-2);
+  width: var(--space-1-5);
+  height: var(--space-1-5);
   padding: 0;
   border: 0;
   border-radius: var(--radius-full);
@@ -166,7 +126,15 @@
 }
 
 .promo-carousel__dot.is-active {
-  width: var(--space-5);
-  border-radius: var(--radius-full);
+  width: var(--space-4);
   background: var(--pp-headline);
+}
+
+.promo-carousel__dot:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-carousel__dot { transition: none; }
 }

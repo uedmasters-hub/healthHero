@@ -1,8 +1,58 @@
+import { useEffect } from 'react'
 import { ONBOARD_LOGO } from '../../lib/onboarding'
 import { BRAND_NAME } from '../../lib/brand'
+import { clearStoredSession } from '../../features/auth/services/sessionGuard'
 import './Auth.css'
 
-export function AuthSplash() {
+/*
+  Splash watchdog. Every boot wait is bounded well below this; if a splash is
+  still up after it, reload once, and on a repeat stall drop the wedged
+  session and open Login. Shared across splash instances so hand-offs
+  between guards don't restart the clock.
+*/
+const SPLASH_WATCHDOG_MS = 25000
+const SPLASH_HANDOFF_MS = 1000
+const REPEAT_WINDOW_MS = 90000
+const RECOVER_KEY = 'emedicalls.splashRecoveredAt'
+
+let splashCount = 0
+let watchdog = null
+let releaseTimer = null
+
+function recoverFromStall() {
+  let last = 0
+  try { last = Number(sessionStorage.getItem(RECOVER_KEY) || 0) } catch { /* private mode */ }
+  const repeat = Date.now() - last < REPEAT_WINDOW_MS
+  try { sessionStorage.setItem(RECOVER_KEY, String(Date.now())) } catch { /* private mode */ }
+  if (repeat) {
+    clearStoredSession()
+    window.location.replace('/login')
+    return
+  }
+  window.location.reload()
+}
+
+function useSplashWatchdog(enabled) {
+  useEffect(() => {
+    if (!enabled) return undefined
+    splashCount += 1
+    clearTimeout(releaseTimer)
+    if (!watchdog) watchdog = setTimeout(recoverFromStall, SPLASH_WATCHDOG_MS)
+    return () => {
+      splashCount -= 1
+      if (splashCount > 0) return
+      releaseTimer = setTimeout(() => {
+        if (splashCount > 0) return
+        clearTimeout(watchdog)
+        watchdog = null
+      }, SPLASH_HANDOFF_MS)
+    }
+  }, [enabled])
+}
+
+/** `watchdog={false}` only where the splash intentionally sits under a user-driven overlay. */
+export function AuthSplash({ watchdog = true }) {
+  useSplashWatchdog(watchdog)
   return (
     <div className="auth-splash" role="status" aria-label={BRAND_NAME}>
       <div className="auth-brand">

@@ -35,7 +35,15 @@ export default function PageSearchHeader({
   showAvatar = true,
   className = '',
   dockClassName = '',
+  /** 'expandable' — Home-style: tap opens a search mode with Cancel; page owns suggestions. */
+  searchMode = 'inline',
+  searchActive = false,
+  onSearchOpen,
+  onSearchCancel,
+  onSearchSubmit,
 }) {
+  const expandable = searchMode === 'expandable'
+  const pinned = locked || (expandable && searchActive)
   const {
     progress,
     fieldStyle,
@@ -45,7 +53,7 @@ export default function PageSearchHeader({
   } = useSearchScrollCompact({
     stageRef: scrollRef,
     searchRef: searchBarRef,
-    enabled: showSearch && enabled && !locked,
+    enabled: showSearch && enabled && !pinned,
   })
 
   const focusSearch = useCallback(() => {
@@ -65,12 +73,12 @@ export default function PageSearchHeader({
   const [mountedOnRoot] = useState(() => isTabRootPath(location.pathname))
   const rootChrome = mountedOnRoot && showAvatar && !leading
 
-  const shownProgress = locked || !showSearch ? 0 : progress
+  const shownProgress = pinned || !showSearch ? 0 : progress
   const showActions = Boolean(showSearch || showAvatar || trailing)
   const searchButton = showSearch ? (
     <HeaderSearchButton
       progress={shownProgress}
-      interactive={locked ? false : iconInteractive}
+      interactive={pinned ? false : iconInteractive}
       onClick={focusSearch}
     />
   ) : null
@@ -100,20 +108,23 @@ export default function PageSearchHeader({
         <CollapsingSearchDock
           className={dockClassName}
           progress={shownProgress}
-          fieldStyle={locked ? null : fieldStyle}
+          fieldStyle={pinned ? null : fieldStyle}
           expandedHeight={expandedHeight}
-          locked={locked}
-          inert={fieldInert && !locked}
+          locked={pinned}
+          inert={fieldInert && !pinned}
         >
           <SearchBar
-            mode="inline"
-            scrollMode={!locked}
+            mode={expandable ? 'expandable' : 'inline'}
+            active={expandable && searchActive}
+            scrollMode={!pinned}
             scope={scope}
             barRef={searchBarRef}
             placeholder={placeholder}
             query={query}
             onQueryChange={onQueryChange}
-            onOpenSearch={focusSearch}
+            onOpenSearch={expandable ? onSearchOpen : focusSearch}
+            onCancel={expandable ? onSearchCancel : undefined}
+            onSubmit={onSearchSubmit}
           />
         </CollapsingSearchDock>
       ) : null}

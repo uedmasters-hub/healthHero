@@ -10,6 +10,7 @@ import { resolveVisitType, VIDEO_CALL } from '../lib/serviceActions'
 import { flowState } from '../lib/careFlow'
 import { clearVideoJourney, isVideoEntry, resolveBookingEntry, saveVideoJourney } from '../features/videoConsult/lock'
 import './SelectSlot.css'
+import { UnavailablePage } from './system'
 
 export default function SelectSlot() {
   const navigate = useNavigate()
@@ -72,7 +73,7 @@ export default function SelectSlot() {
   }
 
   if (!doctor) {
-    return null
+    return <UnavailablePage title="Choose a doctor to book" message="Booking starts from a doctor’s profile. Taking you Home to pick one." />
   }
 
   return (

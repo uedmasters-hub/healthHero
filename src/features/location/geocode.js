@@ -5,6 +5,9 @@
 import { matchNepalCity } from '../../data/nepalGeography'
 import { PLACE_COORDS } from './constants'
 
+const REVERSE_GEOCODE_TIMEOUT_MS = 8000
+const PERMISSION_PROMPT_GRACE_MS = 16000
+
 const CITY_ALIASES = {
   delhi: 'Delhi',
   'new delhi': 'New Delhi',
@@ -40,7 +43,9 @@ export async function reverseGeocode(latitude, longitude) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
 
   const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
-  const res = await fetch(url)
+  const res = await fetch(url, {
+    signal: typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(REVERSE_GEOCODE_TIMEOUT_MS) : undefined,
+  })
   if (!res.ok) throw new Error('reverse-geocode-failed')
   const data = await res.json()
   const admin = (data.localityInfo?.administrative || []).map((item) => item.name)
@@ -139,8 +144,13 @@ export function readDevicePosition({
       reject(Object.assign(new Error('geolocation-unsupported'), { code: 0 }))
       return
     }
+    // The browser's `timeout` starts only after the permission prompt is answered.
+    const guard = setTimeout(() => {
+      reject(Object.assign(new Error('Location unavailable'), { code: 3 }))
+    }, timeout + PERMISSION_PROMPT_GRACE_MS)
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
+        clearTimeout(guard)
         resolve({
           latitude: coords.latitude,
           longitude: coords.longitude,
@@ -148,6 +158,7 @@ export function readDevicePosition({
         })
       },
       (error) => {
+        clearTimeout(guard)
         const err = Object.assign(new Error(error?.message || 'geolocation-failed'), {
           code: error?.code,
         })

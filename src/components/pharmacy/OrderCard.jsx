@@ -2,6 +2,7 @@ import useStaggerReveal from '../useStaggerReveal'
 import RevealItem from '../RevealItem'
 import StatusChip from './StatusChip'
 import { PharmacyIcon } from './PharmacyIcons'
+import { RxImage, RxSectionHead } from './PharmacyHome'
 import { getPharmacyOrderStatus } from '../../data/pharmacy'
 import './OrderCard.css'
 
@@ -12,14 +13,17 @@ export function OrderCard({ order, onClick, revealed = true, cached = false, ite
     <RevealItem
       as="button"
       type="button"
-      className="order-card ds-card is-interactive"
+      className="order-card ds-list-row"
       revealed={revealed}
       cached={cached}
       ref={itemRef}
       onClick={() => onClick?.(order)}
     >
       <span className="order-card__thumb" aria-hidden="true">
-        <img src={order.thumbnail} alt="" />
+        <RxImage
+          srcs={order.images}
+          fallback={<PharmacyIcon name="pill" size={22} />}
+        />
       </span>
       <span className="order-card__copy">
         <span className="order-card__name">{order.name}</span>
@@ -29,7 +33,7 @@ export function OrderCard({ order, onClick, revealed = true, cached = false, ite
         ) : null}
       </span>
       <span className="order-card__chevron" aria-hidden="true">
-        <PharmacyIcon name="chevron" />
+        <PharmacyIcon name="chevron" size={18} />
       </span>
     </RevealItem>
   )
@@ -46,17 +50,16 @@ export default function OrderList({
     namespace: `pharmacy-orders:${orders.length}`,
   })
 
+  if (!orders.length) return null
+
   return (
     <section className={`order-list ${className}`.trim()} aria-label={title}>
-      <div className="ds-section-head order-list__header">
-        <h2 className="ds-section-head__title">{title}</h2>
-        {onViewAll ? (
-          <button type="button" className="ds-link" onClick={onViewAll}>
-            View all
-          </button>
-        ) : null}
-      </div>
-      <div className="order-list__rows" ref={containerRef}>
+      <RxSectionHead
+        title={title}
+        actionLabel={onViewAll ? 'View All' : null}
+        onAction={onViewAll}
+      />
+      <div className="ds-list order-list__rows" ref={containerRef}>
         {orders.map((order, index) => (
           <OrderCard
             key={order.id}

@@ -8,6 +8,7 @@ import DoctorCard from './DoctorCard'
 import StickyFooterCta from './StickyFooterCta'
 import { AppBar, Badge, Callout, Card, InfoCell, InfoGrid, ResultHero } from './ui'
 import './RescheduleSuccess.css'
+import { UnavailablePage } from './system'
 
 export default function RescheduleSuccess() {
   const navigate = useNavigate()
@@ -39,8 +40,7 @@ export default function RescheduleSuccess() {
   }, [appointmentData, amount, completeReschedule, current])
 
   if (!current || !appointmentData) {
-    navigate('/')
-    return null
+    return <UnavailablePage title="This reschedule is already complete" />
   }
 
   const { doctor } = current

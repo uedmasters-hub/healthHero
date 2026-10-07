@@ -16,7 +16,7 @@ import { flowState } from '../../lib/careFlow'
 import { usePushBack } from '../../features/pushNav'
 import { usePullToRefresh } from '../../hooks/usePullToRefresh'
 import PullToRefreshIndicator from '../PullToRefreshIndicator'
-import { AppBar, Badge, Button } from '../ui'
+import { AppBar, Badge, Button, EmptyState } from '../ui'
 import './ReviewsScreen.css'
 
 function StarPick({ value, onChange }) {
@@ -151,11 +151,15 @@ export default function ReviewsScreen({ reviewKey, backTo, subjectName = '', onR
           </Button>
         </section>
 
-        <div className="reviews-list">
-          {items.map((item) => (
-            <ReviewItem key={item.id} item={item} onEdit={startEdit} onDelete={remove} />
-          ))}
-        </div>
+        {items.length ? (
+          <div className="reviews-list">
+            {items.map((item) => (
+              <ReviewItem key={item.id} item={item} onEdit={startEdit} onDelete={remove} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState compact card role="status" title="No reviews yet" message="Be the first to share how your visit went." />
+        )}
       </div>
     </div>
   )

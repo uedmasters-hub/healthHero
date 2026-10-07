@@ -7,6 +7,7 @@ import { formatMoney } from '../lib/paymentSession'
 import DoctorCard from './DoctorCard'
 import { AppBar, Badge, Card, Icon, IconButton, InfoCell, InfoGrid, QuickAction, ResultHero } from './ui'
 import './ConfirmReschedule.css'
+import { UnavailablePage } from './system'
 
 export default function ConfirmReschedule() {
   const navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function ConfirmReschedule() {
   )
   const { oldDate, oldTime, newDate, newTime, newTimeRange, visitType, duration, rescheduleFee, consultationFee, insuranceCoverage, paymentMethod, bookingMode } = location.state || {}
 
-  if (!currentBooking) { navigate('/'); return null }
+  if (!currentBooking) return <UnavailablePage title="This reschedule has expired" />
   const { doctor } = currentBooking
 
   const isQuickBook = bookingMode === 'quick'

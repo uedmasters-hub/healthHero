@@ -34,6 +34,7 @@ import {
   SectionHead, SheetHeader, Steps, cx,
 } from './ui'
 import './PreVisitCheckIn.css'
+import { UnavailablePage } from './system'
 
 const faqItems = [
   { q: 'What should I bring?', a: 'Bring citizenship ID or a photo ID, your health insurance / insurance card, a list of current medications, and any recent lab reports.' },
@@ -89,7 +90,7 @@ export default function PreVisitCheckIn() {
     }
   }, [shared?.phase, currentBooking, shared])
 
-  if (!currentBooking) return null
+  if (!currentBooking) return <UnavailablePage title="This check-in is no longer available" />
 
   const { doctor, date, time, visitType, duration } = currentBooking
   const doctorName = doctor.name?.startsWith('Dr.') ? doctor.name : `Dr. ${doctor.name}`

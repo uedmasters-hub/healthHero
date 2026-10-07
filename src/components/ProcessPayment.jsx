@@ -224,7 +224,6 @@ export default function ProcessPayment() {
   const { date, time } = session.draftBooking
   const selected = session.selectedMethodId
   const canPay = canProceedCheckout(session) && !isExpired && !submitting && !refreshing
-  const walletMethod = PAYMENT_METHODS.find((m) => m.id === 'wallet')
   const locked = isExpired && !expiredModalOpen
 
   const patchSession = (patch) => {
@@ -252,13 +251,13 @@ export default function ProcessPayment() {
     openMethodSheet()
   }
 
-  const selectMethod = (id, { addCard = false, openSheet: shouldOpen = true } = {}) => {
+  const selectMethod = (id, { openSheet: shouldOpen = true } = {}) => {
     if (isExpired) {
       promptRefresh()
       return
     }
     const patch = { selectedMethodId: id }
-    if (id === 'card' && addCard) patch.showAddCard = true
+    if (id === 'card') patch.showAddCard = true
     patchSession(patch)
     setCardErrors({})
     if (shouldOpen) presentMethodSheet(id)
@@ -330,10 +329,7 @@ export default function ProcessPayment() {
 
   const sheetReady = (() => {
     if (!sheetMethodId || isExpired) return false
-    if (sheetMethodId === 'card') {
-      if (session.showAddCard) return validateCardDraft(session.cardDraft).valid
-      return true
-    }
+    if (sheetMethodId === 'card') return validateCardDraft(session.cardDraft).valid
     if (sheetMethodId === 'upi') {
       if (session.upiMode === 'id') return isValidUpiId(session.upiId)
       return Boolean(session.upiAppId)
@@ -362,7 +358,7 @@ export default function ProcessPayment() {
       promptRefresh()
       return
     }
-    if (sheetMethodId === 'card' && session.showAddCard) {
+    if (sheetMethodId === 'card') {
       const result = validateCardDraft(session.cardDraft)
       setCardErrors(result.errors)
       if (!result.valid) return
@@ -431,7 +427,7 @@ export default function ProcessPayment() {
                 type="button"
                 className="ds-link pay-add-link"
                 disabled={isExpired}
-                onClick={() => selectMethod('card', { addCard: true })}
+                onClick={() => selectMethod('card')}
               >
                 <Icon.Plus />
                 Add New
@@ -473,9 +469,6 @@ export default function ProcessPayment() {
                       <span className="pay-method-status">{view.status}</span>
                     ) : view.subtitle ? (
                       <span className="pay-method-sub">{view.subtitle}</span>
-                    ) : null}
-                    {method.id === 'card' && active && method.default && !session.showAddCard && view.ready ? (
-                      <Badge tone="primary" className="pay-method-default"><Icon.Check />Default</Badge>
                     ) : null}
                   </span>
                   <span className="pay-method-aside">
@@ -550,7 +543,7 @@ export default function ProcessPayment() {
         closing={methodSheetClosing}
         onClose={hideMethodSheet}
         labelledBy="pay-method-sheet-title"
-        sheetClassName={`pay-method-sheet ${sheetMethodId === 'card' && session.showAddCard ? 'is-tall' : ''}`}
+        sheetClassName={`pay-method-sheet ${sheetMethodId === 'card' ? 'is-tall' : ''}`}
         className="is-blurred"
         dismissOnSwipe
         snapPoints={['mid', 'full']}
@@ -565,111 +558,79 @@ export default function ProcessPayment() {
 
         <div className="pay-sheet-body">
           {sheetMethodId === 'card' ? (
-            <>
-              {!session.showAddCard ? (
-                <button
-                  type="button"
-                  className="pay-sheet-choice ds-card is-interactive is-selected"
-                  onClick={() => patchSession({ showAddCard: false })}
-                >
-                  <span className="pay-sheet-choice-copy">
-                    <strong>Visa •••• 4242</strong>
-                    <span>Expires 08/27 · Default</span>
-                  </span>
-                  <span className="ds-radio is-on" aria-hidden="true" />
-                </button>
-              ) : null}
-
-              <div className="pay-card-form ds-card is-padded">
-                <div className="pay-card-form-head">
-                  <h3>{session.showAddCard ? 'Add card' : 'Or add a new card'}</h3>
-                  {session.showAddCard ? (
-                    <button type="button" className="ds-link" onClick={() => patchSession({ showAddCard: false })}>
-                      Use saved card
-                    </button>
-                  ) : (
-                    <button type="button" className="ds-link" onClick={() => patchSession({ showAddCard: true })}>
-                      Add new
-                    </button>
-                  )}
-                </div>
-
-                {session.showAddCard ? (
-                  <>
-                    <label className="pay-field">
-                      <span className="ds-field-label">Card number</span>
-                      <input
-                        className={`ds-field ${cardErrors.number ? 'is-error' : ''}`}
-                        inputMode="numeric"
-                        autoComplete="cc-number"
-                        placeholder="ACCT-000003"
-                        value={session.cardDraft.number}
-                        onChange={(e) => {
-                          patchSession({
-                            cardDraft: { ...session.cardDraft, number: formatCardNumber(e.target.value) },
-                          })
-                        }}
-                        onBlur={() => setCardErrors(validateCardDraft(session.cardDraft).errors)}
-                      />
-                      {cardErrors.number ? <em className="ds-field-error">{cardErrors.number}</em> : null}
-                    </label>
-                    <label className="pay-field">
-                      <span className="ds-field-label">Name on card</span>
-                      <input
-                        className={`ds-field ${cardErrors.name ? 'is-error' : ''}`}
-                        autoComplete="cc-name"
-                        placeholder="Full name"
-                        value={session.cardDraft.name}
-                        onChange={(e) => patchSession({
-                          cardDraft: { ...session.cardDraft, name: e.target.value },
-                        })}
-                      />
-                      {cardErrors.name ? <em className="ds-field-error">{cardErrors.name}</em> : null}
-                    </label>
-                    <div className="pay-field-row">
-                      <label className="pay-field">
-                        <span className="ds-field-label">Expiry</span>
-                        <input
-                          className={`ds-field ${cardErrors.expiry ? 'is-error' : ''}`}
-                          inputMode="numeric"
-                          autoComplete="cc-exp"
-                          placeholder="MM/YY"
-                          value={session.cardDraft.expiry}
-                          onChange={(e) => patchSession({
-                            cardDraft: { ...session.cardDraft, expiry: formatExpiry(e.target.value) },
-                          })}
-                        />
-                        {cardErrors.expiry ? <em className="ds-field-error">{cardErrors.expiry}</em> : null}
-                      </label>
-                      <label className="pay-field">
-                        <span className="ds-field-label">CVV</span>
-                        <input
-                          className={`ds-field ${cardErrors.cvv ? 'is-error' : ''}`}
-                          inputMode="numeric"
-                          autoComplete="cc-csc"
-                          placeholder="123"
-                          value={session.cardDraft.cvv}
-                          onChange={(e) => patchSession({
-                            cardDraft: {
-                              ...session.cardDraft,
-                              cvv: e.target.value.replace(/\D/g, '').slice(0, 4),
-                            },
-                          })}
-                        />
-                        {cardErrors.cvv ? <em className="ds-field-error">{cardErrors.cvv}</em> : null}
-                      </label>
-                    </div>
-                    <div className="pay-card-brands">
-                      <img src="/img/payment/visa.png" alt="Visa" />
-                      <img src="/img/payment/mastercard.png" alt="Mastercard" />
-                      <img src="/img/payment/rupay.png" alt="RuPay" />
-                    </div>
-                  </>
-                ) : (
-                  <p className="pay-sheet-hint">Saved card is ready. Tap Continue to verify, or add a new card.</p>
-                )}
+            <div className="pay-card-form ds-card is-padded">
+              <div className="pay-card-form-head">
+                <h3>Add card</h3>
               </div>
-            </>
+              <label className="pay-field">
+                <span className="ds-field-label">Card number</span>
+                <input
+                  className={`ds-field ${cardErrors.number ? 'is-error' : ''}`}
+                  inputMode="numeric"
+                  autoComplete="cc-number"
+                  placeholder="0000 0000 0000 0000"
+                  value={session.cardDraft.number}
+                  onChange={(e) => {
+                    patchSession({
+                      cardDraft: { ...session.cardDraft, number: formatCardNumber(e.target.value) },
+                    })
+                  }}
+                  onBlur={() => setCardErrors(validateCardDraft(session.cardDraft).errors)}
+                />
+                {cardErrors.number ? <em className="ds-field-error">{cardErrors.number}</em> : null}
+              </label>
+              <label className="pay-field">
+                <span className="ds-field-label">Name on card</span>
+                <input
+                  className={`ds-field ${cardErrors.name ? 'is-error' : ''}`}
+                  autoComplete="cc-name"
+                  placeholder="Full name"
+                  value={session.cardDraft.name}
+                  onChange={(e) => patchSession({
+                    cardDraft: { ...session.cardDraft, name: e.target.value },
+                  })}
+                />
+                {cardErrors.name ? <em className="ds-field-error">{cardErrors.name}</em> : null}
+              </label>
+              <div className="pay-field-row">
+                <label className="pay-field">
+                  <span className="ds-field-label">Expiry</span>
+                  <input
+                    className={`ds-field ${cardErrors.expiry ? 'is-error' : ''}`}
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    placeholder="MM/YY"
+                    value={session.cardDraft.expiry}
+                    onChange={(e) => patchSession({
+                      cardDraft: { ...session.cardDraft, expiry: formatExpiry(e.target.value) },
+                    })}
+                  />
+                  {cardErrors.expiry ? <em className="ds-field-error">{cardErrors.expiry}</em> : null}
+                </label>
+                <label className="pay-field">
+                  <span className="ds-field-label">CVV</span>
+                  <input
+                    className={`ds-field ${cardErrors.cvv ? 'is-error' : ''}`}
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    placeholder="123"
+                    value={session.cardDraft.cvv}
+                    onChange={(e) => patchSession({
+                      cardDraft: {
+                        ...session.cardDraft,
+                        cvv: e.target.value.replace(/\D/g, '').slice(0, 4),
+                      },
+                    })}
+                  />
+                  {cardErrors.cvv ? <em className="ds-field-error">{cardErrors.cvv}</em> : null}
+                </label>
+              </div>
+              <div className="pay-card-brands">
+                <img src="/img/payment/visa.png" alt="Visa" />
+                <img src="/img/payment/mastercard.png" alt="Mastercard" />
+                <img src="/img/payment/rupay.png" alt="RuPay" />
+              </div>
+            </div>
           ) : null}
 
           {sheetMethodId === 'upi' ? (
@@ -728,19 +689,6 @@ export default function ProcessPayment() {
                   ) : null}
                 </label>
               )}
-            </div>
-          ) : null}
-
-          {sheetMethodId === 'wallet' ? (
-            <div className="pay-sheet-panel">
-              <div className="pay-wallet-card ds-card is-muted is-padded">
-                <span className="pay-wallet-label ds-overline">Available balance</span>
-                <strong className="pay-wallet-balance">{formatMoney(walletMethod?.balance ?? 0)}</strong>
-                <p className="pay-sheet-hint">
-                  Pay from your eMedicalls wallet. Eligible for this consultation.
-                  No additional details are required.
-                </p>
-              </div>
             </div>
           ) : null}
 

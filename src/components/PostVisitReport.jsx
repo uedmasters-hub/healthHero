@@ -12,6 +12,7 @@ import {
 } from '../booking/visitOutcomes'
 import { AppBar, Button, ResultHero } from './ui'
 import './PostVisitReport.css'
+import { UnavailablePage } from './system'
 
 /**
  * One primary outcome for this visit. The original submission stays
@@ -50,7 +51,7 @@ export default function PostVisitReport() {
   const followUpCard = followUpRecord ? presentBookingCard(toLegacyBooking(followUpRecord)) : null
 
   if (!currentBooking && !bookingId) {
-    return null
+    return <UnavailablePage title="This visit report is no longer available" />
   }
 
   const setDetail = (key, value) => {

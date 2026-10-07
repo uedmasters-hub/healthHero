@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useBooking } from './BookingContext'
-import { useBookingById, useRouteBookingId } from '../booking'
+import { PAYMENT_STATUS, useBookingById, useRouteBookingId } from '../booking'
 import DoctorCard from './DoctorCard'
 import AppBottomSheet from './AppBottomSheet'
 import { useAppSheet } from './PageTransition'
@@ -34,6 +34,7 @@ import {
   InfoCell, InfoGrid, List, ListRow, QuickAction, SectionHead, SheetHeader, cx,
 } from './ui'
 import './AppointmentDetail.css'
+import { UnavailablePage } from './system'
 
 const checklistItems = [
   'Bring citizenship ID or photo ID and your health insurance card',
@@ -55,15 +56,6 @@ const recommendedArticles = [
   { type: 'card', title: 'Understanding Thyroid Health', subtitle: '5 min read', image: '/img/reports/MRI-showing-posterior-fossa-tumor-extending-to-the-spinal-cord-in-both-T2-coronal-view.png' },
   { type: 'card', title: 'Nutrition Tips for Energy', subtitle: '4 min read', image: '/img/reports/Computed-tomography-angiogram-of-abdomen-revealing-multiple-wedge-shaped-infarcts-in-left.png' },
 ]
-
-const defaultPayment = {
-  consultationFee: 1200,
-  insuranceCoverage: 200,
-  copay: 1000,
-  totalPaid: 1000,
-  method: 'eSewa · 9845271970',
-  invoiceId: 'INV-2026-0916',
-}
 
 const recordIcons = {
   reports: (
@@ -156,7 +148,7 @@ export default function AppointmentDetail() {
     }
   }, [shared?.phase, booking, shared])
 
-  if (!booking) return null
+  if (!booking) return <UnavailablePage title="This appointment is no longer available" />
 
   const { doctor, date, time, visitType, duration, rescheduleHistory } = booking
   const appointmentStart = getAppointmentStart(date, time)
@@ -175,22 +167,22 @@ export default function AppointmentDetail() {
   const lastReschedule = wasRescheduled ? history[history.length - 1] : null
 
   const paid = booking.payment || {}
-  const paidAmount = Number(paid.amount ?? paid.consultationFee ?? doctor?.fee ?? defaultPayment.totalPaid)
+  const paidAmount = Number(paid.amount || paid.consultationFee || 0)
+  const rescheduleFee = wasRescheduled ? Number(lastReschedule?.amount || 0) : 0
+  const discount = Number(paid.discount) || 0
   const payment = {
-    consultationFee: Number(paid.consultationFee ?? paidAmount),
-    insuranceCoverage: Number(paid.discount ?? 0) > 0 ? Number(paid.discount) : defaultPayment.insuranceCoverage,
+    isPaid: paid.status === PAYMENT_STATUS.PAID || Boolean(paid.paidAt || paid.paymentId),
+    isPending: [PAYMENT_STATUS.PENDING, PAYMENT_STATUS.PROCESSING].includes(paid.status),
+    consultationFee: Number(paid.consultationFee || paidAmount + discount),
+    discount,
+    rescheduleFee,
     copay: paidAmount,
-    totalPaid: paidAmount,
-    method: paid.method || defaultPayment.method,
-    invoiceId: paid.bookingId || paid.paymentId || paid.orderId || defaultPayment.invoiceId,
-    ...(wasRescheduled
-      ? {
-        rescheduleFee: Number(lastReschedule?.amount ?? 150),
-        totalPaid: paidAmount + Number(lastReschedule?.amount ?? 0),
-        invoiceId: paid.bookingId || `INV-RESCH-${history.length}`,
-      }
-      : {}),
+    totalPaid: paidAmount + rescheduleFee,
+    method: paid.method || '',
+    invoiceId: paid.bookingId || paid.paymentId || paid.orderId || '',
   }
+  const hasPayment = paidAmount > 0 && (payment.isPaid || payment.isPending)
+  const paymentMeta = [payment.method, payment.invoiceId && `Invoice #${payment.invoiceId}`].filter(Boolean).join(' · ')
 
   const dateStr = date.full.toLocaleDateString('en-NP', {
     weekday: 'short',
@@ -521,40 +513,59 @@ export default function AppointmentDetail() {
         </section>
 
         <section>
-          <SectionHead group as="h3" title="Payment & invoice" action={<Badge tone="success">Paid</Badge>} />
+          <SectionHead
+            group
+            as="h3"
+            title="Payment & invoice"
+            action={hasPayment ? (payment.isPaid ? <Badge tone="success">Paid</Badge> : <Badge tone="warning">Pending</Badge>) : null}
+          />
+          {!hasPayment ? (
+            <EmptyState compact card role="status" title="No payment on file" message="Your payment details and invoice appear here once payment is confirmed." />
+          ) : (
           <div className="ds-card appointment-payment-card">
             <div className="ds-stack is-tight appointment-billing">
               <div className="ds-kv">
                 <span className="ds-kv__key">Consultation fee</span>
                 <span className="ds-kv__value tnum">{formatMoney(payment.consultationFee)}</span>
               </div>
-              {wasRescheduled && (
+              {payment.rescheduleFee > 0 && (
                 <div className="ds-kv">
                   <span className="ds-kv__key">Reschedule fee</span>
                   <span className="ds-kv__value tnum">{formatMoney(payment.rescheduleFee)}</span>
                 </div>
               )}
-              <div className="ds-kv">
-                <span className="ds-kv__key">Mediclaim discount</span>
-                <span className="ds-kv__value is-positive tnum">-{formatMoney(payment.insuranceCoverage)}</span>
-              </div>
+              {payment.discount > 0 && (
+                <div className="ds-kv">
+                  <span className="ds-kv__key">Discount</span>
+                  <span className="ds-kv__value is-positive tnum">-{formatMoney(payment.discount)}</span>
+                </div>
+              )}
               <div className="ds-kv">
                 <span className="ds-kv__key">Amount payable</span>
                 <span className="ds-kv__value tnum">{formatMoney(payment.copay)}</span>
               </div>
               <div className="ds-kv is-total">
-                <span className="ds-kv__key">Total paid</span>
+                <span className="ds-kv__key">{payment.isPaid ? 'Total paid' : 'Total due'}</span>
                 <span className="ds-kv__value tnum">{formatMoney(payment.totalPaid)}</span>
               </div>
-              <p className="ds-caption appointment-payment-meta">
-                <Icon.Card />
-                {payment.method} · Invoice #{payment.invoiceId}
-              </p>
+              {paymentMeta ? (
+                <p className="ds-caption appointment-payment-meta">
+                  <Icon.Card />
+                  {paymentMeta}
+                </p>
+              ) : null}
             </div>
-            <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.File /></span>} title="View invoice" onClick={() => openSheet({ type: 'invoice' })} />
-            <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Download /></span>} title="Download receipt (PDF)" onClick={() => openSheet({ type: 'receipt' })} />
-            <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Clock /></span>} title="Payment history" onClick={() => openSheet({ type: 'history' })} />
+            {payment.isPaid && payment.invoiceId ? (
+              <>
+                <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.File /></span>} title="View invoice" onClick={() => openSheet({ type: 'invoice' })} />
+                <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Download /></span>} title="Download receipt (PDF)" onClick={() => openSheet({ type: 'receipt' })} />
+              </>
+            ) : null}
+            {payment.isPaid ? (
+              <ListRow icon={<span className="ds-icon-well" aria-hidden="true"><Icon.Clock /></span>} title="Payment history" onClick={() => openSheet({ type: 'history' })} />
+            ) : null}
           </div>
+          )}
         </section>
 
         <section>
@@ -580,7 +591,7 @@ export default function AppointmentDetail() {
         </section>
 
         <section>
-          <SectionHead group as="h3" title="Recommended for you" />
+          <SectionHead group as="h3" title="Health reading" />
           <div className="ds-stack is-tight">
             {recommendedArticles.filter((article) => article.type === 'featured').map((article) => (
               <List key={article.title}>
@@ -686,7 +697,7 @@ export default function AppointmentDetail() {
 
           {sheet.type === 'invoice' && (
             <div className="ds-stack appointment-sheet-body">
-              <p className="ds-body">Invoice #{payment.invoiceId} · {payment.method}</p>
+              <p className="ds-body">{paymentMeta}</p>
               <div className="ds-kv is-total">
                 <span className="ds-kv__key">Total paid</span>
                 <span className="ds-kv__value tnum">{formatMoney(payment.totalPaid)}</span>
@@ -702,14 +713,14 @@ export default function AppointmentDetail() {
             <List className="appointment-sheet-list">
               <ListRow
                 title="Consultation paid"
-                subtitle={`${dateStr} · ${payment.method}`}
+                subtitle={[dateStr, payment.method].filter(Boolean).join(' · ')}
                 trailing={<strong className="tnum appointment-sheet-amount">{formatMoney(payment.totalPaid)}</strong>}
               />
             </List>
           )}
 
           {sheet.type === 'article' && (
-            <p className="ds-body appointment-sheet-body">{sheet.article.subtitle}. This reading is tailored to your upcoming visit with Dr. {doctor.name}.</p>
+            <p className="ds-body appointment-sheet-body">{sheet.article.subtitle}.</p>
           )}
 
           {sheet.type === 'menu' && (

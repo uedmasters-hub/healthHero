@@ -8,7 +8,7 @@ import BookAppointment from './BookAppointment'
 import Services from './Services'
 import TopDoctors from './TopDoctors'
 import HealthInsights from './HealthInsights'
-import AppFooter from './AppFooter'
+import ParentFooter from './ParentFooter'
 import { HeaderSearchButton } from './home/SharedSearchIcon'
 import CollapsingSearchDock from './home/CollapsingSearchDock'
 import { useTransition } from './PageTransition'
@@ -143,7 +143,7 @@ export default function HomePage() {
               <Services />
               <TopDoctors />
               <HealthInsights />
-              <AppFooter page="home" />
+              <ParentFooter page="home" />
             </div>
           </div>
           <SearchSuggestions query={query} active={searchActive} scope={scope} />
