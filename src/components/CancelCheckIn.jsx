@@ -10,6 +10,7 @@ import {
 } from '../lib/appointmentJourney'
 import DoctorCard from './DoctorCard'
 import { AppBar, Badge, Button, Callout, Card, Choice, ChoiceList, Icon, IconButton, InfoCell, InfoGrid, List, ListRow, ResultHero, Steps } from './ui'
+import { RedirectingPage, UnavailablePage } from './system'
 
 const reasons = [
   "I'll check in when I arrive",
@@ -37,10 +38,10 @@ export default function CancelCheckIn() {
     }
   }, [currentBooking, now, navigate])
 
-  if (!currentBooking) return null
+  if (!currentBooking) return <UnavailablePage title="This check-in is no longer available" />
 
   const actions = getAppointmentActions(currentBooking, now, { surface: 'ready' })
-  if (!actions.canCancelCheckIn && !confirmed) return null
+  if (!actions.canCancelCheckIn && !confirmed) return <RedirectingPage title="Opening your appointment" />
 
   const { doctor, date, time, visitType, duration } = currentBooking
 

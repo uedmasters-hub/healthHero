@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="24 34 192 192" role="img" aria-label="Doctor placeholder">
+  <rect width="240" height="240" fill="#F3ECF6"/>
+  <path d="M72 102c0-34 21-56 48-56s48 22 48 56v46c0 9-7 16-16 16H88c-9 0-16-7-16-16z" fill="#4E2A84"/>
+  <rect x="104" y="124" width="32" height="34" rx="12" fill="#D2C4E6"/>
+  <path d="M28 240c0-50 36-80 92-80s92 30 92 80z" fill="#FFFFFF"/>
+  <path d="M102 162l18 36 18-36c-5-1.5-11-2-18-2s-13 .5-18 2z" fill="#8A5BB8"/>
+  <path d="M102 162l18 36-10 42H84l-4-74c6-2 14-3.5 22-4z" fill="#F7F3FB"/>
+  <path d="M138 162l-18 36 10 42h26l4-74c-6-2-14-3.5-22-4z" fill="#F7F3FB"/>
+  <circle cx="120" cy="96" r="38" fill="#D2C4E6"/>
+  <path d="M82 94c3-24 19-38 38-38s35 14 38 38c-15-4-28-12-36-23-8 12-23 20-40 23z" fill="#4E2A84"/>
+  <path d="M146 176c6 24-2 40-18 44" fill="none" stroke="#4E2A84" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="127" cy="220" r="6" fill="#4E2A84"/>
+</svg>

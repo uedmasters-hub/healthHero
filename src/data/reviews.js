@@ -4,14 +4,13 @@ import {
   removeUserReview,
   upsertUserReview,
 } from '../user/store'
-import { BRAND_STORAGE } from '../lib/brand'
-
-const STORAGE_KEY = BRAND_STORAGE.reviews
+import { DEMO_USER_ID } from '../user/constants'
 
 function review({ id, author, date, rating, text, patientId = null, createdAt }) {
   return { id, author, date, rating, text, patientId, createdAt: createdAt || Date.parse(`${date} 12:00:00 GMT`) }
 }
 
+/** Demo-account catalog only; real users see reviews patients actually wrote. */
 const seedByDoctor = {
   1: [
     review({ id: 'd1-r1', author: 'Priya K.', date: '3 Aug 2026', rating: 5, text: 'Dr. Sharma completely transformed my skin. Her laser treatment plan was thorough and the results are incredible.' }),
@@ -56,78 +55,13 @@ const seedByDoctor = {
   ],
 }
 
-function fallbackReviews(doctorId) {
-  return [
-    review({
-      id: `d${doctorId}-r1`,
-      author: 'Patient',
-      date: '8 Jul 2026',
-      rating: 5,
-      text: 'Attentive, professional, and easy to talk to. I left with a clear next step.',
-    }),
-    review({
-      id: `d${doctorId}-r2`,
-      author: 'Aisha Y.',
-      date: '16 Jun 2026',
-      rating: 4,
-      text: 'Solid consultation. Would book again for a follow-up.',
-    }),
-  ]
+function catalogFor(key) {
+  if (currentUser()?.id !== DEMO_USER_ID) return []
+  return seedByDoctor[key] || []
 }
 
-function placeFallback(key) {
-  const pharmacy = String(key).startsWith('pharmacy:')
-  return [
-    review({
-      id: `${key}-r1`,
-      author: pharmacy ? 'Sita R.' : 'Anil K.',
-      date: '12 Aug 2026',
-      rating: 5,
-      text: pharmacy
-        ? 'Staff found the medicine quickly and the counter wait was short. Packaging was clearly labeled.'
-        : 'Clean facility and a clear explanation of the visit. Registration did not take long.',
-    }),
-    review({
-      id: `${key}-r2`,
-      author: pharmacy ? 'Bikash T.' : 'Maya P.',
-      date: '2 Jul 2026',
-      rating: 4,
-      text: pharmacy
-        ? 'Good stock of everyday medicines. Delivery arrived the same evening.'
-        : 'Helpful front desk. The queue moved steadily once we were checked in.',
-    }),
-  ]
-}
-
-function catalogFor(store, key) {
-  if (store[key]?.length) return store[key]
-  if (String(key).startsWith('pharmacy:') || String(key).startsWith('facility:')) return placeFallback(key)
-  return fallbackReviews(key)
-}
-
-function cloneSeed() {
-  const next = {}
-  Object.keys(seedByDoctor).forEach((id) => {
-    next[id] = seedByDoctor[id].map((item) => ({ ...item }))
-  })
-  return next
-}
-
-function loadStore() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return cloneSeed()
-    const parsed = JSON.parse(raw)
-    return parsed && typeof parsed === 'object' ? parsed : cloneSeed()
-  } catch {
-    return cloneSeed()
-  }
-}
-
-function listFor(store, doctorId) {
-  const key = String(doctorId)
-  const items = catalogFor(store, key)
-  return [...items].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+function listFor(doctorId) {
+  return [...catalogFor(String(doctorId))].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
 }
 
 export function placeReviewKey(kind, id) {
@@ -165,7 +99,7 @@ export function summarizeReviews(items) {
 }
 
 export function getDoctorReviews(doctorId) {
-  const catalog = listFor(loadStore(), doctorId).filter((item) => !item.patientId)
+  const catalog = listFor(doctorId).filter((item) => !item.patientId)
   const mine = getUserReviews(doctorId)
   const mineIds = new Set(mine.map((item) => item.id))
   return [...mine, ...catalog.filter((item) => !mineIds.has(item.id))]

@@ -21,7 +21,7 @@ export const PAYMENT_METHODS = [
     id: 'card',
     label: 'Credit / Debit Card',
     kind: 'card',
-    subtitle: 'Nabil Bank •••• 4242 · Expires 08/27',
+    subtitle: 'Add a Visa, Mastercard, or RuPay card.',
     logos: ['/img/payment/visa.png', '/img/payment/mastercard.png'],
   },
   {
@@ -31,13 +31,6 @@ export const PAYMENT_METHODS = [
     subtitle: 'Pay with eSewa, Khalti, or Fonepay.',
     logos: ['/img/payment/gpay.png', '/img/payment/phonepe.png'],
     default: true,
-  },
-  {
-    id: 'wallet',
-    label: 'Health Wallet',
-    kind: 'wallet',
-    subtitle: 'Pay from your eMedicalls wallet balance.',
-    balance: 2500,
   },
   {
     id: 'netbanking',
@@ -176,7 +169,7 @@ export function createPaymentSession({
       cvv: '',
       setDefault: true,
     },
-    showAddCard: false,
+    showAddCard: true,
     draftBooking,
     appointmentData,
     otpAttempts: 0,
@@ -249,15 +242,11 @@ export function isMethodReady(session, methodId = session?.selectedMethodId) {
   const method = PAYMENT_METHODS.find((item) => item.id === methodId)
   if (!method) return false
 
-  if (method.id === 'card') {
-    if (session.showAddCard) return validateCardDraft(session.cardDraft).valid
-    return true
-  }
+  if (method.id === 'card') return validateCardDraft(session.cardDraft).valid
   if (method.id === 'upi') {
     if (session.upiMode === 'id') return isValidUpiId(session.upiId)
     return Boolean(session.upiAppId)
   }
-  if (method.id === 'wallet') return true
   if (method.id === 'netbanking') return Boolean(session.bankId)
   return false
 }
@@ -266,11 +255,8 @@ export function paymentLabelFromSession(session) {
   const method = PAYMENT_METHODS.find((item) => item.id === session?.selectedMethodId)
   if (!method) return 'Card'
   if (method.id === 'card') {
-    if (session.showAddCard) {
-      const last4 = String(session.cardDraft?.number || '').replace(/\D/g, '').slice(-4)
-      return last4 ? `Card •••• ${last4}` : 'New card'
-    }
-    return 'Visa •••• 4242'
+    const last4 = String(session.cardDraft?.number || '').replace(/\D/g, '').slice(-4)
+    return last4 ? `Card •••• ${last4}` : 'New card'
   }
   if (method.id === 'upi') {
     if (session.upiMode === 'id' && session.upiId) return session.upiId
@@ -281,7 +267,6 @@ export function paymentLabelFromSession(session) {
     const bank = NET_BANKS.find((item) => item.id === session.bankId)
     return bank?.label || method.label
   }
-  if (method.id === 'wallet') return 'Health Wallet'
   return method.label
 }
 
@@ -342,52 +327,27 @@ export function resolveMethodView(session, method) {
   }
 
   if (method.id === 'card') {
-    if (session.showAddCard) {
-      const last4 = String(session.cardDraft?.number || '').replace(/\D/g, '').slice(-4)
-      if (ready) {
-        return {
-          label: `Card •••• ${last4}`,
-          subtitle: null,
-          status: 'Ready to continue',
-          logos: method.logos,
-          balance: null,
-          showEdit: true,
-          ready: true,
-          showBankIcon: false,
-        }
-      }
+    const last4 = String(session.cardDraft?.number || '').replace(/\D/g, '').slice(-4)
+    if (ready) {
       return {
-        label: 'New card',
-        subtitle: 'Complete card details to continue',
-        status: null,
+        label: `Card •••• ${last4}`,
+        subtitle: null,
+        status: 'Ready to continue',
         logos: method.logos,
         balance: null,
         showEdit: true,
-        ready: false,
+        ready: true,
         showBankIcon: false,
       }
     }
     return {
-      label: 'Visa •••• 4242',
-      subtitle: 'Expires 08/27 · Default',
-      status: 'Ready to continue',
+      label: 'New card',
+      subtitle: 'Complete card details to continue',
+      status: null,
       logos: method.logos,
       balance: null,
       showEdit: true,
-      ready: true,
-      showBankIcon: false,
-    }
-  }
-
-  if (method.id === 'wallet') {
-    return {
-      label: method.label,
-      subtitle: method.balance != null ? `Available ${formatMoney(method.balance)}` : method.subtitle,
-      status: 'Ready to continue',
-      logos: null,
-      balance: method.balance,
-      showEdit: true,
-      ready: true,
+      ready: false,
       showBankIcon: false,
     }
   }

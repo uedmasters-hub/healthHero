@@ -131,10 +131,11 @@ export function createRepository(initial = { bookings: [], activeBookingId: null
      * Hard-delete only for disposable drafts / expired checkout shells.
      * Confirmed care rows refuse removal so Treat / Chat / history keep the same UUID.
      */
-    remove(id) {
+    /** `discard` drops a record that was never a real appointment, whatever its status. */
+    remove(id, { discard = false } = {}) {
       const prev = bookings.find((b) => b.id === id)
       if (!prev) return null
-      if (IMMUTABLE_APPOINTMENT_STATUSES.includes(prev.status)) {
+      if (!discard && IMMUTABLE_APPOINTMENT_STATUSES.includes(prev.status)) {
         return null
       }
       bookings = bookings.filter((b) => b.id !== id)

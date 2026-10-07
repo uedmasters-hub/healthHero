@@ -35,6 +35,12 @@ export function resolveServiceAction(name) {
   if (name === 'Pharmacy' || name === 'Online Pharmacy' || name === 'Medicine Delivery') {
     return { kind: 'route', to: '/pharmacy' }
   }
+  if (name === 'Hospitals & Clinics' || name === 'Emergency Care' || name === 'Emergency' || name === 'Surgery & Procedures') {
+    return { kind: 'route', to: '/centers' }
+  }
+  if (name === 'Ambulance') {
+    return { kind: 'call', href: 'tel:112' }
+  }
   const specialty = CONSULTATION_SPECIALTIES[name]
   if (specialty) {
     return { kind: 'specialty', specialty: canonicalSpecialty(specialty) }
@@ -46,6 +52,11 @@ export function runServiceAction(name, { navigate, onCloseOverlays, onComingSoon
   const action = resolveServiceAction(name)
   if (action.kind === 'comingSoon') {
     (onPreview || onComingSoon)?.(action.name)
+    return
+  }
+
+  if (action.kind === 'call') {
+    window.location.href = action.href
     return
   }
 

@@ -27,9 +27,46 @@
     <meta name="twitter:description" content="Book trusted doctors, manage appointments, and keep your care in one place." />
     <meta name="twitter:image" content="https://www.emedicalls.com/img/health_hero.svg" />
     <title>eMedicalls - Doctor Booking</title>
+    <style>
+      /* Pre-boot shell: visible until React mounts, so the page is never blank. */
+      .boot-shell { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; background: #fff; color: #180730; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; text-align: center; }
+      .boot-shell img { width: 64px; height: 64px; }
+      .boot-shell p { margin: 0; }
+      .boot-shell__name { font-size: 20px; font-weight: 500; color: #3d2a7a; }
+      .boot-shell__msg { max-width: 300px; font-size: 14px; line-height: 1.5; color: #5b5470; }
+      .boot-shell__btn { min-height: 44px; padding: 0 22px; border: 0; border-radius: 999px; background: #241347; color: #fff; font: inherit; font-size: 15px; cursor: pointer; }
+      .boot-shell [data-boot-failed] { display: none; }
+      .boot-shell.is-failed [data-boot-failed] { display: block; }
+      .boot-shell.is-failed [data-boot-loading] { display: none; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot-shell" id="boot-shell" role="status">
+        <img src="/img/health_hero.svg" alt="" />
+        <p class="boot-shell__name">eMedicalls</p>
+        <p class="boot-shell__msg" data-boot-loading>Getting things ready…</p>
+        <p class="boot-shell__msg" data-boot-failed>eMedicalls is taking longer than usual to load. Check your connection, then reload.</p>
+        <button class="boot-shell__btn" type="button" data-boot-failed onclick="location.reload()">Reload</button>
+      </div>
+    </div>
+    <noscript>
+      <div class="boot-shell"><p class="boot-shell__name">eMedicalls</p><p class="boot-shell__msg">Turn on JavaScript in your browser settings to use eMedicalls.</p></div>
+    </noscript>
+    <script>
+      setTimeout(function () {
+        var shell = document.getElementById('boot-shell');
+        if (shell) shell.classList.add('is-failed');
+      }, 12000);
+      window.addEventListener('vite:preloadError', function () {
+        try {
+          var last = Number(sessionStorage.getItem('emedicalls.chunkReloadAt') || 0);
+          if (Date.now() - last < 30000) return;
+          sessionStorage.setItem('emedicalls.chunkReloadAt', String(Date.now()));
+        } catch (e) { return; }
+        location.reload();
+      });
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

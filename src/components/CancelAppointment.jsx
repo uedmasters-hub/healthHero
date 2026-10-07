@@ -4,6 +4,7 @@ import { useBooking } from './BookingContext'
 import { usePushBack } from '../features/pushNav'
 import { AppBar, Button, Card, Choice, ChoiceList, InfoCell, InfoGrid, ResultHero } from './ui'
 import './CancelAppointment.css'
+import { UnavailablePage } from './system'
 
 const CANCEL_REASONS = [
   'Feeling better / no longer needed',
@@ -95,7 +96,7 @@ export default function CancelAppointment() {
     return 'Cancel appointment'
   }, [done, step])
 
-  if (!booking && !done) return null
+  if (!booking && !done) return <UnavailablePage title="This appointment is no longer available" />
 
   const doctorName = booking?.doctor?.name || 'your provider'
 

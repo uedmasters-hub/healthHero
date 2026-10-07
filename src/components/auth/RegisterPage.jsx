@@ -8,6 +8,7 @@ import AuthField from './AuthField'
 import { AuthLayout, AuthSubmit } from './AuthScreen'
 import useProgressiveAuth from './useProgressiveAuth'
 import { PhoneInput, toE164 } from '../PhoneInput'
+import { resolveReturnTo } from '../../features/auth/returnTo'
 
 const REGISTER_ORDER = ['name', 'email', 'phone', 'password', 'confirm']
 const REGISTER_IDS = {
@@ -76,7 +77,7 @@ export default function RegisterPage() {
         })
         return
       }
-      navigate('/', { replace: true })
+      navigate(resolveReturnTo(location.state?.from), { replace: true })
     } finally {
       setBusy(false)
     }

@@ -20,6 +20,7 @@ import InsightCard from './InsightCard'
 import './HealthInsights.css'
 import { AppBar, EndOfPage, Icon, IconButton } from './ui'
 import './ArticlePage.css'
+import { UnavailablePage } from './system'
 
 function ArticleSkeleton() {
   return (
@@ -91,7 +92,7 @@ export default function ArticlePage() {
     return undefined
   }, [article, navigate])
 
-  if (!article) return null
+  if (!article) return <UnavailablePage title="This article has moved" />
 
   const openRelated = (next) => {
     if (!next?.id || next.id === article.id) return

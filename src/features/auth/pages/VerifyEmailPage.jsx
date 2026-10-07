@@ -7,6 +7,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { isValidEmail, normalizeEmail } from '../../../user'
 import { useAuth } from '../hooks/useAuth'
 import EmailOtpVerify from '../components/EmailOtpVerify'
+import { resolveReturnTo } from '../returnTo'
 
 function resolveConfirmationUrl(stateUrl, queryUrl) {
   const raw = String(stateUrl || queryUrl || '').trim()
@@ -44,9 +45,11 @@ export default function VerifyEmailPage() {
     return () => window.clearTimeout(id)
   }, [])
 
+  const from = location.state?.from
+
   useEffect(() => {
-    if (isAuthenticated) navigate('/', { replace: true })
-  }, [isAuthenticated, navigate])
+    if (isAuthenticated) navigate(resolveReturnTo(from), { replace: true })
+  }, [isAuthenticated, navigate, from])
 
   const onVerify = useCallback(async (token) => {
     if (!email || !isValidEmail(email)) {
@@ -54,10 +57,10 @@ export default function VerifyEmailPage() {
     }
     const result = await verifyEmailOtp(email, token, { type: 'signup' })
     if (result.ok) {
-      navigate('/', { replace: true })
+      navigate(resolveReturnTo(from), { replace: true })
     }
     return result
-  }, [email, verifyEmailOtp, navigate])
+  }, [email, verifyEmailOtp, navigate, from])
 
   const onResend = useCallback(async () => {
     if (!email) return { ok: false, error: 'Enter a valid email address.' }

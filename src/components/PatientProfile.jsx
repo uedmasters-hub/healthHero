@@ -8,6 +8,7 @@ import RevealItem from './RevealItem'
 import { useOriginBack } from '../features/pushNav'
 import { flowState } from '../lib/careFlow'
 import './PatientProfile.css'
+import { RedirectingPage } from './system'
 
 function sectionProgress(sections, id) {
   return sections.find((item) => item.id === id) || null
@@ -21,7 +22,7 @@ export default function PatientProfile() {
   const { bookings } = useBookingStore()
   const completion = useProfileCompletion()
 
-  if (!profile) return null
+  if (!profile) return <RedirectingPage title="Loading your profile" seconds={12} />
 
   const openChild = (path) => {
     navigate(path, {

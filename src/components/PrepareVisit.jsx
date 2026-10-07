@@ -15,6 +15,7 @@ import {
 } from '../lib/appointmentJourney'
 import { buildAppointmentPreview } from '../lib/appointmentPreview'
 import './PrepareVisit.css'
+import { RedirectingPage, UnavailablePage } from './system'
 
 const STEP_REVEAL_MS = 900
 
@@ -93,8 +94,8 @@ export default function PrepareVisit() {
     }
   }, [currentBooking?.doctor?.id, setCurrentBooking, isLeaving])
 
-  if (!currentBooking) return null
-  if (isPreparationComplete(currentBooking) && !sharedFlow && !isLeaving) return null
+  if (!currentBooking) return <UnavailablePage title="This visit is no longer available" />
+  if (isPreparationComplete(currentBooking) && !sharedFlow && !isLeaving) return <RedirectingPage title="Opening your appointment" />
 
   const doctor = currentBooking.doctor
   const fullDoctor = doctor?.id != null ? getDoctorById(doctor.id) : null

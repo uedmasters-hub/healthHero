@@ -42,6 +42,13 @@ export default function DirectoryShell({
   bare = false,
   children,
   footer = null,
+  searchMode = 'inline',
+  searchActive = false,
+  onSearchOpen,
+  onSearchCancel,
+  onSearchSubmit,
+  /** Rendered over the list (e.g. scoped suggestions); pairs with searchMode="expandable". */
+  searchOverlay = null,
 }) {
   const internalScrollRef = useRef(null)
   const scrollRef = externalScrollRef || internalScrollRef
@@ -56,8 +63,20 @@ export default function DirectoryShell({
     </div>
   ) : null
 
+  const searching = Boolean(searchOverlay) && searchActive
+  const scroll = (
+    <div
+      className="dir-shell__scroll"
+      ref={scrollRef}
+      aria-hidden={searching || undefined}
+      {...(searching ? { inert: true } : {})}
+    >
+      {children}
+    </div>
+  )
+
   return (
-    <div className={`dir-shell${radiusMode ? ' is-radius' : ''} ${className}`.trim()}>
+    <div className={`dir-shell${radiusMode ? ' is-radius' : ''}${searching ? ' is-search' : ''} ${className}`.trim()}>
       <PageSearchHeader
         title={title}
         leading={leading}
@@ -72,6 +91,11 @@ export default function DirectoryShell({
         className={quietHeader ? 'is-radius-chrome' : ''}
         dockClassName="dir-shell__search-dock"
         trailing={headerTrailing}
+        searchMode={searchMode}
+        searchActive={searchActive}
+        onSearchOpen={onSearchOpen}
+        onSearchCancel={onSearchCancel}
+        onSearchSubmit={onSearchSubmit}
       />
 
       {headerExtra}
@@ -87,9 +111,12 @@ export default function DirectoryShell({
         />
       )}
 
-      <div className="dir-shell__scroll" ref={scrollRef}>
-        {children}
-      </div>
+      {searchOverlay ? (
+        <div className="dir-shell__body">
+          {scroll}
+          {searchOverlay}
+        </div>
+      ) : scroll}
 
       {radiusMode ? (
         <footer className="dir-shell__radius-foot">

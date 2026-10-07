@@ -431,6 +431,7 @@ export default function SearchBar({
   showMic = true,
   autoFocus = false,
   autoStartVoice = false,
+  onSubmit,
 }) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -520,6 +521,7 @@ export default function SearchBar({
             onClick={isInline ? undefined : () => openSearch({ startVoice: false })}
             showMic={showMic}
             onClear={() => onQueryChange?.('')}
+            onKeyDown={onSubmit ? (e) => { if (e.key === 'Enter') onSubmit(query) } : undefined}
             autoFocus={autoFocus && isActive}
             reserveStatus={!isInline && isActive}
             autoStartVoice={voiceIntent && isActive}

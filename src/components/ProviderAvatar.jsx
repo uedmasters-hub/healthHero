@@ -3,12 +3,10 @@
  * Frame size/layout never changes with load state. Skeleton while resolving;
  * falls back to lavender initials (never an empty circle).
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
 import { initialsFromName } from '../user'
 import './ProviderAvatar.css'
-
-const CATALOG_PLACEHOLDER = '/img/doctors/new/doctor.png'
 
 export default function ProviderAvatar({
   doctor = null,
@@ -18,8 +16,6 @@ export default function ProviderAvatar({
   imgClassName = 'provider-avatar__img',
   placeholder = null,
   size = null,
-  /** When true, failed loads retry the shared catalog placeholder before icons. */
-  useCatalogFallback = true,
   name = '',
 }) {
   const resolved = src || resolveProviderPhoto(doctor) || ''
@@ -29,29 +25,13 @@ export default function ProviderAvatar({
 
   const [status, setStatus] = useState(resolved ? 'loading' : 'empty')
   const [currentSrc, setCurrentSrc] = useState(resolved)
-  const triedCatalog = useRef(false)
-
   useEffect(() => {
-    triedCatalog.current = false
     const next = src || resolveProviderPhoto(doctor) || ''
     setCurrentSrc(next)
     setStatus(next ? 'loading' : 'empty')
   }, [srcKey]) // eslint-disable-line react-hooks/exhaustive-deps -- stabilize on src/id only
 
-  const handleError = () => {
-    if (
-      useCatalogFallback
-      && !triedCatalog.current
-      && currentSrc
-      && currentSrc !== CATALOG_PLACEHOLDER
-    ) {
-      triedCatalog.current = true
-      setCurrentSrc(CATALOG_PLACEHOLDER)
-      setStatus('loading')
-      return
-    }
-    setStatus('error')
-  }
+  const handleError = () => setStatus('error')
 
   const showImage = Boolean(currentSrc) && status !== 'error' && status !== 'empty'
   const showPlaceholder = status === 'error' || status === 'empty'

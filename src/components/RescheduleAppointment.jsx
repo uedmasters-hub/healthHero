@@ -10,6 +10,7 @@ import { formatMoney } from '../lib/paymentSession'
 import DoctorCard from './DoctorCard'
 import { AppBar, Badge, Card, Icon, IconButton, InfoCell, InfoGrid, List, ListRow, SectionHead } from './ui'
 import './RescheduleAppointment.css'
+import { UnavailablePage } from './system'
 
 export default function RescheduleAppointment() {
   const navigate = useNavigate()
@@ -21,8 +22,7 @@ export default function RescheduleAppointment() {
   const [selectedTime, setSelectedTime] = useState(null)
 
   if (!currentBooking) {
-    navigate('/')
-    return null
+    return <UnavailablePage title="This appointment is no longer available" />
   }
 
   const { doctor, date, time, visitType: origVisitType } = currentBooking

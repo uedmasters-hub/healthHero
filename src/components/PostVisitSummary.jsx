@@ -177,7 +177,7 @@ export default function PostVisitSummary() {
   const { records, prescriptions, profile, isDemo } = useUser()
   const bookingId = useRouteBookingId(location.state)
   const booking = useBookingById(bookingId)
-  const fromState = location.state?.visitData
+  const fromState = isDemo ? location.state?.visitData : null
   const careFocus = location.state?.careFocus || booking?.meta?.nextCarePath || null
   const relay = resolveSmartRelay(booking)
 

@@ -10,7 +10,7 @@
  *
  * Scrubbing of ?code= is owned by /auth/confirm — not here — to avoid races.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import {
   attachAuthenticatedUser,
   logout as detachLocalSession,
@@ -38,8 +38,12 @@ import {
   hasAuthCallbackParams,
 } from './services/oauth'
 import { AUTH_CONFIRM_PATH, AUTH_PATHS } from './types'
+import { clearStoredSession, readStoredSession, withTimeout } from './services/sessionGuard'
+import { forgetReturnTo } from './returnTo'
 
 const AuthContext = createContext(null)
+const BOOT_SESSION_TIMEOUT_MS = 3000
+const SIGN_OUT_TIMEOUT_MS = 5000
 
 function locationLooksLikeRecovery() {
   if (typeof window === 'undefined') return false
@@ -79,6 +83,9 @@ export function AuthProvider({ children }) {
   const [isRecovery, setIsRecovery] = useState(() => locationLooksLikeRecovery())
   const [bootError, setBootError] = useState(null)
   const [googleBirthday, setGoogleBirthdayState] = useState(null)
+  const [sessionExpired, setSessionExpired] = useState(false)
+  const userSignOutRef = useRef(false)
+  const hadSessionRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -94,6 +101,7 @@ export function AuthProvider({ children }) {
         if (oauthError) setBootError(oauthError)
       }
       applyLocalChart(nextSession)
+      hadSessionRef.current = Boolean(nextSession?.user)
       setSession(nextSession)
       if (event) setLastEvent(event)
       setReady(true)
@@ -116,6 +124,13 @@ export function AuthProvider({ children }) {
         return
       }
 
+      // Signed out without the user asking (refresh failed / revoked) → session expired.
+      if (event === 'SIGNED_OUT' && hadSessionRef.current && !userSignOutRef.current) {
+        setSessionExpired(true)
+      }
+      if (next?.user) setSessionExpired(false)
+      hadSessionRef.current = Boolean(next?.user)
+
       setLastEvent(event)
       applyLocalChart(next)
       setSession(next)
@@ -125,18 +140,20 @@ export function AuthProvider({ children }) {
     // Do not promote session-restore failures into user-facing expiry banners.
     const fallbackTimer = window.setTimeout(() => {
       if (cancelled || bootstrapped) return
-      getCurrentSession().then(({ session: next }) => {
-        if (cancelled || bootstrapped) return
+      withTimeout(getCurrentSession(), BOOT_SESSION_TIMEOUT_MS).then((result) => {
+        if (cancelled || bootstrapped || !result) return
+        const next = result.session
         if (!next && hasAuthCallbackParams()) return
         finishBoot(next, 'FALLBACK_SESSION')
       })
     }, 2800)
 
+    // Last resort: getSession() itself can stall behind a hung refresh.
     const forceTimer = window.setTimeout(() => {
       if (cancelled || bootstrapped) return
-      getCurrentSession().then(({ session: next }) => {
+      withTimeout(getCurrentSession(), BOOT_SESSION_TIMEOUT_MS).then((result) => {
         if (cancelled || bootstrapped) return
-        finishBoot(next, 'FORCE_SESSION')
+        finishBoot(result ? result.session : readStoredSession(), 'FORCE_SESSION')
       })
     }, 6000)
 
@@ -186,11 +203,17 @@ export function AuthProvider({ children }) {
   const signUp = useCallback(async (input) => signUpWithPassword(input), [])
 
   const signOut = useCallback(async () => {
-    const result = await signOutRemote()
+    forgetReturnTo()
+    userSignOutRef.current = true
+    const result = await withTimeout(signOutRemote(), SIGN_OUT_TIMEOUT_MS, { ok: true, timedOut: true })
+    if (result?.timedOut) clearStoredSession()
     detachLocalSession()
+    hadSessionRef.current = false
+    setSessionExpired(false)
     setSession(null)
     setAppUser(null)
     setIsRecovery(false)
+    userSignOutRef.current = false
     return result
   }, [])
 
@@ -215,6 +238,7 @@ export function AuthProvider({ children }) {
       lastEvent,
       isRecovery,
       isAuthenticated: Boolean(user) && !isRecovery,
+      sessionExpired,
       bootError,
       googleBirthday,
       emailVerified,
@@ -230,7 +254,7 @@ export function AuthProvider({ children }) {
       appleSignIn,
     }
   }, [
-    ready, session, appUser, lastEvent, isRecovery, bootError, googleBirthday,
+    ready, session, appUser, lastEvent, isRecovery, sessionExpired, bootError, googleBirthday,
     signInWithPassword, sendEmailOtp, verifyEmailOtp, signUp, signOut,
     forgotPassword, updatePassword, resendEmail, googleSignIn, appleSignIn,
   ])

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageSearchHeader from './PageSearchHeader'
 import CartButton from './pharmacy/CartButton'
-import AppFooter from './AppFooter'
+import ParentFooter from './ParentFooter'
 import { useDemoPreview } from './DemoPreviewModal'
 import { clearLock } from '../lib/scrollLock'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
@@ -14,38 +14,55 @@ import {
 import { flowState } from '../lib/careFlow'
 import { useAppLocation } from '../features/location'
 import ExpandRadiusEmpty from './ExpandRadiusEmpty'
+import { formatRupees, listOrders } from '../features/pharmacy/shopApi'
 import {
-  PHARMACY_CATEGORIES,
-  PHARMACY_ORDERS,
-  PHARMACY_PROMO_SLIDES,
-  PHARMACY_RECENT,
+  PHARMACY_ALL_CATEGORIES,
+  PHARMACY_COMMITMENTS,
+  PHARMACY_HERO_SLIDES,
+  PHARMACY_HERO_START,
+  PHARMACY_OFFERS,
+  PHARMACY_POPULAR_CATEGORIES,
   PHARMACY_SEARCH_PLACEHOLDER,
-  PHARMACY_SERVICES,
+  PHARMACY_SHOP_CATEGORIES,
+  PHARMACY_SUPPORT,
   PHARMACY_TIP,
+  PHARMACY_TRUST,
 } from '../data/pharmacy'
 import {
-  CategoryChips,
+  CommitmentList,
+  OfferRail,
   OrderList,
-  PharmacySupportCard,
-  PharmacyTipCard,
+  PharmacyCategoriesSheet,
+  PharmacyHelpList,
+  PopularCategories,
   PromoCarousel,
-  RecentStrip,
-  ServiceTileGrid,
+  ShopCategoryGrid,
+  TrustSection,
 } from './pharmacy'
 import {
   PharmacyEntityCard,
   EntityCardSkeletonStack,
 } from './directory'
 import './pharmacy/PharmacyPage.css'
-import { Button, EmptyState, SectionHead } from './ui'
+import { Button, EmptyState, Icon, SectionHead } from './ui'
 
-const PREVIEW_ACTIONS = new Set(['refill', 'upload-rx', 'essentials', 'order-medicine', 'category', 'recent', 'orders', 'tip'])
-const NEARBY_PAGE_SIZE = 24
+const PREVIEW_ACTIONS = new Set(['refill', 'upload-rx', 'order-medicine', 'category', 'offer', 'tip'])
+const NEARBY_PREVIEW_LIMIT = 5
+const NEARBY_QUERY_SIZE = 12
+const HOME_ORDER_LIMIT = 3
 
-function formatResultsCount({ shown, total }) {
-  const shownLabel = Number(shown || 0).toLocaleString('en-NP')
-  const totalLabel = Number(total || 0).toLocaleString('en-NP')
-  return `Showing ${shownLabel} of ${totalLabel}`
+function shortDate(value) {
+  return new Date(value).toLocaleDateString('en-NP', { month: 'short', day: 'numeric' })
+}
+
+function toOrderCard(order) {
+  const arriving = order.estimated_delivery && order.status !== 'delivered'
+  return {
+    id: order.id,
+    name: `Order · ${formatRupees(order.total_amount)}`,
+    status: order.status,
+    window: arriving ? `Arriving ${shortDate(order.estimated_delivery)}` : `Placed ${shortDate(order.created_at)}`,
+  }
 }
 
 export default function PharmacyPage() {
@@ -67,11 +84,20 @@ export default function PharmacyPage() {
   const [nearbySearch, setNearbySearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [pharmacies, setPharmacies] = useState([])
-  const [page, setPage] = useState(0)
-  const [hasMore, setHasMore] = useState(false)
+  const [orders, setOrders] = useState([])
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    listOrders()
+      .then((rows) => {
+        if (alive) setOrders(rows.slice(0, HOME_ORDER_LIMIT).map(toOrderCard))
+      })
+      .catch(() => {})
+    return () => { alive = false }
+  }, [])
   const [totalCount, setTotalCount] = useState(0)
   const [loadingNearby, setLoadingNearby] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [nearbyError, setNearbyError] = useState(null)
 
   useEffect(() => {
@@ -83,32 +109,25 @@ export default function PharmacyPage() {
     return () => clearTimeout(t)
   }, [nearbySearch])
 
-  const loadNearby = useCallback(async ({ page: nextPage = 0, append = false } = {}) => {
+  const loadNearby = useCallback(async () => {
     const reqId = ++requestIdRef.current
     if (!locationReady || !origin) {
       setLoadingNearby(false)
-      setLoadingMore(false)
-      if (!append) {
-        setPharmacies([])
-        setTotalCount(0)
-        setHasMore(false)
-        setNearbyError(null)
-      }
+      setPharmacies([])
+      setTotalCount(0)
+      setNearbyError(null)
       return
     }
 
-    if (append) setLoadingMore(true)
-    else {
-      setLoadingNearby(true)
-      setNearbyError(null)
-    }
+    setLoadingNearby(true)
+    setNearbyError(null)
 
     const result = await queryPharmacies({
       q: debouncedSearch,
       city: locality,
-      page: nextPage,
-      pageSize: NEARBY_PAGE_SIZE,
-      force: !append,
+      page: 0,
+      pageSize: NEARBY_QUERY_SIZE,
+      force: true,
       origin,
       radiusKm,
       sort: 'nearest',
@@ -118,21 +137,15 @@ export default function PharmacyPage() {
 
     if (result.error && !result.pharmacies?.length) {
       setNearbyError(result.error)
-      if (!append) {
-        setPharmacies([])
-        setTotalCount(0)
-        setHasMore(false)
-      }
+      setPharmacies([])
+      setTotalCount(0)
     } else {
       setNearbyError(null)
-      setPharmacies((prev) => (append ? [...prev, ...result.pharmacies] : result.pharmacies))
+      setPharmacies((result.pharmacies || []).slice(0, NEARBY_PREVIEW_LIMIT))
       setTotalCount(result.total || 0)
-      setHasMore(Boolean(result.hasMore))
-      setPage(result.page)
     }
 
     setLoadingNearby(false)
-    setLoadingMore(false)
   }, [debouncedSearch, locality, origin, radiusKm, locationReady])
 
   useEffect(() => {
@@ -140,12 +153,12 @@ export default function PharmacyPage() {
       setLoadingNearby(true)
       return
     }
-    loadNearby({ page: 0, append: false })
+    loadNearby()
   }, [loadNearby, locationStatus])
 
   const onRefresh = useCallback(async () => {
     clearPharmaciesQueryCache()
-    await loadNearby({ page: 0, append: false })
+    await loadNearby()
   }, [loadNearby])
 
   const ptr = usePullToRefresh(scrollRef, onRefresh)
@@ -182,10 +195,14 @@ export default function PharmacyPage() {
       openLiveChat()
       return
     }
+    if (action === 'shop') {
+      openBrowse()
+      return
+    }
     if (PREVIEW_ACTIONS.has(action)) {
       showDemoPreview?.()
     }
-  }, [openLiveChat, showDemoPreview])
+  }, [openLiveChat, openBrowse, showDemoPreview])
 
   useEffect(() => {
     const onOrderMedicine = () => runPharmacyAction('order-medicine')
@@ -194,8 +211,8 @@ export default function PharmacyPage() {
   }, [runPharmacyAction])
 
   const countLabel = useMemo(
-    () => formatResultsCount({ shown: pharmacies.length, total: totalCount }),
-    [pharmacies.length, totalCount],
+    () => `${Number(totalCount || 0).toLocaleString('en-NP')} within ${radiusKm} km`,
+    [totalCount, radiusKm],
   )
 
   const nearbyHeading = locality
@@ -223,38 +240,42 @@ export default function PharmacyPage() {
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <div className="pharmacy-page__feed">
           <PromoCarousel
-            slides={PHARMACY_PROMO_SLIDES}
+            slides={PHARMACY_HERO_SLIDES}
+            startIndex={PHARMACY_HERO_START}
             onAction={(slide) => runPharmacyAction(slide.action)}
           />
 
-          <ServiceTileGrid
-            items={PHARMACY_SERVICES}
-            onSelect={(item) => runPharmacyAction(item.action)}
-          />
-
-          <OrderList
-            orders={PHARMACY_ORDERS}
-            onViewAll={() => runPharmacyAction('orders-view-all')}
-            onSelect={() => runPharmacyAction('orders')}
-          />
-
-          <CategoryChips
-            items={PHARMACY_CATEGORIES}
+          <ShopCategoryGrid
+            items={PHARMACY_SHOP_CATEGORIES}
             onSelect={() => runPharmacyAction('category')}
           />
 
-          <RecentStrip
-            items={PHARMACY_RECENT}
-            onSelect={() => runPharmacyAction('recent')}
+          <PopularCategories
+            items={PHARMACY_POPULAR_CATEGORIES}
+            onSelect={() => runPharmacyAction('category')}
+            onSeeAll={() => setCategoriesOpen(true)}
+          />
+
+          <OfferRail
+            offers={PHARMACY_OFFERS}
+            onSelect={() => runPharmacyAction('offer')}
+          />
+
+          <OrderList
+            orders={orders}
+            onViewAll={() => navigate('/pharmacy/orders')}
+            onSelect={(order) => navigate(`/pharmacy/orders/${order.id}`)}
           />
 
           <section className="pharmacy-nearby" aria-label="Nearby pharmacies">
             <SectionHead
+              className="rx-section-head"
               title={nearbyHeading}
-              sub={!loadingNearby && !nearbyError && locationReady ? `${countLabel} · ${radiusKm} km` : null}
+              sub={!loadingNearby && !nearbyError && locationReady ? countLabel : null}
               action={(
-                <button type="button" className="ds-link" onClick={openBrowse}>
-                  View all
+                <button type="button" className="ds-link rx-section-head__link" onClick={openBrowse}>
+                  View All
+                  <Icon.ChevronRight />
                 </button>
               )}
             />
@@ -268,7 +289,7 @@ export default function PharmacyPage() {
                 title="Couldn’t load pharmacies"
                 message={nearbyError}
                 action={(
-                  <Button size="sm" onClick={() => loadNearby({ page: 0 })}>
+                  <Button size="sm" onClick={() => loadNearby()}>
                     Try again
                   </Button>
                 )}
@@ -304,28 +325,38 @@ export default function PharmacyPage() {
               </ul>
             ) : null}
 
-            {!loadingNearby && !nearbyError && hasMore ? (
+            {!loadingNearby && !nearbyError && totalCount > pharmacies.length ? (
               <button
                 type="button"
                 className="pharmacy-nearby-more ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
-                onClick={() => loadNearby({ page: page + 1, append: true })}
-                disabled={loadingMore}
+                onClick={openBrowse}
               >
-                {loadingMore ? 'Loading…' : 'Load more pharmacies'}
+                {`View all ${totalCount.toLocaleString('en-NP')} pharmacies`}
               </button>
             ) : null}
           </section>
 
-          <PharmacyTipCard
+          <PharmacyHelpList
             tip={PHARMACY_TIP}
-            onClick={() => runPharmacyAction('tip')}
+            support={PHARMACY_SUPPORT}
+            onTip={() => runPharmacyAction('tip')}
+            onChat={openLiveChat}
           />
 
-          <PharmacySupportCard onClick={openLiveChat} />
+          <TrustSection trust={PHARMACY_TRUST} />
 
-          <AppFooter page="pharmacy" />
+          <CommitmentList items={PHARMACY_COMMITMENTS} />
+
+          <ParentFooter page="pharmacy" />
         </div>
       </div>
+
+      <PharmacyCategoriesSheet
+        open={categoriesOpen}
+        items={PHARMACY_ALL_CATEGORIES}
+        onClose={() => setCategoriesOpen(false)}
+        onSelect={() => runPharmacyAction('category')}
+      />
     </div>
   )
 }

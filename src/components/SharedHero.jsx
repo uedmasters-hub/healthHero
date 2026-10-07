@@ -6,6 +6,7 @@ import { pickDoctorCredentials } from '../features/providers'
 import { SheetPortal } from './PageTransition'
 import { formatMoney } from '../lib/paymentSession'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
+import ProviderAvatar from './ProviderAvatar'
 import './SharedHero.css'
 
 const SharedHeroContext = createContext(null)
@@ -26,12 +27,12 @@ function isUsableRect(rect) {
 }
 
 function MorphCard({ doctor, layout, appointmentPreview }) {
-  const photo = resolveProviderPhoto(doctor) || '/img/doctors/new/doctor.png'
+  const photo = resolveProviderPhoto(doctor) || ''
   const name = displayDoctorName(doctor?.name)
   const specialty = doctor?.specialty || 'Specialist'
   const credentials = pickDoctorCredentials(doctor).line
   const experience = doctor?.experience || ''
-  const rating = doctor?.rating ?? 4.8
+  const rating = Number(doctor?.rating) > 0 ? doctor.rating : null
   const cardLayout = layout === 'mini' ? 'grid is-mini' : layout
 
   if (layout === 'appointment') {
@@ -55,7 +56,7 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
       <div className="shared-hero-card is-appointment">
         <div className="shared-hero-appointment-identity">
           <div className="shared-hero-photo">
-            <img src={photo} alt="" />
+            <ProviderAvatar src={photo} name={name} alt="" />
           </div>
           <div className="shared-hero-appointment-copy">
             <h3 className="shared-hero-name">{name}</h3>
@@ -64,10 +65,12 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
             </p>
             {credentials ? <p className="shared-hero-degree">{credentials}</p> : null}
           </div>
-          <span className="shared-hero-rating">
-            <span aria-hidden="true">★</span>
-            {rating}
-          </span>
+          {rating ? (
+            <span className="shared-hero-rating">
+              <span aria-hidden="true">★</span>
+              {rating}
+            </span>
+          ) : null}
         </div>
         <div className="shared-hero-appointment-body">
           {grid.map((cell) => (
@@ -84,15 +87,17 @@ function MorphCard({ doctor, layout, appointmentPreview }) {
   return (
     <div className={`shared-hero-card is-${cardLayout}`}>
       <div className="shared-hero-photo">
-        <img src={photo} alt="" />
+        <ProviderAvatar src={photo} name={name} alt="" />
       </div>
       <h3 className="shared-hero-name">{name}</h3>
       <p className="shared-hero-meta">
         <span className="shared-hero-specialty">{specialty}</span>
-        <span className="shared-hero-rating">
-          <span aria-hidden="true">★</span>
-          {rating}
-        </span>
+        {rating ? (
+          <span className="shared-hero-rating">
+            <span aria-hidden="true">★</span>
+            {rating}
+          </span>
+        ) : null}
       </p>
       {credentials ? <p className="shared-hero-degree">{credentials}</p> : null}
       {experience ? <span className="shared-hero-exp">{experience}</span> : null}

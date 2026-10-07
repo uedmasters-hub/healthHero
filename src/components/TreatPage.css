@@ -50,7 +50,7 @@
   pointer-events: none;
 }
 
-.treat-page .app-footer {
+.treat-page .parent-footer {
   margin-top: var(--space-6);
 }
 

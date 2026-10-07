@@ -1,0 +1,452 @@
+/*
+  Healthcare center home. Built on shared primitives and tokens; the tints
+  below stay scoped to the Centers page until they graduate to tokens.
+*/
+
+.centers-page {
+  --hc-ink: var(--primary-950);
+  --hc-tint-cyan: color-mix(in srgb, var(--success-300) 26%, var(--neutral-0));
+  --hc-tint-rose: var(--error-500);
+  --hc-tint-slate: #edf2f5;
+  --hc-tint-quote: #eef3f7;
+  --hc-cyan: color-mix(in srgb, var(--success-300) 70%, var(--neutral-0));
+  --hc-well: color-mix(in srgb, var(--success-300) 72%, var(--neutral-0));
+  --hc-rose-ink: var(--error-700);
+  --hc-star: #f5a524;
+  --hc-store: #0b0b0f;
+}
+
+.hc-inset {
+  padding-inline: var(--content-padding);
+}
+
+/* Section heads — medium weight, brand ink, quiet "See All ›" */
+.hc-section-head .ds-section-head__title {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--hc-ink);
+}
+
+.hc-section-head__link {
+  gap: var(--space-0-5);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-regular);
+  color: var(--text-tertiary);
+}
+
+.hc-section-head__link svg {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+/* ── Hero — cyan slide + soft cyan CTA (design) ───────────────────────── */
+.centers-page .promo-card.is-cyan {
+  background: var(--hc-tint-cyan);
+}
+
+.centers-page .promo-card__title {
+  color: var(--hc-ink);
+}
+
+.centers-page .promo-card__cta {
+  background: var(--hc-cyan);
+  color: var(--hc-ink);
+  box-shadow: none;
+}
+
+.centers-page .promo-card__cta:hover {
+  background: color-mix(in srgb, var(--success-300) 85%, var(--neutral-0));
+}
+
+/* ── Hospitals / Clinics segmented toggle ─────────────────────────────── */
+.hc-segments {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-inline: var(--content-padding);
+  padding: var(--space-0-5);
+  border-radius: var(--radius-full);
+  background: var(--surface-1);
+}
+
+.hc-segments__item {
+  min-height: var(--space-10);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.hc-segments__item.is-active {
+  background: var(--chip-selected-bg);
+  color: var(--text-inverse);
+}
+
+.hc-segments__item:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* ── Quick actions — shared ActionGrid, inset to the content column ─── */
+.hc-actions {
+  margin-inline: var(--content-padding);
+}
+
+/* ── Horizontal rails ─────────────────────────────────────────────────── */
+.hc-rail {
+  container-type: inline-size;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--content-padding);
+  padding-inline: var(--content-padding);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.hc-rail::-webkit-scrollbar { display: none; }
+
+.hc-rail > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+.hc-promos {
+  gap: var(--space-3);
+}
+
+.hc-promo {
+  position: relative;
+  width: calc(100cqw - var(--content-padding) * 2 - var(--space-12));
+  min-height: 5.75rem;
+  display: flex;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border: 0;
+  border-radius: var(--card-radius-sm);
+  overflow: hidden;
+  background: var(--hc-tint-rose);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hc-promo.is-slate { background: var(--hc-tint-slate); }
+.hc-promo:focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
+
+.hc-promo__copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0-5);
+  max-width: 58%;
+}
+
+.hc-promo__title {
+  font-size: var(--text-heading-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  color: var(--hc-rose-ink);
+}
+
+.hc-promo__body {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--hc-rose-ink);
+}
+
+.hc-promo.is-slate .hc-promo__title { color: var(--hc-ink); }
+.hc-promo.is-slate .hc-promo__body { color: var(--text-secondary); }
+
+.hc-promo__art {
+  position: absolute;
+  inset: var(--space-2) var(--space-3) var(--space-2) auto;
+  z-index: 1;
+  width: 40%;
+  pointer-events: none;
+}
+
+.hc-promo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right center;
+}
+
+/* ── Top facilities ───────────────────────────────────────────────────── */
+.centers-page .pharmacy-nearby .hc-section-head {
+  margin-bottom: var(--space-3);
+}
+
+.centers-page .pharmacy-nearby .category-chips {
+  margin-bottom: var(--space-3);
+}
+
+.centers-page .pharmacy-nearby .category-chips__scroll {
+  margin-inline: calc(var(--content-padding) * -1);
+  padding-inline: var(--content-padding);
+}
+
+.centers-page .category-chips .ds-chip:not(.is-active) {
+  border-color: transparent;
+  background: var(--surface-1);
+  color: var(--text-secondary);
+}
+
+.centers-page .pharmacy-nearby .ds-empty.is-card {
+  background: var(--surface-1);
+  border-color: transparent;
+}
+
+/* ── Services — 2 × 2 photo cards ─────────────────────────────────────── */
+.hc-services {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4) var(--space-3);
+}
+
+.hc-service {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-0-5);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hc-service:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-md);
+}
+
+.hc-service__media {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-bottom: var(--space-1-5);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface-1);
+  color: var(--icon-color-muted);
+}
+
+.hc-service__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-dialog) var(--ease-emphasized);
+}
+
+.hc-service:hover .hc-service__img { transform: scale(1.03); }
+
+.hc-service__title {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  color: var(--hc-ink);
+}
+
+.hc-service__body {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+/* ── Trust ────────────────────────────────────────────────────────────── */
+.hc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.hc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--card-radius-sm);
+  background: var(--surface-1);
+}
+
+.hc-stat__value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-figure-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--hc-ink);
+}
+
+.hc-stat__label {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.hc-quote {
+  position: relative;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-10);
+  border-radius: var(--card-radius-sm);
+  background: var(--hc-tint-quote);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.hc-quote__mark {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-4);
+  font-size: var(--text-stat-size);
+  line-height: 1;
+  font-weight: var(--font-weight-bold);
+  color: var(--hc-ink);
+}
+
+.hc-quote__text {
+  margin: 0;
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  color: var(--text-secondary);
+}
+
+.hc-quote__by {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: calc(var(--space-6) * -1);
+}
+
+.hc-quote__avatar {
+  display: grid;
+  place-items: center;
+  width: var(--space-10);
+  height: var(--space-10);
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--avatar-surface);
+  color: var(--avatar-ink);
+  font-size: var(--text-caption-size);
+  font-weight: var(--font-weight-medium);
+}
+
+.hc-quote__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hc-quote__who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hc-quote__name {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--hc-ink);
+}
+
+.hc-quote__place {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+.hc-stars {
+  display: inline-flex;
+  gap: var(--space-0-5);
+  color: var(--hc-star);
+}
+
+/* ── Need help — cyan round wells, no rules ───────────────────────────── */
+.hc-help {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hc-help__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-1-5) 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hc-help__row:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.hc-help__well {
+  display: grid;
+  place-items: center;
+  width: var(--space-12);
+  height: var(--space-12);
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--hc-well);
+  color: var(--hc-ink);
+  transition: var(--interact-transition);
+}
+
+.hc-help__row:hover .hc-help__well { background: var(--hc-cyan); }
+
+.hc-help__copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hc-help__title {
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+  font-weight: var(--font-weight-medium);
+  color: var(--hc-ink);
+}
+
+.hc-help__body {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-tertiary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-service__img { transition: none; }
+}

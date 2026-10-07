@@ -5,6 +5,7 @@ import { ProfileSheets } from './ProfileHealth'
 import { GuidedEmpty, InfoCard, InfoRow, MapThumb, ProfilePage, SectionHead } from './ProfileChrome'
 import RevealItem from '../RevealItem'
 import { Badge, Button, List, ListRow } from '../ui'
+import { RedirectingPage } from '../system'
 
 export default function PersonalWorkspace() {
   const { profile, addresses, emergencyContacts, health } = useUser()
@@ -18,7 +19,7 @@ export default function PersonalWorkspace() {
     ? `${emergencyContacts[0].name} · ${emergencyContacts[0].relation}`
     : ''
 
-  if (!profile) return null
+  if (!profile) return <RedirectingPage title="Loading your details" seconds={12} />
 
   return (
     <ProfilePage title="Personal" dataset="profile-personal">

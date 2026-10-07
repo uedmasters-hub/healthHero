@@ -95,6 +95,8 @@ export function markOnboardingComplete() {
   }
 }
 
+const ONBOARDING_LOOKUP_TIMEOUT_MS = 8000
+
 export async function fetchOnboardingCompleted(userId) {
   if (!userId) return false
   try {
@@ -132,7 +134,12 @@ export async function persistOnboardingCompleted(userId) {
 export async function resolveOnboardingCompleted(userId) {
   if (!userId) return true
   if (getLocalOnboardingComplete(userId)) return true
-  const remote = await fetchOnboardingCompleted(userId)
+  // Unknown after the timeout → let the user in this session (not cached).
+  const remote = await Promise.race([
+    fetchOnboardingCompleted(userId),
+    new Promise((resolve) => { setTimeout(() => resolve('timeout'), ONBOARDING_LOOKUP_TIMEOUT_MS) }),
+  ])
+  if (remote === 'timeout') return true
   if (remote) {
     setLocalOnboardingComplete(userId)
     return true

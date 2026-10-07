@@ -1,0 +1,74 @@
+/* Shortcut grid — hairline-ruled card, outline icon over caption */
+
+.action-grid {
+  --action-grid-columns: 4;
+  --action-grid-icon: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(var(--action-grid-columns), minmax(0, 1fr));
+  gap: var(--border-width);
+  border: var(--border-width) solid var(--border-default);
+  border-radius: var(--card-radius-sm);
+  overflow: hidden;
+  background: var(--border-divider);
+}
+
+.action-grid__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  min-height: 6.5rem;
+  padding: var(--space-4) var(--space-1) var(--space-3);
+  border: 0;
+  background: var(--surface-0);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--interact-transition);
+}
+
+.action-grid__cell.is-spacer {
+  cursor: default;
+}
+
+.action-grid__cell:not(.is-spacer):hover {
+  background: color-mix(in srgb, var(--state-hover) 60%, var(--surface-0));
+}
+
+.action-grid__cell:not(.is-spacer):active {
+  background: var(--state-pressed);
+}
+
+.action-grid__cell:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: var(--focus-ring);
+  outline-offset: calc(var(--focus-offset) * -1);
+}
+
+.action-grid__icon {
+  display: grid;
+  place-items: center;
+  width: var(--space-7);
+  height: var(--space-7);
+  flex-shrink: 0;
+  color: var(--primary-800);
+}
+
+.action-grid__icon > svg,
+.action-grid__icon > img {
+  display: block;
+  width: var(--action-grid-icon);
+  height: var(--action-grid-icon);
+  object-fit: contain;
+}
+
+.action-grid__label {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-secondary);
+  text-align: center;
+  text-wrap: balance;
+}

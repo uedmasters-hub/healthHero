@@ -27,6 +27,7 @@ import {
 } from '../features/pharmacy/shopApi'
 import { AppBar, Badge, Button, DetailRow, FormGroup, Icon, IconButton, List, SectionHead, SheetHeader, Steps, Switch } from './ui'
 import './ConfirmBooking.css'
+import { RedirectingPage } from './system'
 
 export default function ConfirmBooking() {
   const navigate = useNavigate()
@@ -186,7 +187,7 @@ export default function ConfirmBooking() {
   }, [doctor, date, time, patient, navigate, location.state])
 
   if (!doctor || !date || !time || !patient) {
-    return null
+    return <RedirectingPage title="Taking you back to complete your booking" />
   }
 
   const dateStr = date.full.toLocaleDateString('en-NP', {

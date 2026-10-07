@@ -1,0 +1,195 @@
+/* App download card sitting flush on the band footer — tab-root pages only. */
+
+.parent-footer {
+  --hc-ink: var(--primary-950);
+  --hc-tint-cyan: color-mix(in srgb, var(--success-300) 26%, var(--neutral-0));
+  --hc-store: #0b0b0f;
+  display: flex;
+  flex-direction: column;
+}
+
+.parent-footer .app-footer.app-footer--band {
+  margin-top: 0;
+}
+
+.hc-app {
+  position: relative;
+  display: flex;
+  min-height: 12.5rem;
+  margin-inline: var(--content-padding);
+  padding: var(--space-6) var(--space-5) 0;
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--hc-tint-cyan) 0%, color-mix(in srgb, var(--success-300) 14%, var(--neutral-0)) 100%);
+}
+
+.hc-app__copy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  max-width: 100%;
+  padding-bottom: var(--space-6);
+}
+
+.hc-app__body {
+  max-width: 55%;
+}
+
+.hc-app__title {
+  margin: 0;
+  font-size: var(--text-title-size);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  color: var(--hc-ink);
+  text-wrap: balance;
+}
+
+.hc-app__body {
+  margin: 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line);
+  color: var(--text-secondary);
+}
+
+.hc-app__stores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.hc-store {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 8.75rem;
+  min-height: var(--space-10);
+  padding: var(--space-1) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--hc-store);
+  color: var(--neutral-0);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hc-store:focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
+
+.hc-store svg {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+  flex-shrink: 0;
+}
+
+.hc-store__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.hc-store__kicker {
+  white-space: nowrap;
+  font-size: var(--text-micro-size);
+  opacity: 0.85;
+}
+
+.hc-store__name {
+  font-size: var(--text-label-size);
+  font-weight: var(--font-weight-medium);
+}
+
+.hc-app__art {
+  position: absolute;
+  right: var(--space-4);
+  bottom: 0;
+  z-index: 1;
+  width: 38%;
+  height: 74%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hc-app__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+/* Interim phone mockup until the app screenshot lands */
+.hc-phone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 7.25rem;
+  height: 100%;
+  padding: var(--space-6) var(--space-2-5) 0;
+  border: 0.3125rem solid var(--neutral-900);
+  border-bottom: 0;
+  border-radius: var(--space-6) var(--space-6) 0 0;
+  background: var(--neutral-0);
+  transform: rotate(8deg) translate(var(--space-2), var(--space-3));
+  transform-origin: bottom center;
+}
+
+.hc-phone__notch {
+  position: absolute;
+  top: var(--space-1-5);
+  left: 50%;
+  width: 34%;
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--neutral-900);
+  transform: translateX(-50%);
+}
+
+.hc-phone__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hc-phone__brand {
+  width: 45%;
+  height: var(--space-1-5);
+  border-radius: var(--radius-full);
+  background: var(--success-500);
+}
+
+.hc-phone__dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--surface-1);
+}
+
+.hc-phone__line {
+  height: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--surface-1);
+}
+
+.hc-phone__line.is-short { width: 60%; }
+
+.hc-phone__tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1-5);
+}
+
+.hc-phone__tile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: var(--hc-tint-cyan);
+  color: var(--success-700);
+}
+

@@ -21,7 +21,8 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshDoctorsData } from '../features/sync/pageRefresh'
 import './DoctorProfile.css'
-import { AppBar, EndOfPage } from './ui'
+import { AppBar, EmptyState, EndOfPage } from './ui'
+import { useUser } from '../user'
 
 const LOGO_BADGES = [
   '/img/logo-badges/LogoBadge-1.png',
@@ -46,13 +47,7 @@ const defaultSpecialties = [
 
 function yearsFromExperience(experience = '') {
   const n = parseInt(experience, 10)
-  return Number.isFinite(n) ? n : 10
-}
-
-function casesLabel(total) {
-  if (!total) return '120+'
-  if (total >= 200) return '200+'
-  return `${Math.max(50, Math.round(total / 10) * 10)}+`
+  return Number.isFinite(n) && n > 0 ? n : null
 }
 
 function ProfileSkeletons() {
@@ -92,6 +87,7 @@ function ProfileSkeletons() {
 export default function DoctorProfile() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { isDemo } = useUser()
   const location = useLocation()
   const { guard, modal } = useDuplicateBookingGuard()
   const shared = useSharedHero()
@@ -225,8 +221,9 @@ export default function DoctorProfile() {
 
   const selectedWindow = selectedTime ? getSlotWindow(selectedDate, selectedTime, now) : null
   const years = yearsFromExperience(doctor?.experience)
-  const cases = casesLabel(doctor?.reviews?.total)
-  const statRating = doctor?.reviews?.rating ?? doctor?.rating ?? 0
+  const reviewTotal = doctor?.reviews?.total || 0
+  const liveRating = Number(doctor?.rating) || 0
+  const statRating = reviewTotal ? doctor.reviews.rating : (liveRating ? liveRating.toFixed(1) : 'New')
 
   const goBack = usePushBack(() => {
     if (sharedFlow) shared.startClose()
@@ -365,13 +362,15 @@ export default function DoctorProfile() {
 
           <div className="profile-stats">
             <div className="profile-stat">
-              <strong>{cases}</strong>
-              <span>Cases Covered</span>
+              <strong>{reviewTotal}</strong>
+              <span>{reviewTotal === 1 ? 'Review' : 'Reviews'}</span>
             </div>
-            <div className="profile-stat">
-              <strong>{years}+</strong>
-              <span>Yrs of experience</span>
-            </div>
+            {years ? (
+              <div className="profile-stat">
+                <strong>{years}+</strong>
+                <span>Yrs of experience</span>
+              </div>
+            ) : null}
             <div className="profile-stat">
               <strong>{statRating}</strong>
               <span>Rating</span>
@@ -390,16 +389,18 @@ export default function DoctorProfile() {
             </div>
           </div>
 
-          <div className="profile-section">
-            <div className="profile-section-label">Institutions & Accreditation</div>
-            <div className="profile-logos">
-              {LOGO_BADGES.map((src) => (
-                <div className="profile-logo" key={src}>
-                  <img src={src} alt="" />
-                </div>
-              ))}
+          {isDemo ? (
+            <div className="profile-section">
+              <div className="profile-section-label">Institutions & Accreditation</div>
+              <div className="profile-logos">
+                {LOGO_BADGES.map((src) => (
+                  <div className="profile-logo" key={src}>
+                    <img src={src} alt="" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="profile-section">
             <WeeklySchedule
@@ -453,63 +454,71 @@ export default function DoctorProfile() {
             )}
           </div>
 
-          <div className="profile-section">
-            <div className="profile-section-label">Gallery</div>
-            <div className="gallery-grid">
-              {GALLERY_IMAGES.map((src) => (
-                <button type="button" className="gallery-img-btn" key={src} onClick={() => setGalleryOpen(true)}>
-                  <img className="gallery-img" src={src} alt="Clinic" width="400" height="280" decoding="async" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="profile-section">
-            <div className="profile-section-label">Ratings & Reviews</div>
-            <div className="ratings-summary">
-              <div className="ratings-big">
-                <div className="ratings-big-num">{doctor.reviews.rating}</div>
-                <div className="ratings-big-stars">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
-                </div>
-                <div className="ratings-big-count">{doctor.reviews.total} reviews</div>
-              </div>
-              <div className="ratings-bars">
-                {doctor.reviews.distribution.map((d) => (
-                  <div className="rating-bar-row" key={d.stars}>
-                    <span className="rating-bar-label">{d.stars}</span>
-                    <span className="rating-bar-star">★</span>
-                    <div className="rating-bar-track">
-                      <div className="rating-bar-fill" style={{ width: `${d.percent}%` }} />
-                    </div>
-                    <span className="rating-bar-percent">{d.percent}%</span>
-                  </div>
+          {isDemo ? (
+            <div className="profile-section">
+              <div className="profile-section-label">Gallery</div>
+              <div className="gallery-grid">
+                {GALLERY_IMAGES.map((src) => (
+                  <button type="button" className="gallery-img-btn" key={src} onClick={() => setGalleryOpen(true)}>
+                    <img className="gallery-img" src={src} alt="Clinic" width="400" height="280" decoding="async" />
+                  </button>
                 ))}
               </div>
             </div>
+          ) : null}
 
-            <div className="review-list">
-              {previewReviews.map((r) => (
-                <div className="review-card" key={r.id}>
-                  <div className="review-header">
-                    <span className="review-author">{r.author}</span>
-                    <span className="review-date">{r.date}</span>
+          <div className="profile-section">
+            <div className="profile-section-label">Ratings & Reviews</div>
+            {reviewTotal ? (
+              <>
+                <div className="ratings-summary">
+                  <div className="ratings-big">
+                    <div className="ratings-big-num">{doctor.reviews.rating}</div>
+                    <div className="ratings-big-stars">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      ))}
+                    </div>
+                    <div className="ratings-big-count">{doctor.reviews.total} reviews</div>
                   </div>
-                  <div className="review-stars">
-                    {[...Array(r.rating)].map((_, i) => (
-                      <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
+                  <div className="ratings-bars">
+                    {doctor.reviews.distribution.map((d) => (
+                      <div className="rating-bar-row" key={d.stars}>
+                        <span className="rating-bar-label">{d.stars}</span>
+                        <span className="rating-bar-star">★</span>
+                        <div className="rating-bar-track">
+                          <div className="rating-bar-fill" style={{ width: `${d.percent}%` }} />
+                        </div>
+                        <span className="rating-bar-percent">{d.percent}%</span>
+                      </div>
                     ))}
                   </div>
-                  <p className="review-text">{r.text}</p>
                 </div>
-              ))}
-            </div>
+
+                <div className="review-list">
+                  {previewReviews.map((r) => (
+                    <div className="review-card" key={r.id}>
+                      <div className="review-header">
+                        <span className="review-author">{r.author}</span>
+                        <span className="review-date">{r.date}</span>
+                      </div>
+                      <div className="review-stars">
+                        {[...Array(r.rating)].map((_, i) => (
+                          <svg key={i} width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="review-text">{r.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <EmptyState compact card role="status" title="No reviews yet" message="Reviews from patients who visited this doctor appear here." />
+            )}
 
             <button
               className="ds-btn ds-btn--secondary ds-btn--md ds-btn--block view-all-reviews"
@@ -518,7 +527,7 @@ export default function DoctorProfile() {
                 state: flowState(location, { returnTo: `/doctor/${doctor.id}` }),
               })}
             >
-              View all reviews
+              {reviewTotal ? 'View all reviews' : 'Write a review'}
             </button>
           </div>
 

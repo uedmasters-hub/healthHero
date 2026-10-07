@@ -5,7 +5,8 @@
  */
 import { requireSupabase, isSupabaseConfigured } from '../lib/supabase'
 import { BOOKING_STATUS } from './constants'
-import { createBookingRecord, reviveBookingRecord, toLegacyBooking } from './models'
+import { reviveBookingRecord, toLegacyBooking } from './models'
+import { isGenuineRestoredBooking } from './genuine'
 import { resolveCatalogDoctor } from './presentBooking'
 import { getDoctorPhoto } from '../features/providers'
 import { resolveProviderPhoto } from '../lib/providerPhoto'
@@ -316,43 +317,23 @@ export async function pullRemoteAppointments(engine, userId) {
         continue
       }
 
-      let record = null
-      if (row.client_payload && typeof row.client_payload === 'object') {
-        record = reviveBookingRecord({
-          ...row.client_payload,
-          id: clientId,
-          status: mapAppointmentStatus(row.status || row.client_payload.status),
-        })
+      if (!row.client_payload || typeof row.client_payload !== 'object') continue
+      const revived = reviveBookingRecord({
+        ...row.client_payload,
+        id: clientId,
+        status: mapAppointmentStatus(row.status || row.client_payload.status),
+      })
+      if (!revived) continue
+      const record = {
+        ...revived,
+        id: clientId,
+        meta: {
+          ...(revived.meta || {}),
+          remoteAppointmentId: row.id,
+          restoredFrom: revived.meta?.restoredFrom || 'appointments',
+        },
       }
-      if (!record) {
-        record = createBookingRecord({
-          id: clientId,
-          userId,
-          status: mapAppointmentStatus(row.status),
-          schedule: {
-            date: row.scheduled_date
-              ? { full: `${row.scheduled_date}T00:00:00.000Z` }
-              : null,
-            time: row.scheduled_time ? String(row.scheduled_time).slice(0, 5) : '',
-            visitType: row.visit_type === 'video' ? 'Video Consultation' : 'In-Person',
-          },
-          meta: {
-            remoteAppointmentId: row.id,
-            restoredFrom: 'appointments',
-            updatedAt: row.updated_at || new Date().toISOString(),
-          },
-        })
-      } else {
-        record = {
-          ...record,
-          id: clientId,
-          meta: {
-            ...(record.meta || {}),
-            remoteAppointmentId: row.id,
-            restoredFrom: 'appointments',
-          },
-        }
-      }
+      if (!isGenuineRestoredBooking(record)) continue
 
       putRecord(engine, record)
       imported += 1
@@ -364,8 +345,9 @@ export async function pullRemoteAppointments(engine, userId) {
 }
 
 /**
- * Rebuild local bookings that still have a provider conversation but were lost locally.
- * Uses conversation metadata (and optional appointment payload) — never deletes chat.
+ * Rebuild local bookings that still have a provider conversation but were lost
+ * locally. Only restores from a real appointment payload — chat metadata alone
+ * never becomes a booking. Never deletes chat.
  */
 export async function recoverMissingBookingsFromConversations(engine, userId) {
   if (!isSupabaseConfigured || !userId || !engine) return { restored: 0 }
@@ -373,9 +355,10 @@ export async function recoverMissingBookingsFromConversations(engine, userId) {
     const sb = requireSupabase()
     const { data: convos, error } = await sb
       .from('conversations')
-      .select('booking_ref, appointment_id, metadata, subject, created_at')
+      .select('booking_ref, appointment_id, metadata')
       .eq('kind', 'provider')
       .eq('created_by', userId)
+      .not('appointment_id', 'is', null)
     if (error) throw error
 
     let restored = 0
@@ -383,71 +366,38 @@ export async function recoverMissingBookingsFromConversations(engine, userId) {
       const ref = convo.booking_ref
       if (!ref || engine.getById(ref)) continue
 
-      let payload = null
-      if (convo.appointment_id) {
-        const { data: appt } = await sb
-          .from('appointments')
-          .select('id, client_id, status, client_payload')
-          .eq('id', convo.appointment_id)
-          .maybeSingle()
-        if (appt?.client_payload) payload = appt.client_payload
-      }
+      const { data: appt } = await sb
+        .from('appointments')
+        .select('id, client_id, status, client_payload')
+        .eq('id', convo.appointment_id)
+        .maybeSingle()
+      const payload = appt?.client_payload
+      if (!payload || typeof payload !== 'object') continue
 
       const meta = convo.metadata || {}
-      const status = mapAppointmentStatus(
-        payload?.status || meta.booking_status || BOOKING_STATUS.CHECKED_IN,
-      )
-
-      const nameHint = meta.provider_name
-        || String(convo.subject || '').replace(/^Chat with\s+/i, '')
-        || 'Care provider'
-      const catalog = resolveCatalogDoctor({
-        doctor: { id: meta.doctor_id ?? null, name: nameHint },
-        providerName: nameHint,
+      const catalog = resolveCatalogDoctor(payload)
+      const doctor = payload.doctor || {}
+      const record = reviveBookingRecord({
+        ...payload,
+        id: ref,
+        status: mapAppointmentStatus(payload.status || appt.status || meta.booking_status),
+        doctor: {
+          ...doctor,
+          photo: doctor.photo || resolveProviderPhoto({
+            id: doctor.id ?? catalog?.id,
+            photo: catalog ? getDoctorPhoto(catalog.id) : '',
+            name: doctor.name,
+          }) || '',
+        },
+        meta: {
+          ...(payload.meta || {}),
+          remoteAppointmentId: appt.id,
+          restoredFrom: 'provider_conversation',
+        },
       })
-      const doctor = {
-        id: meta.doctor_id ?? catalog?.id ?? null,
-        name: catalog?.name || nameHint,
-        specialty: meta.specialty || catalog?.specialty || '',
-        degree: meta.degree || catalog?.degree || '',
-        nmcNumber: meta.nmc_number || catalog?.nmcNumber || null,
-        rating: catalog?.rating ?? null,
-        experience: catalog?.experience || '',
-        address: catalog?.address || '',
-        photo: resolveProviderPhoto({
-          id: meta.doctor_id ?? catalog?.id,
-          photo: meta.photo || (catalog ? getDoctorPhoto(catalog.id) : ''),
-          name: nameHint,
-        }) || '',
-      }
-
-      const record = payload
-        ? reviveBookingRecord({
-          ...payload,
-          id: ref,
-          status,
-          doctor: { ...(payload.doctor || {}), ...doctor, ...(payload.doctor?.photo ? {} : { photo: doctor.photo }) },
-        })
-        : createBookingRecord({
-          id: ref,
-          userId,
-          status,
-          doctor,
-          schedule: {
-            visitType: meta.visit_type || '',
-            time: '',
-            date: null,
-          },
-          meta: {
-            restoredFrom: 'provider_conversation',
-            conversationCreatedAt: convo.created_at,
-            remoteAppointmentId: convo.appointment_id || null,
-            updatedAt: new Date().toISOString(),
-          },
-        })
+      if (!isGenuineRestoredBooking(record)) continue
 
       putRecord(engine, record)
-      await syncAppointmentRecord(engine.getById(ref) || record, userId)
       restored += 1
     }
     return { restored }

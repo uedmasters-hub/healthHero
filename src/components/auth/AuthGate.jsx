@@ -43,7 +43,7 @@ export default function AuthGate({ children }) {
 
   // Signed-in: wait for onboarding resolve; splash under the overlay while needed.
   if (isAuthenticated && (onboardingStatus === 'pending' || onboardingStatus === 'needed')) {
-    return <AuthSplash />
+    return <AuthSplash watchdog={onboardingStatus === 'pending'} />
   }
 
   if (isAuthRoute) {

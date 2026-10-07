@@ -8,6 +8,7 @@
 import './migrateBrandStorage'
 import { createClient } from '@supabase/supabase-js'
 import { AUTH_STORAGE_KEY } from './brand'
+import { reportRequestFailure, reportRequestTiming } from '../features/connection/connection'
 import {
   AUTH_CONFIRM_PATH,
   PRODUCTION_APP_ORIGIN,
@@ -37,6 +38,43 @@ export const supabaseConfigError = (() => {
   return null
 })()
 
+/*
+  Auth requests gate app boot (session restore / token refresh) and REST
+  queries gate busy buttons and skeletons. A stalled socket — e.g. after the
+  laptop sleeps — must fail and surface an error, never hang. Storage uploads
+  and edge functions can legitimately run long, so they stay unbounded.
+*/
+const FETCH_TIMEOUTS = [
+  ['/auth/v1/', 12_000],
+  ['/rest/v1/', 20_000],
+]
+
+function boundedFetch(input, init) {
+  const href = typeof input === 'string' ? input : input?.url || String(input)
+  const ms = FETCH_TIMEOUTS.find(([segment]) => href.includes(segment))?.[1]
+  if (!ms || typeof AbortSignal?.timeout !== 'function') {
+    return fetch(input, init)
+  }
+  const timeout = AbortSignal.timeout(ms)
+  const signal = init.signal && typeof AbortSignal.any === 'function'
+    ? AbortSignal.any([init.signal, timeout])
+    : init.signal || timeout
+  return fetch(input, { ...init, signal })
+}
+
+async function fetchWithTimeout(input, init = {}) {
+  const started = performance.now()
+  try {
+    const response = await boundedFetch(input, init)
+    reportRequestTiming(performance.now() - started)
+    return response
+  } catch (error) {
+    reportRequestTiming(performance.now() - started)
+    reportRequestFailure()
+    throw error
+  }
+}
+
 export const supabase = isSupabaseConfigured && !supabaseConfigError
   ? createClient(url, publishableKey, {
       auth: {
@@ -46,6 +84,7 @@ export const supabase = isSupabaseConfigured && !supabaseConfigError
         flowType: 'pkce',
         storageKey: AUTH_STORAGE_KEY,
       },
+      global: { fetch: fetchWithTimeout },
     })
   : null
 

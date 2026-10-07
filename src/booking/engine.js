@@ -35,6 +35,7 @@ import {
   selectResumePath,
 } from './selectors'
 import { ensureCarouselSeeds } from './seed'
+import { isPresentableBooking } from './genuine'
 import { SERVICE_TYPE } from './serviceTypes'
 import { buildPatientReport, reconcileVisitOutcomes } from './visitOutcomes'
 import { DEMO_USER_ID } from '../user/constants'
@@ -162,6 +163,14 @@ function purgeDuplicateBookings(repo) {
   return removed
 }
 
+function discardFabricatedBookings(repo) {
+  let removed = 0
+  repo.getAll().forEach((record) => {
+    if (!isPresentableBooking(record) && repo.remove(record.id, { discard: true })) removed += 1
+  })
+  return removed
+}
+
 function queueAppointment(record, ownerId) {
   if (!record?.id || !ownerId) return
   mirrorAppointment(record, ownerId).catch(() => {})
@@ -176,6 +185,7 @@ export function createBookingEngine({
   const repo = createRepository(loaded)
   if (seedCarousel) ensureCarouselSeeds(repo)
   purgeDuplicateBookings(repo)
+  discardFabricatedBookings(repo)
 
   const withOwner = (input) => ({ ...input, userId: userId || input.userId || null })
   const ownerId = () => userId || null
@@ -1276,7 +1286,7 @@ export function createBookingEngine({
     },
 
     purgeDuplicates() {
-      return purgeDuplicateBookings(repo)
+      return purgeDuplicateBookings(repo) + discardFabricatedBookings(repo)
     },
 
     /** Imperative replace used by setCurrentBooking compatibility layer */

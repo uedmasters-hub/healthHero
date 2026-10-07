@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageSearchHeader from './PageSearchHeader'
-import AppFooter from './AppFooter'
-import EmptyState from './EmptyState'
+import ParentFooter from './ParentFooter'
 import ExpandRadiusEmpty from './ExpandRadiusEmpty'
+import { useDemoPreview } from './DemoPreviewModal'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import {
@@ -13,59 +13,36 @@ import {
 import { flowState } from '../lib/careFlow'
 import { useAppLocation } from '../features/location'
 import {
-  CategoryChips,
-  PharmacySupportCard,
-  ServiceTileGrid,
-} from './pharmacy'
+  CENTERS_FACILITY_FILTERS,
+  CENTERS_HELP,
+  CENTERS_HERO_SLIDES,
+  CENTERS_HERO_START,
+  CENTERS_PROMOS,
+  CENTERS_QUICK_ACTIONS,
+  CENTERS_SEARCH_PLACEHOLDER,
+  CENTERS_SEGMENTS,
+  CENTERS_SERVICES,
+  CENTERS_TRUST,
+} from '../data/centers'
+import { CategoryChips, PromoCarousel } from './pharmacy'
+import {
+  CentersHelpList,
+  CentersPromoRail,
+  CentersSegments,
+  CentersTrust,
+  HcSectionHead,
+  QuickActionGrid,
+  ServiceGallery,
+} from './centers/CentersHome'
 import {
   FacilityEntityCard,
   EntityCardSkeletonStack,
 } from './directory'
+import { Button, EmptyState } from './ui'
 import './pharmacy/PharmacyPage.css'
+import './pharmacy/PharmacyHome.css'
 
 const PAGE_SIZE = 8
-
-const SERVICES = [
-  {
-    id: 'hospital',
-    icon: 'building',
-    tone: 'sky',
-    badge: 'Tertiary',
-    label: 'Find Hospital',
-    subtitle: 'ICU, OT & Inpatient',
-  },
-  {
-    id: 'clinic',
-    icon: 'plus',
-    tone: 'mint',
-    badge: 'Local',
-    label: 'Find Clinic',
-    subtitle: 'Polyclinic & GP visits',
-  },
-  {
-    id: 'home',
-    icon: 'home',
-    tone: 'peach',
-    badge: '24/7 Live',
-    label: 'Home Care',
-    subtitle: 'Doctor & nursing visits',
-  },
-  {
-    id: 'lab',
-    icon: 'calendar',
-    tone: 'sky',
-    badge: 'Fast Queue',
-    label: 'Lab & Diagnostics',
-    subtitle: 'Blood tests & diagnostics',
-  },
-]
-
-const FACILITY_FILTERS = [
-  { id: 'hospital', label: 'Hospital', query: 'hospital' },
-  { id: 'clinic', label: 'Clinic', query: 'clinic' },
-  { id: 'home', label: 'Home Care', query: 'home' },
-  { id: 'lab', label: 'Diagnostics', query: 'diagnostic' },
-]
 
 function matchesKind(center, kind) {
   if (!kind) return true
@@ -79,6 +56,7 @@ function matchesKind(center, kind) {
 
 export default function CentersPage() {
   const navigate = useNavigate()
+  const { show: showDemoPreview } = useDemoPreview()
   const {
     locality,
     origin,
@@ -95,6 +73,7 @@ export default function CentersPage() {
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [segment, setSegment] = useState('hospital')
   const [kind, setKind] = useState('hospital')
   const [centers, setCenters] = useState([])
   const [page, setPage] = useState(0)
@@ -108,7 +87,7 @@ export default function CentersPage() {
     return () => clearTimeout(t)
   }, [search])
 
-  const kindQuery = FACILITY_FILTERS.find((item) => item.id === kind)?.query || ''
+  const kindQuery = CENTERS_FACILITY_FILTERS.find((item) => item.id === kind)?.query || ''
 
   const loadPage = useCallback(async ({ page: nextPage, append = false } = {}) => {
     const reqId = ++requestIdRef.current
@@ -178,11 +157,17 @@ export default function CentersPage() {
 
   const ptr = usePullToRefresh(scrollRef, onRefresh)
 
-  const focusFacilities = (nextKind) => {
+  const focusFacilities = useCallback((nextKind) => {
     setKind(nextKind)
+    if (nextKind === 'hospital' || nextKind === 'clinic') setSegment(nextKind)
     window.requestAnimationFrame(() => {
       facilitiesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
+  }, [])
+
+  const selectSegment = (item) => {
+    setSegment(item.id)
+    setKind(item.id)
   }
 
   const openFacility = (center) => {
@@ -193,17 +178,53 @@ export default function CentersPage() {
     })
   }
 
+  const runAction = useCallback((action) => {
+    switch (action) {
+      case 'book':
+        navigate('/booking', {
+          state: flowState(null, { origin: 'centers', returnTo: '/centers', entryReturnTo: '/centers' }),
+        })
+        return
+      case 'ambulance':
+        window.location.href = 'tel:112'
+        return
+      case 'chat':
+        navigate('/chat', { state: { origin: 'centers', returnTo: '/centers' } })
+        return
+      case 'help':
+        navigate('/profile/support', { state: { origin: 'centers', returnTo: '/centers' } })
+        return
+      case 'emergency':
+      case 'surgery':
+        focusFacilities('hospital')
+        return
+      case 'departments':
+        focusFacilities(segment)
+        return
+      case 'hospital':
+      case 'clinic':
+      case 'home':
+      case 'lab':
+        focusFacilities(action)
+        return
+      default:
+        showDemoPreview?.()
+    }
+  }, [navigate, focusFacilities, segment, showDemoPreview])
+
+  const services = CENTERS_SERVICES[segment] || CENTERS_SERVICES.hospital
+  const kindLabel = CENTERS_FACILITY_FILTERS.find((item) => item.id === kind)?.label.toLowerCase()
   const waitingForLocation = !locationReady && (locationStatus === 'locating' || locationStatus === 'idle')
   const needsLocation = !locationReady && !waitingForLocation
 
   return (
-    <div className="pharmacy-page">
+    <div className="pharmacy-page centers-page">
       <PageSearchHeader
-        title="Healthcare Centers"
+        title="Healthcare center"
         scrollRef={scrollRef}
         searchBarRef={searchBarRef}
         scope="centers"
-        placeholder="Search hospitals, clinics…"
+        placeholder={CENTERS_SEARCH_PLACEHOLDER}
         query={search}
         onQueryChange={setSearch}
         dockClassName="pharmacy-search-dock"
@@ -212,34 +233,28 @@ export default function CentersPage() {
       <div className="pharmacy-scroll" ref={scrollRef}>
         <PullToRefreshIndicator pull={ptr.pull} refreshing={ptr.refreshing} />
         <div className="pharmacy-page__feed">
-          <ServiceTileGrid
-            items={SERVICES}
-            onSelect={(item) => focusFacilities(item.id)}
+          <PromoCarousel
+            slides={CENTERS_HERO_SLIDES}
+            startIndex={CENTERS_HERO_START}
+            label="Healthcare highlights"
+            onAction={(slide) => runAction(slide.action)}
           />
 
-          <PharmacySupportCard
-            icon="ambulance"
-            title="24/7 Ambulance"
-            body="Triage & Rapid Response"
-            cta="Call"
-            ctaAs="button"
-            onClick={() => { window.location.href = 'tel:112' }}
-          />
+          <CentersSegments items={CENTERS_SEGMENTS} activeId={segment} onSelect={selectSegment} />
+
+          <QuickActionGrid items={CENTERS_QUICK_ACTIONS} onSelect={(item) => runAction(item.id)} />
+
+          <CentersPromoRail promos={CENTERS_PROMOS} onSelect={(promo) => runAction(promo.action)} />
 
           <section className="pharmacy-nearby" aria-label="Top facilities" ref={facilitiesRef}>
-            <div className="ds-section-head">
-              <h2 className="ds-section-head__title">Top Facilities</h2>
-              <button type="button" className="ds-link" onClick={() => focusFacilities(null)}>
-                View all
-              </button>
-            </div>
+            <HcSectionHead title="Top Facilities" actionLabel="See All" onAction={() => focusFacilities(null)} />
 
             <CategoryChips
               title="Facility type"
               hideHeader
               variant="solid"
               activeId={kind}
-              items={FACILITY_FILTERS}
+              items={CENTERS_FACILITY_FILTERS}
               onSelect={(item) => focusFacilities(item.id)}
             />
 
@@ -248,14 +263,13 @@ export default function CentersPage() {
             {!loading && !waitingForLocation && error ? (
               <EmptyState
                 card
-                image="/img/empty_state/hospital.png"
-                alt=""
-                title="Couldn’t load facilities"
-                message={error}
+                compact
+                title="Let’s try that again"
+                message="Facilities near you are a tap away."
                 action={(
-                  <button type="button" className="ds-btn ds-btn--primary ds-btn--sm" onClick={() => loadPage({ page: 0 })}>
+                  <Button size="sm" onClick={() => loadPage({ page: 0 })}>
                     Try again
-                  </button>
+                  </Button>
                 )}
               />
             ) : null}
@@ -263,8 +277,7 @@ export default function CentersPage() {
             {!loading && needsLocation ? (
               <EmptyState
                 card
-                image="/img/empty_state/hospital.png"
-                alt=""
+                compact
                 title="Set your location"
                 message="Allow precise location or pick a place to find nearby facilities."
               />
@@ -275,11 +288,12 @@ export default function CentersPage() {
                 <EmptyState
                   card
                   compact
-                  message={`No ${FACILITY_FILTERS.find((item) => item.id === kind)?.label.toLowerCase() || 'matching'} facilities nearby.`}
+                  title="Coming soon"
+                  message={`${kindLabel ? kindLabel[0].toUpperCase() + kindLabel.slice(1) : 'Matching'} facilities near you are on the way.`}
                   action={(
-                    <button type="button" className="ds-btn ds-btn--secondary ds-btn--sm" onClick={() => focusFacilities(null)}>
+                    <Button size="sm" variant="ghost" onClick={() => focusFacilities(null)}>
                       See all facilities
-                    </button>
+                    </Button>
                   )}
                 />
               ) : (
@@ -316,7 +330,18 @@ export default function CentersPage() {
             ) : null}
           </section>
 
-          <AppFooter page="centers" />
+          <ServiceGallery
+            title={services.title}
+            items={services.items}
+            onSelect={(item) => focusFacilities(item.kind)}
+            onSeeAll={() => focusFacilities(segment)}
+          />
+
+          <CentersTrust trust={CENTERS_TRUST} />
+
+          <CentersHelpList items={CENTERS_HELP} onSelect={(item) => runAction(item.action)} />
+
+          <ParentFooter page="centers" />
         </div>
       </div>
     </div>

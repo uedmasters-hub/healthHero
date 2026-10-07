@@ -239,7 +239,6 @@ export default function FacilityPage() {
               <ProviderAvatar
                 name={facility.name}
                 src={facility.image || null}
-                useCatalogFallback={false}
                 imgClassName="dc-profile-photo-img"
                 alt=""
               />

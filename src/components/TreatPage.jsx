@@ -7,8 +7,8 @@ import { useAppSheet } from './PageTransition'
 import PageSearchHeader from './PageSearchHeader'
 import TreatSearchSuggestions from './TreatSearchSuggestions'
 import UpcomingBookingsCarousel from './UpcomingBookingsCarousel'
-import { visitSummary } from '../data/care'
 import { resolveAppointmentPath } from '../lib/appointmentJourney'
+import { resolveProviderPhoto } from '../lib/providerPhoto'
 import {
   getServiceMeta,
   resolveServiceType,
@@ -17,7 +17,7 @@ import {
 } from '../booking'
 import { useDemoPreview } from './DemoPreviewModal'
 import { isPreviewServiceType } from '../lib/previewModules'
-import AppFooter from './AppFooter'
+import ParentFooter from './ParentFooter'
 import { usePullToRefresh } from '../hooks/usePullToRefresh'
 import PullToRefreshIndicator from './PullToRefreshIndicator'
 import { refreshTreatData } from '../features/sync/pageRefresh'
@@ -129,18 +129,6 @@ export default function TreatPage() {
       navigate('/post-visit-summary', {
         state: {
           bookingId: visit.engineId || visit.id,
-          visitData: visitSummary({
-            doctor: visit.doctor || {},
-            start: visit.start instanceof Date && !Number.isNaN(visit.start.getTime())
-              ? visit.start
-              : new Date(),
-            visitType: visit.visitType || 'In-Person',
-            condition: visit.condition,
-            dateLabel: visit.dateLabel,
-            timeLabel: visit.time,
-            nextLabel: 'Follow-up as advised',
-            status: 'Completed',
-          }),
           origin: 'treat',
         },
       })
@@ -251,7 +239,7 @@ export default function TreatPage() {
                 <EmptyState compact message="No matching care records." />
               ) : filteredHistory.map((visit) => {
                 const service = getServiceMeta(resolveServiceType(visit))
-                const photo = visit.doctor?.photo
+                const photo = resolveProviderPhoto(visit)
                 const initial = (visit.displayName || visit.doctor?.name || service.shortLabel || 'A')
                   .replace(/^Dr\.?\s*/i, '')
                   .charAt(0)
@@ -292,7 +280,7 @@ export default function TreatPage() {
               })}
             </div>
           </section>
-          <AppFooter page="treat" />
+          <ParentFooter page="treat" />
         </div>
 
         <TreatSearchSuggestions

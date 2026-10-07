@@ -36,6 +36,7 @@ import AppointmentDetailPage from './pages/AppointmentDetailPage'
 import SkeletonStrategyPage from './pages/SkeletonStrategyPage'
 import OverlaySystemPage from './pages/OverlaySystemPage'
 import EmptyStatePage from './pages/EmptyStatePage'
+import SystemStatesPage from './pages/SystemStatesPage'
 import ToolsPage from './pages/ToolsPage'
 import ReleasePhasesPage from './pages/ReleasePhasesPage'
 import ContactPage from './pages/ContactPage'
@@ -94,6 +95,7 @@ const sections = [
       { label: 'Chips', path: '/design/components/chips' },
       { label: 'Skeletons', path: '/design/components/skeletons' },
       { label: 'Empty States', path: '/design/components/empty-states' },
+      { label: 'System States', path: '/design/components/system-states', badge: 'New' },
     ],
   },
   {
@@ -239,6 +241,7 @@ export default function DesignSystemLayout() {
             <Route path="components/chips" element={<ChipsPage />} />
             <Route path="components/skeletons" element={<SkeletonsPage />} />
             <Route path="components/empty-states" element={<EmptyStatePage />} />
+            <Route path="components/system-states" element={<SystemStatesPage />} />
             <Route path="rovo-ui" element={<RovoUIPage />} />
             <Route path="rovo-ui/booking-flow" element={<BookingFlowPage />} />
             <Route path="rovo-ui/profile-hub" element={<ProfileHubPage />} />

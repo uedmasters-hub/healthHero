@@ -19,6 +19,7 @@ import {
 } from '../features/providers/pharmacyFacetCounts'
 import { flowState } from '../lib/careFlow'
 import { useAppLocation } from '../features/location'
+import { pushRecentSearch } from '../features/search'
 import { ALL_NEPAL_LOCATION } from '../data/nepalGeography'
 import ExpandRadiusEmpty from './ExpandRadiusEmpty'
 import {
@@ -26,9 +27,11 @@ import {
   PharmacyEntityCard,
   EntityCardSkeletonStack,
 } from './directory'
+import PharmacySearchSuggestions from './pharmacy/PharmacySearchSuggestions'
 import './SelectProvider.css'
 
 const PAGE_SIZE = PHARMACIES_PAGE_SIZE || 24
+const MAX_FETCHES_PER_LOAD = 4
 
 function formatFacetCount(value) {
   if (value == null || Number.isNaN(Number(value))) return null
@@ -54,13 +57,14 @@ export default function PharmacyBrowsePage() {
 
   const initial = location.state || {}
   const [search, setSearch] = useState(initial.q || '')
-  const [debouncedSearch, setDebouncedSearch] = useState(initial.q || '')
+  const [appliedSearch, setAppliedSearch] = useState(initial.q || '')
+  const [searchActive, setSearchActive] = useState(false)
   const [browseNationwide, setBrowseNationwide] = useState(false)
   const [selectedType, setSelectedType] = useState('all')
   const [activeSheet, setActiveSheet] = useState(null)
   const [facetCounts, setFacetCounts] = useState({})
   const [pharmacies, setPharmacies] = useState([])
-  const [page, setPage] = useState(0)
+  const cursorRef = useRef({ page: 0, buffer: [], seen: new Set(), serverHasMore: true })
   const [hasMore, setHasMore] = useState(false)
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -69,12 +73,7 @@ export default function PharmacyBrowsePage() {
 
   const selectedLocation = browseNationwide ? ALL_NEPAL_LOCATION : (locality || null)
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search.trim()), 280)
-    return () => clearTimeout(t)
-  }, [search])
-
-  const loadPage = useCallback(async ({ page: nextPage, append = false } = {}) => {
+  const loadPage = useCallback(async ({ append = false } = {}) => {
     const reqId = ++requestIdRef.current
     if (!browseNationwide && (!locationReady || !origin)) {
       setLoading(false)
@@ -91,25 +90,47 @@ export default function PharmacyBrowsePage() {
     else {
       setLoading(true)
       setError(null)
+      cursorRef.current = { page: 0, buffer: [], seen: new Set(), serverHasMore: true }
     }
 
-    const result = await queryPharmacies({
-      q: debouncedSearch,
-      city: selectedLocation,
-      type: selectedType,
-      page: nextPage,
-      pageSize: PAGE_SIZE,
-      force: !append,
-      origin: browseNationwide ? null : origin,
-      radiusKm,
-      sort: 'nearest',
-      useRadius: !browseNationwide,
-    })
+    // Unnamed rows are dropped client-side, so pull further server pages until a full 24 is ready.
+    const cursor = cursorRef.current
+    const batch = cursor.buffer.splice(0)
+    let total = null
+    let failure = null
+    let fetches = 0
+    while (batch.length < PAGE_SIZE && cursor.serverHasMore && fetches < MAX_FETCHES_PER_LOAD) {
+      fetches += 1
+      const result = await queryPharmacies({
+        q: appliedSearch,
+        city: selectedLocation,
+        type: selectedType,
+        page: cursor.page,
+        pageSize: PAGE_SIZE,
+        force: !append && fetches === 1,
+        origin: browseNationwide ? null : origin,
+        radiusKm,
+        sort: 'nearest',
+        useRadius: !browseNationwide,
+      })
+      if (reqId !== requestIdRef.current) return
+      if (result.error && !result.pharmacies?.length) {
+        failure = result.error
+        break
+      }
+      total = result.total || 0
+      cursor.page = result.page + 1
+      cursor.serverHasMore = Boolean(result.hasMore)
+      result.pharmacies.forEach((pharmacy) => {
+        const id = pharmacy.pharmacyUuid || pharmacy.id
+        if (cursor.seen.has(id)) return
+        cursor.seen.add(id)
+        batch.push(pharmacy)
+      })
+    }
 
-    if (reqId !== requestIdRef.current) return
-
-    if (result.error && !result.pharmacies?.length) {
-      setError(result.error)
+    if (failure && !batch.length) {
+      setError(failure)
       if (!append) {
         setPharmacies([])
         setTotalCount(0)
@@ -117,18 +138,19 @@ export default function PharmacyBrowsePage() {
       }
     } else {
       setError(null)
-      setPharmacies((prev) => (append ? [...prev, ...result.pharmacies] : result.pharmacies))
-      setTotalCount(result.total || 0)
-      setHasMore(Boolean(result.hasMore))
-      setPage(result.page)
+      cursor.buffer = batch.slice(PAGE_SIZE)
+      const shown = batch.slice(0, PAGE_SIZE)
+      setPharmacies((prev) => (append ? [...prev, ...shown] : shown))
+      if (total != null) setTotalCount(total)
+      setHasMore(cursor.buffer.length > 0 || cursor.serverHasMore)
     }
 
     setLoading(false)
     setLoadingMore(false)
-  }, [debouncedSearch, selectedLocation, selectedType, origin, radiusKm, locationReady, browseNationwide])
+  }, [appliedSearch, selectedLocation, selectedType, origin, radiusKm, locationReady, browseNationwide])
 
   useEffect(() => {
-    loadPage({ page: 0, append: false })
+    loadPage()
   }, [loadPage])
 
   useEffect(() => {
@@ -139,7 +161,7 @@ export default function PharmacyBrowsePage() {
 
     const context = {
       city: selectedLocation,
-      q: debouncedSearch,
+      q: appliedSearch,
       type: selectedType,
     }
     const cached = peekPharmacyFilterFacets(facet, context)
@@ -164,11 +186,11 @@ export default function PharmacyBrowsePage() {
     }).catch(() => {})
 
     return () => { cancelled = true }
-  }, [isPresented, activeSheet, selectedLocation, selectedType, debouncedSearch])
+  }, [isPresented, activeSheet, selectedLocation, selectedType, appliedSearch])
 
   const onRefresh = useCallback(async () => {
     clearPharmaciesQueryCache()
-    await loadPage({ page: 0, append: false })
+    await loadPage()
   }, [loadPage])
 
   const ptr = usePullToRefresh(scrollRef, onRefresh)
@@ -189,9 +211,35 @@ export default function PharmacyBrowsePage() {
       state: flowState(location, {
         origin: 'pharmacy-browse',
         returnTo: '/pharmacy/browse',
-        storeName: pharmacy.name || pharmacy.displayName,
+        storeName: pharmacy.name || pharmacy.displayName || pharmacy.label,
       }),
     })
+  }
+
+  const submitSearch = (value) => {
+    const next = String(value ?? search).trim()
+    if (next) pushRecentSearch({ label: next, type: 'query', scope: 'pharmacy', meta: 'Search' })
+    setSearch(next)
+    setAppliedSearch(next)
+    setSearchActive(false)
+    scrollRef.current?.scrollTo({ top: 0 })
+  }
+
+  const cancelSearch = () => {
+    setSearchActive(false)
+    setSearch('')
+    setAppliedSearch('')
+  }
+
+  const selectSuggestion = (item) => {
+    if (item.type === 'query') {
+      submitSearch(item.label)
+      return
+    }
+    pushRecentSearch({ id: item.id, label: item.label, type: 'pharmacy', scope: 'pharmacy', meta: item.meta })
+    setSearchActive(false)
+    setSearch(appliedSearch)
+    openPharmacy(item)
   }
 
   const renderFacetOption = ({ key, label, active, onSelect }) => {
@@ -231,6 +279,28 @@ export default function PharmacyBrowsePage() {
         searchPlaceholder="Search pharmacies…"
         searchQuery={search}
         onSearchChange={setSearch}
+        searchMode="expandable"
+        searchActive={searchActive}
+        onSearchOpen={() => setSearchActive(true)}
+        onSearchCancel={cancelSearch}
+        onSearchSubmit={submitSearch}
+        searchOverlay={(
+          <PharmacySearchSuggestions
+            query={search}
+            active={searchActive}
+            nearby={appliedSearch ? [] : pharmacies}
+            searchParams={{
+              city: selectedLocation,
+              type: selectedType,
+              origin: browseNationwide ? null : origin,
+              radiusKm,
+              sort: 'nearest',
+              useRadius: !browseNationwide,
+            }}
+            onSelect={selectSuggestion}
+            onSubmit={submitSearch}
+          />
+        )}
         shown={pharmacies.length}
         total={totalCount}
         loading={loading}
@@ -250,7 +320,7 @@ export default function PharmacyBrowsePage() {
               title="Couldn’t load pharmacies"
               message={error}
               action={(
-                <button type="button" className="ds-btn ds-btn--secondary ds-btn--md" onClick={() => loadPage({ page: 0 })}>
+                <button type="button" className="ds-btn ds-btn--secondary ds-btn--md" onClick={() => loadPage()}>
                   Try again
                 </button>
               )}
@@ -260,7 +330,19 @@ export default function PharmacyBrowsePage() {
 
         {!loading && !error && !pharmacies.length ? (
           <div className="dir-shell__empty">
-            {browseNationwide ? (
+            {appliedSearch ? (
+              <EmptyState
+                image="/img/empty_state/pharmacy.png"
+                alt=""
+                title={`No pharmacies match “${appliedSearch}”`}
+                message="Check the spelling or try a nearby area name."
+                action={(
+                  <button type="button" className="ds-btn ds-btn--secondary ds-btn--md" onClick={cancelSearch}>
+                    Clear search
+                  </button>
+                )}
+              />
+            ) : browseNationwide ? (
               <EmptyState
                 image="/img/empty_state/pharmacy.png"
                 alt=""
@@ -284,7 +366,7 @@ export default function PharmacyBrowsePage() {
           <ul className="dir-shell__list">
             {pharmacies.map((pharmacy) => (
               <li key={pharmacy.pharmacyUuid || pharmacy.id}>
-                <PharmacyEntityCard pharmacy={pharmacy} onOpen={openPharmacy} />
+                <PharmacyEntityCard pharmacy={pharmacy} variant="nearby" onOpen={openPharmacy} />
               </li>
             ))}
             {hasMore ? (
@@ -293,7 +375,7 @@ export default function PharmacyBrowsePage() {
                   type="button"
                   className="dir-shell__load-more ds-btn ds-btn--secondary ds-btn--md ds-btn--block"
                   disabled={loadingMore}
-                  onClick={() => loadPage({ page: page + 1, append: true })}
+                  onClick={() => loadPage({ append: true })}
                 >
                   {loadingMore ? 'Loading…' : 'Load more'}
                 </button>
