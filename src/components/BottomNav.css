@@ -1,19 +1,52 @@
 /* Tab bar — PocketPills mobile nav: white/95 + blur, hairline top edge,
-   icon tile + label, active = ink + medium + tinted tile. */
+   icon tile + label, active = ink + medium + tinted tile.
+
+   Adaptive tone: `--nav-tone` (0 = Light, 1 = Dark) is scroll-driven by
+   useAdaptiveFooter as a colored footer band slides under the bar. Every
+   colour below is a mix of the two states, so the morph is continuous. */
+@property --nav-tone {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .bottom-nav {
+  --nav-tone: 0;
+  --nav-mix: calc(var(--nav-tone) * 100%);
+
+  /* Light state */
+  --nav-light-bg: var(--surface-chrome);
+  --nav-light-edge: var(--border-default);
+  --nav-light-fg: var(--text-tertiary);
+  --nav-light-fg-active: var(--pp-headline);
+  --nav-light-tile: var(--state-hover);
+
+  /* Dark state — one subtle tonal step above the footer band, no edge line, so
+     band and bar read as one surface; hierarchy comes from text tone only. */
+  --nav-dark-bg: color-mix(in srgb, color-mix(in srgb, var(--neutral-900) 96%, var(--neutral-0)) 97%, transparent);
+  --nav-dark-edge: transparent;
+  --nav-dark-fg: color-mix(in srgb, var(--primary-300) 80%, transparent);
+  --nav-dark-fg-active: var(--neutral-0);
+  --nav-dark-tile: transparent;
+
+  --nav-fg: color-mix(in srgb, var(--nav-light-fg), var(--nav-dark-fg) var(--nav-mix));
+  --nav-fg-active: color-mix(in srgb, var(--nav-light-fg-active), var(--nav-dark-fg-active) var(--nav-mix));
+  --nav-tile: color-mix(in srgb, var(--nav-light-tile), var(--nav-dark-tile) var(--nav-mix));
+
   position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: var(--phone-width);
-  background: var(--surface-chrome);
+  background: color-mix(in srgb, var(--nav-light-bg), var(--nav-dark-bg) var(--nav-mix));
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border-top: var(--border-width) solid var(--border-default);
+  border-top: var(--border-width) solid color-mix(in srgb, var(--nav-light-edge), var(--nav-dark-edge) var(--nav-mix));
   padding-bottom: var(--frame-footer);
   z-index: var(--z-footer);
   transition:
+    --nav-tone var(--duration-normal) linear,
     transform var(--duration-reveal) var(--ease-emphasized),
     padding-bottom var(--duration-moderate) var(--ease-standard);
 }
@@ -43,7 +76,7 @@
   background: none;
   border: none;
   border-radius: var(--radius-md);
-  color: var(--text-tertiary);
+  color: var(--nav-fg);
   font: inherit;
   font-size: var(--text-micro-size);
   font-weight: var(--font-weight-regular);
@@ -53,11 +86,11 @@
   transition: color var(--transition), background-color var(--transition);
 }
 
-.bottom-nav-tab:hover { background: var(--state-hover); }
-.bottom-nav-tab:active { background: var(--state-pressed); }
+.bottom-nav-tab:hover { background: var(--nav-tile); }
+.bottom-nav-tab:active { background: color-mix(in srgb, var(--state-pressed), var(--nav-dark-tile) var(--nav-mix)); }
 
 .bottom-nav-tab.is-active {
-  color: var(--pp-headline);
+  color: var(--nav-fg-active);
   font-weight: var(--font-weight-medium);
 }
 
@@ -73,7 +106,13 @@
 }
 
 .bottom-nav-tab.is-active .bottom-nav-tab-icon {
-  background: var(--state-hover);
+  background: var(--nav-tile);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav {
+    transition: transform var(--duration-reveal) var(--ease-emphasized);
+  }
 }
 
 .bottom-nav-tab-icon svg {

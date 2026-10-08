@@ -84,6 +84,7 @@ import ConversationThreadPage from './features/conversations/pages/ConversationT
 import SupportThreadPage from './features/conversations/pages/SupportThreadPage'
 import AgentInboxPage from './features/conversations/pages/AgentInboxPage'
 import AppScrimHost, { useAppScrim } from './components/AppScrim'
+import { useAdaptiveFooter } from './features/footer/useAdaptiveFooter'
 import { SheetPortal } from './components/PageTransition'
 import { PushStack } from './features/pushNav'
 
@@ -115,6 +116,11 @@ function ExploreIndexRedirect() {
     navigate('/', { replace: true })
   }, [navigate, openSpecialisations])
 
+  return null
+}
+
+function AdaptiveFooterBridge() {
+  useAdaptiveFooter()
   return null
 }
 
@@ -254,6 +260,7 @@ function AppProviders() {
                     <FabProvider>
                       <AppRoutes />
                       <BottomNav />
+                      <AdaptiveFooterBridge />
                       <NotificationPresentationSync />
                       <NotificationIsland />
                       <ConnectionBanner />

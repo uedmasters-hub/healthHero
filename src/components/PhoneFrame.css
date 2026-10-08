@@ -233,12 +233,13 @@
   padding-bottom: var(--space-2-5);
   background: transparent;
   pointer-events: none;
+  transition: --nav-tone var(--duration-normal) linear;
 }
 
 .phone-home-bar {
   width: 134px;
   height: 5px;
-  background: #111;
+  background: color-mix(in srgb, #111, var(--neutral-0) calc(var(--nav-tone, 0) * 100%));
   border-radius: var(--radius-full);
   opacity: 0.9;
 }
