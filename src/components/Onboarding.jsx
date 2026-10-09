@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   ONBOARD_ASSETS,
   ONBOARD_LOGO,
@@ -13,6 +14,7 @@ import {
 } from '../lib/onboarding'
 import { BRAND_NAME } from '../lib/brand'
 import { useAuth } from '../features/auth/hooks/useAuth'
+import { AUTH_CONFIRM_PATH, AUTH_PATHS } from '../features/auth/types'
 import './Onboarding.css'
 
 const LAST = ONBOARD_SLIDES.length
@@ -71,7 +73,9 @@ function ArtCard({ slide, delta, ready }) {
  * Never clears the auth session.
  */
 export function OnboardingProvider({ children }) {
-  const { ready, isAuthenticated, user } = useAuth()
+  const { ready, isAuthenticated, isRecovery, user } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const userId = isAuthenticated ? (user?.id || null) : null
   const [status, setStatus] = useState('pending')
 
@@ -101,6 +105,18 @@ export function OnboardingProvider({ children }) {
   const active = status === 'needed'
 
   // Local flag is written synchronously inside persist; the remote write must not gate entry.
+  const onBeginFinish = useCallback(() => {
+    if (isRecovery) return
+    const path = location.pathname
+    if (
+      path === '/'
+      || path === '/reset'
+      || path === AUTH_CONFIRM_PATH
+      || path === AUTH_PATHS.callback
+    ) return
+    navigate('/', { replace: true })
+  }, [isRecovery, location.pathname, navigate])
+
   const onComplete = useCallback(() => {
     if (userId) persistOnboardingCompleted(userId)
     else markOnboardingComplete()
@@ -111,13 +127,13 @@ export function OnboardingProvider({ children }) {
     <OnboardingStatusContext.Provider value={status}>
       <OnboardingActiveContext.Provider value={active}>
         {children}
-        {active ? <Onboarding onComplete={onComplete} /> : null}
+        {active ? <Onboarding onComplete={onComplete} onBeginFinish={onBeginFinish} /> : null}
       </OnboardingActiveContext.Provider>
     </OnboardingStatusContext.Provider>
   )
 }
 
-function Onboarding({ onComplete }) {
+function Onboarding({ onComplete, onBeginFinish }) {
   const [open, setOpen] = useState(true)
   const [leaving, setLeaving] = useState(false)
   const [step, setStep] = useState(0)
@@ -208,11 +224,12 @@ function Onboarding({ onComplete }) {
   const finish = useCallback(() => {
     if (leaving) return
     setLeaving(true)
+    onBeginFinish?.()
     later(() => {
       setOpen(false)
       onComplete?.()
     }, prefersReducedMotion() ? 80 : 420)
-  }, [leaving, later, onComplete])
+  }, [leaving, later, onBeginFinish, onComplete])
 
   const onContinue = () => {
     if (step >= LAST) finish()

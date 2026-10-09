@@ -10,6 +10,16 @@ const MIGRATION_KEY = 'emedicalls.guest.migration'
 const CART_SNAPSHOT_KEY = 'emedicalls.guest.cartSnapshot'
 
 let flushing = false
+let captureGuest = true
+
+/** Identified sessions stop appending. Guests keep the queue for later migration. */
+export function setGuestCapture(enabled) {
+  captureGuest = Boolean(enabled)
+}
+
+export function listGuestEvents() {
+  return readQueue()
+}
 
 function readQueue() {
   try {
@@ -51,7 +61,7 @@ export async function recordGuestEvent({
   dedupeKey = null,
   occurredAt = new Date().toISOString(),
 } = {}) {
-  if (!eventType) return null
+  if (!captureGuest || !eventType) return null
   const installId = getInstallId()
   const keySource = dedupeKey || crypto.randomUUID()
   const idempotencyKey = await digest([

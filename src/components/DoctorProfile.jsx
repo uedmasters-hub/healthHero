@@ -14,6 +14,7 @@ import DoctorCard from './DoctorCard'
 import GalleryLightbox from './GalleryLightbox'
 import { useRegisteredScroller, useScrollLock } from '../hooks/useScrollLock'
 import { markDoctorViewed } from '../lib/recentDoctors'
+import { recordGuestEvent } from '../features/guest/activity'
 import useNow from '../hooks/useNow'
 import useDuplicateBookingGuard from '../hooks/useDuplicateBookingGuard'
 import { usePushBack } from '../features/pushNav'
@@ -100,6 +101,18 @@ export default function DoctorProfile() {
   useEffect(() => {
     if (id) markDoctorViewed(id)
   }, [id])
+
+  useEffect(() => {
+    if (!id) return undefined
+    recordGuestEvent({
+      eventType: 'view',
+      entityType: 'doctor',
+      entityId: String(id),
+      metadata: { name: registryDoctor?.name || '' },
+      dedupeKey: `doctor|${id}`,
+    }).catch(() => {})
+    return undefined
+  }, [id, registryDoctor?.name])
 
   useEffect(() => {
     let cancelled = false

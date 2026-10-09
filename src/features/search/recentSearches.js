@@ -1,3 +1,5 @@
+import { recordGuestEvent } from '../guest/activity'
+
 const RECENT_KEY = 'em.search.recent'
 const QUERY_KEY = 'em.search.query'
 const MAX_RECENT = 8
@@ -42,6 +44,14 @@ export function pushRecentSearch(entry) {
     ),
   ].slice(0, MAX_RECENT)
   writeJson(RECENT_KEY, next)
+  const label = String(entry.label).trim()
+  recordGuestEvent({
+    eventType: 'search',
+    entityType: entry.type || 'query',
+    entityId: label,
+    metadata: { scope: entry.scope || 'home', meta: entry.meta || '' },
+    dedupeKey: `search|${label.toLowerCase()}`,
+  }).catch(() => {})
   return next
 }
 

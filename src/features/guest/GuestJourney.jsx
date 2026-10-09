@@ -4,13 +4,16 @@ import { AUTH_CONFIRM_PATH, AUTH_PATHS } from '../auth/types'
 import { useAuth } from '../auth/hooks/useAuth'
 import { signInAnonymously } from '../auth/services/authService'
 import { addToCart } from '../pharmacy/shopApi'
+import { adoptGuestSavedInsights } from '../../user/store'
 import {
   clearGuestCartSnapshot,
   flushGuestEvents,
   migrateGuestActivity,
   readGuestCartSnapshot,
   recordGuestEvent,
+  setGuestCapture,
 } from './activity'
+import { describeGuestRoute } from './routes'
 import { clearGuestResume, peekGuestResume } from './resume'
 
 let anonymousAttempted = false
@@ -36,12 +39,18 @@ export default function GuestJourney() {
   }, [ready, user, isRecovery, sessionExpired, location.pathname])
 
   useEffect(() => {
+    setGuestCapture(Boolean(ready && !isAuthenticated && !isRecovery))
+  }, [ready, isAuthenticated, isRecovery])
+
+  useEffect(() => {
     if (!ready || isAuthenticated || isRecovery) return undefined
+    const described = describeGuestRoute(location.pathname)
+    if (!described) return undefined
     recordGuestEvent({
       eventType: 'view',
       entityType: 'route',
       entityId: location.pathname,
-      metadata: { search: location.search || '' },
+      metadata: { search: location.search || '', label: described.label },
       dedupeKey: `${location.pathname}|${location.key || ''}`,
     })
     return undefined
@@ -53,6 +62,7 @@ export default function GuestJourney() {
     ;(async () => {
       await migrateGuestActivity()
       if (cancelled) return
+      adoptGuestSavedInsights()
       const snap = readGuestCartSnapshot()
       if (!snap?.lines?.length || snap.anonymousUserId === user?.id) {
         clearGuestCartSnapshot()

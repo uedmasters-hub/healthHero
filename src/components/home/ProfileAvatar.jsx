@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useProfileCompletion, useUser } from '../../user'
 import { flowState } from '../../lib/careFlow'
+import GuestMark from '../profile/GuestMark'
 import ProfileCompletionRing from './ProfileCompletionRing'
 import './ProfileAvatar.css'
 
@@ -78,15 +79,19 @@ export default function ProfileAvatar({ className = '' }) {
           returnTo: location.pathname || '/',
         }),
       })}
-      aria-label="Open profile"
+      aria-label={profile ? 'Open profile' : 'Open guest profile'}
     >
-      <ProfileCompletionRing percent={ringPercent} className="profile-avatar__ring">
-        {profile?.avatar ? (
-          <img src={profile.avatar} alt="" className="profile-avatar-img" />
-        ) : (
-          <span className="profile-avatar-placeholder">{profile?.initials || 'U'}</span>
-        )}
-      </ProfileCompletionRing>
+      {profile ? (
+        <ProfileCompletionRing percent={ringPercent} className="profile-avatar__ring">
+          {profile.avatar ? (
+            <img src={profile.avatar} alt="" className="profile-avatar-img" />
+          ) : (
+            <span className="profile-avatar-placeholder">{profile.initials}</span>
+          )}
+        </ProfileCompletionRing>
+      ) : (
+        <span className="profile-avatar-placeholder is-guest"><GuestMark /></span>
+      )}
       {isDemo ? <span className="profile-avatar-pro">PRO</span> : null}
     </button>
   )
