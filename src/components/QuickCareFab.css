@@ -22,7 +22,9 @@
   gap: var(--space-2-5);
   pointer-events: none;
   transform: translate3d(0, 0, 0);
-  will-change: transform;
+  /* Scroll-tracked lift above colored footers (useAdaptiveFooter); composes with nav-hide `transform`. */
+  translate: 0 calc(var(--qc-footer-lift, 0px) * -1);
+  will-change: transform, translate;
 }
 
 /* Home-style only — sticky-footer screens never get this class. */

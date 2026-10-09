@@ -21,6 +21,7 @@ import { PharmacyIcon } from './PharmacyIcons'
 import { CartStepper, PriceTag, ProductArt, ProductMiniCard, TrustStrip } from './ProductBits'
 import '../DoctorProfile.css'
 import './PharmacyShop.css'
+import { useRequirePatient } from '../../features/guest/requireIdentity'
 
 /* One tab per monograph field, in the order a pharmacist would read them. */
 const INFO_TABS = [
@@ -211,6 +212,7 @@ export default function PharmacyProductPage() {
   const scrollRef = useRef(null)
   const product = detail?.product || null
   const [quantity] = useCartItem(product)
+  const requirePatient = useRequirePatient()
 
   useEffect(() => {
     let cancelled = false
@@ -270,6 +272,8 @@ export default function PharmacyProductPage() {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file || !product) return
+    const allowed = await requirePatient('prescription_upload', { drugId: product.id })
+    if (!allowed) return
     setBusy(true)
     setNotice('')
     try {

@@ -84,6 +84,8 @@ import ConversationThreadPage from './features/conversations/pages/ConversationT
 import SupportThreadPage from './features/conversations/pages/SupportThreadPage'
 import AgentInboxPage from './features/conversations/pages/AgentInboxPage'
 import AppScrimHost, { useAppScrim } from './components/AppScrim'
+import { useAdaptiveFooter } from './features/footer/useAdaptiveFooter'
+import GuestJourney from './features/guest/GuestJourney'
 import { SheetPortal } from './components/PageTransition'
 import { PushStack } from './features/pushNav'
 
@@ -115,6 +117,11 @@ function ExploreIndexRedirect() {
     navigate('/', { replace: true })
   }, [navigate, openSpecialisations])
 
+  return null
+}
+
+function AdaptiveFooterBridge() {
+  useAdaptiveFooter()
   return null
 }
 
@@ -246,6 +253,7 @@ function AppProviders() {
     <BookingProvider key={user?.id || 'anon'}>
       <NotificationProvider>
         <OnboardingProvider>
+          <GuestJourney />
           <TransitionProvider>
             <AuthGate>
               <DemoPreviewProvider>
@@ -254,6 +262,7 @@ function AppProviders() {
                     <FabProvider>
                       <AppRoutes />
                       <BottomNav />
+                      <AdaptiveFooterBridge />
                       <NotificationPresentationSync />
                       <NotificationIsland />
                       <ConnectionBanner />

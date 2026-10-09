@@ -30,6 +30,8 @@ import {
 } from '../lib/paymentSession'
 import { AppBar, Badge, Button, EmptyState, Icon, SectionHead } from './ui'
 import './ProcessPayment.css'
+import { useRequirePatient } from '../features/guest/requireIdentity'
+import { useAuth } from '../features/auth/hooks/useAuth'
 
 function PaymentDoctorSummary({ doctor, date, time, amount, currency, orderId, ready, locked }) {
   const start = date && time ? getAppointmentStart(date, time) : null
@@ -88,6 +90,13 @@ export default function ProcessPayment() {
   const boot = location.state || {}
   const bookingId = boot.bookingId || paymentSession?.bookingEngineId || null
   const storeBooking = useBookingById(bookingId)
+  const { ready: authReady, isAuthenticated } = useAuth()
+  const requirePatient = useRequirePatient()
+
+  useEffect(() => {
+    if (!authReady || isAuthenticated) return
+    requirePatient('payment', { bookingId })
+  }, [authReady, isAuthenticated, bookingId, requirePatient])
 
   useEffect(() => {
     if (bookingId) focusBooking?.(bookingId)

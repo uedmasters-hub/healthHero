@@ -3,7 +3,6 @@ import { useOnboardingStatus } from '../../lib/onboarding'
 import { AUTH_CONFIRM_PATH, AUTH_PATHS, GUEST_PATHS } from '../../features/auth/types'
 import { useAuth } from '../../features/auth/hooks/useAuth'
 import GuestRoute from '../../features/auth/components/GuestRoute'
-import ProtectedRoute from '../../features/auth/components/ProtectedRoute'
 import AuthConfirmPage from '../../features/auth/pages/AuthConfirmPage'
 import AuthCallbackPage from '../../features/auth/pages/AuthCallbackPage'
 import VerifyEmailPage from '../../features/auth/pages/VerifyEmailPage'
@@ -13,14 +12,17 @@ import RegisterPage from './RegisterPage'
 import ForgotPasswordPage from './ForgotPasswordPage'
 import OtpPage from './OtpPage'
 import { AuthSplash } from './AuthScreen'
+import { SystemState } from '../system'
+
+const EXPIRED_REDIRECT_SECONDS = 10
 
 /**
- * Blocks routing until Supabase auth (and onboarding status for signed-in
- * users) is resolved. /auth/confirm runs first so PKCE / Magic Link never
- * bounce through Login or duplicate session probes.
+ * Resolves auth before routing. Guests explore the app after onboarding.
+ * Login is a screen they open, not a wall around the product. An identified
+ * session that expires still stops on the session-expired state.
  */
 export default function AuthGate({ children }) {
-  const { ready, isAuthenticated } = useAuth()
+  const { ready, isAuthenticated, isRecovery, sessionExpired } = useAuth()
   const onboardingStatus = useOnboardingStatus()
   const location = useLocation()
   const isConfirm = location.pathname === AUTH_CONFIRM_PATH
@@ -46,6 +48,10 @@ export default function AuthGate({ children }) {
     return <AuthSplash watchdog={onboardingStatus === 'pending'} />
   }
 
+  if (isRecovery && !isAuthRoute) {
+    return <Navigate to="/reset" replace />
+  }
+
   if (isAuthRoute) {
     return (
       <Routes>
@@ -60,5 +66,16 @@ export default function AuthGate({ children }) {
     )
   }
 
-  return <ProtectedRoute>{children}</ProtectedRoute>
+  if (sessionExpired && !isAuthenticated) {
+    return (
+      <div className="phone-app-state">
+        <SystemState
+          state="session-expired"
+          autoRedirect={{ to: '/login', seconds: EXPIRED_REDIRECT_SECONDS, label: 'to sign in' }}
+        />
+      </div>
+    )
+  }
+
+  return children
 }

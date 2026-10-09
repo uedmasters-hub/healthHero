@@ -5,6 +5,8 @@ import {
   ONBOARD_SLIDES,
   OnboardingActiveContext,
   OnboardingStatusContext,
+  hasCompletedOnboarding,
+  markOnboardingComplete,
   persistOnboardingCompleted,
   preloadOnboardAssets,
   resolveOnboardingCompleted,
@@ -64,13 +66,13 @@ function ArtCard({ slide, delta, ready }) {
 }
 
 /**
- * Product onboarding runs only after Supabase auth is established.
- * Never clears the auth session. Completion is persisted to public.users
- * with a per-user local cache for fast startup.
+ * Product onboarding runs once per install before exploration.
+ * Identified patients also persist completion on their profile.
+ * Never clears the auth session.
  */
 export function OnboardingProvider({ children }) {
   const { ready, isAuthenticated, user } = useAuth()
-  const userId = user?.id || null
+  const userId = isAuthenticated ? (user?.id || null) : null
   const [status, setStatus] = useState('pending')
 
   useEffect(() => {
@@ -80,8 +82,7 @@ export function OnboardingProvider({ children }) {
     }
 
     if (!isAuthenticated || !userId) {
-      // Guests skip product onboarding; AuthGate sends them to Login.
-      setStatus('done')
+      setStatus(hasCompletedOnboarding() ? 'done' : 'needed')
       return undefined
     }
 
@@ -102,6 +103,7 @@ export function OnboardingProvider({ children }) {
   // Local flag is written synchronously inside persist; the remote write must not gate entry.
   const onComplete = useCallback(() => {
     if (userId) persistOnboardingCompleted(userId)
+    else markOnboardingComplete()
     setStatus('done')
   }, [userId])
 

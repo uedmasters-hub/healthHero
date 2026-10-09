@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useProfileCompletion, useUser } from '../user'
 import { HOME_VISIBLE_STATUSES, useBookingStore } from '../booking'
@@ -9,6 +10,8 @@ import { useOriginBack } from '../features/pushNav'
 import { flowState } from '../lib/careFlow'
 import './PatientProfile.css'
 import { RedirectingPage } from './system'
+import { useAuth } from '../features/auth/hooks/useAuth'
+import { useRequirePatient } from '../features/guest/requireIdentity'
 
 function sectionProgress(sections, id) {
   return sections.find((item) => item.id === id) || null
@@ -19,10 +22,18 @@ export default function PatientProfile() {
   const location = useLocation()
   const goBack = useOriginBack('/')
   const { profile, isDemo, logout, health } = useUser()
+  const { ready: authReady, isAuthenticated } = useAuth()
+  const requirePatient = useRequirePatient()
   const { bookings } = useBookingStore()
   const completion = useProfileCompletion()
 
-  if (!profile) return <RedirectingPage title="Loading your profile" seconds={12} />
+  useEffect(() => {
+    if (authReady && !isAuthenticated) requirePatient('profile')
+  }, [authReady, isAuthenticated, requirePatient])
+
+  if (!authReady || !isAuthenticated || !profile) {
+    return <RedirectingPage title={isAuthenticated ? 'Loading your profile' : 'Sign in to open your profile'} seconds={12} />
+  }
 
   const openChild = (path) => {
     navigate(path, {

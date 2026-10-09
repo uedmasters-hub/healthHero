@@ -1319,7 +1319,23 @@ function persistenceForUser(userId) {
   })
 }
 
+function adoptGuestBookings(userId) {
+  if (!userId || typeof localStorage === 'undefined') return
+  const anonDb = `${STORAGE_KEYS.DB}:anon`
+  const userDb = `${STORAGE_KEYS.DB}:${userId}`
+  try {
+    const guest = localStorage.getItem(anonDb)
+    if (!guest || localStorage.getItem(userDb)) return
+    localStorage.setItem(userDb, guest)
+    const active = localStorage.getItem(`${STORAGE_KEYS.ACTIVE_ID}:anon`)
+    if (active) localStorage.setItem(`${STORAGE_KEYS.ACTIVE_ID}:${userId}`, active)
+  } catch {
+    /* private mode */
+  }
+}
+
 export function bindBookingEngine(userId = null) {
+  if (userId) adoptGuestBookings(userId)
   const scope = userId || 'anon'
   if (singleton && boundUserId === scope) return singleton
   boundUserId = scope

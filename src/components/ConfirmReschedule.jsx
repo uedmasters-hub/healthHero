@@ -8,11 +8,13 @@ import DoctorCard from './DoctorCard'
 import { AppBar, Badge, Card, Icon, IconButton, InfoCell, InfoGrid, QuickAction, ResultHero } from './ui'
 import './ConfirmReschedule.css'
 import { UnavailablePage } from './system'
+import { useRequirePatient } from '../features/guest/requireIdentity'
 
 export default function ConfirmReschedule() {
   const navigate = useNavigate()
   const location = useLocation()
   const { currentBooking, setPaymentSession, startPayment } = useBooking()
+  const requirePatient = useRequirePatient()
   const [selectedRecords, setSelectedRecords] = useState(
     () => currentBooking?.attachedRecordIds || currentBooking?.selectedRecords || []
   )
@@ -24,7 +26,11 @@ export default function ConfirmReschedule() {
   const isQuickBook = bookingMode === 'quick'
   const amountDue = consultationFee + rescheduleFee - insuranceCoverage
 
-  const beginPayment = () => {
+  const beginPayment = async () => {
+    const allowed = await requirePatient('reschedule', {
+      bookingId: currentBooking?.engineId || currentBooking?.id || null,
+    })
+    if (!allowed) return
     const appointmentData = {
       oldDate,
       oldTime,

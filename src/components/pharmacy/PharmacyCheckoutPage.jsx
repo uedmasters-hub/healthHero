@@ -10,6 +10,9 @@ import {
   uploadPrescription,
 } from '../../features/pharmacy/shopApi'
 import { flushCart } from '../../features/pharmacy/cartStore'
+import { useRequirePatient } from '../../features/guest/requireIdentity'
+import { saveGuestCartSnapshot } from '../../features/guest/activity'
+import { useAuth } from '../../features/auth/hooks/useAuth'
 import { EntityCardSkeletonStack } from '../directory'
 import { ProfileHeader } from '../profile/placeProfile'
 import { Badge, Button, Callout, Card, FormGroup, Icon, SectionHead } from '../ui'
@@ -27,6 +30,8 @@ export default function PharmacyCheckoutPage() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const fileRef = useRef(null)
+  const requirePatient = useRequirePatient()
+  const { user } = useAuth()
 
   useEffect(() => {
     // Commit any in-flight stepper taps before reading the order lines.
@@ -60,6 +65,10 @@ export default function PharmacyCheckoutPage() {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file) return
+    const allowed = await requirePatient('prescription_upload', {
+      lines: rxLines.map((line) => line.drugId),
+    })
+    if (!allowed) return
     setBusy(true)
     setError('')
     try {
@@ -81,6 +90,12 @@ export default function PharmacyCheckoutPage() {
   }
 
   const pay = async () => {
+    saveGuestCartSnapshot(cart?.items || [], user?.id)
+    const allowed = await requirePatient('pharmacy_order', {
+      count: cart?.count || 0,
+      note: note || null,
+    })
+    if (!allowed) return
     setBusy(true)
     setError('')
     try {
