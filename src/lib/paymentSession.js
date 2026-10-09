@@ -5,7 +5,18 @@ import { BRAND_STORAGE } from './brand'
 let sessionScope = 'anon'
 
 export function setPaymentSessionScope(userId) {
-  sessionScope = userId || 'anon'
+  const next = userId || 'anon'
+  if (next !== 'anon' && next !== sessionScope && typeof localStorage !== 'undefined') {
+    const from = `${BRAND_STORAGE.paymentSessionPrefix}anon`
+    const to = `${BRAND_STORAGE.paymentSessionPrefix}${next}`
+    try {
+      const guest = localStorage.getItem(from)
+      if (guest && !localStorage.getItem(to)) localStorage.setItem(to, guest)
+    } catch {
+      /* private mode */
+    }
+  }
+  sessionScope = next
 }
 
 function paymentStorageKey() {

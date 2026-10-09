@@ -85,6 +85,7 @@ import SupportThreadPage from './features/conversations/pages/SupportThreadPage'
 import AgentInboxPage from './features/conversations/pages/AgentInboxPage'
 import AppScrimHost, { useAppScrim } from './components/AppScrim'
 import { useAdaptiveFooter } from './features/footer/useAdaptiveFooter'
+import GuestJourney from './features/guest/GuestJourney'
 import { SheetPortal } from './components/PageTransition'
 import { PushStack } from './features/pushNav'
 
@@ -252,6 +253,7 @@ function AppProviders() {
     <BookingProvider key={user?.id || 'anon'}>
       <NotificationProvider>
         <OnboardingProvider>
+          <GuestJourney />
           <TransitionProvider>
             <AuthGate>
               <DemoPreviewProvider>

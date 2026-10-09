@@ -28,6 +28,7 @@ import {
 import { AppBar, Badge, Button, DetailRow, FormGroup, Icon, IconButton, List, SectionHead, SheetHeader, Steps, Switch } from './ui'
 import './ConfirmBooking.css'
 import { RedirectingPage } from './system'
+import { useRequirePatient } from '../features/guest/requireIdentity'
 
 export default function ConfirmBooking() {
   const navigate = useNavigate()
@@ -186,6 +187,8 @@ export default function ConfirmBooking() {
     }
   }, [doctor, date, time, patient, navigate, location.state])
 
+  const requirePatient = useRequirePatient()
+
   if (!doctor || !date || !time || !patient) {
     return <RedirectingPage title="Taking you back to complete your booking" />
   }
@@ -210,8 +213,15 @@ export default function ConfirmBooking() {
     return `${fmt(start)} - ${fmt(end)}`
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (showSuccess) return
+    const allowed = await requirePatient('booking', {
+      doctorId: doctor?.providerUuid || doctor?.id || null,
+      doctorName: doctor?.name || null,
+      visitType,
+      slot: time || null,
+    })
+    if (!allowed) return
     const draftBooking = {
       doctor,
       date,

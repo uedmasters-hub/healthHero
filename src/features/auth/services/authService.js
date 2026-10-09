@@ -110,6 +110,28 @@ export async function exchangeCodeFromUrl(href = typeof window !== 'undefined' ?
   return { session: data.session || null, user: data.user || null }
 }
 
+/** True for a Supabase anonymous session. Identified patients are everyone else. */
+export function isAnonymousUser(user) {
+  if (!user) return false
+  if (user.is_anonymous === true) return true
+  return user.app_metadata?.provider === 'anonymous'
+}
+
+/**
+ * Guest Supabase session. Fails quietly when anonymous sign-in is disabled;
+ * exploration still works from the local activity cache.
+ */
+export async function signInAnonymously() {
+  try {
+    const supabase = requireSupabase()
+    const { data, error } = await supabase.auth.signInAnonymously()
+    if (error) return { ok: false, error: mapAuthError(error) }
+    return { ok: true, session: data.session, user: data.user }
+  } catch (error) {
+    return { ok: false, error: mapAuthError(error) }
+  }
+}
+
 export async function signInWithPassword(email, password) {
   const supabase = requireSupabase()
   const { data, error } = await supabase.auth.signInWithPassword({

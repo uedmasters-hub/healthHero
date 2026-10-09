@@ -10,6 +10,8 @@ import { flowState } from '../lib/careFlow'
 import PageSearchHeader from './PageSearchHeader'
 import { Badge, EmptyState, List, ListRow } from './ui'
 import './SettingsPage.css'
+import { useAuth } from '../features/auth/hooks/useAuth'
+import { useRequirePatient } from '../features/guest/requireIdentity'
 
 const SETTINGS_ROWS = [
   { id: 'personal', label: 'Personal details', path: '/profile/personal' },
@@ -30,6 +32,8 @@ function openFromSettings(navigate, path) {
 export default function SettingsPage() {
   const navigate = useNavigate()
   const { profile, isDemo, logout } = useUser()
+  const { isAuthenticated } = useAuth()
+  const requirePatient = useRequirePatient()
   const { setItemRef, isRevealed, isCached } = useStaggerReveal({
     dataset: 'settings',
   })
@@ -83,10 +87,16 @@ export default function SettingsPage() {
             <List>
               <ListRow
                 className="settings-profile"
-                onClick={() => openFromSettings(navigate, '/profile')}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    requirePatient('profile')
+                    return
+                  }
+                  openFromSettings(navigate, '/profile')
+                }}
                 icon={<span className="settings-avatar" aria-hidden="true">{profile?.initials || 'U'}</span>}
-                title={profile?.name}
-                subtitle={[profile?.email, profile?.phone].filter(Boolean).join(' · ')}
+                title={profile?.name || 'Sign in'}
+                subtitle={profile ? [profile.email, profile.phone].filter(Boolean).join(' · ') : 'Save bookings, orders, and records'}
                 trailing={isDemo ? <Badge tone="solid" caps>PRO</Badge> : null}
               />
             </List>
@@ -97,7 +107,17 @@ export default function SettingsPage() {
           <RevealItem revealed={isRevealed(1)} cached={isCached} ref={setItemRef(1)}>
             <List>
               {visibleRows.map((row) => (
-                <ListRow key={row.id} title={row.label} onClick={() => openFromSettings(navigate, row.path)} />
+                <ListRow
+                  key={row.id}
+                  title={row.label}
+                  onClick={() => {
+                    if (!isAuthenticated && (row.id === 'personal' || row.id === 'account')) {
+                      requirePatient(row.id)
+                      return
+                    }
+                    openFromSettings(navigate, row.path)
+                  }}
+                />
               ))}
             </List>
           </RevealItem>
@@ -106,7 +126,13 @@ export default function SettingsPage() {
         {showSignOut ? (
           <RevealItem revealed={isRevealed(2)} cached={isCached} ref={setItemRef(2)}>
             <List>
-              <ListRow className="is-centered" danger chevron={false} title="Sign out" onClick={signOut} />
+              <ListRow
+                className="is-centered"
+                danger={isAuthenticated}
+                chevron={false}
+                title={isAuthenticated ? 'Sign out' : 'Sign in'}
+                onClick={isAuthenticated ? signOut : () => requirePatient('account')}
+              />
             </List>
           </RevealItem>
         ) : null}

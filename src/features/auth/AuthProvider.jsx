@@ -20,6 +20,7 @@ import {
   chartIdentityFromUser,
   fetchGoogleBirthday,
   getCurrentSession,
+  isAnonymousUser,
   loadAppUser,
   requestPasswordReset,
   resendVerification,
@@ -68,7 +69,7 @@ function shouldSurfaceBootOAuthError() {
 }
 
 function applyLocalChart(session) {
-  if (session?.user) {
+  if (session?.user && !isAnonymousUser(session.user)) {
     attachAuthenticatedUser(chartIdentityFromUser(session.user))
     return
   }
@@ -85,7 +86,7 @@ export function AuthProvider({ children }) {
   const [googleBirthday, setGoogleBirthdayState] = useState(null)
   const [sessionExpired, setSessionExpired] = useState(false)
   const userSignOutRef = useRef(false)
-  const hadSessionRef = useRef(false)
+  const hadIdentifiedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -101,7 +102,7 @@ export function AuthProvider({ children }) {
         if (oauthError) setBootError(oauthError)
       }
       applyLocalChart(nextSession)
-      hadSessionRef.current = Boolean(nextSession?.user)
+      hadIdentifiedRef.current = Boolean(nextSession?.user) && !isAnonymousUser(nextSession?.user)
       setSession(nextSession)
       if (event) setLastEvent(event)
       setReady(true)
@@ -124,12 +125,14 @@ export function AuthProvider({ children }) {
         return
       }
 
-      // Signed out without the user asking (refresh failed / revoked) → session expired.
-      if (event === 'SIGNED_OUT' && hadSessionRef.current && !userSignOutRef.current) {
+      // An identified session that ended on its own → session expired.
+      // Dropping an anonymous guest session must not block exploration.
+      if (event === 'SIGNED_OUT' && hadIdentifiedRef.current && !userSignOutRef.current) {
         setSessionExpired(true)
       }
-      if (next?.user) setSessionExpired(false)
-      hadSessionRef.current = Boolean(next?.user)
+      const identified = Boolean(next?.user) && !isAnonymousUser(next?.user)
+      if (identified) setSessionExpired(false)
+      hadIdentifiedRef.current = identified
 
       setLastEvent(event)
       applyLocalChart(next)
@@ -208,7 +211,7 @@ export function AuthProvider({ children }) {
     const result = await withTimeout(signOutRemote(), SIGN_OUT_TIMEOUT_MS, { ok: true, timedOut: true })
     if (result?.timedOut) clearStoredSession()
     detachLocalSession()
-    hadSessionRef.current = false
+    hadIdentifiedRef.current = false
     setSessionExpired(false)
     setSession(null)
     setAppUser(null)
@@ -225,6 +228,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => {
     const user = session?.user || null
+    const anonymous = isAnonymousUser(user)
     const emailVerified = Boolean(
       user?.email_confirmed_at
       || user?.app_metadata?.provider === 'google'
@@ -237,7 +241,8 @@ export function AuthProvider({ children }) {
       appUser,
       lastEvent,
       isRecovery,
-      isAuthenticated: Boolean(user) && !isRecovery,
+      isAnonymous: anonymous && !isRecovery,
+      isAuthenticated: Boolean(user) && !anonymous && !isRecovery,
       sessionExpired,
       bootError,
       googleBirthday,

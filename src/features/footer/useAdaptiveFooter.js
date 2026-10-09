@@ -30,15 +30,18 @@ function findActiveBar(app, appRect) {
     if (bar.closest(HIDDEN_LAYER)) continue
     const rect = bar.getBoundingClientRect()
     if (!rect.height) continue
-    if (rect.top < appRect.bottom && rect.bottom > appRect.top) return rect
+    if (rect.top < appRect.bottom && rect.bottom > appRect.top) {
+      return { el: bar, rect }
+    }
   }
   return null
 }
 
 /**
  * Colored-footer adaptation, driven by scroll position every frame:
- * - `--nav-tone` (0 Light → 1 Dark) on the tab bar and home indicator as the
- *   footer band slides under the bar.
+ * - `--footer-tone` (0 Dark → 1 Light) on the footer band as it enters and docks.
+ * - `--nav-tone` (0 Light → 1 Dark) on the tab bar / home indicator so chrome
+ *   and band meet without a hard edge.
  * - `--qc-footer-lift` on the FAB so it always rests a fixed gap above the band.
  */
 export function useAdaptiveFooter() {
@@ -47,6 +50,7 @@ export function useAdaptiveFooter() {
   useEffect(() => {
     let raf = 0
     let settleUntil = 0
+    let lastBar = null
 
     const frame = () => {
       raf = 0
@@ -57,25 +61,39 @@ export function useAdaptiveFooter() {
       const fab = document.querySelector('.quick-care')
       const appRect = app.getBoundingClientRect()
       const scale = app.offsetWidth ? appRect.width / app.offsetWidth : 1
-      const bar = findActiveBar(app, appRect)
+      const active = findActiveBar(app, appRect)
 
-      let tone = 0
+      let footerTone = 0
+      let navTone = 0
       let lift = 0
-      if (bar) {
+
+      if (active) {
+        const { el: barEl, rect: bar } = active
         const navHeight = nav?.getBoundingClientRect().height || 0
-        if (navHeight) tone = clamp01((appRect.bottom - bar.top) / navHeight)
+        // Footer Light progress: 0 while only the under-nav clearance is on
+        // screen, 1 once the content row above the nav is fully revealed.
+        const lightRange = Math.max(bar.height - navHeight, 1)
+        footerTone = clamp01((appRect.bottom - bar.top - navHeight) / lightRange)
+        if (navHeight) navTone = clamp01((appRect.bottom - bar.top) / navHeight)
 
         if (fab) {
           // Measured bottom includes nav-hide motion; add back our own lift to get the resting edge.
           const restBottom = fab.getBoundingClientRect().bottom + readVar(fab, '--qc-footer-lift') * scale
           lift = Math.max(0, (restBottom - (bar.top - FAB_FOOTER_GAP * scale)) / scale)
         }
+
+        if (lastBar && lastBar !== barEl) writeVar(lastBar, '--footer-tone', 0)
+        lastBar = barEl
+        writeVar(barEl, '--footer-tone', footerTone)
+      } else if (lastBar) {
+        writeVar(lastBar, '--footer-tone', 0)
+        lastBar = null
       }
 
-      writeVar(nav, '--nav-tone', tone)
-      writeVar(homeBar, '--nav-tone', tone)
+      writeVar(nav, '--nav-tone', navTone)
+      writeVar(homeBar, '--nav-tone', navTone)
       writeVar(fab, '--qc-footer-lift', lift, 'px', 0.1)
-      if (bar || performance.now() < settleUntil) raf = window.requestAnimationFrame(frame)
+      if (active || performance.now() < settleUntil) raf = window.requestAnimationFrame(frame)
     }
 
     const kick = () => {
@@ -90,6 +108,7 @@ export function useAdaptiveFooter() {
       window.cancelAnimationFrame(raf)
       document.removeEventListener('scroll', kick, { capture: true })
       window.removeEventListener('resize', kick)
+      if (lastBar) lastBar.style.removeProperty('--footer-tone')
     }
   }, [location.pathname])
 }

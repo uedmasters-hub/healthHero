@@ -203,9 +203,30 @@
   border-radius: var(--radius-full);
 }
 
+/* Band chrome — Dark (0) and Light (1) states morph via `--footer-tone`.
+   Light is a single tonal step above Dark so the docked end feels open
+   without leaving the brand purple family. */
+@property --footer-tone {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .app-footer--band .app-footer-bar {
+  --footer-tone: 0;
+  --footer-mix: calc(var(--footer-tone) * 100%);
+
+  --footer-dark-bg: var(--neutral-900);
+  --footer-light-bg: color-mix(in srgb, var(--neutral-900) 82%, var(--neutral-0));
+  --footer-dark-icon: color-mix(in srgb, var(--neutral-0) 78%, transparent);
+  --footer-light-icon: var(--neutral-0);
+  --footer-dark-text: color-mix(in srgb, var(--primary-300) 72%, transparent);
+  --footer-light-text: color-mix(in srgb, var(--primary-300) 96%, var(--neutral-0));
+
   margin: var(--space-8) calc(var(--content-padding) * -1) 0;
-  background: var(--neutral-900);
+  background: color-mix(in srgb, var(--footer-dark-bg), var(--footer-light-bg) var(--footer-mix));
+  color: color-mix(in srgb, var(--footer-dark-text), var(--footer-light-text) var(--footer-mix));
+  transition: --footer-tone var(--duration-normal) linear;
 }
 
 .app-footer--band .app-footer-bar .reveal-body {
@@ -230,7 +251,8 @@
   min-height: 24px;
   padding: 0;
   background: transparent;
-  color: color-mix(in srgb, var(--neutral-0) 92%, transparent);
+  color: color-mix(in srgb, var(--footer-dark-icon), var(--footer-light-icon) var(--footer-mix));
+  transition: color var(--duration-normal) linear;
 }
 
 .app-footer--band .app-footer-social-btn svg {
@@ -246,5 +268,12 @@
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--primary-300) 80%, transparent);
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-footer--band .app-footer-bar,
+  .app-footer--band .app-footer-social-btn {
+    transition: none;
+  }
 }

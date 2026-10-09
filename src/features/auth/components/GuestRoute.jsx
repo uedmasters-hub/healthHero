@@ -8,6 +8,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { AuthSplash } from '../../../components/auth/AuthScreen'
 import { useAuth } from '../hooks/useAuth'
 import { resolveReturnTo } from '../returnTo'
+import { peekGuestResume } from '../../guest/resume'
 
 export default function GuestRoute({ children, allowRecovery = false }) {
   const { ready, isAuthenticated, isRecovery } = useAuth()
@@ -15,6 +16,11 @@ export default function GuestRoute({ children, allowRecovery = false }) {
 
   if (!ready) return <AuthSplash />
   if (isRecovery && !allowRecovery) return <Navigate to="/reset" replace />
-  if (isAuthenticated) return <Navigate to={resolveReturnTo(location.state?.from)} replace />
+  if (isAuthenticated) {
+    const to = resolveReturnTo(location.state?.from)
+    const resume = peekGuestResume()
+    const state = resume && resume.path === to ? resume.state : undefined
+    return <Navigate to={to} replace state={state} />
+  }
   return children
 }
