@@ -13,7 +13,7 @@ import SelectPatient from './components/SelectPatient'
 import ConfirmBooking from './components/ConfirmBooking'
 import DoctorProfile from './components/DoctorProfile'
 import DoctorReviews from './components/DoctorReviews'
-import PatientProfile from './components/PatientProfile'
+import ProfileRoute from './components/profile/ProfileRoute'
 import PersonalWorkspace from './components/profile/PersonalWorkspace'
 import MedicalWorkspace from './components/profile/MedicalWorkspace'
 import RecordsWorkspace from './components/profile/RecordsWorkspace'
@@ -166,7 +166,7 @@ function AppRoutes() {
           <Route element={<ChildPageLayout />}>
             <Route index element={null} />
             <Route path="search" element={null} />
-            <Route path="/profile" element={<PatientProfile />} />
+            <Route path="/profile" element={<ProfileRoute />} />
             <Route path="/profile/personal" element={<PersonalWorkspace />} />
             <Route path="/profile/medical" element={<MedicalWorkspace />} />
             <Route path="/profile/records" element={<RecordsWorkspace />} />

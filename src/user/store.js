@@ -15,6 +15,7 @@ import { loadDatabase, loadSession, saveDatabase, saveSession } from './persiste
 import { buildDemoUser } from './seed'
 import { fetchProfileFromSupabase } from '../features/sync/profileSync'
 import { mirrorProfile } from '../features/sync/mirrors'
+import { clearGuestSavedInsights, readGuestSavedInsights, toggleGuestSavedInsight } from '../features/guest/saved'
 
 function applyHealthNormalize(user) {
   if (!user) return user
@@ -603,12 +604,24 @@ export function markAllNotificationsRead() {
 }
 
 export function isInsightSaved(id) {
-  return (currentUser()?.savedInsightIds || []).includes(id)
+  const user = currentUser()
+  if (!user) return readGuestSavedInsights().includes(String(id))
+  return (user.savedInsightIds || []).includes(id)
+}
+
+export function adoptGuestSavedInsights() {
+  const user = currentUser()
+  const ids = readGuestSavedInsights()
+  if (!user || !ids.length) return
+  const merged = [...new Set([...(user.savedInsightIds || []), ...ids])]
+  patchCurrentUser({ savedInsightIds: merged })
+  clearGuestSavedInsights()
 }
 
 export function toggleSavedInsight(id) {
   const user = currentUser()
-  if (!user || !id) return false
+  if (!user) return toggleGuestSavedInsight(id)
+  if (!id) return false
   const saved = (user.savedInsightIds || []).includes(id)
   patchCurrentUser({
     savedInsightIds: saved

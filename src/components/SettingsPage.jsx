@@ -12,6 +12,7 @@ import { Badge, EmptyState, List, ListRow } from './ui'
 import './SettingsPage.css'
 import { useAuth } from '../features/auth/hooks/useAuth'
 import { useRequirePatient } from '../features/guest/requireIdentity'
+import GuestMark from './profile/GuestMark'
 
 const SETTINGS_ROWS = [
   { id: 'personal', label: 'Personal details', path: '/profile/personal' },
@@ -87,16 +88,14 @@ export default function SettingsPage() {
             <List>
               <ListRow
                 className="settings-profile"
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    requirePatient('profile')
-                    return
-                  }
-                  openFromSettings(navigate, '/profile')
-                }}
-                icon={<span className="settings-avatar" aria-hidden="true">{profile?.initials || 'U'}</span>}
-                title={profile?.name || 'Sign in'}
-                subtitle={profile ? [profile.email, profile.phone].filter(Boolean).join(' · ') : 'Save bookings, orders, and records'}
+                onClick={() => openFromSettings(navigate, '/profile')}
+                icon={(
+                  <span className={`settings-avatar ${profile ? '' : 'is-guest'}`} aria-hidden="true">
+                    {profile?.initials || <GuestMark />}
+                  </span>
+                )}
+                title={profile?.name || 'Guest'}
+                subtitle={profile ? [profile.email, profile.phone].filter(Boolean).join(' · ') : 'Explore now. Sign in when you book, order, or pay.'}
                 trailing={isDemo ? <Badge tone="solid" caps>PRO</Badge> : null}
               />
             </List>

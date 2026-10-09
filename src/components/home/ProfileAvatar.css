@@ -59,6 +59,11 @@
   background: var(--avatar-surface);
 }
 
+.profile-avatar-placeholder.is-guest svg {
+  width: 18px;
+  height: 18px;
+}
+
 .profile-avatar-pro {
   position: absolute;
   right: -2px;
@@ -76,7 +81,8 @@
 }
 
 /* Page-open micro-interaction: gentle scale-in (ring fills via stroke transition) */
-.profile-avatar.is-entering .profile-avatar__ring {
+.profile-avatar.is-entering .profile-avatar__ring,
+.profile-avatar.is-entering .profile-avatar-placeholder.is-guest {
   animation: profile-avatar-enter var(--duration-slow) var(--ease-emphasized) both;
 }
 
@@ -92,7 +98,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .profile-avatar.is-entering .profile-avatar__ring {
+  .profile-avatar.is-entering .profile-avatar__ring,
+  .profile-avatar.is-entering .profile-avatar-placeholder.is-guest {
     animation: none;
   }
 }

@@ -37,6 +37,11 @@
   font-weight: var(--font-weight-medium);
 }
 
+.settings-avatar.is-guest svg {
+  width: 22px;
+  height: 22px;
+}
+
 .settings-profile .ds-list-row__title {
   font-size: var(--text-heading-size);
   color: var(--pp-headline);

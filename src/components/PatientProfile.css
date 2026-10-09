@@ -55,6 +55,35 @@
   font-size: 0;
 }
 
+.profile-hub-avatar.is-guest svg {
+  width: 32px;
+  height: 32px;
+}
+
+.guest-profile-note {
+  margin: var(--space-3) 0 0;
+  max-width: 22rem;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line);
+  color: var(--text-secondary);
+}
+
+.guest-profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-self: stretch;
+  margin-top: var(--space-5);
+}
+
+.guest-profile-empty {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-tertiary);
+  font-size: var(--text-label-size);
+  line-height: var(--text-label-line);
+}
+
 .profile-hub-name {
   margin: 0;
   font-size: var(--text-heading-size);

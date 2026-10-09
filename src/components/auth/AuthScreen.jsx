@@ -7,8 +7,8 @@ import './Auth.css'
 /*
   Splash watchdog. Every boot wait is bounded well below this; if a splash is
   still up after it, reload once, and on a repeat stall drop the wedged
-  session and open Login. Shared across splash instances so hand-offs
-  between guards don't restart the clock.
+  session and open Home as a guest. Shared across splash instances so
+  hand-offs between guards don't restart the clock.
 */
 const SPLASH_WATCHDOG_MS = 25000
 const SPLASH_HANDOFF_MS = 1000
@@ -26,7 +26,7 @@ function recoverFromStall() {
   try { sessionStorage.setItem(RECOVER_KEY, String(Date.now())) } catch { /* private mode */ }
   if (repeat) {
     clearStoredSession()
-    window.location.replace('/login')
+    window.location.replace('/')
     return
   }
   window.location.reload()
